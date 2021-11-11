@@ -1,0 +1,7 @@
+{
+  "name": "wm-webapp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

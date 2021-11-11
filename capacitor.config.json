@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "wm-webapp",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}

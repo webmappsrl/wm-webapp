@@ -192,6 +192,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
         return style;
       },
+      minZoom: 10,
       zIndex: 100,
     });
 

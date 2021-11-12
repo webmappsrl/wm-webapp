@@ -47,7 +47,9 @@
           }
         ],
         "no-underscore-dangle": "off",
-        "@angular-eslint/no-input-rename": "off"
+        "@angular-eslint/no-input-rename": "off",
+        "arrow-body-style": "off",
+        "guard-for-in": "off"
       }
     },
     {

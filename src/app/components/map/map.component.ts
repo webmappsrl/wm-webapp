@@ -91,14 +91,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       moveTolerance: 3,
     });
 
-    this._map.addLayer(
-      new TileLayer({
-        source: this._initializeBaseSource(),
-        visible: true,
-        zIndex: 1,
-      })
-    );
-
+    this._initializeBaseLayers();
     this._initializeDataLayers();
 
     // //TODO: figure out why this must be called inside a timeout
@@ -109,6 +102,16 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this._destroyer.next(true);
+  }
+
+  private _initializeBaseLayers() {
+    this._map.addLayer(
+      new TileLayer({
+        source: this._initializeBaseSource(),
+        visible: true,
+        zIndex: 1,
+      })
+    );
   }
 
   /**

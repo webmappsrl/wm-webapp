@@ -1,0 +1,39 @@
+.webmapp-map-fullpage {
+  width: 100%;
+  height: 100%;
+}
+
+.webmapp-map-fabcontainer {
+  position: absolute;
+
+
+  &.webmapp-map-fabcontainer-middle {
+    margin: 0;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+  }
+
+  &.webmapp-map-fabcontainer-bottom {
+    bottom: 28px;
+  }
+
+  &.webmapp-map-fabcontainer-right {
+    right: 22px;
+  }
+
+  &.webmapp-map-fabcontainer-center {
+    left: 50%;
+    -ms-transform: translatex(-50%);
+    transform: translatex(-50%);
+  }
+
+  .webmapp-map-fab {
+    padding-bottom: 20px;
+    display: block;
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+  }
+}

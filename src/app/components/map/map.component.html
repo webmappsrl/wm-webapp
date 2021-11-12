@@ -1,0 +1,68 @@
+<div #map class="webmapp-map-fullpage"></div>
+
+<div
+  class="webmapp-map-fabcontainer webmapp-map-fabcontainer-right"
+  [ngClass]="{
+    'webmapp-map-fabcontainer-bottom': btnposition == 'bottom',
+    'webmapp-map-fabcontainer-middle': btnposition == 'middle'
+  }"
+>
+  <webmapp-btn-layer
+    class="webmapp-map-fab"
+    *ngIf="(registering && !static) || showLayer"
+  >
+  </webmapp-btn-layer>
+
+  <webmapp-btn-register
+    class="webmapp-map-fab"
+    [color]="'primary'"
+    [registering]="registering"
+    *ngIf="!static && !hideRegister && isLoggedIn && isRecordEnabled"
+  >
+  </webmapp-btn-register>
+
+  <webmapp-btn-geolocation
+    class="webmapp-map-fab"
+    color="light"
+    [state]="locationState"
+    *ngIf="!static && !hidePosition"
+    (btn-click)="btnLocationClick()"
+  >
+  </webmapp-btn-geolocation>
+
+  <webmapp-btn-orientation
+    class="webmapp-map-fab"
+    *ngIf="!static && !hidePosition"
+    [degrees]="mapDegrees"
+    (click)="orientNorth()"
+  >
+  </webmapp-btn-orientation>
+</div>
+
+<div
+  class="
+    webmapp-map-fabcontainer
+    webmapp-map-fabcontainer-bottom
+    webmapp-map-fabcontainer-center
+  "
+>
+  <webmapp-btn-rec
+    *ngIf="registering && showRecBtn && !isRecording"
+    (move)="recBtnMove($event)"
+    (unlocked)="recBtnUnlocked($event)"
+  >
+  </webmapp-btn-rec>
+</div>
+
+<!-- <div *ngFor="let cm of clusterMarkers" [id]="'clustermarker'+cm.properties.ids[0]">
+  <webmapp-cluster-marker [item]="cm" (clickcluster)="clickclusterFn($event)"></webmapp-cluster-marker>
+</div> -->
+
+<template #clusterContainer></template>
+
+<div
+  id="container"
+  style="width: 120px; height: 120px; position: absolute; left: -10000px"
+>
+  <canvas id="canvas" width="100" height="100"></canvas>
+</div>

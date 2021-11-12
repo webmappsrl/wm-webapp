@@ -7,13 +7,16 @@ import {
   ViewChild,
 } from '@angular/core';
 
+import { Subject } from 'rxjs';
+
 // ol imports
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
 import XYZ from 'ol/source/XYZ';
+import ZoomControl from 'ol/control/Zoom';
 import { defaults as defaultInteractions } from 'ol/interaction.js';
-import { Subject } from 'rxjs';
+
 import { MapService } from 'src/app/services/map.service';
 
 @Component({
@@ -22,7 +25,8 @@ import { MapService } from 'src/app/services/map.service';
   styleUrls: ['./map.component.scss'],
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('map') mapDiv: ElementRef;
+  @ViewChild('mapContainer') mapContainer: ElementRef;
+  @ViewChild('zoomContainer') zoomContainer: ElementRef;
 
   @Input('start-view') startView: number[] = [10.4147, 43.7118, 9];
 
@@ -61,9 +65,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
 
     this._map = new Map({
-      target: this.mapDiv.nativeElement,
+      target: this.mapContainer.nativeElement,
       view: this._view,
-      controls: [],
+      controls: [
+        new ZoomControl({
+          target: this.zoomContainer.nativeElement,
+        }),
+      ],
       interactions,
       moveTolerance: 3,
     });

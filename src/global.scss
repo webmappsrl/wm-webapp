@@ -26,3 +26,8 @@
 @import "~@ionic/angular/css/flex-utils.css";
 
 @import "~ol/ol.css";
+
+.ol-zoom {
+  top: unset;
+  left: unset;
+}

@@ -294,11 +294,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private _updateView(): void {
     if (this._view) {
       if (this._selectedFeature) {
-        console.log(
-          'LOL',
-          this._selectedFeatureId,
-          this._selectedFeature.getGeometry().getExtent()
-        );
         this._view.fit(this._selectedFeature.getGeometry().getExtent(), {
           padding: this._padding,
           duration: 500,

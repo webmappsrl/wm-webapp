@@ -37,6 +37,7 @@ import { Collection, MapBrowserEvent } from 'ol';
 import Layer from 'ol/layer/Layer';
 import { SelectEvent } from 'ol/interaction/Select';
 import { FeatureLike } from 'ol/Feature';
+import Point from 'ol/geom/Point';
 
 @Component({
   selector: 'webmapp-map',
@@ -51,8 +52,18 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   @Input('padding') set padding(value: Array<number>) {
     this._padding = value;
     if (this._view) {
-      this._view.padding = this._padding;
-      this._map.updateSize();
+      if (this._selectedFeature) {
+        this._view.fit(this._selectedFeature.getGeometry().getExtent(), {
+          padding: this._padding,
+          duration: 500,
+        });
+      } else {
+        this._view.fit(new Point(this._view.getCenter()), {
+          padding: this._padding,
+          duration: 500,
+          maxZoom: this._view.getZoom(),
+        });
+      }
     }
   }
   @Output('feature-click') featureClick: EventEmitter<number> =
@@ -62,6 +73,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private _view: View;
   private _map: Map;
   private _dataLayers: Array<Layer>;
+  private _selectedFeature: FeatureLike;
   private _selectedFeatureId: number;
   private _selectInteraction: SelectInteraction;
   private _styleJson: any;
@@ -121,6 +133,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       const clickedFeatureId: number =
         clickedFeature?.getProperties()?.id ?? undefined;
       if (clickedFeatureId) {
+        this._selectedFeature = clickedFeature;
         this._selectedFeatureId = clickedFeatureId;
         this.featureClick.emit(this._selectedFeatureId);
         for (const layer of this._dataLayers) {
@@ -134,6 +147,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         width: 10,
         color: 'rgba(226, 249, 0, 0.6)',
       }),
+      zIndex: 999,
     });
 
     // //TODO: figure out why this must be called inside a timeout
@@ -247,8 +261,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
         const style: Style = new Style({
           stroke: strokeStyle,
+          zIndex: 100,
         });
         if (properties.id === this._selectedFeatureId) {
+          style.setZIndex(1000);
           return [style, this._selectedStyle];
         } else {
           return style;

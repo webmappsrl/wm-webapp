@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MapPage implements OnInit {
   public detailsId: number;
-  public mapPadding: Array<number> = [0, 30, 0, 0];
+  public mapPadding: Array<number> = [20, 50, 20, 20];
 
   constructor() {}
 
@@ -18,7 +18,7 @@ export class MapPage implements OnInit {
       this.mapPadding[0],
       this.mapPadding[1],
       this.mapPadding[2],
-      400,
+      event ? 420 : 20,
     ];
     this.detailsId = event;
   }

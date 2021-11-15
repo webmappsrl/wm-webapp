@@ -1,3 +1,10 @@
+<ion-toolbar class="webmapp-details-toolbar">
+  <ion-buttons slot="end">
+    <ion-button class="webmapp-details-dismiss" (click)="triggerDismiss()">
+      <ion-icon name="close"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+</ion-toolbar>
 <ion-content #content>
   <ion-grid *ngIf="data && data.length">
     <ion-row *ngFor="let item of data">

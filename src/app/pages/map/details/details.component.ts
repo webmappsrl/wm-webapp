@@ -1,4 +1,12 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { CGeojsonFeature } from 'src/app/classes/features/cgeojson-feature';
 import { GeohubService } from 'src/app/services/geohub.service';
@@ -15,6 +23,8 @@ export class DetailsComponent implements OnInit {
     this._id = value;
     this._initializeFeature();
   }
+
+  @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
 
   private _id: number;
   private _feature: CGeojsonFeature;
@@ -42,5 +52,9 @@ export class DetailsComponent implements OnInit {
     if (this.content) {
       this.content.scrollToTop();
     }
+  }
+
+  triggerDismiss() {
+    this.dismiss.emit();
   }
 }

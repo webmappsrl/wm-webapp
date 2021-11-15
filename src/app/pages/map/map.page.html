@@ -4,7 +4,10 @@
   'details-container-visible': !!detailsId
 }"
 >
-  <webmapp-details [id]="detailsId"></webmapp-details>
+  <webmapp-details
+    [id]="detailsId"
+    (dismiss)="toggleDetails()"
+  ></webmapp-details>
 </div>
 <webmapp-map
   id="map-container"

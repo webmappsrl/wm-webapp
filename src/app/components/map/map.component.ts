@@ -51,20 +51,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   @Input('start-view') startView: number[] = [10.4147, 43.7118, 9];
   @Input('padding') set padding(value: Array<number>) {
     this._padding = value;
-    if (this._view) {
-      if (this._selectedFeature) {
-        this._view.fit(this._selectedFeature.getGeometry().getExtent(), {
-          padding: this._padding,
-          duration: 500,
-        });
-      } else {
-        this._view.fit(new Point(this._view.getCenter()), {
-          padding: this._padding,
-          duration: 500,
-          maxZoom: this._view.getZoom(),
-        });
-      }
-    }
+    this._updateView();
   }
   @Output('feature-click') featureClick: EventEmitter<number> =
     new EventEmitter<number>();
@@ -301,18 +288,28 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     return interactions;
   }
 
-  // private _onMapClick(event: MapBrowserEvent<UIEvent>): void {
-  //   let selectedFeature;
-  //   for (const layer of this._dataLayers) {
-  //     layer.getFeatures(event.pixel).then((features) => {
-  //       if (!features.length) {
-  //         return;
-  //       }
-  //       const feature = features[0];
-  //       if (!feature) {
-  //         return;
-  //       }
-  //     });
-  //   }
-  // }
+  /**
+   * Make the view fit a selected feature if available using the current padding
+   */
+  private _updateView(): void {
+    if (this._view) {
+      if (this._selectedFeature) {
+        console.log(
+          'LOL',
+          this._selectedFeatureId,
+          this._selectedFeature.getGeometry().getExtent()
+        );
+        this._view.fit(this._selectedFeature.getGeometry().getExtent(), {
+          padding: this._padding,
+          duration: 500,
+        });
+      } else {
+        this._view.fit(new Point(this._view.getCenter()), {
+          padding: this._padding,
+          duration: 500,
+          maxZoom: this._view.getZoom(),
+        });
+      }
+    }
+  }
 }

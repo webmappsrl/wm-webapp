@@ -1,3 +1,13 @@
-<ion-content>
-  <webmapp-map></webmapp-map>
-</ion-content>
+<div
+  id="details-container"
+  [ngClass]="{
+  'details-container-visible': !!detailsId
+}"
+>
+  <webmapp-details></webmapp-details>
+</div>
+<webmapp-map
+  id="map-container"
+  (feature-click)="toggleDetails($event)"
+  [padding]="mapPadding"
+></webmapp-map>

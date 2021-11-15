@@ -2,8 +2,10 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   Input,
   OnDestroy,
+  Output,
   ViewChild,
 } from '@angular/core';
 
@@ -15,11 +17,14 @@ import MVT from 'ol/format/MVT';
 import TileLayer from 'ol/layer/Tile';
 import VectorTileLayer from 'ol/layer/VectorTile';
 import VectorTileSource from 'ol/source/VectorTile';
-import TileJsonSource from 'ol/source/TileJSON';
 import View from 'ol/View';
 import XYZ from 'ol/source/XYZ';
 import ZoomControl from 'ol/control/Zoom';
-import { defaults as defaultInteractions } from 'ol/interaction.js';
+import {
+  defaults as defaultInteractions,
+  Interaction,
+  Select as SelectInteraction,
+} from 'ol/interaction.js';
 
 import { MapService } from 'src/app/services/map.service';
 import Style from 'ol/style/Style';
@@ -28,6 +33,10 @@ import StrokeStyle from 'ol/style/Stroke';
 import IconStyle from 'ol/style/Icon';
 import TextStyle from 'ol/style/Text';
 import { CommunicationService } from 'src/app/services/communication.service';
+import { Collection, MapBrowserEvent } from 'ol';
+import Layer from 'ol/layer/Layer';
+import { SelectEvent } from 'ol/interaction/Select';
+import { FeatureLike } from 'ol/Feature';
 
 @Component({
   selector: 'webmapp-map',
@@ -39,22 +48,32 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   @ViewChild('zoomContainer') zoomContainer: ElementRef;
 
   @Input('start-view') startView: number[] = [10.4147, 43.7118, 9];
+  @Input('padding') set padding(value: Array<number>) {
+    this._padding = value;
+    if (this._view) {
+      this._view.padding = this._padding;
+      this._map.updateSize();
+    }
+  }
+  @Output('feature-click') featureClick: EventEmitter<number> =
+    new EventEmitter<number>();
 
-  public mapDegrees: number;
-
-  private _destroyer: Subject<boolean> = new Subject<boolean>();
-
+  private _padding: Array<number> = [0, 0, 0, 0];
   private _view: View;
   private _map: Map;
-
+  private _dataLayers: Array<Layer>;
+  private _selectedFeatureId: number;
+  private _selectInteraction: SelectInteraction;
   private _styleJson: any;
+  private _selectedStyle: Style;
+  private _destroyer: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private _communicationService: CommunicationService,
     private _mapService: MapService
   ) {}
 
-  ngAfterViewInit() {
+  async ngAfterViewInit() {
     if (!this.startView) {
       this.startView = [10.4147, 43.7118, 9];
     }
@@ -71,13 +90,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       constrainOnlyCenter: true,
       extent: this._mapService.extentFromLonLat([-180, -85, 180, 85]),
     });
+    if (this._padding) {
+      this._view.padding = this._padding;
+    }
 
-    const interactions = defaultInteractions({
-      doubleClickZoom: true,
-      dragPan: true,
-      mouseWheelZoom: true,
-      pinchRotate: true,
-    });
+    const baseLayers: Array<Layer> = this._initializeBaseLayers();
+    this._dataLayers = await this._initializeDataLayers();
+    const interactions: Collection<Interaction> =
+      this._initializeMapInteractions(this._dataLayers);
 
     this._map = new Map({
       target: this.mapContainer.nativeElement,
@@ -87,31 +107,53 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           target: this.zoomContainer.nativeElement,
         }),
       ],
+      layers: [...baseLayers, ...this._dataLayers],
       interactions,
       moveTolerance: 3,
     });
 
-    this._initializeBaseLayers();
-    this._initializeDataLayers();
+    // this._map.on('click', (event: MapBrowserEvent<UIEvent>) => {
+    //   this._onMapClick(event);
+    // });
+
+    this._selectInteraction.on('select', (event: SelectEvent) => {
+      const clickedFeature = event?.selected?.[0] ?? undefined;
+      const clickedFeatureId: number =
+        clickedFeature?.getProperties()?.id ?? undefined;
+      if (clickedFeatureId) {
+        this._selectedFeatureId = clickedFeatureId;
+        this.featureClick.emit(this._selectedFeatureId);
+        for (const layer of this._dataLayers) {
+          layer.changed();
+        }
+      }
+    });
+
+    this._selectedStyle = new Style({
+      stroke: new StrokeStyle({
+        width: 10,
+        color: 'rgba(226, 249, 0, 0.6)',
+      }),
+    });
 
     // //TODO: figure out why this must be called inside a timeout
     setTimeout(() => {
       this._map.updateSize();
-    }, 0);
+    }, 100);
   }
 
   ngOnDestroy() {
     this._destroyer.next(true);
   }
 
-  private _initializeBaseLayers() {
-    this._map.addLayer(
+  private _initializeBaseLayers(): Array<TileLayer> {
+    return [
       new TileLayer({
         source: this._initializeBaseSource(),
         visible: true,
         zIndex: 1,
-      })
-    );
+      }),
+    ];
   }
 
   /**
@@ -129,20 +171,37 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  private async _initializeDataLayers() {
+  /**
+   * Create the layers containing the map interactive data
+   *
+   * @returns the array of created layers
+   */
+  private async _initializeDataLayers(): Promise<Array<Layer>> {
     const styleJson = await this._communicationService
       .get('https://k.webmapp.it/webmapp/tracks.json')
       .toPromise();
 
+    const layers: Array<Layer> = [];
+
     if (styleJson.sources) {
       this._styleJson = styleJson;
       for (const i in styleJson.sources) {
-        this._initializeDataLayer(i, styleJson.sources[i]);
+        layers.push(await this._initializeDataLayer(i, styleJson.sources[i]));
       }
     }
+
+    return layers;
   }
 
-  private async _initializeDataLayer(layerId: string, layerConfig: any) {
+  /**
+   * Initialize a specific layer with interactive data
+   *
+   * @returns the created layer
+   */
+  private async _initializeDataLayer(
+    layerId: string,
+    layerConfig: any
+  ): Promise<Layer> {
     if (!layerConfig.url) {
       return;
     }
@@ -161,8 +220,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         format: new MVT(),
         urls: layerJson.tiles,
       }),
-      style: (f) => {
-        const properties = f.getProperties();
+      style: (feature: FeatureLike) => {
+        const properties = feature.getProperties();
         let featureStyle: any;
         for (const layerStyle of this._styleJson.layers) {
           if (layerStyle.id === properties.cai_scale) {
@@ -189,13 +248,55 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         const style: Style = new Style({
           stroke: strokeStyle,
         });
-
-        return style;
+        if (properties.id === this._selectedFeatureId) {
+          return [style, this._selectedStyle];
+        } else {
+          return style;
+        }
       },
       minZoom: 10,
       zIndex: 100,
     });
 
-    this._map.addLayer(layer);
+    return layer;
   }
+
+  /**
+   * Initialize the default map interactions
+   *
+   * @returns the collection of interactions
+   */
+  private _initializeMapInteractions(
+    selectLayers: Array<Layer>
+  ): Collection<Interaction> {
+    const interactions = defaultInteractions({
+      doubleClickZoom: true,
+      dragPan: true,
+      mouseWheelZoom: true,
+      pinchRotate: true,
+    });
+    this._selectInteraction = new SelectInteraction({
+      layers: selectLayers,
+      hitTolerance: 10,
+      style: null,
+    });
+    interactions.push(this._selectInteraction);
+
+    return interactions;
+  }
+
+  // private _onMapClick(event: MapBrowserEvent<UIEvent>): void {
+  //   let selectedFeature;
+  //   for (const layer of this._dataLayers) {
+  //     layer.getFeatures(event.pixel).then((features) => {
+  //       if (!features.length) {
+  //         return;
+  //       }
+  //       const feature = features[0];
+  //       if (!feature) {
+  //         return;
+  //       }
+  //     });
+  //   }
+  // }
 }

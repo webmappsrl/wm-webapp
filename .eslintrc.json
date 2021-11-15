@@ -48,6 +48,7 @@
         ],
         "no-underscore-dangle": "off",
         "@angular-eslint/no-input-rename": "off",
+        "@angular-eslint/no-output-rename": "off",
         "arrow-body-style": "off",
         "guard-for-in": "off"
       }

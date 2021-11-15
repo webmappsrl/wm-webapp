@@ -8,6 +8,7 @@ import { MapPageRoutingModule } from './map-routing.module';
 
 import { MapPage } from './map.page';
 import { MapModule } from 'src/app/components/map/map.module';
+import { DetailsComponent } from './details/details.component';
 
 @NgModule({
   imports: [
@@ -17,6 +18,6 @@ import { MapModule } from 'src/app/components/map/map.module';
     MapPageRoutingModule,
     MapModule,
   ],
-  declarations: [MapPage],
+  declarations: [MapPage, DetailsComponent],
 })
 export class MapPageModule {}

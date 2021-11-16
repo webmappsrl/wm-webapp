@@ -246,18 +246,68 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           strokeStyle.setLineDash(featureStyle.layout['line-dasharray']);
         }
 
+        if (featureStyle?.paint?.['line-width']) {
+          if (featureStyle?.paint?.['line-width']?.stops) {
+            let maxWidthPos: number = -1,
+              currentZoom: number = this._view.getZoom();
+            for (const key in featureStyle.paint['line-width'].stops) {
+              if (
+                featureStyle.paint['line-width'].stops[key]?.[0] &&
+                featureStyle.paint['line-width'].stops[key]?.[0] >= currentZoom
+              ) {
+                maxWidthPos = parseInt(key);
+                break;
+              }
+            }
+            if (maxWidthPos === -1) {
+              maxWidthPos = featureStyle.paint['line-width'].stops.length - 1;
+            }
+
+            if (maxWidthPos === 0) {
+              strokeStyle.setWidth(
+                featureStyle.paint['line-width'].stops[maxWidthPos]?.[1] ?? 1
+              );
+            } else {
+              let minWidth: number =
+                  featureStyle.paint['line-width'].stops[
+                    maxWidthPos - 1
+                  ]?.[1] ?? 1,
+                maxWidth: number =
+                  featureStyle.paint['line-width'].stops[maxWidthPos]?.[1] ?? 1,
+                minZoom: number =
+                  featureStyle.paint['line-width'].stops[maxWidthPos - 1][0],
+                maxZoom: number =
+                  featureStyle.paint['line-width'].stops[maxWidthPos][0],
+                factor: number = (currentZoom - minZoom) / (maxZoom - minZoom);
+
+              strokeStyle.setWidth(minWidth + (maxWidth - minWidth) * factor);
+            }
+          }
+        }
+
         const style: Style = new Style({
           stroke: strokeStyle,
           zIndex: 100,
         });
         if (properties.id === this._selectedFeatureId) {
           style.setZIndex(1000);
+          if (
+            this._selectedStyle.getStroke().getWidth() <
+            strokeStyle.getWidth() + 8
+          ) {
+            this._selectedStyle
+              .getStroke()
+              .setWidth(strokeStyle.getWidth() + 8);
+          } else if (this._selectedStyle.getStroke().getWidth() > 10) {
+            this._selectedStyle.getStroke().setWidth(10);
+          }
+
           return [style, this._selectedStyle];
         } else {
           return style;
         }
       },
-      minZoom: 10,
+      minZoom: 7,
       zIndex: 100,
     });
 

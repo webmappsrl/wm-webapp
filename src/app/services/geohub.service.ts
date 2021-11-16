@@ -8,7 +8,10 @@ import { CommunicationService } from './communication.service';
   providedIn: 'root',
 })
 export class GeohubService {
-  constructor(private _communicationService: CommunicationService) {}
+  private _ecTracks: Array<CGeojsonLineStringFeature>;
+  constructor(private _communicationService: CommunicationService) {
+    this._ecTracks = [];
+  }
 
   /**
    * Get an instance of the specified ec track
@@ -18,6 +21,13 @@ export class GeohubService {
    * @returns
    */
   async getEcTrack(id: string | number): Promise<CGeojsonLineStringFeature> {
+    const cacheResult: CGeojsonLineStringFeature = this._ecTracks.find(
+      (ecTrack: CGeojsonLineStringFeature) => ecTrack?.properties?.id === id
+    );
+    if (cacheResult) {
+      return cacheResult;
+    }
+
     const result = await this._communicationService
       .get(`${GEOHUB_PROTOCOL}://${GEOHUB_DOMAIN}/api/ec/track/${id}`)
       .pipe(
@@ -26,6 +36,12 @@ export class GeohubService {
         })
       )
       .toPromise();
+
+    this._ecTracks.push(result);
+    if (this._ecTracks.length > 10) {
+      this._ecTracks.splice(0, 1);
+    }
+
     return result;
   }
 }

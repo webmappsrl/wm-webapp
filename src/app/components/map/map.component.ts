@@ -12,6 +12,7 @@ import {
 import { Subject } from 'rxjs';
 
 // ol imports
+import GeoJSON from 'ol/format/GeoJSON';
 import Map from 'ol/Map';
 import MVT from 'ol/format/MVT';
 import TileLayer from 'ol/layer/Tile';
@@ -38,6 +39,8 @@ import Layer from 'ol/layer/Layer';
 import { SelectEvent } from 'ol/interaction/Select';
 import { FeatureLike } from 'ol/Feature';
 import Point from 'ol/geom/Point';
+import { CGeojsonFeature } from 'src/app/classes/features/cgeojson-feature';
+import { GeohubService } from 'src/app/services/geohub.service';
 
 @Component({
   selector: 'webmapp-map',
@@ -69,6 +72,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     private _communicationService: CommunicationService,
+    private _geohubService: GeohubService,
     private _mapService: MapService
   ) {}
 
@@ -115,16 +119,27 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     //   this._onMapClick(event);
     // });
 
-    this._selectInteraction.on('select', (event: SelectEvent) => {
+    this._selectInteraction.on('select', async (event: SelectEvent) => {
       const clickedFeature = event?.selected?.[0] ?? undefined;
       const clickedFeatureId: number =
         clickedFeature?.getProperties()?.id ?? undefined;
       if (clickedFeatureId) {
-        this._selectedFeature = clickedFeature;
         this._selectedFeatureId = clickedFeatureId;
-        this.featureClick.emit(this._selectedFeatureId);
-        for (const layer of this._dataLayers) {
-          layer.changed();
+        try {
+          const selectedGeohubFeature = await this._geohubService.getEcTrack(
+            this._selectedFeatureId
+          );
+
+          this._selectedFeature = new GeoJSON({
+            featureProjection: 'EPSG:3857',
+          }).readFeatures(selectedGeohubFeature)[0];
+
+          this.featureClick.emit(this._selectedFeatureId);
+          for (const layer of this._dataLayers) {
+            layer.changed();
+          }
+        } catch (e) {
+          this._selectedFeatureId = undefined;
         }
       }
     });
@@ -326,7 +341,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       doubleClickZoom: true,
       dragPan: true,
       mouseWheelZoom: true,
-      pinchRotate: true,
+      pinchRotate: false,
+      altShiftDragRotate: false,
     });
     this._selectInteraction = new SelectInteraction({
       layers: selectLayers,
@@ -344,6 +360,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private _updateView(): void {
     if (this._view) {
       if (this._selectedFeature) {
+        console.log(this._selectedFeature);
         this._view.fit(this._selectedFeature.getGeometry().getExtent(), {
           padding: this._padding,
           duration: 500,

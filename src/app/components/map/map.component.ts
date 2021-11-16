@@ -111,10 +111,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       moveTolerance: 3,
     });
 
-    // this._map.on('click', (event: MapBrowserEvent<UIEvent>) => {
-    //   this._onMapClick(event);
-    // });
-
     this._selectInteraction.on('select', async (event: SelectEvent) => {
       const clickedFeature = event?.selected?.[0] ?? undefined;
       const clickedFeatureId: number =

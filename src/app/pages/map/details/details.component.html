@@ -11,18 +11,5 @@
   </ion-buttons>
 </ion-toolbar>
 <ion-content #content>
-  <!-- <ion-grid *ngIf="data && data.length">
-    <ion-row>
-      <ion-col>{{ "test" | WebmappTranslate }}</ion-col>
-    </ion-row>
-    <ion-row *ngFor="let item of data">
-      <ion-col size="3">
-        {{ item[0] }}
-      </ion-col>
-      <ion-col size="9">
-        {{ item[1] }}
-      </ion-col>
-    </ion-row>
-  </ion-grid> -->
   <ng-container *ngIf="data && data.name"></ng-container>
 </ion-content>

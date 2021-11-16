@@ -30,4 +30,33 @@
 .ol-zoom {
   top: unset;
   left: unset;
+  z-index: 10000;
+
+  &,
+  &:hover {
+    background: unset;
+  }
+
+  .ol-zoom-in,
+  .ol-zoom-out,
+  .ol-rotate-reset {
+    border-radius: 50%;
+    margin: 10px 0;
+    font-size: x-large;
+    box-shadow: 1px 2px 9px -3px var(--ion-color-dark);
+  }
+
+  .ol-zoom-in,
+  .ol-zoom-out {
+    color: var(--ion-color-dark);
+    background: var(--ion-color-light);
+
+    &:focus {
+      background: var(--ion-color-light);
+    }
+
+    &:hover {
+      background: var(--ion-color-light-shade);
+    }
+  }
 }

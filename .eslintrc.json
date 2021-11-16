@@ -55,20 +55,12 @@
         "@typescript-eslint/naming-convention": [
           "error",
           {
-            "selector": "variable",
+            "selector": "accessor",
             "format": [
               "camelCase"
             ],
-            "leadingUnderscore": "allow",
-            "trailingUnderscore": "forbid"
-          },
-          {
-            "selector": "variable",
             "modifiers": [
               "private"
-            ],
-            "format": [
-              "camelCase"
             ],
             "leadingUnderscore": "require"
           },
@@ -77,9 +69,17 @@
             "format": [
               "camelCase"
             ],
-            "modifier": [
-              "const",
-              "exported"
+            "modifiers": [
+              "exported",
+              "const"
+            ],
+            "leadingUnderscore": "allow",
+            "trailingUnderscore": "forbid"
+          },
+          {
+            "selector": "variable",
+            "format": [
+              "camelCase"
             ],
             "leadingUnderscore": "allow",
             "trailingUnderscore": "forbid"

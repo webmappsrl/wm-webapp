@@ -7,6 +7,9 @@
 </ion-toolbar>
 <ion-content #content>
   <ion-grid *ngIf="data && data.length">
+    <ion-row>
+      <ion-col>{{ "test" | WebmappTranslate }}</ion-col>
+    </ion-row>
     <ion-row *ngFor="let item of data">
       <ion-col size="3">
         {{ item[0] }}

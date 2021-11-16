@@ -9,6 +9,7 @@ import { MapPageRoutingModule } from './map-routing.module';
 import { MapPage } from './map.page';
 import { MapModule } from 'src/app/components/map/map.module';
 import { DetailsComponent } from './details/details.component';
+import { PipeModule } from 'src/app/pipes/pipe.module';
 
 @NgModule({
   imports: [
@@ -17,6 +18,7 @@ import { DetailsComponent } from './details/details.component';
     IonicModule,
     MapPageRoutingModule,
     MapModule,
+    PipeModule,
   ],
   declarations: [MapPage, DetailsComponent],
 })

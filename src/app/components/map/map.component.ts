@@ -29,17 +29,13 @@ import {
 
 import { MapService } from 'src/app/services/map.service';
 import Style from 'ol/style/Style';
-import FillStyle from 'ol/style/Fill';
 import StrokeStyle from 'ol/style/Stroke';
-import IconStyle from 'ol/style/Icon';
-import TextStyle from 'ol/style/Text';
 import { CommunicationService } from 'src/app/services/communication.service';
-import { Collection, MapBrowserEvent } from 'ol';
+import { Collection } from 'ol';
 import Layer from 'ol/layer/Layer';
 import { SelectEvent } from 'ol/interaction/Select';
 import { FeatureLike } from 'ol/Feature';
 import Point from 'ol/geom/Point';
-import { CGeojsonFeature } from 'src/app/classes/features/cgeojson-feature';
 import { GeohubService } from 'src/app/services/geohub.service';
 
 @Component({
@@ -263,14 +259,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
         if (featureStyle?.paint?.['line-width']) {
           if (featureStyle?.paint?.['line-width']?.stops) {
-            let maxWidthPos: number = -1,
-              currentZoom: number = this._view.getZoom();
+            let maxWidthPos: number = -1;
+            const currentZoom: number = this._view.getZoom();
             for (const key in featureStyle.paint['line-width'].stops) {
               if (
                 featureStyle.paint['line-width'].stops[key]?.[0] &&
                 featureStyle.paint['line-width'].stops[key]?.[0] >= currentZoom
               ) {
-                maxWidthPos = parseInt(key);
+                maxWidthPos = parseInt(key, 10);
                 break;
               }
             }
@@ -283,17 +279,17 @@ export class MapComponent implements AfterViewInit, OnDestroy {
                 featureStyle.paint['line-width'].stops[maxWidthPos]?.[1] ?? 1
               );
             } else {
-              let minWidth: number =
-                  featureStyle.paint['line-width'].stops[
-                    maxWidthPos - 1
-                  ]?.[1] ?? 1,
-                maxWidth: number =
-                  featureStyle.paint['line-width'].stops[maxWidthPos]?.[1] ?? 1,
-                minZoom: number =
-                  featureStyle.paint['line-width'].stops[maxWidthPos - 1][0],
-                maxZoom: number =
-                  featureStyle.paint['line-width'].stops[maxWidthPos][0],
-                factor: number = (currentZoom - minZoom) / (maxZoom - minZoom);
+              const minWidth: number =
+                featureStyle.paint['line-width'].stops[maxWidthPos - 1]?.[1] ??
+                1;
+              const maxWidth: number =
+                featureStyle.paint['line-width'].stops[maxWidthPos]?.[1] ?? 1;
+              const minZoom: number =
+                featureStyle.paint['line-width'].stops[maxWidthPos - 1][0];
+              const maxZoom: number =
+                featureStyle.paint['line-width'].stops[maxWidthPos][0];
+              const factor: number =
+                (currentZoom - minZoom) / (maxZoom - minZoom);
 
               strokeStyle.setWidth(minWidth + (maxWidth - minWidth) * factor);
             }

@@ -26,14 +26,20 @@ export class DetailsComponent implements OnInit {
 
   @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
 
+  public data: {
+    [key: string]: any;
+  };
+
   private _id: number;
   private _feature: CGeojsonFeature;
-
-  public data: Array<[string, string]>;
 
   constructor(private _geohubService: GeohubService) {}
 
   ngOnInit() {}
+
+  triggerDismiss() {
+    this.dismiss.emit();
+  }
 
   private async _initializeFeature() {
     if (!this._id) {
@@ -42,19 +48,13 @@ export class DetailsComponent implements OnInit {
     }
     this._feature = await this._geohubService.getEcTrack(this._id);
 
-    this.data = [];
+    this.data = {};
     if (this._feature?.properties) {
-      for (let i in this._feature.properties) {
-        this.data.push([i, JSON.stringify(this._feature.properties[i])]);
-      }
+      this.data.name = this._feature.properties?.name;
     }
 
     if (this.content) {
       this.content.scrollToTop();
     }
-  }
-
-  triggerDismiss() {
-    this.dismiss.emit();
   }
 }

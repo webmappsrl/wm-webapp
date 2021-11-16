@@ -8,6 +8,10 @@ export class WebmappTranslatePipe implements PipeTransform {
   constructor(private _languagesService: LanguagesService) {}
 
   transform(value: any, ...args: unknown[]): string {
-    return this._languagesService.translate(value);
+    if (value) {
+      return this._languagesService.translate(value);
+    } else {
+      return '';
+    }
   }
 }

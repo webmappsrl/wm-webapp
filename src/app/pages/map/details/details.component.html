@@ -1,4 +1,9 @@
 <ion-toolbar class="webmapp-details-toolbar">
+  <ion-title
+    *ngIf="data?.name"
+    [innerHtml]="data.name | WebmappTranslate"
+    slot="start"
+  ></ion-title>
   <ion-buttons slot="end">
     <ion-button class="webmapp-details-dismiss" (click)="triggerDismiss()">
       <ion-icon name="close"></ion-icon>
@@ -6,7 +11,7 @@
   </ion-buttons>
 </ion-toolbar>
 <ion-content #content>
-  <ion-grid *ngIf="data && data.length">
+  <!-- <ion-grid *ngIf="data && data.length">
     <ion-row>
       <ion-col>{{ "test" | WebmappTranslate }}</ion-col>
     </ion-row>
@@ -18,5 +23,6 @@
         {{ item[1] }}
       </ion-col>
     </ion-row>
-  </ion-grid>
+  </ion-grid> -->
+  <ng-container *ngIf="data && data.name"></ng-container>
 </ion-content>

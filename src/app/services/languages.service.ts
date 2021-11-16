@@ -111,7 +111,6 @@ export class LanguagesService {
       return undefined;
     }
 
-    console.log(this._translateService.instant(key));
     // First the key is a string
     if (typeof key === 'string') {
       value = this._translateService.instant(key);

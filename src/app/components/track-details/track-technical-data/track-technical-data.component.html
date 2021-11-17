@@ -1,0 +1,13 @@
+<div *ngIf="technicalData?.length" id="webmapp-track-technical-data-container">
+  <div
+    *ngFor="let item of technicalData"
+    class="webmapp-track-technical-data-item"
+  >
+    <div class="webmapp-track-technical-data-label">
+      {{ item.label | WebmappTranslate }}
+    </div>
+    <div class="webmapp-track-technical-data-value">
+      {{ item.value }}
+    </div>
+  </div>
+</div>

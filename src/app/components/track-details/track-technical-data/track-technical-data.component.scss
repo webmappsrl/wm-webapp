@@ -1,0 +1,25 @@
+#webmapp-track-technical-data-container {
+  width: 100%;
+  padding: 10px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  font-family: var(--font-family-content);
+  .webmapp-track-technical-data-item {
+    flex-basis: 50%;
+    padding: 5px 0;
+    .webmapp-track-technical-data-label {
+      display: block;
+      width: 100%;
+      opacity: 0.7;
+      &::first-letter {
+        text-transform: capitalize;
+      }
+    }
+    .webmapp-track-technical-data-value {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      width: 100%;
+    }
+  }
+}

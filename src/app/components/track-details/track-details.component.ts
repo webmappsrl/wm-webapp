@@ -1,6 +1,5 @@
 import {
   Component,
-  ElementRef,
   EventEmitter,
   Input,
   OnInit,
@@ -9,14 +8,17 @@ import {
 } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { CGeojsonFeature } from 'src/app/classes/features/cgeojson-feature';
+import { CGeojsonLineStringFeature } from 'src/app/classes/features/cgeojson-line-string-feature';
 import { GeohubService } from 'src/app/services/geohub.service';
+import { UtilsService } from 'src/app/services/utils.service';
+import { ILocaleString } from 'src/app/types/model';
 
 @Component({
-  selector: 'webmapp-details',
-  templateUrl: './details.component.html',
-  styleUrls: ['./details.component.scss'],
+  selector: 'webmapp-track-details',
+  templateUrl: './track-details.component.html',
+  styleUrls: ['./track-details.component.scss'],
 })
-export class DetailsComponent implements OnInit {
+export class TrackDetailsComponent implements OnInit {
   @ViewChild('content') content: IonContent;
 
   @Input('id') set id(value: number) {
@@ -26,12 +28,12 @@ export class DetailsComponent implements OnInit {
 
   @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
 
+  public feature: CGeojsonLineStringFeature;
   public data: {
-    [key: string]: any;
+    name?: string | ILocaleString;
   };
 
   private _id: number;
-  private _feature: CGeojsonFeature;
 
   constructor(private _geohubService: GeohubService) {}
 
@@ -41,16 +43,21 @@ export class DetailsComponent implements OnInit {
     this.dismiss.emit();
   }
 
-  private async _initializeFeature() {
+  /**
+   * Get the track geojson and initialize all the data to show
+   *
+   * @returns
+   */
+  private async _initializeFeature(): Promise<void> {
     if (!this._id) {
       this.data = undefined;
       return;
     }
-    this._feature = await this._geohubService.getEcTrack(this._id);
+    this.feature = await this._geohubService.getEcTrack(this._id);
 
     this.data = {};
-    if (this._feature?.properties) {
-      this.data.name = this._feature.properties?.name;
+    if (this.feature?.properties) {
+      this.data.name = this.feature.properties?.name;
     }
 
     if (this.content) {

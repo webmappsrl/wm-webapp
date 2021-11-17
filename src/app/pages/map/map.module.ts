@@ -8,8 +8,8 @@ import { MapPageRoutingModule } from './map-routing.module';
 
 import { MapPage } from './map.page';
 import { MapModule } from 'src/app/components/map/map.module';
-import { DetailsComponent } from './details/details.component';
 import { PipeModule } from 'src/app/pipes/pipe.module';
+import { TrackDetailsModule } from 'src/app/components/track-details/track-details.module';
 
 @NgModule({
   imports: [
@@ -19,7 +19,8 @@ import { PipeModule } from 'src/app/pipes/pipe.module';
     MapPageRoutingModule,
     MapModule,
     PipeModule,
+    TrackDetailsModule,
   ],
-  declarations: [MapPage, DetailsComponent],
+  declarations: [MapPage],
 })
 export class MapPageModule {}

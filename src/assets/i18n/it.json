@@ -11,6 +11,11 @@
       "duration_forward": "durata di andata",
       "duration_backward": "durata di ritorno",
       "distance": "lunghezza"
+    },
+    "downloadUrls": {
+      "gpx": "scarica il tracciato GPX",
+      "kml": "scarica il tracciato KML",
+      "geojson": "scarica il tracciato GEOJSON"
     }
   }
 }

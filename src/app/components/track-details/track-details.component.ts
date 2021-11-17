@@ -7,10 +7,8 @@ import {
   ViewChild,
 } from '@angular/core';
 import { IonContent } from '@ionic/angular';
-import { CGeojsonFeature } from 'src/app/classes/features/cgeojson-feature';
 import { CGeojsonLineStringFeature } from 'src/app/classes/features/cgeojson-line-string-feature';
 import { GeohubService } from 'src/app/services/geohub.service';
-import { UtilsService } from 'src/app/services/utils.service';
 import { ILocaleString } from 'src/app/types/model';
 
 @Component({

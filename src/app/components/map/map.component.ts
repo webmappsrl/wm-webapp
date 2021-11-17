@@ -65,7 +65,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private _selectedFeatureId: number;
   private _selectInteraction: SelectInteraction;
   private _styleJson: any;
-  private _selectedStyle: Style;
   private _destroyer: Subject<boolean> = new Subject<boolean>();
 
   constructor(
@@ -141,14 +140,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           this._selectedFeatureId = undefined;
         }
       }
-    });
-
-    this._selectedStyle = new Style({
-      stroke: new StrokeStyle({
-        width: 10,
-        color: 'rgba(226, 249, 0, 0.6)',
-      }),
-      zIndex: 999,
     });
 
     // //TODO: figure out why this must be called inside a timeout
@@ -305,18 +296,15 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         });
         if (properties.id === this._selectedFeatureId) {
           style.setZIndex(1000);
-          if (
-            this._selectedStyle.getStroke().getWidth() <
-            strokeStyle.getWidth() + 8
-          ) {
-            this._selectedStyle
-              .getStroke()
-              .setWidth(strokeStyle.getWidth() + 8);
-          } else if (this._selectedStyle.getStroke().getWidth() > 10) {
-            this._selectedStyle.getStroke().setWidth(10);
-          }
+          const selectedStyle = new Style({
+            stroke: new StrokeStyle({
+              width: Math.max(10, strokeStyle.getWidth() + 8),
+              color: 'rgba(226, 249, 0, 0.6)',
+            }),
+            zIndex: 999,
+          });
 
-          return [style, this._selectedStyle];
+          return [style, selectedStyle];
         } else {
           return style;
         }

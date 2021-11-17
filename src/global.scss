@@ -60,3 +60,15 @@
     }
   }
 }
+
+.ol-scale-line {
+  z-index: 500;
+  background: rgba(var(--ion-color-light-rgb), 0.5);
+  box-shadow: 1px 2px 9px -3px var(--ion-color-dark);
+  .ol-scale-line-inner {
+    background: rgba(0, 0, 0, 0);
+    color: var(--ion-color-dark);
+    border: 1px solid var(--ion-color-dark);
+    border-top: 0;
+  }
+}

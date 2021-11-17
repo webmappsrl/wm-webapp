@@ -1,7 +1,14 @@
 <div class="webmapp-map-container">
-  <div #mapContainer class="webmapp-map-map-container"></div>
-  <div #zoomContainer class="webmapp-map-zoom-container"></div>
-  <div class="webmapp-map-attribution-container">
+  <div #mapContainer id="webmapp-map-map-container"></div>
+  <div #zoomContainer id="webmapp-map-zoom-container"></div>
+  <div
+    #scaleLineContainer
+    id="webmapp-map-scale-line-container"
+    [ngStyle]="{
+      'left': (padding?.[3] - 10 ?? 10) + 'px'
+    }"
+  ></div>
+  <div id="webmapp-map-attribution-container">
     <div class="webmapp-map-attribution">
       <a
         class="wm-clickable webmapp-map-attribution-link"

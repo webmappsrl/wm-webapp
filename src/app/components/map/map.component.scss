@@ -1,12 +1,12 @@
 .webmapp-map-container {
   width: 100%;
   height: 100%;
-  .webmapp-map-map-container {
+  #webmapp-map-map-container {
     width: 100%;
     height: 100%;
   }
 
-  .webmapp-map-zoom-container {
+  #webmapp-map-zoom-container {
     position: absolute;
     top: 50%;
     right: 20px;
@@ -14,7 +14,13 @@
     width: 32px;
     height: 58px;
   }
-  .webmapp-map-attribution-container {
+
+  #webmapp-map-scale-line-container {
+    position: absolute;
+    transition: left 500ms;
+  }
+
+  #webmapp-map-attribution-container {
     position: absolute;
     bottom: 0;
     right: 0;

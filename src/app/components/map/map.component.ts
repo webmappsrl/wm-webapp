@@ -21,6 +21,7 @@ import VectorTileSource from 'ol/source/VectorTile';
 import View from 'ol/View';
 import XYZ from 'ol/source/XYZ';
 import ZoomControl from 'ol/control/Zoom';
+import ScaleLineControl from 'ol/control/ScaleLine';
 import {
   defaults as defaultInteractions,
   Interaction,
@@ -46,16 +47,17 @@ import { GeohubService } from 'src/app/services/geohub.service';
 export class MapComponent implements AfterViewInit, OnDestroy {
   @ViewChild('mapContainer') mapContainer: ElementRef;
   @ViewChild('zoomContainer') zoomContainer: ElementRef;
+  @ViewChild('scaleLineContainer') scaleLineContainer: ElementRef;
 
   @Input('start-view') startView: number[] = [10.4147, 43.7118, 9];
-  @Input('padding') set padding(value: Array<number>) {
-    this._padding = value;
+  @Input('padding') set mapPadding(value: Array<number>) {
+    this.padding = value;
     this._updateView();
   }
   @Output('feature-click') featureClick: EventEmitter<number> =
     new EventEmitter<number>();
 
-  private _padding: Array<number> = [0, 0, 0, 0];
+  public padding: Array<number> = [0, 0, 0, 0];
   private _view: View;
   private _map: Map;
   private _dataLayers: Array<Layer>;
@@ -89,8 +91,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       constrainOnlyCenter: true,
       extent: this._mapService.extentFromLonLat([-180, -85, 180, 85]),
     });
-    if (this._padding) {
-      this._view.padding = this._padding;
+    if (this.padding) {
+      this._view.padding = this.padding;
     }
 
     const baseLayers: Array<Layer> = this._initializeBaseLayers();
@@ -104,6 +106,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       controls: [
         new ZoomControl({
           target: this.zoomContainer.nativeElement,
+        }),
+        new ScaleLineControl({
+          units: 'metric',
+          minWidth: 50,
+          target: this.scaleLineContainer.nativeElement,
         }),
       ],
       layers: [...baseLayers, ...this._dataLayers],
@@ -353,12 +360,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     if (this._view) {
       if (this._selectedFeature) {
         this._view.fit(this._selectedFeature.getGeometry().getExtent(), {
-          padding: this._padding,
+          padding: this.padding,
           duration: 500,
         });
       } else {
         this._view.fit(new Point(this._view.getCenter()), {
-          padding: this._padding,
+          padding: this.padding,
           duration: 500,
           maxZoom: this._view.getZoom(),
         });

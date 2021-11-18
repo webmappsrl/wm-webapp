@@ -67,7 +67,7 @@
           {
             "selector": "variable",
             "format": [
-              "camelCase"
+              "UPPER_CASE"
             ],
             "modifiers": [
               "exported",

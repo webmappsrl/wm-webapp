@@ -38,6 +38,7 @@ import { SelectEvent } from 'ol/interaction/Select';
 import { FeatureLike } from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import { GeohubService } from 'src/app/services/geohub.service';
+import { ConfigService } from 'src/app/services/config.service';
 
 @Component({
   selector: 'webmapp-map',
@@ -68,6 +69,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private _destroyer: Subject<boolean> = new Subject<boolean>();
 
   constructor(
+    private _configService: ConfigService,
     private _communicationService: CommunicationService,
     private _geohubService: GeohubService,
     private _mapService: MapService
@@ -183,9 +185,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
    * @returns the array of created layers
    */
   private async _initializeDataLayers(): Promise<Array<Layer>> {
-    const styleJson = await this._communicationService
-      .get('https://k.webmapp.it/webmapp/tracks.json')
-      .toPromise();
+    let styleJson: any;
+    try {
+      styleJson = await this._geohubService.getVectorLayerStyle();
+    } catch (e) {
+      styleJson = await this._communicationService
+        .get('https://k.webmapp.it/webmapp/tracks_old.json')
+        .toPromise();
+    }
 
     const layers: Array<Layer> = [];
 

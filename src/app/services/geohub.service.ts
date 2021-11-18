@@ -3,13 +3,18 @@ import { map } from 'rxjs/operators';
 import { CGeojsonLineStringFeature } from '../classes/features/cgeojson-line-string-feature';
 import { GEOHUB_DOMAIN, GEOHUB_PROTOCOL } from '../constants/geohub';
 import { CommunicationService } from './communication.service';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GeohubService {
   private _ecTracks: Array<CGeojsonLineStringFeature>;
-  constructor(private _communicationService: CommunicationService) {
+
+  constructor(
+    private _configService: ConfigService,
+    private _communicationService: CommunicationService
+  ) {
     this._ecTracks = [];
   }
 
@@ -43,5 +48,16 @@ export class GeohubService {
     }
 
     return result;
+  }
+
+  /**
+   * Retrieve the vector layer style from the geohub
+   *
+   * @returns the API response in a promise
+   */
+  async getVectorLayerStyle(): Promise<any> {
+    await this._communicationService
+      .get(this._configService.vectorStyleUrl)
+      .toPromise();
   }
 }

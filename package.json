@@ -9,7 +9,8 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "deploy": "ionic build --prod && scp -r ~/Documents/wm-webapp/www/* server:/var/www/html/app.geohub.webmapp.it/"
   },
   "private": true,
   "dependencies": {

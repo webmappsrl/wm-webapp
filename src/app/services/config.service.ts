@@ -10,7 +10,7 @@ export class ConfigService {
 
   constructor() {
     const hostname: string = window.location.hostname;
-    if (hostname.indexOf('localhost') > 0) {
+    if (hostname.indexOf('localhost') >= 0) {
       this._geohubAppId = 3;
     } else {
       this._geohubAppId = parseInt(hostname.split('.')[0], 10);

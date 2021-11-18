@@ -56,7 +56,7 @@ export class GeohubService {
    * @returns the API response in a promise
    */
   async getVectorLayerStyle(): Promise<any> {
-    await this._communicationService
+    return await this._communicationService
       .get(this._configService.vectorStyleUrl)
       .toPromise();
   }

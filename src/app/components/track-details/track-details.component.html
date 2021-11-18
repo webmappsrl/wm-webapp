@@ -1,18 +1,20 @@
-<ion-toolbar class="webmapp-track-details-toolbar">
-  <ion-title
-    *ngIf="data?.name"
-    [innerHtml]="data.name | WebmappTranslate"
-    slot="start"
-  ></ion-title>
-  <ion-buttons slot="end">
-    <ion-button
-      class="webmapp-track-details-dismiss"
-      (click)="triggerDismiss()"
-    >
-      <ion-icon name="close"></ion-icon>
-    </ion-button>
-  </ion-buttons>
-</ion-toolbar>
+<ion-header>
+  <ion-toolbar class="webmapp-track-details-toolbar">
+    <ion-title
+      *ngIf="data?.name"
+      [innerHtml]="data.name | WebmappTranslate"
+      size="small"
+    ></ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        class="webmapp-track-details-dismiss"
+        (click)="triggerDismiss()"
+      >
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 <ion-content #content id="webmapp-track-details-content">
   <webmapp-track-technical-data
     [feature]="feature"

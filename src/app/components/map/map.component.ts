@@ -22,23 +22,22 @@ import View from 'ol/View';
 import XYZ from 'ol/source/XYZ';
 import ZoomControl from 'ol/control/Zoom';
 import ScaleLineControl from 'ol/control/ScaleLine';
-import {
-  defaults as defaultInteractions,
-  Interaction,
-  Select as SelectInteraction,
-} from 'ol/interaction.js';
+import { defaults as defaultInteractions } from 'ol/interaction.js';
+import Interaction from 'ol/interaction/Interaction';
+import SelectInteraction from 'ol/interaction/Select';
 
 import { MapService } from 'src/app/services/map.service';
 import Style from 'ol/style/Style';
 import StrokeStyle from 'ol/style/Stroke';
 import { CommunicationService } from 'src/app/services/communication.service';
-import { Collection } from 'ol';
+import { Collection, MapBrowserEvent } from 'ol';
 import Layer from 'ol/layer/Layer';
 import { SelectEvent } from 'ol/interaction/Select';
 import { FeatureLike } from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import { GeohubService } from 'src/app/services/geohub.service';
 import { ConfigService } from 'src/app/services/config.service';
+import { Extent } from 'ol/extent';
 
 @Component({
   selector: 'webmapp-map',
@@ -61,7 +60,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   public padding: Array<number> = [0, 0, 0, 0];
   private _view: View;
   private _map: Map;
-  private _dataLayers: Array<Layer>;
+  private _dataLayers: Array<VectorTileLayer>;
   private _selectedFeature: FeatureLike;
   private _selectedFeatureId: number;
   private _selectInteraction: SelectInteraction;
@@ -69,7 +68,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private _destroyer: Subject<boolean> = new Subject<boolean>();
 
   constructor(
-    private _configService: ConfigService,
     private _communicationService: CommunicationService,
     private _geohubService: GeohubService,
     private _mapService: MapService
@@ -144,6 +142,34 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       }
     });
 
+    this._map.on('pointerdrag', () => {
+      this._map.getTargetElement().style.cursor = 'grabbing';
+    });
+
+    this._map.on('moveend', () => {
+      this._map.getTargetElement().style.cursor = 'grab';
+    });
+
+    this._map.on('pointermove', (event: MapBrowserEvent) => {
+      const pixelMargin: number = 3;
+      const margin: number = pixelMargin * this._view.getResolution();
+      const extent: Extent = [
+        event.coordinate[0] - margin,
+        event.coordinate[1] - margin,
+        event.coordinate[0] + margin,
+        event.coordinate[1] + margin,
+      ];
+
+      for (const layer of this._dataLayers) {
+        const features = layer.getSource().getFeaturesInExtent(extent);
+        if (features.length > 0) {
+          // this._map.getTargetElement().style.cursor = 'pointer';
+          return;
+        }
+      }
+      // this._map.getTargetElement().style.cursor = 'grab';
+    });
+
     // //TODO: figure out why this must be called inside a timeout
     setTimeout(() => {
       this._map.updateSize();
@@ -184,17 +210,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
    *
    * @returns the array of created layers
    */
-  private async _initializeDataLayers(): Promise<Array<Layer>> {
-    let styleJson: any;
-    try {
-      styleJson = await this._geohubService.getVectorLayerStyle();
-    } catch (e) {
-      styleJson = await this._communicationService
-        .get('https://k.webmapp.it/webmapp/tracks_old.json')
-        .toPromise();
-    }
+  private async _initializeDataLayers(): Promise<Array<VectorTileLayer>> {
+    const styleJson: any = await this._geohubService.getVectorLayerStyle();
 
-    const layers: Array<Layer> = [];
+    const layers: Array<VectorTileLayer> = [];
 
     if (styleJson.sources) {
       this._styleJson = styleJson;
@@ -214,7 +233,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private async _initializeDataLayer(
     layerId: string,
     layerConfig: any
-  ): Promise<Layer> {
+  ): Promise<VectorTileLayer> {
     if (!layerConfig.url) {
       return;
     }
@@ -343,6 +362,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       hitTolerance: 10,
       style: null,
     });
+
     interactions.push(this._selectInteraction);
 
     return interactions;

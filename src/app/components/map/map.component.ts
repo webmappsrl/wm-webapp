@@ -37,12 +37,7 @@ import { SelectEvent } from 'ol/interaction/Select';
 import { FeatureLike } from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import { GeohubService } from 'src/app/services/geohub.service';
-import { ConfigService } from 'src/app/services/config.service';
-import { Extent } from 'ol/extent';
 import { ILocation } from 'src/app/types/location';
-import Geometry from 'ol/geom/Geometry';
-import { Coordinate } from 'ol/coordinate';
-import { CLocation } from 'src/app/classes/clocation';
 
 @Component({
   selector: 'webmapp-map',
@@ -120,6 +115,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       layers: [...baseLayers, ...this._dataLayers],
       interactions,
       moveTolerance: 3,
+      maxTilesLoading: 8,
     });
 
     this._selectInteraction.on('select', async (event: SelectEvent) => {
@@ -334,6 +330,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       },
       minZoom: 7,
       zIndex: 100,
+      updateWhileAnimating: true,
+      updateWhileInteracting: true,
     });
 
     return layer;

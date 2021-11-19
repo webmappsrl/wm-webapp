@@ -16,6 +16,10 @@
   </ion-toolbar>
 </ion-header>
 <ion-content #content id="webmapp-track-details-content">
+  <webmapp-track-description
+    *ngIf="data?.description"
+    [description]="data.description | WebmappTranslate"
+  ></webmapp-track-description>
   <webmapp-track-technical-data
     [feature]="feature"
     id="webmapp-track-details-technical-data"

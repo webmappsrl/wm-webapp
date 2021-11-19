@@ -29,6 +29,7 @@ export class TrackDetailsComponent implements OnInit {
   public feature: CGeojsonLineStringFeature;
   public data: {
     name?: string | ILocaleString;
+    description?: string | ILocaleString;
   };
 
   private _id: number;
@@ -56,6 +57,7 @@ export class TrackDetailsComponent implements OnInit {
     this.data = {};
     if (this.feature?.properties) {
       this.data.name = this.feature.properties?.name;
+      this.data.description = this.feature.properties?.description;
     }
 
     if (this.content) {

@@ -25,6 +25,7 @@ import ScaleLineControl from 'ol/control/ScaleLine';
 import { defaults as defaultInteractions } from 'ol/interaction.js';
 import Interaction from 'ol/interaction/Interaction';
 import SelectInteraction from 'ol/interaction/Select';
+import { getDistance } from 'ol/sphere.js';
 
 import { MapService } from 'src/app/services/map.service';
 import Style from 'ol/style/Style';
@@ -38,6 +39,10 @@ import Point from 'ol/geom/Point';
 import { GeohubService } from 'src/app/services/geohub.service';
 import { ConfigService } from 'src/app/services/config.service';
 import { Extent } from 'ol/extent';
+import { ILocation } from 'src/app/types/location';
+import Geometry from 'ol/geom/Geometry';
+import { Coordinate } from 'ol/coordinate';
+import { CLocation } from 'src/app/classes/clocation';
 
 @Component({
   selector: 'webmapp-map',
@@ -151,23 +156,15 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
 
     this._map.on('pointermove', (event: MapBrowserEvent) => {
-      const pixelMargin: number = 3;
-      const margin: number = pixelMargin * this._view.getResolution();
-      const extent: Extent = [
-        event.coordinate[0] - margin,
-        event.coordinate[1] - margin,
-        event.coordinate[0] + margin,
-        event.coordinate[1] + margin,
-      ];
+      const features: Array<FeatureLike> = this._map.getFeaturesAtPixel(
+        event.pixel
+      );
 
-      for (const layer of this._dataLayers) {
-        const features = layer.getSource().getFeaturesInExtent(extent);
-        if (features.length > 0) {
-          // this._map.getTargetElement().style.cursor = 'pointer';
-          return;
-        }
+      if (features.length) {
+        this._map.getTargetElement().style.cursor = 'pointer';
+      } else {
+        this._map.getTargetElement().style.cursor = 'grab';
       }
-      // this._map.getTargetElement().style.cursor = 'grab';
     });
 
     // //TODO: figure out why this must be called inside a timeout
@@ -386,5 +383,20 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         });
       }
     }
+  }
+
+  /**
+   * Return a value for the distance between the two point using a screen-fixed unit
+   *
+   * @param point1 the first location
+   * @param point2 the second location
+   */
+  private _getFixedDistance(point1: ILocation, point2: ILocation): number {
+    return (
+      getDistance(
+        [point1.longitude, point1.latitude],
+        [point2.longitude, point2.latitude]
+      ) / this._view.getResolution()
+    );
   }
 }

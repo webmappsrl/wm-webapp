@@ -12,29 +12,37 @@ export class TrackDescriptionComponent implements OnInit {
   }
 
   public safeHtml: SafeHtml;
+  public isExpanded: boolean;
+  public isExpandable: boolean;
 
-  constructor(private _domSanitizer: DomSanitizer) {}
+  constructor(private _domSanitizer: DomSanitizer) {
+    this.isExpandable = true;
+    this.isExpanded = false;
+  }
 
   ngOnInit() {}
+
+  toggleExpansion(): void {
+    this.isExpanded = !this.isExpanded;
+  }
 
   private _initializeSafeHtml(value: string): void {
     if (!!value && typeof value === 'string') {
       value = value.replace(/(href="[^\"]*")/gm, '$1 target="_system"');
       this.safeHtml = this._domSanitizer.bypassSecurityTrustHtml(value);
 
-      // setTimeout(() => {
-      //   let descriptionDiv: HTMLElement =
-      //     document.getElementById('descriptionDetails');
-      //   this._deviceService.onResize.pipe(take(1)).subscribe(
-      //     (windowSize) => {
-      //       this.isDescriptionExpandable =
-      //         descriptionDiv.scrollHeight > windowSize.height * 0.4;
-      //     },
-      //     (err) => {
-      //       console.warn(err);
-      //     }
-      //   );
-      // }, 0); // Make this code execute after DOM render
+      const interval = setInterval(() => {
+        const descriptionDiv: HTMLElement = document.getElementById(
+          'webmapp-track-description-html'
+        );
+
+        this.isExpandable =
+          descriptionDiv.scrollHeight > window.innerHeight * 0.4;
+      }, 100);
+
+      setTimeout(() => {
+        clearInterval(interval);
+      }, 1000);
     }
   }
 }

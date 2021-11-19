@@ -1,3 +1,23 @@
-<div>
-  <div [innerHtml]="safeHtml"></div>
+<div
+  *ngIf="safeHtml"
+  id="webmapp-track-description-container"
+  [ngClass]="{
+    'webmapp-track-description-container-expanded': isExpanded,
+    'webmapp-track-description-container-not-expandable': !isExpandable
+  }"
+>
+  <div id="webmapp-track-description-html" [innerHtml]="safeHtml"></div>
+
+  <div
+    class="webmapp-track-description-expand-container"
+    *ngIf="isExpandable"
+    (click)="toggleExpansion()"
+  >
+    <span *ngIf="!isExpanded">
+      {{ "trackDetails.description.readAll" | WebmappTranslate }}
+    </span>
+    <span *ngIf="isExpanded">
+      {{ "trackDetails.description.hide" | WebmappTranslate }}
+    </span>
+  </div>
 </div>

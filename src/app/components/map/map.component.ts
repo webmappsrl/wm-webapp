@@ -115,7 +115,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       layers: [...baseLayers, ...this._dataLayers],
       interactions,
       moveTolerance: 3,
-      maxTilesLoading: 8,
     });
 
     this._selectInteraction.on('select', async (event: SelectEvent) => {
@@ -163,7 +162,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       }
     });
 
-    // //TODO: figure out why this must be called inside a timeout
+    // TODO: figure out why this must be called inside a timeout
     setTimeout(() => {
       this._map.updateSize();
     }, 100);

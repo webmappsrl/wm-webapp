@@ -16,6 +16,10 @@
       "gpx": "scarica il tracciato GPX",
       "kml": "scarica il tracciato KML",
       "geojson": "scarica il tracciato GEOJSON"
+    },
+    "description": {
+      "readAll": "leggi tutto",
+      "hide": "nascondi"
     }
   }
 }

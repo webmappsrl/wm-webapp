@@ -10,6 +10,7 @@ import { IonContent } from '@ionic/angular';
 import { CGeojsonLineStringFeature } from 'src/app/classes/features/cgeojson-line-string-feature';
 import { GeohubService } from 'src/app/services/geohub.service';
 import { ILocaleString } from 'src/app/types/model';
+import { ITrackElevationChartHoverElements } from 'src/app/types/track-elevation-chart';
 
 @Component({
   selector: 'webmapp-track-details',
@@ -24,6 +25,9 @@ export class TrackDetailsComponent implements OnInit {
     this._initializeFeature();
   }
 
+  @Output('trackElevationChartHover')
+  trackElevationChartHover: EventEmitter<ITrackElevationChartHoverElements> = new EventEmitter<ITrackElevationChartHoverElements>();
+
   @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
 
   public feature: CGeojsonLineStringFeature;
@@ -37,6 +41,10 @@ export class TrackDetailsComponent implements OnInit {
   constructor(private _geohubService: GeohubService) {}
 
   ngOnInit() {}
+
+  onLocationHover(event: ITrackElevationChartHoverElements) {
+    this.trackElevationChartHover.emit(event);
+  }
 
   triggerDismiss() {
     this.dismiss.emit();

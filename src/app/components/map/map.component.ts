@@ -26,10 +26,12 @@ import { defaults as defaultInteractions } from 'ol/interaction.js';
 import Interaction from 'ol/interaction/Interaction';
 import SelectInteraction from 'ol/interaction/Select';
 import { getDistance } from 'ol/sphere.js';
-
+import Feature from 'ol/Feature';
 import { MapService } from 'src/app/services/map.service';
 import Style from 'ol/style/Style';
 import StrokeStyle from 'ol/style/Stroke';
+import FillStyle from 'ol/style/Fill';
+import CircleStyle from 'ol/style/Circle';
 import { CommunicationService } from 'src/app/services/communication.service';
 import { Collection, MapBrowserEvent } from 'ol';
 import Layer from 'ol/layer/Layer';
@@ -38,6 +40,12 @@ import { FeatureLike } from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import { GeohubService } from 'src/app/services/geohub.service';
 import { ILocation } from 'src/app/types/location';
+import { ITrackElevationChartHoverElements } from 'src/app/types/track-elevation-chart';
+import { CGeojsonLineStringFeature } from 'src/app/classes/features/cgeojson-line-string-feature';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import LineString from 'ol/geom/LineString';
+import { ILineString } from 'src/app/types/model';
 
 @Component({
   selector: 'webmapp-map',
@@ -54,6 +62,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.padding = value;
     this._updateView();
   }
+  @Input('trackElevationChartElements') set trackElevationChartElements(
+    value: ITrackElevationChartHoverElements
+  ) {
+    this._drawTemporaryLocationFeature(value?.location, value?.track);
+  }
   @Output('feature-click') featureClick: EventEmitter<number> =
     new EventEmitter<number>();
 
@@ -65,6 +78,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private _selectedFeatureId: number;
   private _selectInteraction: SelectInteraction;
   private _styleJson: any;
+  private _elevationChartLayer: VectorLayer;
+  private _elevationChartSource: VectorSource;
+  private _elevationChartPoint: Feature<Point>;
+  private _elevationChartTrack: Feature<LineString>;
   private _destroyer: Subject<boolean> = new Subject<boolean>();
 
   constructor(
@@ -395,5 +412,153 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         [point2.longitude, point2.latitude]
       ) / this._view.getResolution()
     );
+  }
+
+  private _drawTemporaryLocationFeature(
+    location?: ILocation,
+    track?: CGeojsonLineStringFeature
+  ): void {
+    if (location) {
+      if (!this._elevationChartSource) {
+        this._elevationChartSource = new VectorSource({
+          format: new GeoJSON(),
+        });
+      }
+      if (!this._elevationChartLayer) {
+        this._elevationChartLayer = new VectorLayer({
+          source: this._elevationChartSource,
+          style: (feature) => {
+            if (feature.getGeometry().getType() === 'Point') {
+              return [
+                new Style({
+                  image: new CircleStyle({
+                    fill: new FillStyle({
+                      color: '#000',
+                    }),
+                    radius: 7,
+                    stroke: new StrokeStyle({
+                      width: 2,
+                      color: '#fff',
+                    }),
+                  }),
+                  zIndex: 100,
+                }),
+              ];
+            } else {
+              return this._getLineStyle(this._elevationChartTrack.get('color'));
+            }
+          },
+          updateWhileAnimating: false,
+          updateWhileInteracting: false,
+          zIndex: 150,
+        });
+        this._map.addLayer(this._elevationChartLayer);
+      }
+
+      if (location) {
+        const pointGeometry: Point = new Point(
+          this._mapService.coordsFromLonLat([
+            location.longitude,
+            location.latitude,
+          ])
+        );
+
+        if (this._elevationChartPoint) {
+          this._elevationChartPoint.setGeometry(pointGeometry);
+        } else {
+          this._elevationChartPoint = new Feature(pointGeometry);
+          this._elevationChartSource.addFeature(this._elevationChartPoint);
+        }
+
+        if (track) {
+          const trackGeometry: LineString = new LineString(
+            (track.geometry.coordinates as ILineString).map((value) =>
+              this._mapService.coordsFromLonLat(value)
+            )
+          );
+          const trackColor: string = track?.properties?.color;
+
+          if (this._elevationChartTrack) {
+            this._elevationChartTrack.setGeometry(trackGeometry);
+            this._elevationChartTrack.set('color', trackColor);
+          } else {
+            this._elevationChartTrack = new Feature(trackGeometry);
+            this._elevationChartTrack.set('color', trackColor);
+            this._elevationChartSource.addFeature(this._elevationChartTrack);
+          }
+        }
+      } else {
+        this._elevationChartPoint = undefined;
+        this._elevationChartTrack = undefined;
+        this._elevationChartSource.clear();
+      }
+
+      this._map.render();
+    } else if (this._elevationChartSource && this._map) {
+      this._elevationChartPoint = undefined;
+      this._elevationChartTrack = undefined;
+      this._elevationChartSource.clear();
+      this._map.render();
+    }
+  }
+
+  private _getLineStyle(color?: string): Array<Style> {
+    const style: Array<Style> = [];
+    const selected: boolean = false;
+
+    if (!color) {
+      color = '255, 177, 0';
+    }
+    if (color[0] === '#') {
+      color =
+        parseInt(color.substring(1, 3), 16) +
+        ', ' +
+        parseInt(color.substring(3, 5), 16) +
+        ', ' +
+        parseInt(color.substring(5, 7), 16);
+    }
+    const strokeWidth: number = 3; // this._featuresService.strokeWidth(id),
+    const strokeOpacity: number = 1; // this._featuresService.strokeOpacity(id),
+    const lineDash: Array<number> = []; // this._featuresService.lineDash(id),
+    const lineCap: CanvasLineCap = 'round'; // this._featuresService.lineCap(id),
+    color = 'rgba(' + color + ',' + strokeOpacity + ')';
+
+    const zIndex: number = 50; //this._getZIndex(id, "line", selected);
+
+    if (selected) {
+      style.push(
+        new Style({
+          stroke: new StrokeStyle({
+            color: 'rgba(226, 249, 0, 0.6)',
+            width: 10,
+          }),
+          zIndex: zIndex + 5,
+        })
+      );
+    }
+
+    style.push(
+      new Style({
+        stroke: new StrokeStyle({
+          color: 'rgba(255, 255, 255, 0.9)',
+          width: strokeWidth * 2,
+        }),
+        zIndex: zIndex + 1,
+      })
+    );
+
+    style.push(
+      new Style({
+        stroke: new StrokeStyle({
+          color,
+          width: strokeWidth,
+          lineDash,
+          lineCap,
+        }),
+        zIndex: zIndex + 2,
+      })
+    );
+
+    return style;
   }
 }

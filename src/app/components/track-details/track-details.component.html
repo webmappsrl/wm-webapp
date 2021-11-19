@@ -26,6 +26,7 @@
   ></webmapp-track-technical-data>
   <webmapp-track-elevation-chart
     [feature]="feature"
+    (hover)="onLocationHover($event)"
     id="webmapp-track-details-elevation-chart"
   ></webmapp-track-elevation-chart>
   <webmapp-track-download-urls

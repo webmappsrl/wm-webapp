@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ITrackElevationChartHoverElements } from 'src/app/types/track-elevation-chart';
 
 @Component({
   selector: 'webmapp-map-page',
@@ -8,6 +9,7 @@ import { Component, OnInit } from '@angular/core';
 export class MapPage implements OnInit {
   public detailsId: number;
   public mapPadding: Array<number> = [20, 50, 20, 20];
+  public trackElevationChartHoverElements: ITrackElevationChartHoverElements;
 
   constructor() {}
 
@@ -21,5 +23,11 @@ export class MapPage implements OnInit {
       event ? 420 : 20,
     ];
     this.detailsId = event;
+  }
+
+  setTrackElevationChartHoverElements(
+    elements?: ITrackElevationChartHoverElements
+  ): void {
+    this.trackElevationChartHoverElements = elements;
   }
 }

@@ -6,6 +6,7 @@
 >
   <webmapp-track-details
     [id]="detailsId"
+    (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
     (dismiss)="toggleDetails()"
     class="webmapp-track-details"
   ></webmapp-track-details>
@@ -14,4 +15,5 @@
   id="map-container"
   (feature-click)="toggleDetails($event)"
   [padding]="mapPadding"
+  [trackElevationChartElements]="trackElevationChartHoverElements"
 ></webmapp-map>

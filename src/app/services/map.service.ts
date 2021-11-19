@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Coordinate } from 'ol/coordinate';
 import { Extent } from 'ol/extent';
 import { transform, transformExtent } from 'ol/proj';
+import { ILocation } from '../types/location';
 
 @Injectable({
   providedIn: 'root',
@@ -51,5 +52,28 @@ export class MapService {
    */
   extentFromLonLat(extent: Extent): Extent {
     return transformExtent(extent, 'EPSG:4326', 'EPSG:3857');
+  }
+
+  /**
+   * Return the distance in meters between two locations
+   *
+   * @param point1 the first location
+   * @param point2 the second location
+   */
+  getDistanceBetweenPoints(point1: ILocation, point2: ILocation): number {
+    const earthRadius: number = 6371e3;
+    const lat1: number = (point1.latitude * Math.PI) / 180;
+    const lat2: number = (point2.latitude * Math.PI) / 180;
+    const lon1: number = (point1.longitude * Math.PI) / 180;
+    const lon2: number = (point2.longitude * Math.PI) / 180;
+    const dlat: number = lat2 - lat1;
+    const dlon: number = lon2 - lon1;
+
+    const a: number =
+      Math.sin(dlat / 2) * Math.sin(dlat / 2) +
+      Math.cos(lat1) * Math.cos(lat2) * Math.sin(dlon / 2) * Math.sin(dlon / 2);
+    const c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return earthRadius * c;
   }
 }

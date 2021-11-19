@@ -165,7 +165,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     // TODO: figure out why this must be called inside a timeout
     setTimeout(() => {
       this._map.updateSize();
-    }, 100);
+    }, 1000);
   }
 
   ngOnDestroy() {

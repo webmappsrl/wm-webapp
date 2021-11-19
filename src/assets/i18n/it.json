@@ -20,6 +20,34 @@
     "description": {
       "readAll": "leggi tutto",
       "hide": "nascondi"
+    },
+    "elevationChart": {
+      "slope": {
+        "label": "pendenza"
+      },
+      "surfaces": {
+        "asphalt": {
+          "label": "asfalto"
+        },
+        "concrete": {
+          "label": "cemento"
+        },
+        "dirt": {
+          "label": "terra"
+        },
+        "grass": {
+          "label": "erba"
+        },
+        "gravel": {
+          "label": "ghiaia"
+        },
+        "paved": {
+          "label": "lastricato"
+        },
+        "sand": {
+          "label": "sabbia"
+        }
+      }
     }
   }
 }

@@ -7,6 +7,7 @@ import { PipeModule } from 'src/app/pipes/pipe.module';
 import { TrackTechnicalDataComponent } from './track-technical-data/track-technical-data.component';
 import { TrackDownloadUrlsComponent } from './track-download-urls/track-download-urls.component';
 import { TrackDescriptionComponent } from './track-description/track-description.component';
+import { TrackElevationChartComponent } from './track-elevation-chart/track-elevation-chart.component';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { TrackDescriptionComponent } from './track-description/track-description
     TrackTechnicalDataComponent,
     TrackDownloadUrlsComponent,
     TrackDescriptionComponent,
+    TrackElevationChartComponent,
   ],
   imports: [CommonModule, FormsModule, IonicModule, PipeModule],
   exports: [TrackDetailsComponent],

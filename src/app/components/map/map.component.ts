@@ -46,6 +46,8 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import LineString from 'ol/geom/LineString';
 import { ILineString } from 'src/app/types/model';
+import TextStyle from 'ol/style/Text';
+import TextPlacement from 'ol/style/TextPlacement';
 
 @Component({
   selector: 'webmapp-map',
@@ -226,6 +228,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     if (styleJson.sources) {
       this._styleJson = styleJson;
+      console.log(styleJson);
       for (const i in styleJson.sources) {
         layers.push(await this._initializeDataLayer(i, styleJson.sources[i]));
       }
@@ -264,10 +267,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       style: (feature: FeatureLike) => {
         const properties = feature.getProperties();
         let featureStyle: any;
+        let featureSymbolStyle: any;
         for (const layerStyle of this._styleJson.layers) {
           if (layerStyle.id === properties.cai_scale) {
             featureStyle = layerStyle;
-            break;
+          } else if (layerStyle.type === 'symbol') {
+            featureSymbolStyle = layerStyle;
           }
         }
 
@@ -329,6 +334,62 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           stroke: strokeStyle,
           zIndex: 100,
         });
+
+        if (
+          (!featureSymbolStyle?.minzoom ||
+            featureSymbolStyle?.minzoom <= this._view.getZoom()) &&
+          (!featureSymbolStyle?.maxzoom ||
+            featureSymbolStyle?.maxzoom >= this._view.getZoom())
+        ) {
+          // Apply symbol style
+          let text: string = '';
+          let mapping: string = featureSymbolStyle?.layout?.['text-field'];
+
+          while (mapping.length > 0) {
+            if (mapping[0] === '{') {
+              const length: number =
+                mapping.indexOf('}') > 0 ? mapping.indexOf('}') - 1 : -1;
+
+              if (length >= 0) {
+                const property: string = mapping.substring(1, length + 1);
+                mapping = mapping.substring(length + 2);
+                text += properties?.[property] ?? '';
+              }
+            } else {
+              const length: number =
+                mapping.indexOf('{') >= 0
+                  ? mapping.indexOf('{')
+                  : mapping.length;
+              text += mapping.substring(0, length);
+              mapping = mapping.substring(length);
+            }
+          }
+
+          if (text) {
+            const textStyle: TextStyle = new TextStyle({
+              text,
+              font:
+                (featureSymbolStyle?.layout?.['text-size'] ?? '12') + 'px sans',
+              placement:
+                featureSymbolStyle?.layout?.['symbol-placement'] &&
+                [TextPlacement.LINE, TextPlacement.POINT].indexOf(
+                  featureSymbolStyle?.layout?.['symbol-placement']
+                ) >= 0
+                  ? featureSymbolStyle?.layout?.['symbol-placement']
+                  : TextPlacement.LINE,
+              textBaseline: 'bottom',
+              maxAngle: Math.PI / 10,
+              fill: new FillStyle({
+                color:
+                  featureSymbolStyle?.paint?.['text-color'] ??
+                  strokeStyle.getColor(),
+              }),
+            });
+
+            style.setText(textStyle);
+          }
+        }
+
         if (properties.id === this._selectedFeatureId) {
           style.setZIndex(1000);
           const selectedStyle = new Style({
@@ -338,6 +399,15 @@ export class MapComponent implements AfterViewInit, OnDestroy {
             }),
             zIndex: 999,
           });
+
+          if (style.getText()) {
+            style.getText().setStroke(
+              new StrokeStyle({
+                width: 4,
+                color: 'rgba(226, 249, 0, 0.6)',
+              })
+            );
+          }
 
           return [style, selectedStyle];
         } else {

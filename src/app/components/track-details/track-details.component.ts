@@ -9,7 +9,7 @@ import {
 import { IonContent } from '@ionic/angular';
 import { CGeojsonLineStringFeature } from 'src/app/classes/features/cgeojson-line-string-feature';
 import { GeohubService } from 'src/app/services/geohub.service';
-import { ILocaleString } from 'src/app/types/model';
+import { ILocaleString, IWmImage } from 'src/app/types/model';
 import { ITrackElevationChartHoverElements } from 'src/app/types/track-elevation-chart';
 
 @Component({
@@ -34,13 +34,14 @@ export class TrackDetailsComponent implements OnInit {
   public data: {
     name?: string | ILocaleString;
     description?: string | ILocaleString;
+    gallery?: Array<IWmImage>;
   };
 
   private _id: number;
 
-  constructor(private _geohubService: GeohubService) {}
+  constructor(private _geohubService: GeohubService) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   onLocationHover(event: ITrackElevationChartHoverElements) {
     this.trackElevationChartHover.emit(event);
@@ -66,6 +67,7 @@ export class TrackDetailsComponent implements OnInit {
     if (this.feature?.properties) {
       this.data.name = this.feature.properties?.name;
       this.data.description = this.feature.properties?.description;
+      this.data.gallery = this.feature.properties?.image_gallery;
     }
 
     if (this.content) {

@@ -8,6 +8,8 @@ import { TrackTechnicalDataComponent } from './track-technical-data/track-techni
 import { TrackDownloadUrlsComponent } from './track-download-urls/track-download-urls.component';
 import { TrackDescriptionComponent } from './track-description/track-description.component';
 import { TrackElevationChartComponent } from './track-elevation-chart/track-elevation-chart.component';
+import { GalleryComponent } from './gallery/gallery.component';
+import { SwiperModule } from 'swiper/angular';
 
 @NgModule({
   declarations: [
@@ -16,8 +18,9 @@ import { TrackElevationChartComponent } from './track-elevation-chart/track-elev
     TrackDownloadUrlsComponent,
     TrackDescriptionComponent,
     TrackElevationChartComponent,
+    GalleryComponent
   ],
-  imports: [CommonModule, FormsModule, IonicModule, PipeModule],
+  imports: [CommonModule, FormsModule, IonicModule, PipeModule, SwiperModule],
   exports: [TrackDetailsComponent],
 })
-export class TrackDetailsModule {}
+export class TrackDetailsModule { }

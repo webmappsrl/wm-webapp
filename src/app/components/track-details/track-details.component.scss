@@ -2,7 +2,13 @@
   width: 100%;
   height: calc(100% - 56px);
   #webmapp-track-details-technical-data,
-  #webmapp-track-details-download-urls {
+  #webmapp-track-details-download-urls,
+  #webmapp-track-details-gallery {
     width: 100%;
+  }
+  #webmapp-track-details-gallery {
+    height: 300px;
+    max-height: 30vh;
+    display: block;
   }
 }

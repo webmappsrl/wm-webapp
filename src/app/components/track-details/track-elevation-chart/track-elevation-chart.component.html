@@ -1,0 +1,53 @@
+<div id="webmapp-track-elevation-chart-container">
+  <div class="webmapp-track-elevation-chart-canvas-container">
+    <canvas #chartCanvas class="webmapp-track-elevation-chart-canvas"></canvas>
+  </div>
+  <div class="webmapp-track-elevation-chart-legend-container">
+    <div
+      class="webmapp-track-elevation-chart-legend-slope-container"
+      *ngIf="slope?.available"
+    >
+      <div class="webmapp-track-elevation-chart-legend-slope-label">
+        {{ "trackDetails.elevationChart.slope.label" | WebmappTranslate }}
+      </div>
+      <div class="webmapp-track-elevation-chart-legend-slope-bar">
+        <div
+          *ngIf="slope?.selectedValue !== undefined"
+          class="webmapp-track-elevation-chart-legend-slope-selected-container"
+          [ngStyle]="{
+            left: slope.selectedPercentage + '%'
+          }"
+        >
+          <div class="webmapp-track-elevation-chart-legend-slope-selected-text">
+            {{ slope.selectedValue }}%
+          </div>
+          <div
+            class="webmapp-track-elevation-chart-legend-slope-selected-dot"
+          ></div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="webmapp-track-elevation-chart-legend-surface-container"
+      *ngIf="surfaces && surfaces.length > 0"
+    >
+      <div
+        *ngFor="let surface of surfaces"
+        class="webmapp-track-elevation-chart-legend-surface"
+      >
+        <span
+          [ngStyle]="{
+            background: 'rgb(' + surface.backgroundColor + ')'
+          }"
+          class="webmapp-track-elevation-chart-legend-surface-dot"
+        ></span>
+        <div class="webmapp-track-elevation-chart-legend-surface-label">
+          {{
+            "trackDetails.elevationChart.surfaces." + surface.id + ".label"
+              | WebmappTranslate
+          }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

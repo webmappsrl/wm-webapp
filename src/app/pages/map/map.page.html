@@ -1,0 +1,19 @@
+<div
+  id="details-container"
+  [ngClass]="{
+  'details-container-visible': !!detailsId
+}"
+>
+  <webmapp-track-details
+    [id]="detailsId"
+    (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
+    (dismiss)="toggleDetails()"
+    class="webmapp-track-details"
+  ></webmapp-track-details>
+</div>
+<webmapp-map
+  id="map-container"
+  (feature-click)="toggleDetails($event)"
+  [padding]="mapPadding"
+  [trackElevationChartElements]="trackElevationChartHoverElements"
+></webmapp-map>

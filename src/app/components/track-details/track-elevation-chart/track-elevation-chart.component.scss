@@ -1,0 +1,86 @@
+#webmapp-track-elevation-chart-container {
+  padding: 0 10px;
+  width: calc(100% - 20px);
+  .webmapp-track-elevation-chart-canvas-container {
+    margin: 0 auto;
+    width: 100%;
+    height: 160px;
+    .webmapp-track-elevation-chart-canvas {
+      margin: 0 auto;
+      width: 100%;
+    }
+  }
+
+  .webmapp-track-elevation-chart-legend-container {
+    .webmapp-track-elevation-chart-legend-slope-container {
+      margin: 15px 0 10px;
+      width: 100%;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      padding-right: 15px;
+      .webmapp-track-elevation-chart-legend-slope-label {
+        flex-grow: 1;
+        &::first-letter {
+          text-transform: uppercase;
+        }
+      }
+      .webmapp-track-elevation-chart-legend-slope-bar {
+        height: 4px;
+        flex-grow: 10;
+        background: linear-gradient(
+          to right,
+          rgb(67, 227, 9) 0%,
+          rgb(195, 255, 0) 25%,
+          rgb(255, 239, 10) 50%,
+          rgb(255, 174, 0) 75%,
+          rgb(196, 30, 4) 100%
+        );
+        overflow: visible;
+        position: relative;
+        .webmapp-track-elevation-chart-legend-slope-selected-container {
+          position: absolute;
+          bottom: -5px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          transform: translateX(-50%);
+          transition: left 500ms;
+          .webmapp-track-elevation-chart-legend-slope-selected-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 10px;
+            border: 2px solid #fff;
+            background: #000;
+          }
+        }
+      }
+    }
+    .webmapp-track-elevation-chart-legend-surface-container {
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: space-evenly;
+      .webmapp-track-elevation-chart-legend-surface {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 5px;
+        .webmapp-track-elevation-chart-legend-surface-dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 10px;
+          display: inline-block;
+        }
+        .webmapp-track-elevation-chart-legend-surface-label {
+          margin-left: 5px;
+          &::first-letter {
+            text-transform: uppercase;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+<swiper *ngIf="gallery" class="webmapp-gallery-slider">
+  <ng-template
+    class="webmapp-gallery-slide-container"
+    swiperSlide
+    *ngFor="let picture of gallery"
+  >
+    <div
+      class="webmapp-gallery-picture"
+      [ngStyle]="{
+      'backgroundImage': 'url(' + (picture?.sizes?.['335x250'] ?? picture?.sizes?.['400x200'] ?? picture.url) + ')'
+    }"
+    ></div>
+  </ng-template>
+</swiper>

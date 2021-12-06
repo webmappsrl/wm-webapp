@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar class="webmapp-track-details-toolbar">
+    <ion-title
+      *ngIf="data?.name"
+      [innerHtml]="data.name | WebmappTranslate"
+      size="small"
+    ></ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        class="webmapp-track-details-dismiss"
+        (click)="triggerDismiss()"
+      >
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content #content id="webmapp-track-details-content">
+  <webmapp-gallery
+    *ngIf="data?.gallery"
+    [gallery]="data.gallery"
+    id="webmapp-track-details-gallery"
+  >
+  </webmapp-gallery>
+  <webmapp-track-description
+    *ngIf="data?.description"
+    [description]="data.description | WebmappTranslate"
+  >
+  </webmapp-track-description>
+  <webmapp-track-technical-data
+    [feature]="feature"
+    id="webmapp-track-details-technical-data"
+  >
+  </webmapp-track-technical-data>
+  <webmapp-track-elevation-chart
+    [feature]="feature"
+    (hover)="onLocationHover($event)"
+    id="webmapp-track-details-elevation-chart"
+  >
+  </webmapp-track-elevation-chart>
+  <webmapp-track-download-urls
+    [feature]="feature"
+    id="webmapp-track-details-download-urls"
+  >
+  </webmapp-track-download-urls>
+</ion-content>

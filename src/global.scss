@@ -16,7 +16,7 @@
 @import "~@ionic/angular/css/normalize.css";
 @import "~@ionic/angular/css/structure.css";
 @import "~@ionic/angular/css/typography.css";
-@import '~@ionic/angular/css/display.css';
+@import "~@ionic/angular/css/display.css";
 
 /* Optional CSS utils that can be commented out */
 @import "~@ionic/angular/css/padding.css";
@@ -24,3 +24,61 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+/* OpenLayers */
+@import "~ol/ol.css";
+
+/* Swiper */
+@import "~swiper/scss";
+@import "~swiper/scss/autoplay";
+@import "~swiper/scss/keyboard";
+@import "~swiper/scss/pagination";
+@import "~swiper/scss/scrollbar";
+@import "~swiper/scss/zoom";
+@import "~@ionic/angular/css/ionic-swiper";
+
+.ol-zoom {
+  top: unset;
+  left: unset;
+  z-index: 10000;
+
+  &,
+  &:hover {
+    background: unset;
+  }
+
+  .ol-zoom-in,
+  .ol-zoom-out,
+  .ol-rotate-reset {
+    border-radius: 50%;
+    margin: 10px 0;
+    font-size: x-large;
+    box-shadow: 1px 2px 9px -3px var(--ion-color-dark);
+  }
+
+  .ol-zoom-in,
+  .ol-zoom-out {
+    color: var(--ion-color-dark);
+    background: var(--ion-color-light);
+
+    &:focus {
+      background: var(--ion-color-light);
+    }
+
+    &:hover {
+      background: var(--ion-color-light-shade);
+    }
+  }
+}
+
+.ol-scale-line {
+  z-index: 500;
+  background: rgba(var(--ion-color-light-rgb), 0.5);
+  box-shadow: 1px 2px 9px -3px var(--ion-color-dark);
+  .ol-scale-line-inner {
+    background: rgba(0, 0, 0, 0);
+    color: var(--ion-color-dark);
+    border: 1px solid var(--ion-color-dark);
+    border-top: 0;
+  }
+}

@@ -10,6 +10,7 @@ import { MapPage } from './map.page';
 import { MapModule } from 'src/app/components/map/map.module';
 import { PipeModule } from 'src/app/pipes/pipe.module';
 import { TrackDetailsModule } from 'src/app/components/track-details/track-details.module';
+import { HomeModule } from 'src/app/components/home/home.module';
 
 @NgModule({
   imports: [
@@ -20,6 +21,7 @@ import { TrackDetailsModule } from 'src/app/components/track-details/track-detai
     MapModule,
     PipeModule,
     TrackDetailsModule,
+    HomeModule
   ],
   declarations: [MapPage],
 })

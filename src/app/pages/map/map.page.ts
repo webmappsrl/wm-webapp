@@ -7,7 +7,8 @@ import { ITrackElevationChartHoverElements } from 'src/app/types/track-elevation
   styleUrls: ['./map.page.scss'],
 })
 export class MapPage implements OnInit {
-  public detailsId: number;
+  public detailsId: number = 0;
+  public showMenu: boolean = true;
   public mapPadding: Array<number> = [20, 50, 20, 20];
   public trackElevationChartHoverElements: ITrackElevationChartHoverElements;
 
@@ -29,5 +30,9 @@ export class MapPage implements OnInit {
     elements?: ITrackElevationChartHoverElements
   ): void {
     this.trackElevationChartHoverElements = elements;
+  }
+
+  toggleMenu(){
+    this.showMenu = !this.showMenu;
   }
 }

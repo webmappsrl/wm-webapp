@@ -1,19 +1,15 @@
-<div
-  id="details-container"
-  [ngClass]="{
-  'details-container-visible': !!detailsId
-}"
->
-  <webmapp-track-details
-    [id]="detailsId"
-    (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
-    (dismiss)="toggleDetails()"
-    class="webmapp-track-details"
-  ></webmapp-track-details>
+<div id="details-container" [ngClass]="{
+  'details-container-visible': showMenu
+}">
+  <webmapp-track-details [id]="detailsId" [hidden]="detailsId <= 0"
+    (trackElevationChartHover)="setTrackElevationChartHoverElements($event)" (dismiss)="toggleDetails()"
+    class="webmapp-track-details"></webmapp-track-details>
+  <webmapp-home [hidden]="detailsId > 0" class="webmapp-home"></webmapp-home>
 </div>
-<webmapp-map
-  id="map-container"
-  (feature-click)="toggleDetails($event)"
-  [padding]="mapPadding"
-  [trackElevationChartElements]="trackElevationChartHoverElements"
-></webmapp-map>
+<button class="webmapp-menubtn" [ngClass]="{  'webmapp-menubtn-opened': showMenu}" type="button" title="menu"
+  (click)="toggleMenu()">
+  <ion-icon *ngIf="showMenu" name="caret-back-outline"></ion-icon>
+  <ion-icon *ngIf="!showMenu" name="caret-forward-outline"></ion-icon>
+</button>
+<webmapp-map id="map-container" (feature-click)="toggleDetails($event)" [padding]="mapPadding"
+  [trackElevationChartElements]="trackElevationChartHoverElements"></webmapp-map>

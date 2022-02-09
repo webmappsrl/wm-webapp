@@ -7,7 +7,7 @@
       </ion-button>
     </ion-buttons>
     <div *ngIf="!showSearch" class="wm-toolbar-title" [innerHtml]="title"></div>
-    <ion-searchbar class="wm-searchbar" *ngIf="showSearch" [(ngModel)]="searchString" (ionChange)="searchBarChanged()"
+    <ion-searchbar class="wm-searchbar" *ngIf="showSearch" (ionChange)="searchBarChanged()"
       animated debounce="300" mode="md" (ionClear)="searchBarCleared()">
     </ion-searchbar>
   </ion-toolbar>

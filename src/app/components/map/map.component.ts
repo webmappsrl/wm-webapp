@@ -48,6 +48,7 @@ import LineString from 'ol/geom/LineString';
 import { ILineString } from 'src/app/types/model';
 import TextStyle from 'ol/style/Text';
 import TextPlacement from 'ol/style/TextPlacement';
+import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
   selector: 'webmapp-map',
@@ -89,7 +90,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   constructor(
     private _communicationService: CommunicationService,
     private _geohubService: GeohubService,
-    private _mapService: MapService
+    private _mapService: MapService,
+    private _themeService: ThemeService
   ) {}
 
   async ngAfterViewInit() {

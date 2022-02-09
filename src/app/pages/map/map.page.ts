@@ -16,13 +16,7 @@ export class MapPage implements OnInit {
 
   ngOnInit() {}
 
-  toggleDetails(event?: number) {
-    this.mapPadding = [
-      this.mapPadding[0],
-      this.mapPadding[1],
-      this.mapPadding[2],
-      event ? 420 : 20,
-    ];
+  toggleDetails(event: number = 0) {
     this.detailsId = event;
   }
 
@@ -34,5 +28,12 @@ export class MapPage implements OnInit {
 
   toggleMenu(){
     this.showMenu = !this.showMenu;
+    this.mapPadding = [
+      this.mapPadding[0],
+      this.mapPadding[1],
+      this.mapPadding[2],
+      this.showMenu ? 420 : 20,
+    ];
   }
+
 }

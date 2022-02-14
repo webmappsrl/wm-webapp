@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { first } from 'rxjs/operators';
 import { ITrackElevationChartHoverElements } from 'src/app/types/track-elevation-chart';
 
 @Component({
@@ -9,12 +11,18 @@ import { ITrackElevationChartHoverElements } from 'src/app/types/track-elevation
 export class MapPage implements OnInit {
   public detailsId: number = 0;
   public showMenu: boolean = true;
-  public mapPadding: Array<number> = [20, 50, 20, 20];
+  public mapPadding: Array<number> = [20, 50, 20, 250];
   public trackElevationChartHoverElements: ITrackElevationChartHoverElements;
 
-  constructor() {}
+  constructor(
+    private _route: ActivatedRoute
+  ) { }
 
-  ngOnInit() {}
+  async ngOnInit() {
+    const params = await this._route.queryParams.pipe(first()).toPromise();
+    const trackId = params['track'];
+    if (trackId) { this.detailsId = Number.parseFloat(trackId); }
+  }
 
   toggleDetails(event: number = 0) {
     this.detailsId = event;
@@ -26,7 +34,7 @@ export class MapPage implements OnInit {
     this.trackElevationChartHoverElements = elements;
   }
 
-  toggleMenu(){
+  toggleMenu() {
     this.showMenu = !this.showMenu;
     this.mapPadding = [
       this.mapPadding[0],

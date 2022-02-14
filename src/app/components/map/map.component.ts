@@ -22,7 +22,7 @@ import View from 'ol/View';
 import XYZ from 'ol/source/XYZ';
 import ZoomControl from 'ol/control/Zoom';
 import ScaleLineControl from 'ol/control/ScaleLine';
-import { defaults as defaultInteractions } from 'ol/interaction.js';
+import { defaults as defaultInteractions, Extent } from 'ol/interaction.js';
 import Interaction from 'ol/interaction/Interaction';
 import SelectInteraction from 'ol/interaction/Select';
 import { getDistance } from 'ol/sphere.js';
@@ -60,7 +60,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   @ViewChild('zoomContainer') zoomContainer: ElementRef;
   @ViewChild('scaleLineContainer') scaleLineContainer: ElementRef;
 
-  @Input('start-view') startView: number[] = [10.4147, 43.7118, 9];
   @Input('padding') set mapPadding(value: Array<number>) {
     this.padding = value;
     this._updateView();
@@ -72,6 +71,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
   @Output('feature-click') featureClick: EventEmitter<number> =
     new EventEmitter<number>();
+
+  @Input('start-view') startView: number[] = [10.4147, 43.7118, 9];
+
+  @Input('trackId') set setTrackId(value) {
+    this.selectTrackId(value);
+  }
 
   public padding: Array<number> = [0, 0, 0, 0];
   private _view: View;
@@ -92,7 +97,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     private _geohubService: GeohubService,
     private _mapService: MapService,
     private _themeService: ThemeService
-  ) {}
+  ) { }
 
   async ngAfterViewInit() {
     if (!this.startView) {
@@ -139,28 +144,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
 
     this._selectInteraction.on('select', async (event: SelectEvent) => {
+
       const clickedFeature = event?.selected?.[0] ?? undefined;
       const clickedFeatureId: number =
         clickedFeature?.getProperties()?.id ?? undefined;
-      if (clickedFeatureId) {
-        this._selectedFeatureId = clickedFeatureId;
-        try {
-          const selectedGeohubFeature = await this._geohubService.getEcTrack(
-            this._selectedFeatureId
-          );
-
-          this._selectedFeature = new GeoJSON({
-            featureProjection: 'EPSG:3857',
-          }).readFeatures(selectedGeohubFeature)[0];
-
-          this.featureClick.emit(this._selectedFeatureId);
-          for (const layer of this._dataLayers) {
-            layer.changed();
-          }
-        } catch (e) {
-          this._selectedFeatureId = undefined;
-        }
-      }
+      this.selectTrackId(clickedFeatureId);
     });
 
     this._map.on('pointerdrag', () => {
@@ -191,6 +179,30 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this._destroyer.next(true);
+  }
+
+
+  async selectTrackId(trackId: number) {
+    if (trackId) {
+      this._selectedFeatureId = trackId;
+      try {
+        const selectedGeohubFeature = await this._geohubService.getEcTrack(
+          this._selectedFeatureId
+        );
+
+        this._selectedFeature = new GeoJSON({
+          featureProjection: 'EPSG:3857',
+        }).readFeatures(selectedGeohubFeature)[0];
+
+        this.featureClick.emit(this._selectedFeatureId);
+        for (const layer of this._dataLayers) {
+          layer.changed();
+        }
+        this._updateView();
+      } catch (e) {
+        this._selectedFeatureId = undefined;
+      }
+    }
   }
 
   private _initializeBaseLayers(): Array<TileLayer> {
@@ -374,9 +386,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
                 (featureSymbolStyle?.layout?.['text-size'] ?? '12') + 'px sans',
               placement:
                 featureSymbolStyle?.layout?.['symbol-placement'] &&
-                [TextPlacement.LINE, TextPlacement.POINT].indexOf(
-                  featureSymbolStyle?.layout?.['symbol-placement']
-                ) >= 0
+                  [TextPlacement.LINE, TextPlacement.POINT].indexOf(
+                    featureSymbolStyle?.layout?.['symbol-placement']
+                  ) >= 0
                   ? featureSymbolStyle?.layout?.['symbol-placement']
                   : TextPlacement.LINE,
               textBaseline: 'bottom',

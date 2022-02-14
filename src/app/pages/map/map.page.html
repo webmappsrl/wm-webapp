@@ -11,5 +11,5 @@
   <ion-icon *ngIf="showMenu" name="caret-back-outline"></ion-icon>
   <ion-icon *ngIf="!showMenu" name="caret-forward-outline"></ion-icon>
 </button>
-<webmapp-map id="map-container" (feature-click)="toggleDetails($event)" [padding]="mapPadding"
+<webmapp-map id="map-container" (feature-click)="toggleDetails($event)" [padding]="mapPadding" [trackId]="detailsId"
   [trackElevationChartElements]="trackElevationChartHoverElements"></webmapp-map>

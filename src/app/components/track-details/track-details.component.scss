@@ -1,6 +1,7 @@
 #webmapp-track-details-content {
   width: 100%;
   height: calc(100% - 56px);
+  --padding-top: 20px;
   #webmapp-track-details-technical-data,
   #webmapp-track-details-download-urls,
   #webmapp-track-details-gallery {
@@ -11,4 +12,11 @@
     max-height: 30vh;
     display: block;
   }
+  .webmapp-track-picture{
+    height: 200px;
+    /* width: 100%; */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    }
 }

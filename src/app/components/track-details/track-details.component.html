@@ -22,6 +22,16 @@
     id="webmapp-track-details-gallery"
   >
   </webmapp-gallery>
+
+  <div
+      *ngIf="!data?.gallery?.length"
+      class="webmapp-track-picture"
+      [ngStyle]="{
+      'backgroundImage': 'url(' + (data?.featureImage?.sizes?.['335x250'] ?? data?.featureImage?.sizes?.['400x200'] ?? data?.featureImage.url) + ')'
+    }"
+    >
+  </div>
+
   <webmapp-track-description
     *ngIf="data?.description"
     [description]="data.description | WebmappTranslate"

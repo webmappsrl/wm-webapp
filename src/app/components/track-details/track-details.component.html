@@ -23,12 +23,9 @@
   >
   </webmapp-gallery>
 
-  <div
-      *ngIf="!data?.gallery?.length && data?.featureImage"
-      class="webmapp-track-picture"
-      [ngStyle]="{
-      'backgroundImage': 'url(' + (data?.featureImage?.sizes?.['335x250'] ?? data?.featureImage?.sizes?.['400x200'] ?? data?.featureImage.url) + ')'
-    }"
+  <div  *ngIf="!data?.gallery?.length && data?.featureImage"
+      class="webmapp-track-picture">
+  <img [src]="data?.featureImage?.sizes?.['335x250'] ?? data?.featureImage?.sizes?.['400x200'] ?? data?.featureImage.url"
     >
   </div>
 

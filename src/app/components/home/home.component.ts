@@ -17,17 +17,17 @@ export class HomeComponent implements OnInit {
     },
     {
       name: 'Itinerari',
-      img: 'https://picsum.photos/300/201',
+      img: 'https://picsum.photos/300/200',
       description: 'Gli itinerari dell\'app'
     },
     {
       name: 'Viaggi',
-      img: 'https://picsum.photos/301/200',
+      img: 'https://picsum.photos/300/200',
       description: 'I viaggi dell\'app'
     },
     {
       name: 'Idee',
-      img: 'https://picsum.photos/301/201',
+      img: 'https://picsum.photos/300/200',
       description: 'Le idee dell\'app'
     }
   ];

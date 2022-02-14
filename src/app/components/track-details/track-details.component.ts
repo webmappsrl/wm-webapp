@@ -6,11 +6,12 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { IonContent } from '@ionic/angular';
+import { IonContent, ModalController } from '@ionic/angular';
 import { CGeojsonLineStringFeature } from 'src/app/classes/features/cgeojson-line-string-feature';
 import { GeohubService } from 'src/app/services/geohub.service';
 import { ILocaleString, IWmImage } from 'src/app/types/model';
 import { ITrackElevationChartHoverElements } from 'src/app/types/track-elevation-chart';
+import { ModalGalleryComponent } from './modal-gallery/modal-gallery.component';
 
 @Component({
   selector: 'webmapp-track-details',
@@ -36,12 +37,15 @@ export class TrackDetailsComponent implements OnInit {
     description?: string | ILocaleString;
     gallery?: Array<IWmImage>;
     featureImage?: IWmImage;
-    activity? : any[];
+    activity?: any[];
   };
 
   private _id: number;
 
-  constructor(private _geohubService: GeohubService) { }
+  constructor(
+    private _geohubService: GeohubService,
+    private _modalController: ModalController
+  ) { }
 
   ngOnInit() { }
 
@@ -51,6 +55,20 @@ export class TrackDetailsComponent implements OnInit {
 
   triggerDismiss() {
     this.dismiss.emit();
+  }
+
+  open() {
+      this._modalController
+        .create({
+          component: ModalGalleryComponent,
+          cssClass: 'modal-gallery-class',
+          componentProps: {
+            gallery: [this.data.featureImage],
+          },
+        })
+        .then((modal) => {
+          modal.present();
+        });
   }
 
   /**

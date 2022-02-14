@@ -35,8 +35,11 @@
 
   <div  *ngIf="!data?.gallery?.length && data?.featureImage"
       class="webmapp-track-picture">
-  <img [src]="data?.featureImage?.sizes?.['335x250'] ?? data?.featureImage?.sizes?.['400x200'] ?? data?.featureImage.url"
-    >
+  <img [src]="data?.featureImage?.sizes?.['335x250'] ?? data?.featureImage?.sizes?.['400x200'] ?? data?.featureImage.url"    >
+  <button class="webmapp-track-picture-zoombutton" type="button" (click)="open()">
+    <ion-icon name="search-circle-outline"></ion-icon>
+    <ion-ripple-effect></ion-ripple-effect>
+  </button>
   </div>
 
   <webmapp-track-description

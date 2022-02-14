@@ -1,0 +1,37 @@
+<div class="modal__dismiss" (click)="dismiss()">
+  <ion-icon name="close"></ion-icon>
+</div>
+<ion-slides
+  #gallerySlider
+  pager="true"
+  [options]="galleryOptions"
+  class="gallery__slides"
+>
+  <ion-slide
+    class="gallery__slide"
+    *ngFor="let img of gallery"
+    [ngStyle]="{
+      'background-image': 'url(\'' + img.url + '\')'
+    }"
+  >
+    <div
+      class="gallery__caption wm-clickable"
+      *ngIf="img.caption && img.caption !== ''"
+      [innerHtml]="img.caption"
+      (click)="expandCaption()"
+      [ngClass]="{
+        expanded: isExpanded
+      }"
+    ></div>
+  </ion-slide>
+</ion-slides>
+<div
+  class="gallery__previous wm-clickable"
+  *ngIf="!isStart"
+  (click)="previous()"
+>
+  <ion-icon name="arrow-back" mode="ios"></ion-icon>
+</div>
+<div class="gallery__next wm-clickable" *ngIf="!isEnd" (click)="next()">
+  <ion-icon name="arrow-forward" mode="ios"></ion-icon>
+</div>

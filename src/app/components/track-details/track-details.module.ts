@@ -10,6 +10,7 @@ import { TrackDescriptionComponent } from './track-description/track-description
 import { TrackElevationChartComponent } from './track-elevation-chart/track-elevation-chart.component';
 import { GalleryComponent } from './gallery/gallery.component';
 import { SwiperModule } from 'swiper/angular';
+import { ModalGalleryComponent } from './modal-gallery/modal-gallery.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { SwiperModule } from 'swiper/angular';
     TrackDownloadUrlsComponent,
     TrackDescriptionComponent,
     TrackElevationChartComponent,
-    GalleryComponent
+    GalleryComponent,
+    ModalGalleryComponent
   ],
   imports: [CommonModule, FormsModule, IonicModule, PipeModule, SwiperModule],
   exports: [TrackDetailsComponent],

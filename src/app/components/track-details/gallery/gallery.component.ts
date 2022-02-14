@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 import { IWmImage } from 'src/app/types/model';
 import SwiperCore, {
   Autoplay,
@@ -8,6 +9,7 @@ import SwiperCore, {
   Zoom,
 } from 'swiper';
 import { SwiperComponent } from 'swiper/angular';
+import { ModalGalleryComponent } from '../modal-gallery/modal-gallery.component';
 
 @Component({
   selector: 'webmapp-gallery',
@@ -24,7 +26,9 @@ export class GalleryComponent implements OnInit {
   public gallery: Array<IWmImage>;
   public currentSlide: number = 0;
 
-  constructor() {
+  constructor(
+    private _modalController: ModalController
+  ) {
     SwiperCore.use([Autoplay, Keyboard, Pagination, Scrollbar, Zoom]);
   }
 
@@ -38,8 +42,25 @@ export class GalleryComponent implements OnInit {
     this.swiper.swiperRef.slidePrev(200);
   }
 
-  slideChange(ev){
+  slideChange(ev) {
     this.currentSlide = ev.activeIndex;
+  }
+
+  open() {
+    if (this.gallery.length > 0) {
+      this._modalController
+        .create({
+          component: ModalGalleryComponent,
+          cssClass: 'modal-gallery-class',
+          componentProps: {
+            gallery: this.gallery,
+          },
+        })
+        .then((modal) => {
+          modal.present();
+        });
+    }
+
   }
 
   private _initializeGallery(gallery: Array<IWmImage>): void {

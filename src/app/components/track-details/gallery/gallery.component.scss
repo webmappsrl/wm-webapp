@@ -47,3 +47,22 @@
   padding-left: 8px;
   }
 }
+
+.webmapp-gallery-zoombutton {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  background-color: #33333367;
+  color: var(--ion-color-light);
+  bottom: 2px;
+  right:2px;
+  z-index:100;
+  font-size: xx-large;
+  padding-top: 0px;
+  padding-left: 0px;
+  opacity: 0.5;
+  &:hover{
+    opacity: 1;
+  }
+}

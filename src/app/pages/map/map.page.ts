@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs/operators';
 import { ITrackElevationChartHoverElements } from 'src/app/types/track-elevation-chart';
 
@@ -15,7 +15,8 @@ export class MapPage implements OnInit {
   public trackElevationChartHoverElements: ITrackElevationChartHoverElements;
 
   constructor(
-    private _route: ActivatedRoute
+    private _route: ActivatedRoute,
+    private _router: Router
   ) { }
 
   async ngOnInit() {
@@ -26,6 +27,17 @@ export class MapPage implements OnInit {
 
   toggleDetails(event: number = 0) {
     this.detailsId = event;
+    this.updateUrl();
+  }
+
+  updateUrl(){
+    this._router.navigate(
+      [],
+      {
+        relativeTo: this._route,
+        queryParams: { track: this.detailsId ?  this.detailsId : null },
+        queryParamsHandling: 'merge'
+      });
   }
 
   setTrackElevationChartHoverElements(

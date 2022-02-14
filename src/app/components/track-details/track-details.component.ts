@@ -36,6 +36,7 @@ export class TrackDetailsComponent implements OnInit {
     description?: string | ILocaleString;
     gallery?: Array<IWmImage>;
     featureImage?: IWmImage;
+    activity? : any[];
   };
 
   private _id: number;
@@ -70,6 +71,7 @@ export class TrackDetailsComponent implements OnInit {
       this.data.description = this.feature.properties?.description;
       this.data.gallery = this.feature.properties?.image_gallery;
       this.data.featureImage = this.feature.properties?.feature_image;
+      this.data.activity = this.feature.properties.taxonomy.activity;
     }
 
     if (this.content) {

@@ -49,5 +49,10 @@
         }
       }
     }
+  },
+  "home":{
+    "duration":"Durata",
+    "length":"Lunghezza",
+    "difference":"Dislivello"
   }
 }

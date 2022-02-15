@@ -4,7 +4,7 @@
   <webmapp-track-details [id]="detailsId" [hidden]="detailsId <= 0"
     (trackElevationChartHover)="setTrackElevationChartHoverElements($event)" (dismiss)="toggleDetails()"
     class="webmapp-track-details"></webmapp-track-details>
-  <webmapp-home [hidden]="detailsId > 0" class="webmapp-home"></webmapp-home>
+  <webmapp-home [hidden]="detailsId > 0" class="webmapp-home" (searchId)="selectTrack($event)"></webmapp-home>
 </div>
 <button class="webmapp-menubtn" [ngClass]="{  'webmapp-menubtn-opened': showMenu}" type="button" title="menu"
   (click)="toggleMenu()">

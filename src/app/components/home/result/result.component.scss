@@ -1,0 +1,34 @@
+.wm-result {
+    padding: 20px;
+
+    .wm-result-title {
+        font-size: var(--font-xlg);
+        font-family: var(--font-family-header);
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .wm-result-imgcontainer {
+        position: relative;
+        .wm-result-img {
+            width: 100%;
+            border-radius: 2px;
+            height: 80px;
+            object-fit: cover;
+        }
+    }
+
+    .wm-result-info {
+        width: 100%;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--ion-color-medium);
+        .wm-result-infobox {
+            width: 33%;
+            display: inline-block;
+            text-align: center;
+            .wm-result-infobox-label {
+                color: var(--ion-color-medium);
+            }
+        }
+    }
+}

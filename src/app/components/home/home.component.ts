@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CardData } from 'src/app/classes/cardata';
+import { SearchResult } from 'src/app/classes/searchresult';
+import { GeohubService } from 'src/app/services/geohub.service';
 
 @Component({
   selector: 'webmapp-home',
@@ -8,27 +10,32 @@ import { CardData } from 'src/app/classes/cardata';
 })
 export class HomeComponent implements OnInit {
 
+  @Output('searchId') searchIdEvent: EventEmitter<number> =  new EventEmitter<number>();
 
   public cards: CardData[] = [
     {
       name: 'Percorsi',
       img: 'https://picsum.photos/300/200',
-      description: 'I percorsi dell\'app'
+      description: 'I percorsi dell\'app',
+      searchString: 'percorsi'
     },
     {
       name: 'Itinerari',
       img: 'https://picsum.photos/300/200',
-      description: 'Gli itinerari dell\'app'
+      description: 'Gli itinerari dell\'app',
+      searchString: 'itinerari'
     },
     {
       name: 'Viaggi',
       img: 'https://picsum.photos/300/200',
-      description: 'I viaggi dell\'app'
+      description: 'I viaggi dell\'app',
+      searchString: 'viaggi'
     },
     {
       name: 'Idee',
       img: 'https://picsum.photos/300/200',
-      description: 'Le idee dell\'app'
+      description: 'Le idee dell\'app',
+      searchString: 'idee'
     }
   ];
 
@@ -37,23 +44,31 @@ export class HomeComponent implements OnInit {
   public showSearch: boolean = true;
   public title: string;
   public searchString: string;
+  public searchresults: SearchResult[];
 
-  constructor() { }
+  constructor(
+    private _geoHubService: GeohubService) { }
 
   ngOnInit() { }
 
   goBack() {
     console.log('------- ~ HomeComponent ~ goBack ~ goBack');
-
   }
 
-  searchBarChanged() {
-    console.log('------- ~ HomeComponent ~ searchBarChanged ~ searchBarChanged');
-
+  async searchBarChanged() {
+    if (this.searchString) {
+      this.searchresults = await this._geoHubService.search(this.searchString);
+    }
+    else { this.searchBarCleared(); }
   }
 
   searchBarCleared() {
-    console.log('------- ~ HomeComponent ~ searchBarCleared ~ searchBarCleared');
+    this.searchresults = [];
+  }
+
+  select(result: SearchResult){
+    console.log("------- ~ HomeComponent ~ select ~ result", result);
+    this.searchIdEvent.emit(result.id);
   }
 
 }

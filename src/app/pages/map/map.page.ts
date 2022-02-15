@@ -30,12 +30,18 @@ export class MapPage implements OnInit {
     this.updateUrl();
   }
 
-  updateUrl(){
+  selectTrack(trackid: number) {
+    console.log("------- ~ MapPage ~ selectTrack ~ trackid", trackid);
+    this.detailsId = trackid;
+    this.updateUrl();
+  }
+
+  updateUrl() {
     this._router.navigate(
       [],
       {
         relativeTo: this._route,
-        queryParams: { track: this.detailsId ?  this.detailsId : null },
+        queryParams: { track: this.detailsId ? this.detailsId : null },
         queryParamsHandling: 'merge'
       });
   }

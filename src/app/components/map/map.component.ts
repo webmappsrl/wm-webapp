@@ -29,6 +29,7 @@ import { getDistance } from 'ol/sphere.js';
 import Feature from 'ol/Feature';
 import { MapService } from 'src/app/services/map.service';
 import Style from 'ol/style/Style';
+import Icon from 'ol/style/Icon';
 import StrokeStyle from 'ol/style/Stroke';
 import FillStyle from 'ol/style/Fill';
 import CircleStyle from 'ol/style/Circle';
@@ -45,10 +46,13 @@ import { CGeojsonLineStringFeature } from 'src/app/classes/features/cgeojson-lin
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import LineString from 'ol/geom/LineString';
-import { ILineString } from 'src/app/types/model';
+import { IGeojsonFeature, IGeojsonPoi, ILineString } from 'src/app/types/model';
 import TextStyle from 'ol/style/Text';
 import TextPlacement from 'ol/style/TextPlacement';
 import { ThemeService } from 'src/app/services/theme.service';
+import Geometry from 'ol/geom/Geometry';
+import { PoiMarker } from 'src/app/classes/features/cgeojson-feature';
+import { fromLonLat } from 'ol/proj';
 
 @Component({
   selector: 'webmapp-map',
@@ -91,6 +95,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   private _elevationChartPoint: Feature<Point>;
   private _elevationChartTrack: Feature<LineString>;
   private _destroyer: Subject<boolean> = new Subject<boolean>();
+
+  private _poisLayer: VectorLayer;
+  private _poiMarkers: PoiMarker[] = [];
 
   constructor(
     private _communicationService: CommunicationService,
@@ -199,10 +206,225 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           layer.changed();
         }
         this._updateView();
+
+        this._addPoisMarkers(selectedGeohubFeature.properties.related_pois);
       } catch (e) {
         this._selectedFeatureId = undefined;
       }
     }
+  }
+
+
+  private async _addPoisMarkers(poiCollection: Array<IGeojsonFeature>) {
+    this._poisLayer = this._createLayer(this._poisLayer, 9999);
+
+    
+      for (let i = this._poiMarkers?.length - 1; i >= 0; i--) {
+        const ov = this._poiMarkers[i];
+        if (
+          !poiCollection?.find(
+            (x) => x.properties.id + '' === ov.id
+          )
+        ) {
+          this._removeIconFromLayer(this._poisLayer, ov.icon);
+          this._poiMarkers.splice(i, 1);
+        }
+      }
+      if (poiCollection) {
+      for (const poi of poiCollection) {
+        if (
+          !this._poiMarkers?.find(
+            (x) =>
+              x.id === poi.properties.id + '' &&
+              poi.properties?.feature_image?.sizes
+          )
+        ) {
+          const { marker } = await this._createPoiCanvasIcon(poi);
+          this._addIconToLayer(this._poisLayer, marker.icon);
+          this._poiMarkers.push(marker);
+        }
+      }
+    }
+  }
+
+  private async _createPoiCanvasIcon(
+    poi: any,
+    geometry = null
+  ): Promise<{ marker: PoiMarker; style: Style }> {
+    const img = await this._createPoiCavasImage(poi);
+    const { iconFeature, style } = await this._createIconFeature(
+      geometry ? geometry :
+        [
+          poi.geometry.coordinates[0] as number,
+          poi.geometry.coordinates[1] as number,
+        ],
+      img,
+      46
+    );
+    return {
+      marker: {
+        poi,
+        icon: iconFeature,
+        id: poi.properties.id + '',
+      },
+      style,
+    };
+  }
+
+  private async _createIconFeature(
+    coordinates: number[],
+    img: HTMLImageElement,
+    size: number,
+    transparent: boolean = false,
+    anchor: number[] = [0.5, 0.5]
+  ): Promise<{ iconFeature: Feature<Geometry>; style: Style }> {
+    if (!coordinates) {return;}
+    const position = fromLonLat([
+      coordinates[0] as number,
+      coordinates[1] as number,
+    ]);
+
+    const iconFeature = new Feature({
+      geometry: new Point([position[0], position[1]]),
+    });
+    const style = new Style({
+      image: new Icon({
+        anchor,
+        img,
+        imgSize: [size, size],
+        opacity: transparent ? 0.5 : 1,
+      }),
+    });
+
+    iconFeature.setStyle(style);
+
+    return { iconFeature, style };
+  }
+
+
+  private async _createPoiCavasImage(
+    poi: IGeojsonFeature
+  ): Promise<HTMLImageElement> {
+    console.log("------- ~ MapComponent ~ poi", poi);
+    const htmlTextCanvas =
+      await this._createPoiMarkerHtmlForCanvas(poi);
+    return this._createCanvasForHtml(
+      htmlTextCanvas,
+      46
+    );
+  }
+
+  private async _createPoiMarkerHtmlForCanvas(value: IGeojsonFeature): Promise<string> {
+  console.log("------- ~ MapComponent ~ _createPoiMarkerHtmlForCanvas ~ value", value);
+
+    const img1b64: string | ArrayBuffer = await this._downloadBase64Img(value.properties?.feature_image?.sizes['108x137']);
+
+
+    let html = `
+    <div class="webmapp-map-poimarker-container" style="position: relative;width: 30px;height: 60px;">`;
+
+      html += `
+        <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style=" position: absolute;  width: 46px;  height: 46px;  left: 0px;  top: 0px;">
+          <circle opacity="0.2" cx="23" cy="23" r="23" fill="#2F9E44"/>
+          <rect x="5" y="5" width="36" height="36" rx="18" fill="url(#img)" stroke="white" stroke-width="2"/>
+          <defs>
+            <pattern height="100%" width="100%" patternContentUnits="objectBoundingBox" id="img">
+              <image height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="${img1b64}">
+              </image>
+            </pattern>
+          </defs>
+        </svg>`;
+    html += ` </div>`;
+
+    return html;
+  }
+
+  private async _downloadBase64Img(url): Promise<string | ArrayBuffer> {
+    const opt = {};
+    // if (this.platform.is('mobile')) {
+    //   opt = { mode: 'no-cors' };
+    // }
+    const data = await fetch(url, opt);
+    const blob = await data.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      try {
+        reader.onloadend = () => {
+          const base64data = reader.result;
+          resolve(base64data);
+        }
+      } catch (error) {
+        console.log("------- ~ getB64img ~ error", error);
+        resolve('');
+      }
+    });
+  }
+
+
+  private async _createCanvasForHtml(
+    html: string,
+    size: number
+  ): Promise<HTMLImageElement> {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const canvas = <HTMLCanvasElement>document.getElementById('canvas');
+    const ctx = canvas?.getContext('2d');
+
+    const canvasHtml =
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">` +
+      '<foreignObject width="100%" height="100%">' +
+      '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:40px">' +
+      html +
+      '</div>' +
+      '</foreignObject>' +
+      '</svg>';
+
+    const domUrl = window.URL; // || window.webkitURL || window;
+
+    const img = new Image();
+    const svg = new Blob([canvasHtml], {
+      type: 'image/svg+xml', //;charset=utf-8',
+    });
+    const url = domUrl.createObjectURL(svg);
+
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0);
+      domUrl.revokeObjectURL(url);
+    };
+
+    img.src = url;
+    img.crossOrigin = 'Anonymous';
+
+    return img;
+  }
+
+  private _createLayer(layer: VectorLayer, zIndex: number) {
+    if (!layer) {
+      layer = new VectorLayer({
+        source: new VectorSource({
+          features: [],
+        }),
+        updateWhileAnimating: true,
+        updateWhileInteracting: true,
+        zIndex,
+      });
+      this._map.addLayer(layer);
+    }
+    return layer;
+  }
+
+  private _addIconToLayer(layer: VectorLayer, icon: Feature<Geometry>) {
+    const source = layer.getSource();
+    layer.getSource().addFeature(icon);
+  }
+
+  private _removeIconFromLayer(layer: VectorLayer, icon: Feature<Geometry>) {
+    const source = layer.getSource();
+    if (source.hasFeature(icon)) {
+      source.removeFeature(icon);
+    }
+    // this._map.removeOverlay(cm.icon);
+    //cm.component.destroy();
   }
 
   private _initializeBaseLayers(): Array<TileLayer> {

@@ -13,7 +13,7 @@
   </ion-toolbar>
 
   <ion-content scrollY="true"class="wm-home-cardcontainer" *ngIf="!searchresults?.length">
-    <webmapp-card class="wm-home-card" *ngFor="let card of cards" [data]="card"> </webmapp-card>
+    <webmapp-card class="wm-home-card" *ngFor="let card of cards" [data]="card" (click)="searchCard(card)"> </webmapp-card>
   </ion-content>
 
   <ion-content scrollY="true"class="wm-home-cardcontainer" *ngIf="searchresults?.length">

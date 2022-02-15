@@ -69,6 +69,7 @@ export interface IGeojsonProperties {
       backward?: number;
     };
   };
+  related_pois?: IGeojsonFeature[];
 }
 
 /**

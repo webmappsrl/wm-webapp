@@ -10,7 +10,7 @@ import { GeohubService } from 'src/app/services/geohub.service';
 })
 export class HomeComponent implements OnInit {
 
-  @Output('searchId') searchIdEvent: EventEmitter<number> =  new EventEmitter<number>();
+  @Output('searchId') searchIdEvent: EventEmitter<number> = new EventEmitter<number>();
 
   public cards: CardData[] = [
     {
@@ -66,9 +66,12 @@ export class HomeComponent implements OnInit {
     this.searchresults = [];
   }
 
-  select(result: SearchResult){
-    console.log("------- ~ HomeComponent ~ select ~ result", result);
+  select(result: SearchResult) {
     this.searchIdEvent.emit(result.id);
+  }
+
+  searchCard(card: CardData) {
+    this.searchString = card.searchString;
   }
 
 }

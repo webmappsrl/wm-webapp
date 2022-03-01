@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import {
   AfterViewInit,
   Component,
@@ -9,7 +10,7 @@ import {
   ViewChild,
 } from '@angular/core';
 
-import { Subject } from 'rxjs';
+import {Subject} from 'rxjs';
 
 // ol imports
 import GeoJSON from 'ol/format/GeoJSON';
@@ -22,37 +23,37 @@ import View from 'ol/View';
 import XYZ from 'ol/source/XYZ';
 import ZoomControl from 'ol/control/Zoom';
 import ScaleLineControl from 'ol/control/ScaleLine';
-import { defaults as defaultInteractions, Extent } from 'ol/interaction.js';
+import {defaults as defaultInteractions, Extent} from 'ol/interaction.js';
 import Interaction from 'ol/interaction/Interaction';
 import SelectInteraction from 'ol/interaction/Select';
-import { getDistance } from 'ol/sphere.js';
+import {getDistance} from 'ol/sphere.js';
 import Feature from 'ol/Feature';
-import { MapService } from 'src/app/services/map.service';
+import {MapService} from 'src/app/services/map.service';
 import Style from 'ol/style/Style';
 import Icon from 'ol/style/Icon';
 import StrokeStyle from 'ol/style/Stroke';
 import FillStyle from 'ol/style/Fill';
 import CircleStyle from 'ol/style/Circle';
-import { CommunicationService } from 'src/app/services/communication.service';
-import { Collection, MapBrowserEvent } from 'ol';
+import {CommunicationService} from 'src/app/services/communication.service';
+import {Collection, MapBrowserEvent} from 'ol';
 import Layer from 'ol/layer/Layer';
-import { SelectEvent } from 'ol/interaction/Select';
-import { FeatureLike } from 'ol/Feature';
+import {SelectEvent} from 'ol/interaction/Select';
+import {FeatureLike} from 'ol/Feature';
 import Point from 'ol/geom/Point';
-import { GeohubService } from 'src/app/services/geohub.service';
-import { ILocation } from 'src/app/types/location';
-import { ITrackElevationChartHoverElements } from 'src/app/types/track-elevation-chart';
-import { CGeojsonLineStringFeature } from 'src/app/classes/features/cgeojson-line-string-feature';
+import {GeohubService} from 'src/app/services/geohub.service';
+import {ILocation} from 'src/app/types/location';
+import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
+import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import LineString from 'ol/geom/LineString';
-import { IGeojsonFeature, IGeojsonPoi, ILineString } from 'src/app/types/model';
+import {IGeojsonFeature, IGeojsonPoi, ILineString} from 'src/app/types/model';
 import TextStyle from 'ol/style/Text';
 import TextPlacement from 'ol/style/TextPlacement';
-import { ThemeService } from 'src/app/services/theme.service';
+import {ThemeService} from 'src/app/services/theme.service';
 import Geometry from 'ol/geom/Geometry';
-import { PoiMarker } from 'src/app/classes/features/cgeojson-feature';
-import { fromLonLat } from 'ol/proj';
+import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
+import {fromLonLat} from 'ol/proj';
 
 @Component({
   selector: 'webmapp-map',
@@ -69,17 +70,18 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this._updateView();
   }
   @Input('trackElevationChartElements') set trackElevationChartElements(
-    value: ITrackElevationChartHoverElements
+    value: ITrackElevationChartHoverElements,
   ) {
     this._drawTemporaryLocationFeature(value?.location, value?.track);
   }
-  @Output('feature-click') featureClick: EventEmitter<number> =
-    new EventEmitter<number>();
+  @Output('feature-click') featureClick: EventEmitter<number> = new EventEmitter<number>();
 
   @Input('start-view') startView: number[] = [10.4147, 43.7118, 9];
 
   @Input('trackId') set setTrackId(value) {
-    this.selectTrackId(value);
+    if (value > -1) {
+      this.selectTrackId(value);
+    }
   }
 
   public padding: Array<number> = [0, 0, 0, 0];
@@ -103,8 +105,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     private _communicationService: CommunicationService,
     private _geohubService: GeohubService,
     private _mapService: MapService,
-    private _themeService: ThemeService
-  ) { }
+    private _themeService: ThemeService,
+  ) {}
 
   async ngAfterViewInit() {
     if (!this.startView) {
@@ -112,10 +114,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
 
     this._view = new View({
-      center: this._mapService.coordsFromLonLat([
-        this.startView[0],
-        this.startView[1],
-      ]),
+      center: this._mapService.coordsFromLonLat([this.startView[0], this.startView[1]]),
       zoom: this.startView[2],
       maxZoom: 17,
       minZoom: 0,
@@ -129,8 +128,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     const baseLayers: Array<Layer> = this._initializeBaseLayers();
     this._dataLayers = await this._initializeDataLayers();
-    const interactions: Collection<Interaction> =
-      this._initializeMapInteractions(this._dataLayers);
+    const interactions: Collection<Interaction> = this._initializeMapInteractions(this._dataLayers);
 
     this._map = new Map({
       target: this.mapContainer.nativeElement,
@@ -151,10 +149,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
 
     this._selectInteraction.on('select', async (event: SelectEvent) => {
-
       const clickedFeature = event?.selected?.[0] ?? undefined;
-      const clickedFeatureId: number =
-        clickedFeature?.getProperties()?.id ?? undefined;
+      const clickedFeatureId: number = clickedFeature?.getProperties()?.id ?? undefined;
       this.selectTrackId(clickedFeatureId);
     });
 
@@ -167,9 +163,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
 
     this._map.on('pointermove', (event: MapBrowserEvent) => {
-      const features: Array<FeatureLike> = this._map.getFeaturesAtPixel(
-        event.pixel
-      );
+      const features: Array<FeatureLike> = this._map.getFeaturesAtPixel(event.pixel);
 
       if (features.length) {
         this._map.getTargetElement().style.cursor = 'pointer';
@@ -188,14 +182,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this._destroyer.next(true);
   }
 
-
   async selectTrackId(trackId: number) {
-    if (trackId) {
+    if (trackId && trackId > -1) {
       this._selectedFeatureId = trackId;
       try {
-        const selectedGeohubFeature = await this._geohubService.getEcTrack(
-          this._selectedFeatureId
-        );
+        const selectedGeohubFeature = await this._geohubService.getEcTrack(this._selectedFeatureId);
 
         this._selectedFeature = new GeoJSON({
           featureProjection: 'EPSG:3857',
@@ -214,32 +205,24 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-
   private async _addPoisMarkers(poiCollection: Array<IGeojsonFeature>) {
     this._poisLayer = this._createLayer(this._poisLayer, 9999);
 
-    
-      for (let i = this._poiMarkers?.length - 1; i >= 0; i--) {
-        const ov = this._poiMarkers[i];
-        if (
-          !poiCollection?.find(
-            (x) => x.properties.id + '' === ov.id
-          )
-        ) {
-          this._removeIconFromLayer(this._poisLayer, ov.icon);
-          this._poiMarkers.splice(i, 1);
-        }
+    for (let i = this._poiMarkers?.length - 1; i >= 0; i--) {
+      const ov = this._poiMarkers[i];
+      if (!poiCollection?.find(x => x.properties.id + '' === ov.id)) {
+        this._removeIconFromLayer(this._poisLayer, ov.icon);
+        this._poiMarkers.splice(i, 1);
       }
-      if (poiCollection) {
+    }
+    if (poiCollection) {
       for (const poi of poiCollection) {
         if (
           !this._poiMarkers?.find(
-            (x) =>
-              x.id === poi.properties.id + '' &&
-              poi.properties?.feature_image?.sizes
+            x => x.id === poi.properties.id + '' && poi.properties?.feature_image?.sizes,
           )
         ) {
-          const { marker } = await this._createPoiCanvasIcon(poi);
+          const {marker} = await this._createPoiCanvasIcon(poi);
           this._addIconToLayer(this._poisLayer, marker.icon);
           this._poiMarkers.push(marker);
         }
@@ -249,17 +232,15 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   private async _createPoiCanvasIcon(
     poi: any,
-    geometry = null
-  ): Promise<{ marker: PoiMarker; style: Style }> {
+    geometry = null,
+  ): Promise<{marker: PoiMarker; style: Style}> {
     const img = await this._createPoiCavasImage(poi);
-    const { iconFeature, style } = await this._createIconFeature(
-      geometry ? geometry :
-        [
-          poi.geometry.coordinates[0] as number,
-          poi.geometry.coordinates[1] as number,
-        ],
+    const {iconFeature, style} = await this._createIconFeature(
+      geometry
+        ? geometry
+        : [poi.geometry.coordinates[0] as number, poi.geometry.coordinates[1] as number],
       img,
-      46
+      46,
     );
     return {
       marker: {
@@ -276,13 +257,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     img: HTMLImageElement,
     size: number,
     transparent: boolean = false,
-    anchor: number[] = [0.5, 0.5]
-  ): Promise<{ iconFeature: Feature<Geometry>; style: Style }> {
-    if (!coordinates) {return;}
-    const position = fromLonLat([
-      coordinates[0] as number,
-      coordinates[1] as number,
-    ]);
+    anchor: number[] = [0.5, 0.5],
+  ): Promise<{iconFeature: Feature<Geometry>; style: Style}> {
+    if (!coordinates) {
+      return;
+    }
+    const position = fromLonLat([coordinates[0] as number, coordinates[1] as number]);
 
     const iconFeature = new Feature({
       geometry: new Point([position[0], position[1]]),
@@ -298,32 +278,26 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     iconFeature.setStyle(style);
 
-    return { iconFeature, style };
+    return {iconFeature, style};
   }
 
-
-  private async _createPoiCavasImage(
-    poi: IGeojsonFeature
-  ): Promise<HTMLImageElement> {
-    console.log("------- ~ MapComponent ~ poi", poi);
-    const htmlTextCanvas =
-      await this._createPoiMarkerHtmlForCanvas(poi);
-    return this._createCanvasForHtml(
-      htmlTextCanvas,
-      46
-    );
+  private async _createPoiCavasImage(poi: IGeojsonFeature): Promise<HTMLImageElement> {
+    console.log('------- ~ MapComponent ~ poi', poi);
+    const htmlTextCanvas = await this._createPoiMarkerHtmlForCanvas(poi);
+    return this._createCanvasForHtml(htmlTextCanvas, 46);
   }
 
   private async _createPoiMarkerHtmlForCanvas(value: IGeojsonFeature): Promise<string> {
-  console.log("------- ~ MapComponent ~ _createPoiMarkerHtmlForCanvas ~ value", value);
+    console.log('------- ~ MapComponent ~ _createPoiMarkerHtmlForCanvas ~ value', value);
 
-    const img1b64: string | ArrayBuffer = await this._downloadBase64Img(value.properties?.feature_image?.sizes['108x137']);
-
+    const img1b64: string | ArrayBuffer = await this._downloadBase64Img(
+      value.properties?.feature_image?.sizes['108x137'],
+    );
 
     let html = `
     <div class="webmapp-map-poimarker-container" style="position: relative;width: 30px;height: 60px;">`;
 
-      html += `
+    html += `
         <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style=" position: absolute;  width: 46px;  height: 46px;  left: 0px;  top: 0px;">
           <circle opacity="0.2" cx="23" cy="23" r="23" fill="#2F9E44"/>
           <rect x="5" y="5" width="36" height="36" rx="18" fill="url(#img)" stroke="white" stroke-width="2"/>
@@ -346,26 +320,22 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     // }
     const data = await fetch(url, opt);
     const blob = await data.blob();
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const reader = new FileReader();
       reader.readAsDataURL(blob);
       try {
         reader.onloadend = () => {
           const base64data = reader.result;
           resolve(base64data);
-        }
+        };
       } catch (error) {
-        console.log("------- ~ getB64img ~ error", error);
+        console.log('------- ~ getB64img ~ error', error);
         resolve('');
       }
     });
   }
 
-
-  private async _createCanvasForHtml(
-    html: string,
-    size: number
-  ): Promise<HTMLImageElement> {
+  private async _createCanvasForHtml(html: string, size: number): Promise<HTMLImageElement> {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const canvas = <HTMLCanvasElement>document.getElementById('canvas');
     const ctx = canvas?.getContext('2d');
@@ -478,17 +448,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
    *
    * @returns the created layer
    */
-  private async _initializeDataLayer(
-    layerId: string,
-    layerConfig: any
-  ): Promise<VectorTileLayer> {
+  private async _initializeDataLayer(layerId: string, layerConfig: any): Promise<VectorTileLayer> {
     if (!layerConfig.url) {
       return;
     }
 
-    const layerJson = await this._communicationService
-      .get(layerConfig.url)
-      .toPromise();
+    const layerJson = await this._communicationService.get(layerConfig.url).toPromise();
 
     if (!layerJson.tiles) {
       return;
@@ -545,21 +510,15 @@ export class MapComponent implements AfterViewInit, OnDestroy {
             }
 
             if (maxWidthPos === 0) {
-              strokeStyle.setWidth(
-                featureStyle.paint['line-width'].stops[maxWidthPos]?.[1] ?? 1
-              );
+              strokeStyle.setWidth(featureStyle.paint['line-width'].stops[maxWidthPos]?.[1] ?? 1);
             } else {
               const minWidth: number =
-                featureStyle.paint['line-width'].stops[maxWidthPos - 1]?.[1] ??
-                1;
+                featureStyle.paint['line-width'].stops[maxWidthPos - 1]?.[1] ?? 1;
               const maxWidth: number =
                 featureStyle.paint['line-width'].stops[maxWidthPos]?.[1] ?? 1;
-              const minZoom: number =
-                featureStyle.paint['line-width'].stops[maxWidthPos - 1][0];
-              const maxZoom: number =
-                featureStyle.paint['line-width'].stops[maxWidthPos][0];
-              const factor: number =
-                (currentZoom - minZoom) / (maxZoom - minZoom);
+              const minZoom: number = featureStyle.paint['line-width'].stops[maxWidthPos - 1][0];
+              const maxZoom: number = featureStyle.paint['line-width'].stops[maxWidthPos][0];
+              const factor: number = (currentZoom - minZoom) / (maxZoom - minZoom);
 
               strokeStyle.setWidth(minWidth + (maxWidth - minWidth) * factor);
             }
@@ -572,10 +531,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         });
 
         if (
-          (!featureSymbolStyle?.minzoom ||
-            featureSymbolStyle?.minzoom <= this._view.getZoom()) &&
-          (!featureSymbolStyle?.maxzoom ||
-            featureSymbolStyle?.maxzoom >= this._view.getZoom())
+          (!featureSymbolStyle?.minzoom || featureSymbolStyle?.minzoom <= this._view.getZoom()) &&
+          (!featureSymbolStyle?.maxzoom || featureSymbolStyle?.maxzoom >= this._view.getZoom())
         ) {
           // Apply symbol style
           let text: string = '';
@@ -583,8 +540,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
           while (mapping.length > 0) {
             if (mapping[0] === '{') {
-              const length: number =
-                mapping.indexOf('}') > 0 ? mapping.indexOf('}') - 1 : -1;
+              const length: number = mapping.indexOf('}') > 0 ? mapping.indexOf('}') - 1 : -1;
 
               if (length >= 0) {
                 const property: string = mapping.substring(1, length + 1);
@@ -593,9 +549,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
               }
             } else {
               const length: number =
-                mapping.indexOf('{') >= 0
-                  ? mapping.indexOf('{')
-                  : mapping.length;
+                mapping.indexOf('{') >= 0 ? mapping.indexOf('{') : mapping.length;
               text += mapping.substring(0, length);
               mapping = mapping.substring(length);
             }
@@ -604,21 +558,18 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           if (text) {
             const textStyle: TextStyle = new TextStyle({
               text,
-              font:
-                (featureSymbolStyle?.layout?.['text-size'] ?? '12') + 'px sans',
+              font: (featureSymbolStyle?.layout?.['text-size'] ?? '12') + 'px sans',
               placement:
                 featureSymbolStyle?.layout?.['symbol-placement'] &&
-                  [TextPlacement.LINE, TextPlacement.POINT].indexOf(
-                    featureSymbolStyle?.layout?.['symbol-placement']
-                  ) >= 0
+                [TextPlacement.LINE, TextPlacement.POINT].indexOf(
+                  featureSymbolStyle?.layout?.['symbol-placement'],
+                ) >= 0
                   ? featureSymbolStyle?.layout?.['symbol-placement']
                   : TextPlacement.LINE,
               textBaseline: 'bottom',
               maxAngle: Math.PI / 10,
               fill: new FillStyle({
-                color:
-                  featureSymbolStyle?.paint?.['text-color'] ??
-                  strokeStyle.getColor(),
+                color: featureSymbolStyle?.paint?.['text-color'] ?? strokeStyle.getColor(),
               }),
             });
 
@@ -641,7 +592,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
               new StrokeStyle({
                 width: 4,
                 color: 'rgba(226, 249, 0, 0.6)',
-              })
+              }),
             );
           }
 
@@ -664,9 +615,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
    *
    * @returns the collection of interactions
    */
-  private _initializeMapInteractions(
-    selectLayers: Array<Layer>
-  ): Collection<Interaction> {
+  private _initializeMapInteractions(selectLayers: Array<Layer>): Collection<Interaction> {
     const interactions = defaultInteractions({
       doubleClickZoom: true,
       dragPan: true,
@@ -713,16 +662,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
    */
   private _getFixedDistance(point1: ILocation, point2: ILocation): number {
     return (
-      getDistance(
-        [point1.longitude, point1.latitude],
-        [point2.longitude, point2.latitude]
-      ) / this._view.getResolution()
+      getDistance([point1.longitude, point1.latitude], [point2.longitude, point2.latitude]) /
+      this._view.getResolution()
     );
   }
 
   private _drawTemporaryLocationFeature(
     location?: ILocation,
-    track?: CGeojsonLineStringFeature
+    track?: CGeojsonLineStringFeature,
   ): void {
     if (location) {
       if (!this._elevationChartSource) {
@@ -733,7 +680,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       if (!this._elevationChartLayer) {
         this._elevationChartLayer = new VectorLayer({
           source: this._elevationChartSource,
-          style: (feature) => {
+          style: feature => {
             if (feature.getGeometry().getType() === 'Point') {
               return [
                 new Style({
@@ -763,10 +710,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
       if (location) {
         const pointGeometry: Point = new Point(
-          this._mapService.coordsFromLonLat([
-            location.longitude,
-            location.latitude,
-          ])
+          this._mapService.coordsFromLonLat([location.longitude, location.latitude]),
         );
 
         if (this._elevationChartPoint) {
@@ -778,9 +722,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
         if (track) {
           const trackGeometry: LineString = new LineString(
-            (track.geometry.coordinates as ILineString).map((value) =>
-              this._mapService.coordsFromLonLat(value)
-            )
+            (track.geometry.coordinates as ILineString).map(value =>
+              this._mapService.coordsFromLonLat(value),
+            ),
           );
           const trackColor: string = track?.properties?.color;
 
@@ -839,7 +783,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
             width: 10,
           }),
           zIndex: zIndex + 5,
-        })
+        }),
       );
     }
 
@@ -850,7 +794,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           width: strokeWidth * 2,
         }),
         zIndex: zIndex + 1,
-      })
+      }),
     );
 
     style.push(
@@ -862,7 +806,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           lineCap,
         }),
         zIndex: zIndex + 2,
-      })
+      }),
     );
 
     return style;

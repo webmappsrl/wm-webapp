@@ -1,10 +1,5 @@
 <ng-container *ngIf="(trackid$|async) as trackid">
-  <div
-    id="details-container"
-    [ngClass]="{
-    'details-container-visible': showMenu
-  }"
-  >
+  <div id="details-container" [class.details-container-visible]="(showMenu$|async)">
     <webmapp-track-details
       [id]="trackid"
       [hidden]="trackid <= 0"
@@ -20,19 +15,18 @@
   </div>
   <button
     class="webmapp-menubtn"
-    [ngClass]="{  'webmapp-menubtn-opened': showMenu}"
+    [class.webmapp-menubtn-opened]="(showMenu$|async)"
     type="button"
     title="menu"
     (click)="toggleMenu()"
   >
-    <ion-icon *ngIf="showMenu" name="caret-back-outline"></ion-icon>
-    <ion-icon *ngIf="!showMenu" name="caret-forward-outline"></ion-icon>
+    <ion-icon [attr.name]="caretOutLine$|async"></ion-icon>
   </button>
   <webmapp-map
     id="map-container"
     (feature-click)="toggleDetails($event)"
-    [padding]="mapPadding"
+    [padding]="mapPadding$|async"
     [trackId]="trackid"
-    [trackElevationChartElements]="trackElevationChartHoverElements"
+    [trackElevationChartElements]="trackElevationChartHoverElements$|async"
   ></webmapp-map>
 </ng-container>

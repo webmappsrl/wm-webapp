@@ -1,16 +1,16 @@
 /* eslint-disable max-len */
 import {
-  AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
   Input,
-  OnDestroy,
+  NgZone,
   Output,
   ViewChild,
 } from '@angular/core';
 
-import {Subject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 // ol imports
 import GeoJSON from 'ol/format/GeoJSON';
@@ -23,7 +23,7 @@ import View from 'ol/View';
 import XYZ from 'ol/source/XYZ';
 import ZoomControl from 'ol/control/Zoom';
 import ScaleLineControl from 'ol/control/ScaleLine';
-import {defaults as defaultInteractions, Extent} from 'ol/interaction.js';
+import {defaults as defaultInteractions} from 'ol/interaction.js';
 import Interaction from 'ol/interaction/Interaction';
 import SelectInteraction from 'ol/interaction/Select';
 import {getDistance} from 'ol/sphere.js';
@@ -47,26 +47,31 @@ import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import LineString from 'ol/geom/LineString';
-import {IGeojsonFeature, IGeojsonPoi, ILineString} from 'src/app/types/model';
+import {IGeojsonFeature, ILineString} from 'src/app/types/model';
 import TextStyle from 'ol/style/Text';
 import TextPlacement from 'ol/style/TextPlacement';
-import {ThemeService} from 'src/app/services/theme.service';
 import Geometry from 'ol/geom/Geometry';
 import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
 import {fromLonLat} from 'ol/proj';
 
+const initPadding = [0, 0, 0, 0];
+const zoomDuration = 200;
 @Component({
   selector: 'webmapp-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MapComponent implements AfterViewInit, OnDestroy {
+export class MapComponent {
   @ViewChild('mapContainer') mapContainer: ElementRef;
   @ViewChild('zoomContainer') zoomContainer: ElementRef;
   @ViewChild('scaleLineContainer') scaleLineContainer: ElementRef;
 
-  @Input('padding') set mapPadding(value: Array<number>) {
-    this.padding = value;
+  @Input('padding') set mapPadding(padding: number[]) {
+    this._padding$.next(padding);
+    if (padding != null && padding[3] != null) {
+      this.scaleLineStyle$.next(padding[3] - 10);
+    }
     this._updateView();
   }
   @Input('trackElevationChartElements') set trackElevationChartElements(
@@ -78,25 +83,28 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   @Input('start-view') startView: number[] = [10.4147, 43.7118, 9];
 
-  @Input('trackId') set setTrackId(value) {
-    if (value > -1) {
-      this.selectTrackId(value);
+  @Input('trackId') set setTrackId(trackid) {
+    if (trackid > -1) {
+      this.selectTrackId(trackid);
     }
   }
 
-  public padding: Array<number> = [0, 0, 0, 0];
+  scaleLineStyle$: BehaviorSubject<number> = new BehaviorSubject<number>(10);
+
+  private _padding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   private _view: View;
   private _map: Map;
   private _dataLayers: Array<VectorTileLayer>;
   private _selectedFeature: FeatureLike;
-  private _selectedFeatureId: number;
+  private _currentTrackid$: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(
+    null,
+  );
   private _selectInteraction: SelectInteraction;
   private _styleJson: any;
   private _elevationChartLayer: VectorLayer;
   private _elevationChartSource: VectorSource;
   private _elevationChartPoint: Feature<Point>;
   private _elevationChartTrack: Feature<LineString>;
-  private _destroyer: Subject<boolean> = new Subject<boolean>();
 
   private _poisLayer: VectorLayer;
   private _poiMarkers: PoiMarker[] = [];
@@ -105,10 +113,36 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     private _communicationService: CommunicationService,
     private _geohubService: GeohubService,
     private _mapService: MapService,
-    private _themeService: ThemeService,
-  ) {}
+    private _zone: NgZone,
+  ) {
+    this._zone.runOutsideAngular(() => this._initMap());
+  }
 
-  async ngAfterViewInit() {
+  async selectTrackId(trackId: number) {
+    if (trackId && trackId > -1) {
+      this._currentTrackid$.next(trackId);
+      try {
+        const selectedGeohubFeature = await this._geohubService.getEcTrack(
+          this._currentTrackid$.value,
+        );
+
+        this._selectedFeature = new GeoJSON({
+          featureProjection: 'EPSG:3857',
+        }).readFeatures(selectedGeohubFeature)[0];
+
+        this.featureClick.emit(this._currentTrackid$.value);
+        for (const layer of this._dataLayers) {
+          layer.changed();
+        }
+        this._addPoisMarkers(selectedGeohubFeature.properties.related_pois);
+        this._updateView();
+      } catch (e) {
+        this._currentTrackid$.next(null);
+      }
+    }
+  }
+
+  private async _initMap() {
     if (!this.startView) {
       this.startView = [10.4147, 43.7118, 9];
     }
@@ -121,11 +155,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       projection: 'EPSG:3857',
       constrainOnlyCenter: true,
       extent: this._mapService.extentFromLonLat([-180, -85, 180, 85]),
+      padding: this._padding$.value || undefined,
     });
-    if (this.padding) {
-      this._view.padding = this.padding;
-    }
-
+    this._view.fit(new Point(this._view.getCenter()), {
+      padding: this._padding$.value,
+      duration: zoomDuration,
+      maxZoom: this._view.getZoom(),
+    });
     const baseLayers: Array<Layer> = this._initializeBaseLayers();
     this._dataLayers = await this._initializeDataLayers();
     const interactions: Collection<Interaction> = this._initializeMapInteractions(this._dataLayers);
@@ -171,38 +207,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         this._map.getTargetElement().style.cursor = 'grab';
       }
     });
-
-    // TODO: figure out why this must be called inside a timeout
-    setTimeout(() => {
-      this._map.updateSize();
-    }, 1000);
-  }
-
-  ngOnDestroy() {
-    this._destroyer.next(true);
-  }
-
-  async selectTrackId(trackId: number) {
-    if (trackId && trackId > -1) {
-      this._selectedFeatureId = trackId;
-      try {
-        const selectedGeohubFeature = await this._geohubService.getEcTrack(this._selectedFeatureId);
-
-        this._selectedFeature = new GeoJSON({
-          featureProjection: 'EPSG:3857',
-        }).readFeatures(selectedGeohubFeature)[0];
-
-        this.featureClick.emit(this._selectedFeatureId);
-        for (const layer of this._dataLayers) {
-          layer.changed();
-        }
-        this._updateView();
-
-        this._addPoisMarkers(selectedGeohubFeature.properties.related_pois);
-      } catch (e) {
-        this._selectedFeatureId = undefined;
-      }
-    }
   }
 
   private async _addPoisMarkers(poiCollection: Array<IGeojsonFeature>) {
@@ -337,8 +341,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   private async _createCanvasForHtml(html: string, size: number): Promise<HTMLImageElement> {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const canvas = <HTMLCanvasElement>document.getElementById('canvas');
-    const ctx = canvas?.getContext('2d');
 
     const canvasHtml =
       `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">` +
@@ -358,7 +360,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     const url = domUrl.createObjectURL(svg);
 
     img.onload = () => {
-      ctx.drawImage(img, 0, 0);
       domUrl.revokeObjectURL(url);
     };
 
@@ -577,7 +578,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           }
         }
 
-        if (properties.id === this._selectedFeatureId) {
+        if (properties.id === this._currentTrackid$.value) {
           style.setZIndex(1000);
           const selectedStyle = new Style({
             stroke: new StrokeStyle({
@@ -641,13 +642,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     if (this._view) {
       if (this._selectedFeature) {
         this._view.fit(this._selectedFeature.getGeometry().getExtent(), {
-          padding: this.padding,
-          duration: 500,
+          padding: this._padding$.value,
+          duration: zoomDuration,
         });
       } else {
         this._view.fit(new Point(this._view.getCenter()), {
-          padding: this.padding,
-          duration: 500,
+          padding: this._padding$.value,
+          duration: zoomDuration,
           maxZoom: this._view.getZoom(),
         });
       }

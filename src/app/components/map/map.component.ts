@@ -6,11 +6,12 @@ import {
   EventEmitter,
   Input,
   NgZone,
+  OnDestroy,
   Output,
   ViewChild,
 } from '@angular/core';
 
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, from, Subscription} from 'rxjs';
 
 // ol imports
 import GeoJSON from 'ol/format/GeoJSON';
@@ -53,16 +54,25 @@ import TextPlacement from 'ol/style/TextPlacement';
 import Geometry from 'ol/geom/Geometry';
 import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
 import {fromLonLat} from 'ol/proj';
+import {filter, switchMap, tap} from 'rxjs/operators';
+import {Extent} from 'ol/extent';
 
 const initPadding = [0, 0, 0, 0];
-const zoomDuration = 200;
+const zoomDuration = 500;
+const startView = [10.4147, 43.7118, 9];
+const initExtent: Extent = [-180, -85, 180, 85];
+const maxZoom = 17;
+const minZoom = 0;
+const projection = 'EPSG:3857';
+const scaleUnits = 'metric';
+const scaleMinWidth = 50;
 @Component({
   selector: 'webmapp-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MapComponent {
+export class MapComponent implements OnDestroy {
   @ViewChild('mapContainer') mapContainer: ElementRef;
   @ViewChild('zoomContainer') zoomContainer: ElementRef;
   @ViewChild('scaleLineContainer') scaleLineContainer: ElementRef;
@@ -72,7 +82,11 @@ export class MapComponent {
     if (padding != null && padding[3] != null) {
       this.scaleLineStyle$.next(padding[3] - 10);
     }
-    this._updateView();
+    this._view.fit(new Point(this._view.getCenter()), {
+      padding: this._padding$.value,
+      duration: zoomDuration,
+      maxZoom: this._view.getZoom(),
+    });
   }
   @Input('trackElevationChartElements') set trackElevationChartElements(
     value: ITrackElevationChartHoverElements,
@@ -81,11 +95,11 @@ export class MapComponent {
   }
   @Output('feature-click') featureClick: EventEmitter<number> = new EventEmitter<number>();
 
-  @Input('start-view') startView: number[] = [10.4147, 43.7118, 9];
+  @Input('start-view') startView: number[] = startView;
 
   @Input('trackId') set setTrackId(trackid) {
     if (trackid > -1) {
-      this.selectTrackId(trackid);
+      this._currentTrackid$.next(trackid);
     }
   }
 
@@ -95,7 +109,8 @@ export class MapComponent {
   private _view: View;
   private _map: Map;
   private _dataLayers: Array<VectorTileLayer>;
-  private _selectedFeature: FeatureLike;
+  private _selectedFeature$: BehaviorSubject<FeatureLike | null> =
+    new BehaviorSubject<FeatureLike | null>(null);
   private _currentTrackid$: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(
     null,
   );
@@ -108,53 +123,55 @@ export class MapComponent {
 
   private _poisLayer: VectorLayer;
   private _poiMarkers: PoiMarker[] = [];
-
+  private _updateMapSub: Subscription = Subscription.EMPTY;
   constructor(
     private _communicationService: CommunicationService,
     private _geohubService: GeohubService,
     private _mapService: MapService,
     private _zone: NgZone,
   ) {
-    this._zone.runOutsideAngular(() => this._initMap());
+    this._zone.run(() => this._initMap());
+
+    this._updateMapSub = this._currentTrackid$
+      .pipe(
+        filter(trackid => trackid != null),
+        switchMap(trackid => from(this._geohubService.getEcTrack(trackid))),
+        tap(selectedGeohubFeature => {
+          this._selectedFeature$.next(
+            new GeoJSON({
+              featureProjection: 'EPSG:3857',
+            }).readFeatures(selectedGeohubFeature)[0],
+          );
+          this._addPoisMarkers(selectedGeohubFeature.properties.related_pois);
+        }),
+        tap(() => {
+          this.featureClick.emit(this._currentTrackid$.value);
+          for (const layer of this._dataLayers) {
+            layer.changed();
+          }
+        }),
+      )
+      .subscribe(() => {
+        this._view.fit(this._selectedFeature$.value.getGeometry().getExtent(), {
+          padding: this._padding$.value,
+          duration: zoomDuration,
+        });
+      });
   }
 
-  async selectTrackId(trackId: number) {
-    if (trackId && trackId > -1) {
-      this._currentTrackid$.next(trackId);
-      try {
-        const selectedGeohubFeature = await this._geohubService.getEcTrack(
-          this._currentTrackid$.value,
-        );
-
-        this._selectedFeature = new GeoJSON({
-          featureProjection: 'EPSG:3857',
-        }).readFeatures(selectedGeohubFeature)[0];
-
-        this.featureClick.emit(this._currentTrackid$.value);
-        for (const layer of this._dataLayers) {
-          layer.changed();
-        }
-        this._addPoisMarkers(selectedGeohubFeature.properties.related_pois);
-        this._updateView();
-      } catch (e) {
-        this._currentTrackid$.next(null);
-      }
-    }
+  ngOnDestroy(): void {
+    this._updateMapSub.unsubscribe();
   }
 
   private async _initMap() {
-    if (!this.startView) {
-      this.startView = [10.4147, 43.7118, 9];
-    }
-
     this._view = new View({
       center: this._mapService.coordsFromLonLat([this.startView[0], this.startView[1]]),
       zoom: this.startView[2],
-      maxZoom: 17,
-      minZoom: 0,
-      projection: 'EPSG:3857',
+      maxZoom,
+      minZoom,
+      projection,
       constrainOnlyCenter: true,
-      extent: this._mapService.extentFromLonLat([-180, -85, 180, 85]),
+      extent: this._mapService.extentFromLonLat(initExtent),
       padding: this._padding$.value || undefined,
     });
     this._view.fit(new Point(this._view.getCenter()), {
@@ -174,8 +191,8 @@ export class MapComponent {
           target: this.zoomContainer.nativeElement,
         }),
         new ScaleLineControl({
-          units: 'metric',
-          minWidth: 50,
+          units: scaleUnits,
+          minWidth: scaleMinWidth,
           target: this.scaleLineContainer.nativeElement,
         }),
       ],
@@ -187,7 +204,7 @@ export class MapComponent {
     this._selectInteraction.on('select', async (event: SelectEvent) => {
       const clickedFeature = event?.selected?.[0] ?? undefined;
       const clickedFeatureId: number = clickedFeature?.getProperties()?.id ?? undefined;
-      this.selectTrackId(clickedFeatureId);
+      this._currentTrackid$.next(clickedFeatureId);
     });
 
     this._map.on('pointerdrag', () => {
@@ -633,26 +650,6 @@ export class MapComponent {
     interactions.push(this._selectInteraction);
 
     return interactions;
-  }
-
-  /**
-   * Make the view fit a selected feature if available using the current padding
-   */
-  private _updateView(): void {
-    if (this._view) {
-      if (this._selectedFeature) {
-        this._view.fit(this._selectedFeature.getGeometry().getExtent(), {
-          padding: this._padding$.value,
-          duration: zoomDuration,
-        });
-      } else {
-        this._view.fit(new Point(this._view.getCenter()), {
-          padding: this._padding$.value,
-          duration: zoomDuration,
-          maxZoom: this._view.getZoom(),
-        });
-      }
-    }
   }
 
   /**

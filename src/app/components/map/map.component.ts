@@ -11,58 +11,56 @@ import {
   ViewChild,
 } from '@angular/core';
 
-import {BehaviorSubject, from, Subscription} from 'rxjs';
-
-// ol imports
-import GeoJSON from 'ol/format/GeoJSON';
-import Map from 'ol/Map';
-import MVT from 'ol/format/MVT';
-import TileLayer from 'ol/layer/Tile';
-import VectorTileLayer from 'ol/layer/VectorTile';
-import VectorTileSource from 'ol/source/VectorTile';
-import View from 'ol/View';
-import XYZ from 'ol/source/XYZ';
-import ZoomControl from 'ol/control/Zoom';
+import {Collection, MapBrowserEvent} from 'ol';
 import ScaleLineControl from 'ol/control/ScaleLine';
+import ZoomControl from 'ol/control/Zoom';
+import {Extent} from 'ol/extent';
+import Feature, {FeatureLike} from 'ol/Feature';
+import GeoJSON from 'ol/format/GeoJSON';
+import MVT from 'ol/format/MVT';
+import Geometry from 'ol/geom/Geometry';
+import LineString from 'ol/geom/LineString';
+import Point from 'ol/geom/Point';
 import {defaults as defaultInteractions} from 'ol/interaction.js';
 import Interaction from 'ol/interaction/Interaction';
-import SelectInteraction from 'ol/interaction/Select';
+import SelectInteraction, {SelectEvent} from 'ol/interaction/Select';
+import Layer from 'ol/layer/Layer';
+import TileLayer from 'ol/layer/Tile';
+import VectorLayer from 'ol/layer/Vector';
+import VectorTileLayer from 'ol/layer/VectorTile';
+import Map from 'ol/Map';
+import {fromLonLat} from 'ol/proj';
+import VectorSource from 'ol/source/Vector';
+import VectorTileSource from 'ol/source/VectorTile';
+import XYZ from 'ol/source/XYZ';
 import {getDistance} from 'ol/sphere.js';
-import Feature from 'ol/Feature';
-import {MapService} from 'src/app/services/map.service';
-import Style from 'ol/style/Style';
+import CircleStyle from 'ol/style/Circle';
+import FillStyle from 'ol/style/Fill';
 import Icon from 'ol/style/Icon';
 import StrokeStyle from 'ol/style/Stroke';
-import FillStyle from 'ol/style/Fill';
-import CircleStyle from 'ol/style/Circle';
-import {CommunicationService} from 'src/app/services/communication.service';
-import {Collection, MapBrowserEvent} from 'ol';
-import Layer from 'ol/layer/Layer';
-import {SelectEvent} from 'ol/interaction/Select';
-import {FeatureLike} from 'ol/Feature';
-import Point from 'ol/geom/Point';
-import {GeohubService} from 'src/app/services/geohub.service';
-import {ILocation} from 'src/app/types/location';
-import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
-import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import LineString from 'ol/geom/LineString';
-import {IGeojsonFeature, ILineString} from 'src/app/types/model';
+import Style from 'ol/style/Style';
 import TextStyle from 'ol/style/Text';
 import TextPlacement from 'ol/style/TextPlacement';
-import Geometry from 'ol/geom/Geometry';
-import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
-import {fromLonLat} from 'ol/proj';
+import View from 'ol/View';
+
+import {BehaviorSubject, from, Subscription} from 'rxjs';
 import {filter, switchMap, tap} from 'rxjs/operators';
-import {Extent} from 'ol/extent';
+
+import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
+import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
+import {CommunicationService} from 'src/app/services/communication.service';
+import {GeohubService} from 'src/app/services/geohub.service';
+import {MapService} from 'src/app/services/map.service';
+import {ILocation} from 'src/app/types/location';
+import {IGeojsonFeature, ILineString} from 'src/app/types/model';
+import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 
 const initPadding = [0, 0, 0, 0];
 const zoomDuration = 500;
 const startView = [10.4147, 43.7118, 9];
 const initExtent: Extent = [-180, -85, 180, 85];
-const maxZoom = 17;
-const minZoom = 0;
+const initMaxZoom = 17;
+const initMinZoom = 0;
 const projection = 'EPSG:3857';
 const scaleUnits = 'metric';
 const scaleMinWidth = 50;
@@ -167,8 +165,8 @@ export class MapComponent implements OnDestroy {
     this._view = new View({
       center: this._mapService.coordsFromLonLat([this.startView[0], this.startView[1]]),
       zoom: this.startView[2],
-      maxZoom,
-      minZoom,
+      maxZoom: initMaxZoom,
+      minZoom: initMinZoom,
       projection,
       constrainOnlyCenter: true,
       extent: this._mapService.extentFromLonLat(initExtent),

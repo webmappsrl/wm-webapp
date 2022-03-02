@@ -43,8 +43,8 @@ import TextStyle from 'ol/style/Text';
 import TextPlacement from 'ol/style/TextPlacement';
 import View from 'ol/View';
 
-import {BehaviorSubject, from, Subscription} from 'rxjs';
-import {filter, switchMap, tap} from 'rxjs/operators';
+import {BehaviorSubject, Subscription} from 'rxjs';
+import {filter, tap} from 'rxjs/operators';
 
 import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
@@ -91,15 +91,14 @@ export class MapComponent implements OnDestroy {
   ) {
     this._drawTemporaryLocationFeature(value?.location, value?.track);
   }
-  @Output('feature-click') featureClick: EventEmitter<number> = new EventEmitter<number>();
-
   @Input('start-view') startView: number[] = startView;
-
-  @Input('trackId') set setTrackId(trackid) {
-    if (trackid > -1) {
-      this._currentTrackid$.next(trackid);
+  @Input('track') set setTrack(track: CGeojsonLineStringFeature) {
+    if (track != null) {
+      this._currentTrack$.next(track);
     }
   }
+
+  @Output('feature-click') featureClick: EventEmitter<number> = new EventEmitter<number>();
 
   scaleLineStyle$: BehaviorSubject<number> = new BehaviorSubject<number>(10);
 
@@ -109,19 +108,18 @@ export class MapComponent implements OnDestroy {
   private _dataLayers: Array<VectorTileLayer>;
   private _selectedFeature$: BehaviorSubject<FeatureLike | null> =
     new BehaviorSubject<FeatureLike | null>(null);
-  private _currentTrackid$: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(
-    null,
-  );
+  private _currentTrack$: BehaviorSubject<CGeojsonLineStringFeature | null> =
+    new BehaviorSubject<CGeojsonLineStringFeature | null>(null);
   private _selectInteraction: SelectInteraction;
   private _styleJson: any;
   private _elevationChartLayer: VectorLayer;
   private _elevationChartSource: VectorSource;
   private _elevationChartPoint: Feature<Point>;
   private _elevationChartTrack: Feature<LineString>;
-
   private _poisLayer: VectorLayer;
   private _poiMarkers: PoiMarker[] = [];
   private _updateMapSub: Subscription = Subscription.EMPTY;
+
   constructor(
     private _communicationService: CommunicationService,
     private _geohubService: GeohubService,
@@ -130,10 +128,9 @@ export class MapComponent implements OnDestroy {
   ) {
     this._zone.run(() => this._initMap());
 
-    this._updateMapSub = this._currentTrackid$
+    this._updateMapSub = this._currentTrack$
       .pipe(
         filter(trackid => trackid != null),
-        switchMap(trackid => from(this._geohubService.getEcTrack(trackid))),
         tap(selectedGeohubFeature => {
           this._selectedFeature$.next(
             new GeoJSON({
@@ -143,7 +140,6 @@ export class MapComponent implements OnDestroy {
           this._addPoisMarkers(selectedGeohubFeature.properties.related_pois);
         }),
         tap(() => {
-          this.featureClick.emit(this._currentTrackid$.value);
           for (const layer of this._dataLayers) {
             layer.changed();
           }
@@ -202,7 +198,7 @@ export class MapComponent implements OnDestroy {
     this._selectInteraction.on('select', async (event: SelectEvent) => {
       const clickedFeature = event?.selected?.[0] ?? undefined;
       const clickedFeatureId: number = clickedFeature?.getProperties()?.id ?? undefined;
-      this._currentTrackid$.next(clickedFeatureId);
+      this.featureClick.emit(clickedFeatureId);
     });
 
     this._map.on('pointerdrag', () => {
@@ -301,13 +297,13 @@ export class MapComponent implements OnDestroy {
   }
 
   private async _createPoiCavasImage(poi: IGeojsonFeature): Promise<HTMLImageElement> {
-    console.log('------- ~ MapComponent ~ poi', poi);
+    // console.log('------- ~ MapComponent ~ poi', poi);
     const htmlTextCanvas = await this._createPoiMarkerHtmlForCanvas(poi);
     return this._createCanvasForHtml(htmlTextCanvas, 46);
   }
 
   private async _createPoiMarkerHtmlForCanvas(value: IGeojsonFeature): Promise<string> {
-    console.log('------- ~ MapComponent ~ _createPoiMarkerHtmlForCanvas ~ value', value);
+    // console.log('------- ~ MapComponent ~ _createPoiMarkerHtmlForCanvas ~ value', value);
 
     const img1b64: string | ArrayBuffer = await this._downloadBase64Img(
       value.properties?.feature_image?.sizes['108x137'],
@@ -348,7 +344,7 @@ export class MapComponent implements OnDestroy {
           resolve(base64data);
         };
       } catch (error) {
-        console.log('------- ~ getB64img ~ error', error);
+        // console.log('------- ~ getB64img ~ error', error);
         resolve('');
       }
     });
@@ -450,7 +446,7 @@ export class MapComponent implements OnDestroy {
 
     if (styleJson.sources) {
       this._styleJson = styleJson;
-      console.log(styleJson);
+      // console.log(styleJson);
       for (const i in styleJson.sources) {
         layers.push(await this._initializeDataLayer(i, styleJson.sources[i]));
       }
@@ -593,7 +589,10 @@ export class MapComponent implements OnDestroy {
           }
         }
 
-        if (properties.id === this._currentTrackid$.value) {
+        if (
+          this._currentTrack$.value != null &&
+          properties.id === this._currentTrack$.value.properties.id
+        ) {
           style.setZIndex(1000);
           const selectedStyle = new Style({
             stroke: new StrokeStyle({

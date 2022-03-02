@@ -6,20 +6,15 @@
       class="webmapp-track-details-header"
     ></ion-title>
     <ion-buttons slot="end">
-      <ion-button
-        class="webmapp-track-details-dismiss"
-        (click)="triggerDismiss()"
-      >
+      <ion-button class="webmapp-track-details-dismiss" (click)="triggerDismiss()">
         <ion-icon name="close"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content #content id="webmapp-track-details-content">
-
   <div class="webmapp-track-activity">
     <span *ngFor="let act of data?.activity">{{act.name  | WebmappTranslate}}</span>
-    
   </div>
 
   <div class="webmapp-track-title">
@@ -33,13 +28,14 @@
   >
   </webmapp-gallery>
 
-  <div  *ngIf="!data?.gallery?.length && data?.featureImage"
-      class="webmapp-track-picture">
-  <img [src]="data?.featureImage?.sizes?.['335x250'] ?? data?.featureImage?.sizes?.['400x200'] ?? data?.featureImage.url"    >
-  <button class="webmapp-track-picture-zoombutton" type="button" (click)="open()">
-    <ion-icon name="search-circle-outline"></ion-icon>
-    <ion-ripple-effect></ion-ripple-effect>
-  </button>
+  <div *ngIf="!data?.gallery?.length && data?.featureImage" class="webmapp-track-picture">
+    <img
+      [src]="data?.featureImage?.sizes?.['335x250'] ?? data?.featureImage?.sizes?.['400x200'] ?? data?.featureImage.url"
+    />
+    <button class="webmapp-track-picture-zoombutton" type="button" (click)="open()">
+      <ion-icon name="search-circle-outline"></ion-icon>
+      <ion-ripple-effect></ion-ripple-effect>
+    </button>
   </div>
 
   <webmapp-track-description
@@ -47,20 +43,14 @@
     [description]="data.description | WebmappTranslate"
   >
   </webmapp-track-description>
-  <webmapp-track-technical-data
-    [feature]="feature"
-    id="webmapp-track-details-technical-data"
-  >
+  <webmapp-track-technical-data [feature]="track" id="webmapp-track-details-technical-data">
   </webmapp-track-technical-data>
   <webmapp-track-elevation-chart
-    [feature]="feature"
+    [feature]="track"
     (hover)="onLocationHover($event)"
     id="webmapp-track-details-elevation-chart"
   >
   </webmapp-track-elevation-chart>
-  <webmapp-track-download-urls
-    [feature]="feature"
-    id="webmapp-track-details-download-urls"
-  >
+  <webmapp-track-download-urls [feature]="track" id="webmapp-track-details-download-urls">
   </webmapp-track-download-urls>
 </ion-content>

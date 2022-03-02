@@ -1,7 +1,7 @@
 <ng-container *ngIf="(trackid$|async) as trackid">
   <div id="details-container" [class.details-container-visible]="(showMenu$|async)">
     <webmapp-track-details
-      [id]="trackid"
+      [track]="track$|async"
       [hidden]="trackid <= 0"
       (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
       (dismiss)="toggleDetails()"
@@ -24,9 +24,9 @@
   </button>
   <webmapp-map
     id="map-container"
-    (feature-click)="toggleDetails($event)"
     [padding]="mapPadding$|async"
-    [trackId]="trackid"
+    [track]="track$|async"
     [trackElevationChartElements]="trackElevationChartHoverElements$|async"
+    (feature-click)="toggleDetails($event)"
   ></webmapp-map>
 </ng-container>

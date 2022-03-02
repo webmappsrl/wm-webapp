@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -6,23 +7,27 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { IonContent, ModalController } from '@ionic/angular';
-import { CGeojsonLineStringFeature } from 'src/app/classes/features/cgeojson-line-string-feature';
-import { GeohubService } from 'src/app/services/geohub.service';
-import { ILocaleString, IWmImage } from 'src/app/types/model';
-import { ITrackElevationChartHoverElements } from 'src/app/types/track-elevation-chart';
-import { ModalGalleryComponent } from './modal-gallery/modal-gallery.component';
+
+import {IonContent, ModalController} from '@ionic/angular';
+
+import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
+import {IGeojsonProperties} from 'src/app/types/model';
+import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
+
+import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
 
 @Component({
   selector: 'webmapp-track-details',
   templateUrl: './track-details.component.html',
   styleUrls: ['./track-details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TrackDetailsComponent implements OnInit {
   @ViewChild('content') content: IonContent;
 
-  @Input('id') set id(value: number) {
-    this._id = value;
+  @Input('track') set setTrack(track: CGeojsonLineStringFeature) {
+    this.track = track;
+    console.log(track);
     this._initializeFeature();
   }
 
@@ -32,22 +37,13 @@ export class TrackDetailsComponent implements OnInit {
   @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
 
   public feature: CGeojsonLineStringFeature;
-  public data: {
-    name?: string | ILocaleString;
-    description?: string | ILocaleString;
-    gallery?: Array<IWmImage>;
-    featureImage?: IWmImage;
-    activity?: any[];
-  };
+  public data: Partial<IGeojsonProperties>;
 
-  private _id: number;
+  track: CGeojsonLineStringFeature;
 
-  constructor(
-    private _geohubService: GeohubService,
-    private _modalController: ModalController
-  ) { }
+  constructor(private _modalController: ModalController) {}
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   onLocationHover(event: ITrackElevationChartHoverElements) {
     this.trackElevationChartHover.emit(event);
@@ -58,17 +54,17 @@ export class TrackDetailsComponent implements OnInit {
   }
 
   open() {
-      this._modalController
-        .create({
-          component: ModalGalleryComponent,
-          cssClass: 'modal-gallery-class',
-          componentProps: {
-            gallery: [this.data.featureImage],
-          },
-        })
-        .then((modal) => {
-          modal.present();
-        });
+    this._modalController
+      .create({
+        component: ModalGalleryComponent,
+        cssClass: 'modal-gallery-class',
+        componentProps: {
+          gallery: [this.data.featureImage],
+        },
+      })
+      .then(modal => {
+        modal.present();
+      });
   }
 
   /**
@@ -77,19 +73,19 @@ export class TrackDetailsComponent implements OnInit {
    * @returns
    */
   private async _initializeFeature(): Promise<void> {
-    if (!this._id) {
+    if (!this.track) {
       this.data = undefined;
       return;
     }
-    this.feature = await this._geohubService.getEcTrack(this._id);
 
     this.data = {};
-    if (this.feature?.properties) {
-      this.data.name = this.feature.properties?.name;
-      this.data.description = this.feature.properties?.description;
-      this.data.gallery = this.feature.properties?.image_gallery;
-      this.data.featureImage = this.feature.properties?.feature_image;
-      this.data.activity = this.feature.properties.taxonomy.activity;
+    if (this.track?.properties) {
+      this.data.name = this.track.properties?.name;
+      this.data.description = this.track.properties?.description;
+      this.data.gallery = this.track.properties?.image_gallery;
+      this.data.featureImage = this.track.properties?.feature_image;
+      this.data.activity = this.track.properties.taxonomy.activity;
+      this.data.related_pois = this.track.properties.related_pois;
     }
 
     if (this.content) {

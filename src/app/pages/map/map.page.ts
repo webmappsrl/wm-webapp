@@ -1,9 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 
-import {BehaviorSubject, Observable} from 'rxjs';
-import {filter, map, startWith} from 'rxjs/operators';
+import {BehaviorSubject, from, Observable} from 'rxjs';
+import {filter, map, startWith, switchMap} from 'rxjs/operators';
 
+import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
+import {GeohubService} from 'src/app/services/geohub.service';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 
 const menuOpenLeft = 420;
@@ -22,15 +24,24 @@ export class MapPage {
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
 
   readonly trackid$: Observable<number>;
+  readonly track$: Observable<CGeojsonLineStringFeature>;
 
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
 
-  constructor(private _route: ActivatedRoute, private _router: Router) {
+  constructor(
+    private _route: ActivatedRoute,
+    private _router: Router,
+    private _geohubService: GeohubService,
+  ) {
     this.trackid$ = this._route.queryParams.pipe(
       filter(params => params != null && params.track != null),
       map(params => +params.track),
       startWith(-1),
+    );
+    this.track$ = this.trackid$.pipe(
+      filter(trackid => trackid > -1),
+      switchMap(trackid => from(this._geohubService.getEcTrack(trackid))),
     );
 
     this.caretOutLine$ = this.showMenu$.pipe(

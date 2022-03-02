@@ -1,7 +1,7 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { IonSlides, ModalController } from '@ionic/angular';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {IonSlides, ModalController} from '@ionic/angular';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'webmapp-modal-gallery',
@@ -9,10 +9,10 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./modal-gallery.component.scss'],
 })
 export class ModalGalleryComponent implements OnInit, OnDestroy {
-
   @Input() gallery: Array<{
     src: string;
     caption?: string;
+    url?: string;
   }>;
   @ViewChild('gallerySlider') slider: IonSlides;
   public galleryOptions: any;
@@ -22,9 +22,7 @@ export class ModalGalleryComponent implements OnInit, OnDestroy {
 
   private _destroyer: Subject<any> = new Subject<any>();
 
-  constructor(
-    private _modalController: ModalController
-  ) {
+  constructor(private _modalController: ModalController) {
     this.isExpanded = false;
     this.isStart = true;
     this.isEnd = false;
@@ -32,7 +30,8 @@ export class ModalGalleryComponent implements OnInit, OnDestroy {
       slidesPerView: 1,
     };
 
-    if (1 == 1) { // || alleryAnimationType === "fade") {
+    if (1 == 1) {
+      // || alleryAnimationType === "fade") {
       this.galleryOptions.on = {
         beforeInit() {
           const swiper = this;
@@ -50,12 +49,14 @@ export class ModalGalleryComponent implements OnInit, OnDestroy {
         },
         setTranslate() {
           const swiper = this;
-          const { slides } = swiper;
+          const {slides} = swiper;
           for (let i = 0; i < slides.length; i += 1) {
             const $slideEl = swiper.slides.eq(i);
             const offset$$1 = $slideEl[0].swiperSlideOffset;
             let tx = -offset$$1;
-            if (!swiper.params.virtualTranslate) { tx -= swiper.translate; }
+            if (!swiper.params.virtualTranslate) {
+              tx -= swiper.translate;
+            }
             let ty = 0;
             if (!swiper.isHorizontal()) {
               ty = tx;
@@ -73,13 +74,17 @@ export class ModalGalleryComponent implements OnInit, OnDestroy {
         },
         setTransition(duration) {
           const swiper = this;
-          const { slides, $wrapperEl } = swiper;
+          const {slides, $wrapperEl} = swiper;
           slides.transition(duration);
           if (swiper.params.virtualTranslate && duration !== 0) {
             let eventTriggered = false;
             slides.transitionEnd(() => {
-              if (eventTriggered) { return; };
-              if (!swiper || swiper.destroyed) { return; };
+              if (eventTriggered) {
+                return;
+              }
+              if (!swiper || swiper.destroyed) {
+                return;
+              }
               eventTriggered = true;
               swiper.animating = false;
               const triggerEvents = ['webkitTransitionEnd', 'transitionend'];
@@ -95,27 +100,24 @@ export class ModalGalleryComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     setTimeout(() => {
-      this.slider.ionSlideTransitionEnd
-        .pipe(takeUntil(this._destroyer))
-        .subscribe(
-          (event) => {
-            this.slider.getActiveIndex().then((index) => {
-              this.isStart = index === 0 ? true : false;
-              this.isEnd = index === this.gallery.length - 1 ? true : false;
-              this.isExpanded = false;
-            });
-          },
-          (err) => {
-            console.warn(err);
-          }
-        );
+      this.slider.ionSlideTransitionEnd.pipe(takeUntil(this._destroyer)).subscribe(
+        event => {
+          this.slider.getActiveIndex().then(index => {
+            this.isStart = index === 0 ? true : false;
+            this.isEnd = index === this.gallery.length - 1 ? true : false;
+            this.isExpanded = false;
+          });
+        },
+        err => {
+          console.warn(err);
+        },
+      );
 
-        console.log("------- ~ ModalGalleryComponent ~ setTimeout ~ this.gallery", this.gallery);
+      console.log('------- ~ ModalGalleryComponent ~ setTimeout ~ this.gallery', this.gallery);
       if (this.gallery.length === 1) {
         this.isEnd = true;
       }
     }, 0);
-
   }
 
   next(): void {
@@ -137,5 +139,4 @@ export class ModalGalleryComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this._destroyer.next();
   }
-
 }

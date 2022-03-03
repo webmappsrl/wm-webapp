@@ -407,6 +407,7 @@ export class MapComponent implements OnDestroy {
       domUrl.revokeObjectURL(url);
     };
     img.src = url;
+    console.log(url);
     img.crossOrigin = 'Anonymous';
 
     return img;

@@ -27,8 +27,10 @@ export class TrackDetailsComponent implements OnInit {
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
 
   @Input('track') set setTrack(track: CGeojsonLineStringFeature) {
-    this.track = track;
-    this._initializeFeature();
+    if (track != null) {
+      this.track = track;
+      this._initializeFeature();
+    }
   }
 
   @Input('poi') set setPoi(id: number) {

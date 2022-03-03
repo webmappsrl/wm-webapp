@@ -43,11 +43,25 @@
     [description]="data.description | WebmappTranslate"
   >
   </webmapp-track-description>
+  <ion-card *ngIf="track && (track.properties.from || track.properties.to)">
+    <ion-card-header *ngIf="track.properties.from as from">
+      <ion-card-subtitle>inizio percorso</ion-card-subtitle>
+      <ion-card-title>{{from}}</ion-card-title>
+    </ion-card-header>
+    <ion-card-header *ngIf="track.properties.to as to">
+      <ion-card-subtitle>fine percorso</ion-card-subtitle>
+      <ion-card-title>{{to}}</ion-card-title>
+    </ion-card-header>
+  </ion-card>
+  <ion-text color="primary">
+    <h2 style="margin-left: 10px;">Punti di interesse</h2>
+  </ion-text>
   <webmapp-track-poi
     [track]="track"
     [poi]="poiId"
     (poi-click)="poiClick.emit($event)"
   ></webmapp-track-poi>
+
   <webmapp-track-technical-data [feature]="track" id="webmapp-track-details-technical-data">
   </webmapp-track-technical-data>
   <webmapp-track-elevation-chart

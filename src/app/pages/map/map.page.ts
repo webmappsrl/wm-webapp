@@ -28,6 +28,8 @@ export class MapPage {
 
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
+  currentPoiFromMap$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
+  currentPoiToMap$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
 
   constructor(
     private _route: ActivatedRoute,
@@ -51,6 +53,14 @@ export class MapPage {
 
   toggleDetails(trackid: number = -1) {
     this.updateUrl(trackid);
+  }
+
+  updateCurrentPoi(id) {
+    this.currentPoiFromMap$.next(id);
+  }
+
+  setCurrentPoi(id) {
+    this.currentPoiToMap$.next(id);
   }
 
   selectTrack(trackid: number = -1) {

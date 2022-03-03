@@ -14,6 +14,7 @@ import {
 import {Collection, MapBrowserEvent} from 'ol';
 import ScaleLineControl from 'ol/control/ScaleLine';
 import ZoomControl from 'ol/control/Zoom';
+import {stopPropagation} from 'ol/events/Event';
 import {Extent} from 'ol/extent';
 import Feature, {FeatureLike} from 'ol/Feature';
 import GeoJSON from 'ol/format/GeoJSON';
@@ -97,8 +98,17 @@ export class MapComponent implements OnDestroy {
       this._currentTrack$.next(track);
     }
   }
+  @Input('poi') set setPoi(id: number) {
+    const currentPoi = this._poiMarkers.find(p => +p.id === +id);
+    if (currentPoi != null) {
+      this._view.fit(currentPoi.icon.getGeometry() as any, {
+        duration: zoomDuration,
+      });
+    }
+  }
 
   @Output('feature-click') featureClick: EventEmitter<number> = new EventEmitter<number>();
+  @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
 
   scaleLineStyle$: BehaviorSubject<number> = new BehaviorSubject<number>(10);
 
@@ -198,7 +208,9 @@ export class MapComponent implements OnDestroy {
     this._selectInteraction.on('select', async (event: SelectEvent) => {
       const clickedFeature = event?.selected?.[0] ?? undefined;
       const clickedFeatureId: number = clickedFeature?.getProperties()?.id ?? undefined;
-      this.featureClick.emit(clickedFeatureId);
+      if (clickedFeatureId > -1) {
+        this.featureClick.emit(clickedFeatureId);
+      }
     });
 
     this._map.on('pointerdrag', () => {
@@ -210,19 +222,38 @@ export class MapComponent implements OnDestroy {
     });
 
     this._map.on('pointermove', (event: MapBrowserEvent) => {
-      const features: Array<FeatureLike> = this._map.getFeaturesAtPixel(event.pixel);
-
-      if (features.length) {
+      try {
+        const features: Array<FeatureLike> = this._map.getFeaturesAtPixel(event.pixel);
+        if (features.length) {
+          this._map.getTargetElement().style.cursor = 'pointer';
+        } else {
+          this._map.getTargetElement().style.cursor = 'grab';
+        }
+      } catch (e) {
         this._map.getTargetElement().style.cursor = 'pointer';
-      } else {
-        this._map.getTargetElement().style.cursor = 'grab';
       }
+    });
+    this._map.on('click', event => {
+      try {
+        event.map.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
+          const poiID = this._poiMarkers.map(poi => poi.id);
+          const currentID = +feature.getId() || -1;
+          if (poiID.find(x => +x === currentID)) {
+            this.poiClick.emit(currentID);
+            this._view.fit(feature.getGeometry() as any, {
+              duration: zoomDuration,
+            });
+          }
+        });
+      } catch (e) {
+        console.log(e);
+      }
+      stopPropagation(event);
     });
   }
 
   private async _addPoisMarkers(poiCollection: Array<IGeojsonFeature>) {
     this._poisLayer = this._createLayer(this._poisLayer, 9999);
-
     for (let i = this._poiMarkers?.length - 1; i >= 0; i--) {
       const ov = this._poiMarkers[i];
       if (!poiCollection?.find(x => x.properties.id + '' === ov.id)) {
@@ -257,6 +288,7 @@ export class MapComponent implements OnDestroy {
       img,
       46,
     );
+    iconFeature.setId(poi.properties.id);
     return {
       marker: {
         poi,
@@ -280,10 +312,12 @@ export class MapComponent implements OnDestroy {
     const position = fromLonLat([coordinates[0] as number, coordinates[1] as number]);
 
     const iconFeature = new Feature({
+      type: 'icon',
       geometry: new Point([position[0], position[1]]),
     });
     const style = new Style({
       image: new Icon({
+        crossOrigin: 'anonymous',
         anchor,
         img,
         imgSize: [size, size],
@@ -304,7 +338,6 @@ export class MapComponent implements OnDestroy {
 
   private async _createPoiMarkerHtmlForCanvas(value: IGeojsonFeature): Promise<string> {
     // console.log('------- ~ MapComponent ~ _createPoiMarkerHtmlForCanvas ~ value', value);
-
     const img1b64: string | ArrayBuffer = await this._downloadBase64Img(
       value.properties?.feature_image?.sizes['108x137'],
     );
@@ -373,7 +406,6 @@ export class MapComponent implements OnDestroy {
     img.onload = () => {
       domUrl.revokeObjectURL(url);
     };
-
     img.src = url;
     img.crossOrigin = 'Anonymous';
 
@@ -396,7 +428,6 @@ export class MapComponent implements OnDestroy {
   }
 
   private _addIconToLayer(layer: VectorLayer, icon: Feature<Geometry>) {
-    const source = layer.getSource();
     layer.getSource().addFeature(icon);
   }
 
@@ -446,7 +477,6 @@ export class MapComponent implements OnDestroy {
 
     if (styleJson.sources) {
       this._styleJson = styleJson;
-      // console.log(styleJson);
       for (const i in styleJson.sources) {
         layers.push(await this._initializeDataLayer(i, styleJson.sources[i]));
       }

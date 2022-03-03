@@ -24,11 +24,15 @@ import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
 })
 export class TrackDetailsComponent implements OnInit {
   @ViewChild('content') content: IonContent;
+  @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
 
   @Input('track') set setTrack(track: CGeojsonLineStringFeature) {
     this.track = track;
-    console.log(track);
     this._initializeFeature();
+  }
+
+  @Input('poi') set setPoi(id: number) {
+    this.poiId = id;
   }
 
   @Output('trackElevationChartHover')
@@ -40,6 +44,7 @@ export class TrackDetailsComponent implements OnInit {
   public data: Partial<IGeojsonProperties>;
 
   track: CGeojsonLineStringFeature;
+  poiId: number;
 
   constructor(private _modalController: ModalController) {}
 

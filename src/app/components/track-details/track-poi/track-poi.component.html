@@ -1,0 +1,14 @@
+<ion-list id="webmapp-track-poi">
+  <ng-container *ngFor="let item of poi">
+    <ion-item
+      button
+      (click)="selectPoi(item)"
+      fill="solid"
+      [ngClass]="{'selected': currentPoi !== null &&item.id === currentPoi.id}"
+    >
+      <ion-label>
+        {{ item.name | WebmappTranslate }}
+      </ion-label>
+    </ion-item>
+  </ng-container>
+</ion-list>

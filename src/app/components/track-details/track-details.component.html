@@ -43,6 +43,11 @@
     [description]="data.description | WebmappTranslate"
   >
   </webmapp-track-description>
+  <webmapp-track-poi
+    [track]="track"
+    [poi]="poiId"
+    (poi-click)="poiClick.emit($event)"
+  ></webmapp-track-poi>
   <webmapp-track-technical-data [feature]="track" id="webmapp-track-details-technical-data">
   </webmapp-track-technical-data>
   <webmapp-track-elevation-chart

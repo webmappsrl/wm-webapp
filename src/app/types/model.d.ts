@@ -1,4 +1,5 @@
-import { EGeojsonGeometryTypes } from './egeojson-geometry-types.enum';
+/* eslint-disable @typescript-eslint/naming-convention */
+import {EGeojsonGeometryTypes} from './egeojson-geometry-types.enum';
 
 export type IPoint = [number, number, number?];
 export type ILineString = Array<IPoint>;
@@ -11,12 +12,7 @@ export type IMultiPolygon = Array<Array<Array<IPoint>>>;
  */
 export interface IGeojsonGeometry {
   type: EGeojsonGeometryTypes;
-  coordinates:
-    | IPoint
-    | ILineString
-    | IMultiLineString
-    | IPolygon
-    | IMultiPolygon;
+  coordinates: IPoint | ILineString | IMultiLineString | IPolygon | IMultiPolygon;
 }
 
 export interface ILocaleString {
@@ -70,6 +66,7 @@ export interface IGeojsonProperties {
     };
   };
   related_pois?: IGeojsonFeature[];
+  related_url?: {[label: string]: string};
 }
 
 /**

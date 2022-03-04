@@ -1,75 +1,78 @@
-<ion-header>
-  <ion-toolbar class="webmapp-track-details-toolbar">
-    <ion-title
-      *ngIf="data?.name"
-      [innerHtml]="data.name | WebmappTranslate"
-      class="webmapp-track-details-header"
-    ></ion-title>
-    <ion-buttons slot="end">
-      <ion-button class="webmapp-track-details-dismiss" (click)="triggerDismiss()">
-        <ion-icon name="close"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-<ion-content #content id="webmapp-track-details-content">
-  <div class="webmapp-track-activity">
-    <span *ngFor="let act of data?.activity">{{act.name  | WebmappTranslate}}</span>
-  </div>
+<ng-container *ngIf="data != null">
+  <ion-header>
+    <ion-toolbar class="webmapp-track-details-toolbar">
+      <ion-title
+        *ngIf="data?.name"
+        [innerHtml]="data.name | WebmappTranslate"
+        class="webmapp-track-details-header"
+      ></ion-title>
+      <ion-buttons slot="end">
+        <ion-button class="webmapp-track-details-dismiss" (click)="triggerDismiss()">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content #content id="webmapp-track-details-content">
+    <div class="webmapp-track-activity">
+      <span *ngFor="let act of data?.activity">{{act.name  | WebmappTranslate}}</span>
+    </div>
 
-  <div class="webmapp-track-title">
-    {{data?.name  | WebmappTranslate}}
-  </div>
+    <div class="webmapp-track-title">
+      {{data?.name  | WebmappTranslate}}
+    </div>
 
-  <webmapp-gallery
-    *ngIf="data?.gallery"
-    [gallery]="data.gallery"
-    id="webmapp-track-details-gallery"
-  >
-  </webmapp-gallery>
+    <webmapp-gallery
+      *ngIf="data?.gallery"
+      [gallery]="data.gallery"
+      id="webmapp-track-details-gallery"
+    >
+    </webmapp-gallery>
 
-  <div *ngIf="!data?.gallery?.length && data?.featureImage" class="webmapp-track-picture">
-    <img
-      [src]="data?.featureImage?.sizes?.['335x250'] ?? data?.featureImage?.sizes?.['400x200'] ?? data?.featureImage.url"
-    />
-    <button class="webmapp-track-picture-zoombutton" type="button" (click)="open()">
-      <ion-icon name="search-circle-outline"></ion-icon>
-      <ion-ripple-effect></ion-ripple-effect>
-    </button>
-  </div>
+    <div *ngIf="!data?.gallery?.length && data?.featureImage" class="webmapp-track-picture">
+      <img
+        [src]="data?.featureImage?.sizes?.['335x250'] ?? data?.featureImage?.sizes?.['400x200'] ?? data?.featureImage.url"
+      />
+      <button class="webmapp-track-picture-zoombutton" type="button" (click)="open()">
+        <ion-icon name="search-circle-outline"></ion-icon>
+        <ion-ripple-effect></ion-ripple-effect>
+      </button>
+    </div>
 
-  <webmapp-track-description
-    *ngIf="data?.description"
-    [description]="data.description | WebmappTranslate"
-  >
-  </webmapp-track-description>
-  <ion-card *ngIf="track && (track.properties.from || track.properties.to)">
-    <ion-card-header *ngIf="track.properties.from as from">
-      <ion-card-subtitle>inizio percorso</ion-card-subtitle>
-      <ion-card-title>{{from}}</ion-card-title>
-    </ion-card-header>
-    <ion-card-header *ngIf="track.properties.to as to">
-      <ion-card-subtitle>fine percorso</ion-card-subtitle>
-      <ion-card-title>{{to}}</ion-card-title>
-    </ion-card-header>
-  </ion-card>
-  <ion-text color="primary">
-    <h2 style="margin-left: 10px;">Punti di interesse</h2>
-  </ion-text>
-  <webmapp-track-poi
-    [track]="track"
-    [poi]="poiId"
-    (poi-click)="poiClick.emit($event)"
-  ></webmapp-track-poi>
+    <webmapp-track-description
+      *ngIf="data?.description"
+      [description]="data.description | WebmappTranslate"
+    >
+    </webmapp-track-description>
+    <ion-card *ngIf="track && (track.properties.from || track.properties.to)">
+      <ion-card-header *ngIf="track.properties.from as from">
+        <ion-card-subtitle>inizio percorso</ion-card-subtitle>
+        <ion-card-title>{{from}}</ion-card-title>
+      </ion-card-header>
+      <ion-card-header *ngIf="track.properties.to as to">
+        <ion-card-subtitle>fine percorso</ion-card-subtitle>
+        <ion-card-title>{{to}}</ion-card-title>
+      </ion-card-header>
+    </ion-card>
+    <ion-text color="primary">
+      <h2 style="margin-left: 10px;">Punti di interesse</h2>
+    </ion-text>
+    <webmapp-track-poi
+      [track]="track"
+      [poi]="poiId"
+      (poi-click)="poiClick.emit($event)"
+    ></webmapp-track-poi>
 
-  <webmapp-track-technical-data [feature]="track" id="webmapp-track-details-technical-data">
-  </webmapp-track-technical-data>
-  <webmapp-track-elevation-chart
-    [feature]="track"
-    (hover)="onLocationHover($event)"
-    id="webmapp-track-details-elevation-chart"
-  >
-  </webmapp-track-elevation-chart>
-  <webmapp-track-download-urls [feature]="track" id="webmapp-track-details-download-urls">
-  </webmapp-track-download-urls>
-</ion-content>
+    <webmapp-track-technical-data [feature]="track" id="webmapp-track-details-technical-data">
+    </webmapp-track-technical-data>
+    <webmapp-track-elevation-chart
+      [feature]="track"
+      (hover)="onLocationHover($event)"
+      id="webmapp-track-details-elevation-chart"
+    >
+    </webmapp-track-elevation-chart>
+    <webmapp-track-related-urls [relatedUrls]="data.related_url"> </webmapp-track-related-urls>
+    <webmapp-track-download-urls [feature]="track" id="webmapp-track-details-download-urls">
+    </webmapp-track-download-urls>
+  </ion-content>
+</ng-container>

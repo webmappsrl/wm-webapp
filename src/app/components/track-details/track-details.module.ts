@@ -13,6 +13,7 @@ import {TrackDownloadUrlsComponent} from './track-download-urls/track-download-u
 import {TrackElevationChartComponent} from './track-elevation-chart/track-elevation-chart.component';
 import {TrackPoiComponent} from './track-poi/track-poi.component';
 import {TrackTechnicalDataComponent} from './track-technical-data/track-technical-data.component';
+import {TrackRelatedUrlsComponent} from './track-related-urls/track-related-urls.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import {TrackTechnicalDataComponent} from './track-technical-data/track-technica
     TrackPoiComponent,
     GalleryComponent,
     ModalGalleryComponent,
+    TrackRelatedUrlsComponent,
   ],
   imports: [CommonModule, FormsModule, IonicModule, PipeModule, SwiperModule],
   exports: [TrackDetailsComponent],

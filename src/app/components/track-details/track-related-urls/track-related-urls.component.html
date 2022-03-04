@@ -1,0 +1,10 @@
+<ion-list *ngIf="relatedUrls!= null">
+  <ion-list-header>
+    <ion-label>Link relativi</ion-label>
+  </ion-list-header>
+  <ion-item *ngFor="let item of relatedUrls|keyvalue">
+    <ion-label>
+      <a [href]="item.value" target="_blank">{{item.key}}</a>
+    </ion-label>
+  </ion-item>
+</ion-list>

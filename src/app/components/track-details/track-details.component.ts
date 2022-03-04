@@ -84,15 +84,8 @@ export class TrackDetailsComponent implements OnInit {
       this.data = undefined;
       return;
     }
-
-    this.data = {};
     if (this.track?.properties) {
-      this.data.name = this.track.properties?.name;
-      this.data.description = this.track.properties?.description;
-      this.data.gallery = this.track.properties?.image_gallery;
-      this.data.featureImage = this.track.properties?.feature_image;
-      this.data.activity = this.track.properties.taxonomy.activity;
-      this.data.related_pois = this.track.properties.related_pois;
+      this.data = {...this.track.properties};
     }
 
     if (this.content) {

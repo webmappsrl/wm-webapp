@@ -10,7 +10,8 @@
       "duration": "durata",
       "duration_forward": "durata di andata",
       "duration_backward": "durata di ritorno",
-      "distance": "lunghezza"
+      "distance": "lunghezza",
+      "difficulty": "difficoltà"
     },
     "downloadUrls": {
       "gpx": "scarica il tracciato GPX",

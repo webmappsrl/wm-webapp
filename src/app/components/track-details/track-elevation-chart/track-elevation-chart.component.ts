@@ -1,22 +1,16 @@
 import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
   Input,
-  OnInit,
   Output,
   ViewChild,
 } from '@angular/core';
-import {
-  Chart,
-  ChartDataset,
-  registerables,
-  Tick,
-  TooltipItem,
-  TooltipModel,
-} from 'chart.js';
-import { CLocation } from 'src/app/classes/clocation';
-import { CGeojsonLineStringFeature } from 'src/app/classes/features/cgeojson-line-string-feature';
+import {Chart, ChartDataset, registerables, Tick, TooltipItem, TooltipModel} from 'chart.js';
+import {CLocation} from 'src/app/classes/clocation';
+import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {
   TRACK_ELEVATION_CHART_SLOPE_EASY,
   TRACK_ELEVATION_CHART_SLOPE_HARD,
@@ -25,19 +19,20 @@ import {
   TRACK_ELEVATION_CHART_SLOPE_MEDIUM_HARD,
   TRACK_ELEVATION_CHART_SURFACE,
 } from 'src/app/constants/elevation-chart';
-import { MapService } from 'src/app/services/map.service';
-import { EGeojsonGeometryTypes } from 'src/app/types/egeojson-geometry-types.enum';
-import { ETrackElevationChartSurface } from 'src/app/types/etrack-elevation-chart.enum';
-import { ILocation } from 'src/app/types/location';
-import { ILineString } from 'src/app/types/model';
-import { ITrackElevationChartHoverElements } from 'src/app/types/track-elevation-chart';
+import {MapService} from 'src/app/services/map.service';
+import {EGeojsonGeometryTypes} from 'src/app/types/egeojson-geometry-types.enum';
+import {ETrackElevationChartSurface} from 'src/app/types/etrack-elevation-chart.enum';
+import {ILocation} from 'src/app/types/location';
+import {ILineString} from 'src/app/types/model';
+import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 
 @Component({
   selector: 'webmapp-track-elevation-chart',
   templateUrl: './track-elevation-chart.component.html',
   styleUrls: ['./track-elevation-chart.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TrackElevationChartComponent implements OnInit {
+export class TrackElevationChartComponent implements AfterViewInit {
   @ViewChild('chartCanvas') set content(content: ElementRef) {
     this._chartCanvas = content.nativeElement;
   }
@@ -77,18 +72,38 @@ export class TrackElevationChartComponent implements OnInit {
   private _chartCanvas: any;
   private _chart: Chart;
   private _chartValues: Array<ILocation>;
+  private _reverseSmoothedValues: {[idx: number]: number} = {};
+  private _smoothedValues: {[idx: number]: number} = {};
+  private _values: number[] = [];
 
   constructor(private _mapService: MapService) {
     Chart.register(...registerables);
   }
 
-  ngOnInit() {
-    // setTimeout(() => {
-    //   // this._feature = this._statusService.route;
-    //   this._setChart();
-    // }, 0);
+  ngAfterViewInit(): void {
+    this._setChart();
+  }
+  private _average(data) {
+    const sum = data.reduce((s, value) => s + value, 0);
+    const avg = sum / data.length;
+    return avg;
   }
 
+  private _smooth(values, alpha) {
+    if (alpha === 0) {
+      return values;
+    }
+    const weighted = this._average(values) * alpha;
+    const smoothed = [];
+    for (const i in values) {
+      const curr = values[i];
+      const prev = smoothed[+i - 1] || values[i];
+      const next = curr || values[0];
+      const improved = Number(this._average([weighted, prev, curr, next]).toFixed(0));
+      smoothed.push(improved);
+    }
+    return smoothed;
+  }
   /**
    * Calculate all the chart values and trigger the chart representation
    */
@@ -116,7 +131,7 @@ export class TrackElevationChartComponent implements OnInit {
       currentLocation = new CLocation(
         this._feature.geometry.coordinates[0][0],
         this._feature.geometry.coordinates[0][1],
-        this._feature.geometry.coordinates[0][2]
+        this._feature.geometry.coordinates[0][2],
       );
       this._chartValues.push(currentLocation);
       maxAlt = currentLocation.altitude;
@@ -127,7 +142,7 @@ export class TrackElevationChartComponent implements OnInit {
         surface,
         this._feature.geometry.coordinates[0][2],
         [currentLocation],
-        surfaceValues
+        surfaceValues,
       );
       if (!usedSurfaces.includes(surface)) {
         usedSurfaces.push(surface);
@@ -140,12 +155,9 @@ export class TrackElevationChartComponent implements OnInit {
         currentLocation = new CLocation(
           this._feature.geometry.coordinates[i][0],
           this._feature.geometry.coordinates[i][1],
-          this._feature.geometry.coordinates[i][2]
+          this._feature.geometry.coordinates[i][2],
         );
-        trackLength += this._mapService.getDistanceBetweenPoints(
-          previousLocation,
-          currentLocation
-        );
+        trackLength += this._mapService.getDistanceBetweenPoints(previousLocation, currentLocation);
 
         if (!maxAlt || maxAlt < currentLocation.altitude) {
           maxAlt = currentLocation.altitude;
@@ -160,84 +172,60 @@ export class TrackElevationChartComponent implements OnInit {
       currentLocation = new CLocation(
         this._feature.geometry.coordinates[0][0],
         this._feature.geometry.coordinates[0][1],
-        this._feature.geometry.coordinates[0][2]
+        this._feature.geometry.coordinates[0][2],
       );
 
       // Create the chart datasets
-      for (
-        let i = 1;
-        i < this._feature.geometry.coordinates.length && step <= steps;
-        i++
-      ) {
+      for (let i = 1; i < this._feature.geometry.coordinates.length && step <= steps; i++) {
         locations.push(currentLocation);
         previousLocation = currentLocation;
         currentLocation = new CLocation(
           this._feature.geometry.coordinates[i][0],
           this._feature.geometry.coordinates[i][1],
-          this._feature.geometry.coordinates[i][2]
+          this._feature.geometry.coordinates[i][2],
         );
         const localDistance: number = this._mapService.getDistanceBetweenPoints(
           previousLocation,
-          currentLocation
+          currentLocation,
         );
         currentDistance += localDistance;
 
         while (currentDistance >= (trackLength / steps) * step) {
           const difference: number =
             localDistance - (currentDistance - (trackLength / steps) * step);
-          const deltaLongitude: number =
-            currentLocation.longitude - previousLocation.longitude;
-          const deltaLatitude: number =
-            currentLocation.latitude - previousLocation.latitude;
-          const deltaAltitude: number =
-            currentLocation.altitude - previousLocation.altitude;
+          const deltaLongitude: number = currentLocation.longitude - previousLocation.longitude;
+          const deltaLatitude: number = currentLocation.latitude - previousLocation.latitude;
+          const deltaAltitude: number = currentLocation.altitude - previousLocation.altitude;
           const longitude: number =
-            previousLocation.longitude +
-            (deltaLongitude * difference) / localDistance;
+            previousLocation.longitude + (deltaLongitude * difference) / localDistance;
           const latitude: number =
-            previousLocation.latitude +
-            (deltaLatitude * difference) / localDistance;
+            previousLocation.latitude + (deltaLatitude * difference) / localDistance;
           const altitude: number = Math.round(
-            previousLocation.altitude +
-              (deltaAltitude * difference) / localDistance
+            previousLocation.altitude + (deltaAltitude * difference) / localDistance,
           );
           const currentSurface = Object.values(ETrackElevationChartSurface)[
-            Math.round(step / 10) %
-              (Object.keys(ETrackElevationChartSurface).length - 2)
+            Math.round(step / 10) % (Object.keys(ETrackElevationChartSurface).length - 2)
           ];
           const slope: number = parseFloat(
             (
-              ((altitude -
-                this._chartValues[this._chartValues.length - 1].altitude) *
-                100) /
+              ((altitude - this._chartValues[this._chartValues.length - 1].altitude) * 100) /
               (trackLength / steps)
-            ).toPrecision(1)
+            ).toPrecision(1),
           );
 
-          const intermediateLocation: ILocation = new CLocation(
-            longitude,
-            latitude,
-            altitude
-          );
+          const intermediateLocation: ILocation = new CLocation(longitude, latitude, altitude);
 
           this._chartValues.push(intermediateLocation);
 
           locations.push(intermediateLocation);
-          surfaceValues = this._setSurfaceValue(
-            currentSurface,
-            altitude,
-            locations,
-            surfaceValues
-          );
+          surfaceValues = this._setSurfaceValue(currentSurface, altitude, locations, surfaceValues);
           locations = [intermediateLocation];
           if (!usedSurfaces.includes(currentSurface)) {
             usedSurfaces.push(currentSurface);
           }
           slopeValues.push([altitude, slope]);
 
-          labels.push(
-            parseFloat(((step * trackLength) / (steps * 1000)).toFixed(1))
-          );
+          labels.push(parseFloat(((step * trackLength) / (steps * 1000)).toFixed(1)));
 
           step++;
         }
@@ -247,19 +235,31 @@ export class TrackElevationChartComponent implements OnInit {
       for (const usedSurface of usedSurfaces) {
         this.surfaces.push({
           id: usedSurface,
-          backgroundColor:
-            TRACK_ELEVATION_CHART_SURFACE[usedSurface].backgroundColor,
+          backgroundColor: TRACK_ELEVATION_CHART_SURFACE[usedSurface].backgroundColor,
         });
       }
-
+      const alpha = 0.9;
+      this._values = slopeValues.map(value => value[0]);
+      const smoothValues: Array<number> = this._smooth(
+        slopeValues.map(value => value[0]),
+        alpha,
+      );
+      this._values.forEach((oldValue, index) => {
+        const smoothValue = smoothValues[index];
+        this._smoothedValues[oldValue] =
+          this._smoothedValues[oldValue] != null ? this._smoothedValues[oldValue] : smoothValue;
+        this._reverseSmoothedValues[smoothValue] =
+          this._reverseSmoothedValues[smoothValue] != null
+            ? this._reverseSmoothedValues[smoothValue]
+            : oldValue;
+      });
+      const slopes: Array<number> = slopeValues.map(value => value[1]);
+      surfaceValues.forEach((_, i) => {
+        surfaceValues[i].values = surfaceValues[i].values.map(v => this._smoothedValues[v] || v);
+      });
+      const smoothSlopeValues = slopeValues.map((_, index) => [smoothValues[index], slopes[index]]);
       setTimeout(() => {
-        this._createChart(
-          labels,
-          trackLength,
-          maxAlt,
-          surfaceValues,
-          slopeValues
-        );
+        this._createChart(labels, trackLength, maxAlt, surfaceValues, smoothSlopeValues as any);
       }, 100);
     }
   }
@@ -280,7 +280,7 @@ export class TrackElevationChartComponent implements OnInit {
       surface: string;
       values: Array<number>;
       locations: Array<ILocation>;
-    }>
+    }>,
   ): Array<{
     surface: string;
     values: Array<number>;
@@ -321,14 +321,13 @@ export class TrackElevationChartComponent implements OnInit {
    */
   private _getSlopeChartSurfaceDataset(
     values: Array<number>,
-    surface: ETrackElevationChartSurface
+    surface: ETrackElevationChartSurface,
   ): ChartDataset<'line', any> {
     return {
       fill: true,
       cubicInterpolationMode: 'monotone',
       tension: 0.3,
-      backgroundColor:
-        'rgb(' + TRACK_ELEVATION_CHART_SURFACE[surface].backgroundColor + ')',
+      backgroundColor: 'rgb(' + TRACK_ELEVATION_CHART_SURFACE[surface].backgroundColor + ')',
       borderColor: 'rgba(255, 199, 132, 0)',
       pointRadius: 0,
       data: values,
@@ -377,15 +376,9 @@ export class TrackElevationChartComponent implements OnInit {
 
     const result: [string, string, string] = ['0', '0', '0'];
 
-    result[0] = Math.abs(
-      Math.round(min[0] + (max[0] - min[0]) * proportion)
-    ).toString(16);
-    result[1] = Math.abs(
-      Math.round(min[1] + (max[1] - min[1]) * proportion)
-    ).toString(16);
-    result[2] = Math.abs(
-      Math.round(min[2] + (max[2] - min[2]) * proportion)
-    ).toString(16);
+    result[0] = Math.abs(Math.round(min[0] + (max[0] - min[0]) * proportion)).toString(16);
+    result[1] = Math.abs(Math.round(min[1] + (max[1] - min[1]) * proportion)).toString(16);
+    result[2] = Math.abs(Math.round(min[2] + (max[2] - min[2]) * proportion)).toString(16);
 
     return (
       '#' +
@@ -405,37 +398,30 @@ export class TrackElevationChartComponent implements OnInit {
    * @returns
    */
   private _getSlopeChartSlopeDataset(
-    slopeValues: Array<[number, number]>
+    values: number[],
+    slopes: number[],
   ): Array<ChartDataset<'line', any>> {
-    const values: Array<number> = slopeValues.map((value) => value[0]);
-    const slopes: Array<number> = slopeValues.map((value) => value[1]);
-
     return [
       {
         fill: false,
         cubicInterpolationMode: 'monotone',
         tension: 0.3,
         backgroundColor: 'rgba(0, 0, 0, 0)',
-        borderColor: (context) => {
+        borderColor: context => {
           const chart = context.chart;
-          const { ctx, chartArea } = chart;
+          const {ctx, chartArea} = chart;
 
           if (!chartArea) {
             // This case happens on initial chart load
             return null;
           }
 
-          const gradient = ctx.createLinearGradient(
-            chartArea.left,
-            0,
-            chartArea.right,
-            0
-          );
+          const gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
 
           for (const i in slopes) {
             gradient.addColorStop(
               parseInt(i, 10) / slopes.length,
-              this._getSlopeGradientColor(slopes[i])
+              this._getSlopeGradientColor(slopes[i]),
             );
           }
 
@@ -481,39 +467,34 @@ export class TrackElevationChartComponent implements OnInit {
       values: Array<number>;
       locations: Array<ILocation>;
     }>,
-    slopeValues: Array<[number, number]>
+    slopeValues: Array<[number, number]>,
   ) {
     if (this._chartCanvas) {
       const surfaceDatasets: Array<ChartDataset> = [];
 
       this.slopeValues = slopeValues;
-
+      const values: Array<number> = slopeValues.map(value => value[0]);
+      const slopes: Array<number> = slopeValues.map(value => value[1]);
       for (const i in surfaceValues) {
         surfaceDatasets.push(
           this._getSlopeChartSurfaceDataset(
             surfaceValues[i].values,
-            surfaceValues[i].surface as ETrackElevationChartSurface
-          )
+            surfaceValues[i].surface as ETrackElevationChartSurface,
+          ),
         );
       }
-
+      const smoothedMaxAlt = Object.values(this._smoothedValues)
+        .filter(f => f != null)
+        .sort()
+        .reverse()[0];
       this._chart = new Chart(this._chartCanvas, {
         type: 'line',
         data: {
           labels,
-          datasets: [
-            ...this._getSlopeChartSlopeDataset(slopeValues),
-            ...surfaceDatasets,
-          ],
+          datasets: [...this._getSlopeChartSlopeDataset(values, slopes), ...surfaceDatasets],
         },
         options: {
-          events: [
-            'mousemove',
-            'click',
-            'touchstart',
-            'touchmove',
-            'pointermove',
-          ],
+          events: ['mousemove', 'click', 'touchstart', 'touchmove', 'pointermove'],
           layout: {
             padding: {
               top: 40,
@@ -539,11 +520,10 @@ export class TrackElevationChartComponent implements OnInit {
               titleMarginBottom: 0,
               callbacks: {
                 title: (items: Array<TooltipItem<'line'>>): string => {
-                  let result: string = items[0].raw + ' m';
+                  let result: string =
+                    (this._reverseSmoothedValues[+items[0].raw] || items[0].raw) + ' m';
 
-                  if (
-                    typeof slopeValues?.[items[0].dataIndex]?.[1] === 'number'
-                  ) {
+                  if (typeof slopeValues?.[items[0].dataIndex]?.[1] === 'number') {
                     result += ' / ' + slopeValues[items[0].dataIndex][1] + '%';
                   }
 
@@ -560,7 +540,7 @@ export class TrackElevationChartComponent implements OnInit {
               title: {
                 display: false,
               },
-              max: maxAltitude,
+              max: smoothedMaxAlt + 15,
               ticks: {
                 maxTicksLimit: 2,
                 maxRotation: 0,
@@ -571,8 +551,14 @@ export class TrackElevationChartComponent implements OnInit {
                 callback: (
                   tickValue: number | string,
                   index: number,
-                  ticks: Array<Tick>
+                  ticks: Array<Tick>,
                 ): string => {
+                  if (index > 0) {
+                    tickValue = this._values
+                      .filter(f => f != null)
+                      .sort()
+                      .reverse()[0];
+                  }
                   return tickValue + ' m';
                 },
               },
@@ -597,7 +583,7 @@ export class TrackElevationChartComponent implements OnInit {
                 callback: (
                   tickValue: number | string,
                   index: number,
-                  ticks: Array<Tick>
+                  ticks: Array<Tick>,
                 ): string => {
                   return labels[index] + ' km';
                 },
@@ -615,13 +601,10 @@ export class TrackElevationChartComponent implements OnInit {
         plugins: [
           {
             id: 'webmappTooltipPlugin',
-            beforeTooltipDraw: (chart) => {
+            beforeTooltipDraw: chart => {
               const tooltip: TooltipModel<'line'> = chart.tooltip;
 
-              if (
-                (tooltip as any)._active &&
-                (tooltip as any)._active.length > 0
-              ) {
+              if ((tooltip as any)._active && (tooltip as any)._active.length > 0) {
                 const activePoint = (tooltip as any)._active[0];
                 const ctx = chart.ctx;
                 const x = activePoint.element.x;
@@ -639,16 +622,14 @@ export class TrackElevationChartComponent implements OnInit {
 
                 if (
                   (tooltip as any)?._tooltipItems?.[0]?.dataIndex >= 0 &&
-                  typeof labels[
-                    (tooltip as any)?._tooltipItems?.[0]?.dataIndex
-                  ] !== 'undefined'
+                  typeof labels[(tooltip as any)?._tooltipItems?.[0]?.dataIndex] !== 'undefined'
                 ) {
                   const distance: string =
                     labels[(tooltip as any)._tooltipItems[0].dataIndex] + ' km';
                   const measure: TextMetrics = ctx.measureText(distance);
                   const minX: number = Math.max(
                     0,
-                    Math.min(chart.width - measure.width, x - measure.width / 2)
+                    Math.min(chart.width - measure.width, x - measure.width / 2),
                   );
                   const minY: number = bottomY;
 
@@ -661,19 +642,11 @@ export class TrackElevationChartComponent implements OnInit {
                 ctx.restore();
 
                 this.slope.selectedValue =
-                  slopeValues[
-                    (tooltip as any)?._tooltipItems?.[0]?.dataIndex
-                  ][1];
+                  slopeValues[(tooltip as any)?._tooltipItems?.[0]?.dataIndex][1];
                 this.slope.selectedPercentage =
-                  (Math.min(
-                    15,
-                    Math.max(0, Math.abs(this.slope.selectedValue))
-                  ) *
-                    100) /
-                  15;
+                  (Math.min(15, Math.max(0, Math.abs(this.slope.selectedValue))) * 100) / 15;
 
-                const index: number = (tooltip as any)._tooltipItems[0]
-                  .dataIndex;
+                const index: number = (tooltip as any)._tooltipItems[0].dataIndex;
                 let locations: Array<ILocation> = [];
                 let surfaceColor: string;
 
@@ -692,22 +665,18 @@ export class TrackElevationChartComponent implements OnInit {
                   }
                 }
 
-                const coordinates: ILineString = locations.map((location) => {
+                const coordinates: ILineString = locations.map(location => {
                   return [location.longitude, location.latitude];
                 });
-                const surfaceTrack: CGeojsonLineStringFeature =
-                  new CGeojsonLineStringFeature({
-                    type: EGeojsonGeometryTypes.LINE_STRING,
-                    coordinates,
-                  });
+                const surfaceTrack: CGeojsonLineStringFeature = new CGeojsonLineStringFeature({
+                  type: EGeojsonGeometryTypes.LINE_STRING,
+                  coordinates,
+                });
 
                 surfaceTrack.setProperty('color', surfaceColor);
 
                 this.hover.emit({
-                  location:
-                    this._chartValues[
-                      (tooltip as any)?._tooltipItems?.[0]?.dataIndex
-                    ],
+                  location: this._chartValues[(tooltip as any)?._tooltipItems?.[0]?.dataIndex],
                   track: surfaceTrack,
                 });
               } else {

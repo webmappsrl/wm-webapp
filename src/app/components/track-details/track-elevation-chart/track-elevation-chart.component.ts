@@ -8,6 +8,7 @@ import {
   OnInit,
   Output,
   ViewChild,
+  ViewEncapsulation,
 } from '@angular/core';
 import {Chart, ChartDataset, registerables, Tick, TooltipItem, TooltipModel} from 'chart.js';
 import {CLocation} from 'src/app/classes/clocation';
@@ -32,6 +33,7 @@ import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-c
   templateUrl: './track-elevation-chart.component.html',
   styleUrls: ['./track-elevation-chart.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class TrackElevationChartComponent implements AfterViewInit {
   @ViewChild('chartCanvas') set content(content: ElementRef) {

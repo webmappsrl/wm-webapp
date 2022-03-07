@@ -1,58 +1,65 @@
-.webmapp-track-details-header {
-  font-size: var(--font-md);
-}
+webmapp-track-details {
+  .webmapp-track-details-header {
+    font-size: var(--font-md);
+  }
 
-#webmapp-track-details-content {
-  width: 100%;
-  height: calc(100% - 56px);
-  font-family: var(--font-family-content);
-  #webmapp-track-details-technical-data,
-  #webmapp-track-details-download-urls,
-  #webmapp-track-details-gallery {
+  #webmapp-track-details-content {
     width: 100%;
-  }
-  #webmapp-track-details-gallery {
-    height: 300px;
-    max-height: 30vh;
-    display: block;
-  }
-  .webmapp-track-title {
-    color: var(--ion-color-dark);
-    margin: 15px 20px 20px;
-    font-size: var(--font-xxlg);
-    font-weight: 700;
-    font-family: var(--font-family-header);
-  }
-  .webmapp-track-activity {
-    color: var(--ion-color-primary);
-    text-transform: uppercase;
-    padding: 10px 20px 0;
-    font-weight: 700;
-    font-family: var(--font-family-header);
-  }
-  .webmapp-track-picture {
-    text-align: center;
-    position: relative;
-    width: 100%;
-    img {
+    height: calc(100% - 56px);
+    font-family: var(--font-family-content);
+    #webmapp-track-details-technical-data,
+    #webmapp-track-details-download-urls,
+    #webmapp-track-details-gallery {
       width: 100%;
     }
-    .webmapp-track-picture-zoombutton {
-      position: absolute;
-      width: 32px;
-      height: 32px;
-      border-radius: 16px;
-      background-color: #33333367;
-      color: var(--ion-color-light);
-      bottom: 5px;
-      right: 2px;
-      z-index: 100;
-      font-size: xx-large;
-      padding-top: 0px;
-      padding-left: 0px;
-      opacity: 0.5;
-      &:hover {
-        opacity: 1;
+    #webmapp-track-details-gallery {
+      height: 300px;
+      max-height: 30vh;
+      display: block;
+    }
+    .webmapp-track-title {
+      font-style: normal;
+      font-weight: 700;
+      line-height: 22px;
+      letter-spacing: 0em;
+      text-align: left;
+      margin: 15px 20px 20px;
+
+      color: var(--ion-color-dark);
+      font-size: var(--font-md);
+      font-family: var(--font-family-header);
+    }
+    .webmapp-track-activity {
+      color: var(--ion-color-primary);
+      text-transform: uppercase;
+      padding: 10px 20px 0;
+      font-weight: 700;
+      font-family: var(--font-family-header);
+    }
+    .webmapp-track-picture {
+      text-align: center;
+      position: relative;
+      width: 100%;
+      img {
+        width: 100%;
+      }
+      .webmapp-track-picture-zoombutton {
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        border-radius: 16px;
+        background-color: #33333367;
+        color: var(--ion-color-light);
+        bottom: 5px;
+        right: 2px;
+        z-index: 100;
+        font-size: xx-large;
+        padding-top: 0px;
+        padding-left: 0px;
+        opacity: 0.5;
+        &:hover {
+          opacity: 1;
+        }
       }
     }
   }

@@ -21,7 +21,12 @@
     <div class="webmapp-track-title">
       {{data?.name  | WebmappTranslate}}
     </div>
-
+    <webmapp-track-elevation-chart
+      [feature]="track"
+      (hover)="onLocationHover($event)"
+      id="webmapp-track-details-elevation-chart"
+    >
+    </webmapp-track-elevation-chart>
     <webmapp-gallery
       *ngIf="data?.gallery"
       [gallery]="data.gallery"
@@ -65,12 +70,7 @@
 
     <webmapp-track-technical-data [feature]="track" id="webmapp-track-details-technical-data">
     </webmapp-track-technical-data>
-    <webmapp-track-elevation-chart
-      [feature]="track"
-      (hover)="onLocationHover($event)"
-      id="webmapp-track-details-elevation-chart"
-    >
-    </webmapp-track-elevation-chart>
+
     <webmapp-track-related-urls [relatedUrls]="data.related_url"> </webmapp-track-related-urls>
     <webmapp-track-download-urls [feature]="track" id="webmapp-track-details-download-urls">
     </webmapp-track-download-urls>

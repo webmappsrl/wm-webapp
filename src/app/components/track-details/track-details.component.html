@@ -58,23 +58,19 @@
       </button>
     </div>
 
-    <webmapp-track-description
-      *ngIf="data?.description"
-      [description]="data.description | WebmappTranslate"
-    >
-    </webmapp-track-description>
     <div class="webmapp-track-activity">
       <span *ngFor="let act of data?.activity">{{act.name  | WebmappTranslate}}</span>
     </div>
-    <ion-text color="primary">
-      <h2 style="margin-left: 10px;">Punti di interesse</h2>
-    </ion-text>
     <webmapp-track-poi
       [track]="track"
       [poi]="poiId"
       (poi-click)="poiClick.emit($event)"
     ></webmapp-track-poi>
-
+    <webmapp-track-description
+      *ngIf="data?.description"
+      [description]="data.description | WebmappTranslate"
+    >
+    </webmapp-track-description>
     <webmapp-track-related-urls [relatedUrls]="data.related_url"> </webmapp-track-related-urls>
     <webmapp-track-download-urls [feature]="track" id="webmapp-track-details-download-urls">
     </webmapp-track-download-urls>

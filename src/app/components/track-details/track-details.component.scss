@@ -9,6 +9,14 @@ webmapp-track-details {
   font-style: normal;
   overflow: scroll;
 
+  .webmapp-title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: 0em;
+    text-align: left;
+  }
+
   .webmapp-track-details-header {
     font-size: var(--font-md);
   }

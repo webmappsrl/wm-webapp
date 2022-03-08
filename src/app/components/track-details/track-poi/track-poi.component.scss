@@ -1,6 +1,61 @@
-#webmapp-track-poi {
-  .selected {
-    color:var(--ion-color-primary);
-  }
+webmapp-track-poi {
+  .webmapp-track-poi-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: stretch;
+    .webmapp-track-poi-item {
+      flex: 0 1 auto;
+      align-self: auto;
 
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-content: stretch;
+      align-items: stretch;
+      margin-bottom: 10px;
+      height: 140px;
+      cursor: pointer;
+    }
+    .webmapp-track-poi-text {
+      margin-left: 5px;
+      flex: 1 1 auto;
+      align-self: auto;
+      height: 100%;
+
+      .webmapp-track-poi-title {
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 22px;
+        letter-spacing: 0em;
+        text-align: left;
+      }
+      .webmapp-track-poi-description {
+        height: 118px;
+        align-self: stretch;
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-line-clamp: 6;
+        -webkit-box-orient: vertical;
+      }
+    }
+    .webmapp-track-poi-img {
+      height: 100%;
+      width: 108px;
+      left: 0px;
+      top: 0px;
+      border-radius: 8px;
+      object-fit: cover;
+
+      flex: 0 1 auto;
+      align-self: auto;
+    }
+    .selected {
+      color: var(--ion-color-primary);
+    }
+  }
 }

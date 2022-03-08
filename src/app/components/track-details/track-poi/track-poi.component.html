@@ -1,14 +1,24 @@
-<ion-list id="webmapp-track-poi">
-  <ng-container *ngFor="let item of poi">
-    <ion-item
-      button
-      (click)="selectPoi(item)"
-      fill="solid"
-      [ngClass]="{'selected': currentPoi !== null &&item.id === currentPoi.id}"
-    >
-      <ion-label>
+<span class="webmapp-title">Punti di interesse</span>
+<div *ngFor="let item of poi" class="webmapp-track-poi-list">
+  <div
+    class="webmapp-track-poi-item"
+    (click)="selectPoi(item)"
+    [ngClass]="{'selected': currentPoi !== null &&item.id === currentPoi.id}"
+  >
+    <img class="webmapp-track-poi-img" [src]="item.feature_image.url" />
+    <div class="webmapp-track-poi-text">
+      <div class="webmapp-track-poi-title">
         {{ item.name | WebmappTranslate }}
-      </ion-label>
-    </ion-item>
-  </ng-container>
-</ion-list>
+      </div>
+      <div class="webmapp-track-poi-description">
+        It is a long established fact that a reader will be distracted by the readable content of a
+        page when looking at its layout. The point of using Lorem Ipsum is that it has a
+        more-or-less normal distribution of letters, as opposed to using 'Content here, content
+        here', making it look like readable English. Many desktop publishing packages and web page
+        editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will
+        uncover many web sites still in their infancy. Various versions have evolved over the years,
+        sometimes by accident, sometimes on purpose (injected humour and the like).
+      </div>
+    </div>
+  </div>
+</div>

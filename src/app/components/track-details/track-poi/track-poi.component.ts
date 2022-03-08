@@ -1,4 +1,11 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewEncapsulation,
+} from '@angular/core';
 
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {IGeojsonProperties} from 'src/app/types/model';
@@ -8,6 +15,7 @@ import {IGeojsonProperties} from 'src/app/types/model';
   templateUrl: './track-poi.component.html',
   styleUrls: ['./track-poi.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class TrackPoiComponent {
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();

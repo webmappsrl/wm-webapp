@@ -1,10 +1,19 @@
-<div *ngIf="technicalData?.length" id="webmapp-track-technical-data-container">
-  <div *ngFor="let item of technicalData" class="webmapp-track-technical-data-item">
-    <div class="webmapp-track-technical-data-label">
-      {{ item.label | WebmappTranslate }}
-    </div>
-    <div class="webmapp-track-technical-data-value">
-      {{ item.value | WebmappTranslate}}
-    </div>
+<ng-container *ngIf="technicalData?.length">
+  <span class="webmapp-track-technical-data-title">Dettagli tecnici</span>
+  <div class="webmapp-track-technical-data-container">
+    <ng-container *ngFor="let item of technicalData">
+      <div class="webmapp-track-technical-data-item">
+        <i className="{{item.icon}} webmapp-pageroute-tabdetail-icon"
+          ><span class="path1"></span><span class="path2"></span>
+        </i>
+        <div class="webmapp-track-technical-data-label">
+          {{ item.label | WebmappTranslate }}
+        </div>
+        <div class="webmapp-track-technical-data-value">
+          {{ item.value | WebmappTranslate}}
+        </div>
+      </div>
+      <hr />
+    </ng-container>
   </div>
-</div>
+</ng-container>

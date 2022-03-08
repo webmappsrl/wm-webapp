@@ -1,24 +1,68 @@
-#webmapp-track-technical-data-container {
-  width: 100%;
-  padding: 10px 20px;
-  display: flex;
-  flex-wrap: wrap;
-  font-family: var(--font-family-content);
-  .webmapp-track-technical-data-item {
-    flex-basis: 50%;
-    padding: 5px 0;
-    .webmapp-track-technical-data-label {
-      display: block;
-      width: 100%;
-      opacity: 0.7;
-      &::first-letter {
-        text-transform: capitalize;
+webmapp-track-technical-data {
+  display: block;
+  .webmapp-track-technical-data-title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: 0em;
+    text-align: left;
+  }
+
+  .webmapp-track-technical-data-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: flex-start;
+
+    .webmapp-track-technical-data-item {
+      flex: 1 1 auto;
+      align-self: stretch;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-content: stretch;
+      align-items: flex-start;
+      margin: 10px;
+
+      .webmapp-pageroute-tabdetail-icon {
+        color: var(--wm-color-primary);
+        padding: 0 5px;
+        flex: 0 1 auto;
+      }
+
+      .webmapp-track-technical-data-label {
+        flex: 1 1 auto;
+        &::first-letter {
+          text-transform: capitalize;
+        }
+        font-family: Inter;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px;
+        letter-spacing: 0em;
+        text-align: left;
+      }
+      .webmapp-track-technical-data-value {
+        flex: 0 1 auto;
+        display: inline-flex;
+        white-space: nowrap;
+
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px;
+        letter-spacing: 0em;
+        text-align: right;
       }
     }
-    .webmapp-track-technical-data-value {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
+    hr {
+      border: 0;
+      margin-top: 4px;
+      border-top: 1px solid #d2d2d2;
       width: 100%;
     }
   }

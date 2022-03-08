@@ -38,6 +38,7 @@
       </div>
     </div>
 
+    <span class="webmapp-title">Dettagli tecnici</span>
     <webmapp-track-technical-data [feature]="track" id="webmapp-track-details-technical-data">
     </webmapp-track-technical-data>
 
@@ -61,6 +62,31 @@
     <div class="webmapp-track-activity">
       <span *ngFor="let act of data?.activity">{{act.name  | WebmappTranslate}}</span>
     </div>
+
+    <div class="webmapp-title">Come arrivare</div>
+    <div class="webmapp-how-to-get">
+      <div class="webmapp-hot-to-get-box">
+        <i class="icon-outline-bike"></i>
+        <span class="webmapp-how-to-get-label">Bici muscolari</span>
+      </div>
+      <div class="webmapp-hot-to-get-box">
+        <i class="icon-outline-bike_1"></i>
+        <span class="webmapp-how-to-get-label">Bici elettriche</span>
+      </div>
+      <div class="webmapp-hot-to-get-box">
+        <i class="icon-outline-bike_2"></i>
+        <span class="webmapp-how-to-get-label">Mezzi pubblici</span>
+      </div>
+      <div class="webmapp-hot-to-get-box">
+        <i class="icon-outline-bike_4"></i>
+        <span class="webmapp-how-to-get-label">NCC</span>
+      </div>
+      <div class="webmapp-hot-to-get-box">
+        <i class="icon-outline-bike_3"></i>
+        <span class="webmapp-how-to-get-label">Auto Propria</span>
+      </div>
+    </div>
+    <div class="webmapp-title">Punti di interesse</div>
     <webmapp-track-poi
       [track]="track"
       [poi]="poiId"

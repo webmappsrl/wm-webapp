@@ -16,12 +16,68 @@ webmapp-track-details {
     letter-spacing: 0em;
     text-align: left;
   }
+  .webmapp-how-to-get {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    align-items: flex-start;
+    .webmapp-hot-to-get-box {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-start;
+      padding: 12px;
+      margin: 0 10px 10px 0;
 
+      width: 96px;
+      height: 98px;
+      left: 0px;
+      top: 1220px;
+
+      /* Primary light */
+
+      background: #d5ecda;
+      border-radius: 16px;
+      i {
+        position: static;
+        font-size: 32px;
+        left: 12px;
+        top: 12px;
+
+        /* Inside auto layout */
+
+        flex: none;
+        order: 0;
+        flex-grow: 0;
+        margin: 8px 0px;
+      }
+      .webmapp-how-to-get-label {
+        height: 34px;
+        width: 72px;
+        left: 12px;
+        top: 52px;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 17px;
+        letter-spacing: 0em;
+        text-align: left;
+      }
+    }
+  }
+
+  .webmapp-pageroute-tabdetail-icon {
+    color: var(--wm-color-primary);
+    padding: 0 5px;
+    flex: 0 1 auto;
+  }
   .webmapp-track-details-header {
     font-size: var(--font-md);
   }
   #webmapp-track-details-content > * {
-    padding-top: 30px;
+    padding-top: 20px;
   }
   #webmapp-track-details-content {
     width: 100%;

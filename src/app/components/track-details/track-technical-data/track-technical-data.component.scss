@@ -1,12 +1,5 @@
 webmapp-track-technical-data {
   display: block;
-  .webmapp-track-technical-data-title {
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 22px;
-    letter-spacing: 0em;
-    text-align: left;
-  }
 
   .webmapp-track-technical-data-container {
     display: flex;
@@ -26,12 +19,6 @@ webmapp-track-technical-data {
       align-content: stretch;
       align-items: flex-start;
       margin: 10px;
-
-      .webmapp-pageroute-tabdetail-icon {
-        color: var(--wm-color-primary);
-        padding: 0 5px;
-        flex: 0 1 auto;
-      }
 
       .webmapp-track-technical-data-label {
         flex: 1 1 auto;

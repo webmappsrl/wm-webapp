@@ -13,11 +13,7 @@
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
-  <ion-content #content id="webmapp-track-details-content">
-    <div class="webmapp-track-activity">
-      <span *ngFor="let act of data?.activity">{{act.name  | WebmappTranslate}}</span>
-    </div>
-
+  <div #content id="webmapp-track-details-content">
     <div class="webmapp-track-title">
       {{data?.name  | WebmappTranslate}}
     </div>
@@ -27,6 +23,24 @@
       id="webmapp-track-details-elevation-chart"
     >
     </webmapp-track-elevation-chart>
+
+    <div
+      *ngIf="track && (track.properties.from || track.properties.to)"
+      class="webmapp-track-details-from-to"
+    >
+      <div *ngIf="track.properties.from as from" class="webmapp-track-details-from-to-box">
+        <div>Punto di partenza</div>
+        <div>{{from}}</div>
+      </div>
+      <div *ngIf="track.properties.to as to" class="webmapp-track-details-from-to-box">
+        <div>Punto di arrivo</div>
+        <div>{{to}}</div>
+      </div>
+    </div>
+
+    <webmapp-track-technical-data [feature]="track" id="webmapp-track-details-technical-data">
+    </webmapp-track-technical-data>
+
     <webmapp-gallery
       *ngIf="data?.gallery"
       [gallery]="data.gallery"
@@ -49,16 +63,9 @@
       [description]="data.description | WebmappTranslate"
     >
     </webmapp-track-description>
-    <ion-card *ngIf="track && (track.properties.from || track.properties.to)">
-      <ion-card-header *ngIf="track.properties.from as from">
-        <ion-card-subtitle>inizio percorso</ion-card-subtitle>
-        <ion-card-title>{{from}}</ion-card-title>
-      </ion-card-header>
-      <ion-card-header *ngIf="track.properties.to as to">
-        <ion-card-subtitle>fine percorso</ion-card-subtitle>
-        <ion-card-title>{{to}}</ion-card-title>
-      </ion-card-header>
-    </ion-card>
+    <div class="webmapp-track-activity">
+      <span *ngFor="let act of data?.activity">{{act.name  | WebmappTranslate}}</span>
+    </div>
     <ion-text color="primary">
       <h2 style="margin-left: 10px;">Punti di interesse</h2>
     </ion-text>
@@ -68,11 +75,8 @@
       (poi-click)="poiClick.emit($event)"
     ></webmapp-track-poi>
 
-    <webmapp-track-technical-data [feature]="track" id="webmapp-track-details-technical-data">
-    </webmapp-track-technical-data>
-
     <webmapp-track-related-urls [relatedUrls]="data.related_url"> </webmapp-track-related-urls>
     <webmapp-track-download-urls [feature]="track" id="webmapp-track-details-download-urls">
     </webmapp-track-download-urls>
-  </ion-content>
+  </div>
 </ng-container>

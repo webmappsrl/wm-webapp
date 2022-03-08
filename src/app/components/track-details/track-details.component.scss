@@ -1,12 +1,26 @@
 webmapp-track-details {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-content: stretch;
+  align-items: flex-start;
+  background-color: white;
+  font-style: normal;
+  overflow: scroll;
+
   .webmapp-track-details-header {
     font-size: var(--font-md);
   }
-
+  #webmapp-track-details-content > * {
+    padding-top: 30px;
+  }
   #webmapp-track-details-content {
     width: 100%;
     height: calc(100% - 56px);
     font-family: var(--font-family-content);
+    padding: 15px 20px 20px;
+
     #webmapp-track-details-technical-data,
     #webmapp-track-details-download-urls,
     #webmapp-track-details-gallery {
@@ -18,16 +32,33 @@ webmapp-track-details {
       display: block;
     }
     .webmapp-track-title {
-      font-style: normal;
       font-weight: 700;
       line-height: 22px;
       letter-spacing: 0em;
       text-align: left;
-      margin: 15px 20px 20px;
 
       color: var(--ion-color-dark);
       font-size: var(--font-md);
       font-family: var(--font-family-header);
+    }
+    .webmapp-track-details-from-to {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-content: stretch;
+      align-items: flex-start;
+      .webmapp-track-details-from-to-box {
+        flex: 1 1 auto;
+        align-self: stretch;
+      }
+      .webmapp-track-details-from-to-box > :first-child {
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 20px;
+        letter-spacing: 0em;
+        text-align: left;
+      }
     }
     .webmapp-track-activity {
       color: var(--ion-color-primary);

@@ -4,7 +4,10 @@
     (click)="selectPoi(item)"
     [ngClass]="{'selected': currentPoi !== null &&item.id === currentPoi.id}"
   >
-    <img class="webmapp-track-poi-img" [src]="item.feature_image.url" />
+    <img
+      class="webmapp-track-poi-img"
+      [src]="item.feature_image !=null? item.feature_image.url:defaultPhotoPath"
+    />
     <div class="webmapp-track-poi-text">
       <div class="webmapp-track-poi-title">
         {{ item.name | WebmappTranslate }}

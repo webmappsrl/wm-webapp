@@ -32,6 +32,7 @@ export class TrackPoiComponent {
     }
   }
 
+  defaultPhotoPath = '/assets/icon/no-photo.svg';
   poi: IGeojsonProperties[] = [];
   currentPoi: IGeojsonProperties = null;
 

@@ -5,6 +5,7 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  OnInit,
   Output,
   ViewChild,
 } from '@angular/core';
@@ -72,9 +73,6 @@ export class TrackElevationChartComponent implements AfterViewInit {
   private _chartCanvas: any;
   private _chart: Chart;
   private _chartValues: Array<ILocation>;
-  private _reverseSmoothedValues: {[idx: number]: number} = {};
-  private _smoothedValues: {[idx: number]: number} = {};
-  private _values: number[] = [];
 
   constructor(private _mapService: MapService) {
     Chart.register(...registerables);
@@ -83,27 +81,7 @@ export class TrackElevationChartComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this._setChart();
   }
-  private _average(data) {
-    const sum = data.reduce((s, value) => s + value, 0);
-    const avg = sum / data.length;
-    return avg;
-  }
 
-  private _smooth(values, alpha) {
-    if (alpha === 0) {
-      return values;
-    }
-    const weighted = this._average(values) * alpha;
-    const smoothed = [];
-    for (const i in values) {
-      const curr = values[i];
-      const prev = smoothed[+i - 1] || values[i];
-      const next = curr || values[0];
-      const improved = Number(this._average([weighted, prev, curr, next]).toFixed(0));
-      smoothed.push(improved);
-    }
-    return smoothed;
-  }
   /**
    * Calculate all the chart values and trigger the chart representation
    */
@@ -238,28 +216,9 @@ export class TrackElevationChartComponent implements AfterViewInit {
           backgroundColor: TRACK_ELEVATION_CHART_SURFACE[usedSurface].backgroundColor,
         });
       }
-      const alpha = 0.9;
-      this._values = slopeValues.map(value => value[0]);
-      const smoothValues: Array<number> = this._smooth(
-        slopeValues.map(value => value[0]),
-        alpha,
-      );
-      this._values.forEach((oldValue, index) => {
-        const smoothValue = smoothValues[index];
-        this._smoothedValues[oldValue] =
-          this._smoothedValues[oldValue] != null ? this._smoothedValues[oldValue] : smoothValue;
-        this._reverseSmoothedValues[smoothValue] =
-          this._reverseSmoothedValues[smoothValue] != null
-            ? this._reverseSmoothedValues[smoothValue]
-            : oldValue;
-      });
-      const slopes: Array<number> = slopeValues.map(value => value[1]);
-      surfaceValues.forEach((_, i) => {
-        surfaceValues[i].values = surfaceValues[i].values.map(v => this._smoothedValues[v] || v);
-      });
-      const smoothSlopeValues = slopeValues.map((_, index) => [smoothValues[index], slopes[index]]);
+
       setTimeout(() => {
-        this._createChart(labels, trackLength, maxAlt, surfaceValues, smoothSlopeValues as any);
+        this._createChart(labels, trackLength, maxAlt, surfaceValues, slopeValues);
       }, 100);
     }
   }
@@ -398,9 +357,11 @@ export class TrackElevationChartComponent implements AfterViewInit {
    * @returns
    */
   private _getSlopeChartSlopeDataset(
-    values: number[],
-    slopes: number[],
+    slopeValues: Array<[number, number]>,
   ): Array<ChartDataset<'line', any>> {
+    const values: Array<number> = slopeValues.map(value => value[0]);
+    const slopes: Array<number> = slopeValues.map(value => value[1]);
+
     return [
       {
         fill: false,
@@ -473,8 +434,7 @@ export class TrackElevationChartComponent implements AfterViewInit {
       const surfaceDatasets: Array<ChartDataset> = [];
 
       this.slopeValues = slopeValues;
-      const values: Array<number> = slopeValues.map(value => value[0]);
-      const slopes: Array<number> = slopeValues.map(value => value[1]);
+
       for (const i in surfaceValues) {
         surfaceDatasets.push(
           this._getSlopeChartSurfaceDataset(
@@ -483,15 +443,12 @@ export class TrackElevationChartComponent implements AfterViewInit {
           ),
         );
       }
-      const smoothedMaxAlt = Object.values(this._smoothedValues)
-        .filter(f => f != null)
-        .sort()
-        .reverse()[0];
+
       this._chart = new Chart(this._chartCanvas, {
         type: 'line',
         data: {
           labels,
-          datasets: [...this._getSlopeChartSlopeDataset(values, slopes), ...surfaceDatasets],
+          datasets: [...this._getSlopeChartSlopeDataset(slopeValues), ...surfaceDatasets],
         },
         options: {
           events: ['mousemove', 'click', 'touchstart', 'touchmove', 'pointermove'],
@@ -520,8 +477,7 @@ export class TrackElevationChartComponent implements AfterViewInit {
               titleMarginBottom: 0,
               callbacks: {
                 title: (items: Array<TooltipItem<'line'>>): string => {
-                  let result: string =
-                    (this._reverseSmoothedValues[+items[0].raw] || items[0].raw) + ' m';
+                  let result: string = items[0].raw + ' m';
 
                   if (typeof slopeValues?.[items[0].dataIndex]?.[1] === 'number') {
                     result += ' / ' + slopeValues[items[0].dataIndex][1] + '%';
@@ -540,7 +496,7 @@ export class TrackElevationChartComponent implements AfterViewInit {
               title: {
                 display: false,
               },
-              max: smoothedMaxAlt + 15,
+              max: maxAltitude,
               ticks: {
                 maxTicksLimit: 2,
                 maxRotation: 0,
@@ -553,12 +509,6 @@ export class TrackElevationChartComponent implements AfterViewInit {
                   index: number,
                   ticks: Array<Tick>,
                 ): string => {
-                  if (index > 0) {
-                    tickValue = this._values
-                      .filter(f => f != null)
-                      .sort()
-                      .reverse()[0];
-                  }
                   return tickValue + ' m';
                 },
               },
@@ -688,5 +638,26 @@ export class TrackElevationChartComponent implements AfterViewInit {
         ],
       });
     }
+  }
+
+  private _smooth(values, alpha) {
+    const _average = data => {
+      const sum = data.reduce((s, value) => s + value, 0);
+      const avg = sum / data.length;
+      return avg;
+    };
+    if (alpha === 0) {
+      return values;
+    }
+    const weighted = _average(values) * alpha;
+    const smoothed = [];
+    for (const i in values) {
+      const curr = values[i];
+      const prev = smoothed[+i - 1] || values[i];
+      const next = curr || values[0];
+      const improved = Number(_average([weighted, prev, curr, next]).toFixed(0));
+      smoothed.push(improved);
+    }
+    return smoothed;
   }
 }

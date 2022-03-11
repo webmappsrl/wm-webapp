@@ -9,6 +9,15 @@
     [src]="poiProperties.feature_image !=null? poiProperties.feature_image.url:defaultPhotoPath"
     (click)="toggleImage()"
   />
+  <span class="webmapp-poi-popup-header">
+    <button class="webmapp-poi-popup-left" (click)="prevEVT.emit()">
+      <i class="icon-outline-arrow-left"></i>
+    </button>
+    <p class="webmapp-poi-popup-title">{{poiProperties.name|WebmappTranslate}}</p>
+    <button class="webmapp-poi-popup-right" (click)="nextEVT.emit()">
+      <i class="icon-outline-arrow-right"></i>
+    </button>
+  </span>
   <div class="webmapp-poi-popup-btns">
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.address">
       <i class="webmapp-icon icon-fill-pin"></i>
@@ -36,9 +45,6 @@
     </div>
   </div>
   <div class="webmapp-poi-popup-text">
-    <span class="webmapp-poi-popup-title">
-      {{poiProperties.name|WebmappTranslate}}
-    </span>
     <p>
       {{poiProperties.description|WebmappTranslate}}
     </p>

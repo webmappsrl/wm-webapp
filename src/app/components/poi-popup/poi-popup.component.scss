@@ -13,6 +13,7 @@ webmapp-poi-popup {
   transition: all 500ms;
 
   display: flex;
+  flex: 1;
   flex-direction: column;
   flex-wrap: nowrap;
   justify-content: flex-start;
@@ -21,6 +22,43 @@ webmapp-poi-popup {
   > * {
     padding: 10px;
   }
+  .webmapp-poi-popup-img {
+    width: 100%;
+    object-fit: cover;
+    padding: 10px;
+    border-radius: 15px;
+    flex: 0 0 auto;
+    align-self: auto;
+    cursor: pointer;
+    flex-basis: 225px;
+  }
+
+  .webmapp-poi-popup-header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: baseline;
+    flex-basis: min-content;
+
+    .webmapp-poi-popup-left,
+    .webmapp-poi-popup-right {
+      order: 0;
+      flex: 0 1 auto;
+      align-self: auto;
+    }
+    .webmapp-poi-popup-title {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 22px;
+      letter-spacing: 0em;
+      text-align: left;
+      flex: 1 1 auto;
+      flex-basis: min-content;
+    }
+  }
+
   .webmapp-poi-popup-text {
     display: flex;
     flex-direction: column;
@@ -33,31 +71,11 @@ webmapp-poi-popup {
     scrollbar-width: none; /* Firefox */
     margin-bottom: 10px;
 
-    .webmapp-poi-popup-title {
-      font-size: 18px;
-      font-weight: 700;
-      line-height: 22px;
-      letter-spacing: 0em;
-      text-align: left;
-    }
     p {
       margin: unset;
     }
   }
-  .webmapp-poi-popup-img {
-    height: 100%;
-    width: 100%;
-    max-height: 300px;
-    left: 0px;
-    top: 0px;
-    border-radius: 8px;
-    object-fit: cover;
-    padding: 10px;
-    border-radius: 15px;
-    flex: 0 1 auto;
-    align-self: auto;
-    cursor: pointer;
-  }
+
   .webmapp-poi-popup-btns {
     display: flex;
     flex-direction: column;
@@ -89,11 +107,15 @@ webmapp-poi-popup {
       }
     }
   }
-  .webmapp-poi-popup-close {
-    position: absolute;
-    right: 0;
+  .webmapp-poi-popup-close,
+  .webmapp-poi-popup-left,
+  .webmapp-poi-popup-right {
     padding: 10px;
     margin: 5px;
     border-radius: 15px;
+  }
+  .webmapp-poi-popup-close {
+    position: absolute;
+    right: 0;
   }
 }

@@ -8,6 +8,7 @@ import {
   map,
   startWith,
   switchMap,
+  tap,
   withLatestFrom,
 } from 'rxjs/operators';
 
@@ -26,19 +27,20 @@ const initMenuOpened = true;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MapPage {
-  showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
-  mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
-  leftPadding$: Observable<number>;
-  caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
-
-  readonly trackid$: Observable<number>;
   readonly track$: Observable<CGeojsonLineStringFeature>;
+  readonly trackid$: Observable<number>;
 
+  caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
+  currentPoi$: Observable<any>;
+  currentPoiFromMap$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
+  currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
+  currentPoiToMap$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
+  leftPadding$: Observable<number>;
+  mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
+  poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
+  showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
-  currentPoiFromMap$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
-  currentPoiToMap$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
-  currentPoi$: Observable<any>;
 
   constructor(
     private _route: ActivatedRoute,
@@ -53,6 +55,10 @@ export class MapPage {
     this.track$ = this.trackid$.pipe(
       filter(trackid => trackid > -1),
       switchMap(trackid => from(this._geohubService.getEcTrack(trackid))),
+      tap(track => {
+        const poiIDs = (track.properties.related_pois || []).map(poi => poi.properties.id);
+        this.poiIDs$.next(poiIDs);
+      }),
     );
 
     this.caretOutLine$ = this.showMenu$.pipe(
@@ -71,44 +77,48 @@ export class MapPage {
         });
         return relatedPoi.length > 0 ? relatedPoi[0] : null;
       }),
+      tap(currentPoi => {
+        this.currentPoiID$.next(currentPoi?.properties?.id || -1);
+      }),
       distinctUntilChanged(),
     );
   }
 
-  toggleDetails(trackid: number = -1) {
+  public next(): void {
+    const currentPoiID = this.currentPoiID$.value;
+    const poiIDs = this.poiIDs$.value;
+    const indexOfCurrentID = poiIDs.indexOf(currentPoiID);
+    const nextIndex = (indexOfCurrentID + 1) % poiIDs.length;
+    this.setCurrentPoi(poiIDs[nextIndex]);
+  }
+
+  public prev(): void {
+    const currentPoiID = this.currentPoiID$.value;
+    const poiIDs = this.poiIDs$.value;
+    const indexOfCurrentID = poiIDs.indexOf(currentPoiID);
+    const prevIndex = (indexOfCurrentID - 1) % poiIDs.length;
+    this.setCurrentPoi(poiIDs.slice(prevIndex)[0]);
+  }
+
+  public selectTrack(trackid: number = -1) {
     this.updateUrl(trackid);
   }
 
-  updateCurrentPoi(id) {
+  public setCurrentPoi(id) {
     this.currentPoiToMap$.next(id);
   }
 
-  setCurrentPoi(id) {
-    this.currentPoiToMap$.next(id);
-  }
-
-  selectTrack(trackid: number = -1) {
-    this.updateUrl(trackid);
-  }
-
-  updateUrl(trackid: number) {
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: {track: trackid ? trackid : null},
-      queryParamsHandling: 'merge',
-    });
-  }
-  unselectPOI(): void {
-    this.setCurrentPoi(-1);
-  }
-
-  setTrackElevationChartHoverElements(elements?: ITrackElevationChartHoverElements): void {
+  public setTrackElevationChartHoverElements(elements?: ITrackElevationChartHoverElements): void {
     if (elements != null) {
       this.trackElevationChartHoverElements$.next(elements);
     }
   }
 
-  toggleMenu() {
+  public toggleDetails(trackid: number = -1) {
+    this.updateUrl(trackid);
+  }
+
+  public toggleMenu() {
     this.showMenu$.next(!this.showMenu$.value);
     this.mapPadding$.next([
       initPadding[0],
@@ -116,5 +126,21 @@ export class MapPage {
       initPadding[2],
       this.showMenu$.value ? menuOpenLeft : menuCloseLeft,
     ]);
+  }
+
+  public unselectPOI(): void {
+    this.setCurrentPoi(-1);
+  }
+
+  public updateCurrentPoi(id) {
+    this.currentPoiToMap$.next(id);
+  }
+
+  public updateUrl(trackid: number) {
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams: {track: trackid ? trackid : null},
+      queryParamsHandling: 'merge',
+    });
   }
 }

@@ -36,7 +36,8 @@
   <webmapp-poi-popup
     *ngIf="currentPoi$|async as currentPoi"
     [poi]="currentPoi"
-    [padding]="mapPadding$|async"
     (closeEVT)="unselectPOI()"
+    (nextEVT)="next()"
+    (prevEVT)="prev()"
   ></webmapp-poi-popup>
 </ng-container>

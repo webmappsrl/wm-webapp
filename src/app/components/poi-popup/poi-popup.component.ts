@@ -1,10 +1,11 @@
 import {
-  Component,
   ChangeDetectionStrategy,
-  ViewEncapsulation,
-  Input,
+  Component,
   EventEmitter,
+  HostListener,
+  Input,
   Output,
+  ViewEncapsulation,
 } from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 
@@ -16,14 +17,15 @@ import {BehaviorSubject} from 'rxjs';
   encapsulation: ViewEncapsulation.None,
 })
 export class PoiPopupComponent {
-  @Output() closeEVT: EventEmitter<void> = new EventEmitter<void>();
+  @Output() public closeEVT: EventEmitter<void> = new EventEmitter<void>();
+  @Output() public nextEVT: EventEmitter<void> = new EventEmitter<void>();
+  @Output() public prevEVT: EventEmitter<void> = new EventEmitter<void>();
 
-  @Input('padding') set mapPadding(padding: number[]) {
-    if (padding != null && padding[3] != null) {
-      this._left$.next(padding[3]);
-    }
-  }
-  @Input('poi') set setPoi(poi: any) {
+  public defaultPhotoPath = '/assets/icon/no-photo.svg';
+  public poiProperties: any = null;
+  toggleImage$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+  @Input('poi') public set setPoi(poi: any) {
     if (poi != null && poi.properties != null) {
       poi.properties.address = [poi.properties.addr_locality, poi.properties.addr_street]
         .filter(f => f != null)
@@ -42,13 +44,23 @@ export class PoiPopupComponent {
       this.poiProperties = poi.properties;
     }
   }
-  toggleImage$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  poiProperties: any = null;
-  defaultPhotoPath = '/assets/icon/no-photo.svg';
-  private _left$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  @HostListener('document:keydown.ArrowLeft', ['$event'])
+  public handleArrowLeft() {
+    this.prevEVT.emit();
+  }
 
-  toggleImage(): void {
+  @HostListener('document:keydown.ArrowRight', ['$event'])
+  public handleArrowRight() {
+    this.nextEVT.emit();
+  }
+
+  @HostListener('document:keydown.Escape', ['$event'])
+  public handleEscape() {
+    this.closeEVT.emit();
+  }
+
+  public toggleImage(): void {
     console.table(this.poiProperties.feature_image);
     this.toggleImage$.next(!this.toggleImage$.value);
   }

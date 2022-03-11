@@ -3,7 +3,7 @@
     <webmapp-track-details
       [track]="track$|async"
       [hidden]="trackid <= 0"
-      [poi]="currentPoiFromMap$|async"
+      [poi]="currentPoiToMap$|async"
       (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
       (poi-click)="setCurrentPoi($event)"
       (dismiss)="toggleDetails()"
@@ -22,6 +22,8 @@
     title="menu"
     (click)="toggleMenu()"
   >
+    {{currentPoiToMap$|async}}
+
     <ion-icon [attr.name]="caretOutLine$|async"></ion-icon>
   </button>
   <webmapp-map
@@ -33,4 +35,10 @@
     (feature-click)="toggleDetails($event)"
     (poi-click)="updateCurrentPoi($event)"
   ></webmapp-map>
+  <webmapp-poi-popup
+    *ngIf="currentPoi$|async as currentPoi"
+    [poi]="currentPoi"
+    [padding]="mapPadding$|async"
+    (closeEVT)="unselectPOI()"
+  ></webmapp-poi-popup>
 </ng-container>

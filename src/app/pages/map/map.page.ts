@@ -2,14 +2,21 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 
 import {BehaviorSubject, from, Observable} from 'rxjs';
-import {filter, map, startWith, switchMap} from 'rxjs/operators';
+import {
+  distinctUntilChanged,
+  filter,
+  map,
+  startWith,
+  switchMap,
+  withLatestFrom,
+} from 'rxjs/operators';
 
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {GeohubService} from 'src/app/services/geohub.service';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 
-const menuOpenLeft = 420;
-const menuCloseLeft = 20;
+const menuOpenLeft = 400;
+const menuCloseLeft = 0;
 const initPadding = [20, 50, 20, menuOpenLeft];
 const initMenuOpened = true;
 @Component({
@@ -21,6 +28,7 @@ const initMenuOpened = true;
 export class MapPage {
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
+  leftPadding$: Observable<number>;
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
 
   readonly trackid$: Observable<number>;
@@ -30,6 +38,7 @@ export class MapPage {
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
   currentPoiFromMap$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiToMap$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
+  currentPoi$: Observable<any>;
 
   constructor(
     private _route: ActivatedRoute,
@@ -49,6 +58,21 @@ export class MapPage {
     this.caretOutLine$ = this.showMenu$.pipe(
       map(showMenu => (showMenu ? 'caret-back-outline' : 'caret-forward-outline')),
     );
+    this.leftPadding$ = this.showMenu$.pipe(map(showMenu => (showMenu ? menuOpenLeft : 0)));
+
+    this.currentPoi$ = this.currentPoiToMap$.pipe(
+      withLatestFrom(this.track$),
+      map(([id, track]) => {
+        const properties = track.properties;
+        const relatedPois = properties.related_pois || [];
+        const relatedPoi = relatedPois.filter(poi => {
+          const poiProperties = poi.properties;
+          return +poiProperties.id === +id;
+        });
+        return relatedPoi.length > 0 ? relatedPoi[0] : null;
+      }),
+      distinctUntilChanged(),
+    );
   }
 
   toggleDetails(trackid: number = -1) {
@@ -56,7 +80,7 @@ export class MapPage {
   }
 
   updateCurrentPoi(id) {
-    this.currentPoiFromMap$.next(id);
+    this.currentPoiToMap$.next(id);
   }
 
   setCurrentPoi(id) {
@@ -73,6 +97,9 @@ export class MapPage {
       queryParams: {track: trackid ? trackid : null},
       queryParamsHandling: 'merge',
     });
+  }
+  unselectPOI(): void {
+    this.setCurrentPoi(-1);
   }
 
   setTrackElevationChartHoverElements(elements?: ITrackElevationChartHoverElements): void {

@@ -35,14 +35,26 @@ webmapp-track-poi {
         text-align: left;
       }
       .webmapp-track-poi-description {
-        height: 118px;
         align-self: stretch;
         display: -webkit-box;
         overflow: hidden;
-        -webkit-line-clamp: 6;
+        -webkit-line-clamp: 4;
         -webkit-box-orient: vertical;
+        flex: 0 1 auto;
+      }
+      .webmapp-track-poi-btns {
+        margin-top: 5px;
+        display: -ms-inline-flexbox;
+        display: -webkit-inline-flex;
+        display: inline-flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-content: stretch;
+        align-items: flex-start;
       }
     }
+
     .webmapp-track-poi-img {
       height: 100%;
       width: 108px;
@@ -55,7 +67,8 @@ webmapp-track-poi {
       align-self: auto;
     }
     .selected {
-      color: var(--ion-color-primary);
+      background-color: rgba(243, 244, 246, 1);
+      border-radius: 8px;
     }
   }
 }

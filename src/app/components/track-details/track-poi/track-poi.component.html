@@ -2,7 +2,7 @@
   <div
     class="webmapp-track-poi-item"
     (click)="selectPoi(item)"
-    [ngClass]="{'selected': currentPoi !== null &&item.id === currentPoi.id}"
+    [ngClass]="{'selected': currentPoi != null &&item.id === currentPoi.id}"
   >
     <img
       class="webmapp-track-poi-img"
@@ -13,13 +13,21 @@
         {{ item.name | WebmappTranslate }}
       </div>
       <div class="webmapp-track-poi-description">
-        It is a long established fact that a reader will be distracted by the readable content of a
-        page when looking at its layout. The point of using Lorem Ipsum is that it has a
-        more-or-less normal distribution of letters, as opposed to using 'Content here, content
-        here', making it look like readable English. Many desktop publishing packages and web page
-        editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will
-        uncover many web sites still in their infancy. Various versions have evolved over the years,
-        sometimes by accident, sometimes on purpose (injected humour and the like).
+        {{ item.description | WebmappTranslate }}
+      </div>
+      <div class="webmapp-track-poi-btns">
+        <div class="webmapp-poi-popup-btn" *ngIf="item.address">
+          <i class="webmapp-icon icon-fill-pin"></i>
+        </div>
+        <div class="webmapp-poi-popup-btn" *ngIf="item.contact_phone" target="_blank">
+          <i class="webmapp-icon icon-fill-phone"></i>
+        </div>
+        <div class="webmapp-poi-popup-btn" *ngIf="item.contact_email" target="_blank">
+          <i class="webmapp-icon icon-fill-mail"></i>
+        </div>
+        <div class="webmapp-poi-popup-btn" *ngIf="item.related_url != null">
+          <i class="webmapp-icon icon-fill-globe"></i>
+        </div>
       </div>
     </div>
   </div>

@@ -22,14 +22,26 @@ export class TrackPoiComponent {
 
   @Input('track') set feature(track: CGeojsonLineStringFeature) {
     if (track != null && track.properties != null && track.properties.related_pois != null) {
-      this.poi = track.properties.related_pois.map(relatedPoi => relatedPoi.properties);
+      this.poi = track.properties.related_pois.map(relatedPoi => {
+        const properties = relatedPoi.properties;
+        if (properties.related_url != null) {
+          delete properties.related_url[''];
+          properties.related_url =
+            Object.keys(properties.related_url).length === 0
+              ? null
+              : properties.related_url || undefined;
+        }
+
+        properties.address = [properties.addr_locality, properties.addr_street]
+          .filter(f => f != null)
+          .join(', ');
+        return properties;
+      });
     }
   }
   @Input('poi') set setPoi(id: number) {
     const newCurrentPoi = this.poi.find(p => p.id === id);
-    if (newCurrentPoi != null) {
-      this.currentPoi = newCurrentPoi;
-    }
+    this.currentPoi = newCurrentPoi;
   }
 
   defaultPhotoPath = '/assets/icon/no-photo.svg';

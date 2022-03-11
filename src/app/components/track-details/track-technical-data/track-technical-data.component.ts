@@ -58,7 +58,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Ele from
     if (this?._feature?.properties?.ele_from) {
       technicalData.push({
-        icon: 'icon-outline-starting-point',
+        icon: 'icon-fill-starting-point',
         label: technicalDataLabelPrefix + 'ele_from',
         value: this._utilsService.formatElevation(this._feature.properties.ele_from),
       });

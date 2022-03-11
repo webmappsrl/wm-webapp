@@ -1,6 +1,11 @@
+#details-container::-webkit-scrollbar {
+  display: none;
+}
 #details-container {
   width: 0;
   overflow: auto;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
   height: 100%;
   position: absolute;
   top: 0;

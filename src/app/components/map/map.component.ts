@@ -82,7 +82,7 @@ export class MapComponent implements OnDestroy {
   @Input('padding') set mapPadding(padding: number[]) {
     this._padding$.next(padding);
     if (padding != null && padding[3] != null) {
-      this.scaleLineStyle$.next(padding[3] - 10);
+      this.scaleLineStyle$.next(padding[3]);
     }
     this._view.fit(new Point(this._view.getCenter()), {
       padding: this._padding$.value,
@@ -106,6 +106,7 @@ export class MapComponent implements OnDestroy {
     if (currentPoi != null) {
       this._view.fit(currentPoi.icon.getGeometry() as any, {
         duration: zoomDuration,
+        maxZoom: this._view.getZoom(),
       });
     }
   }
@@ -113,7 +114,7 @@ export class MapComponent implements OnDestroy {
   @Output('feature-click') featureClick: EventEmitter<number> = new EventEmitter<number>();
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
 
-  scaleLineStyle$: BehaviorSubject<number> = new BehaviorSubject<number>(10);
+  scaleLineStyle$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
   private _padding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   private _view: View;

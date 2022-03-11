@@ -1,3 +1,6 @@
+webmapp-track-details::-webkit-scrollbar {
+  display: none;
+}
 webmapp-track-details {
   display: flex;
   flex-direction: column;
@@ -8,6 +11,8 @@ webmapp-track-details {
   background-color: white;
   font-style: normal;
   overflow: scroll;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 
   .webmapp-title {
     font-size: 18px;
@@ -117,10 +122,18 @@ webmapp-track-details {
     }
   }
 
-  .webmapp-pageroute-tabdetail-icon {
+  .webmapp-pageroute-tabdetail-icon,
+  .webmapp-icon {
     color: var(--wm-color-primary);
     padding: 0 5px;
     flex: 0 1 auto;
+    path1,
+    path2,
+    path1::before,
+    path2::before {
+      color: var(--wm-color-primary);
+      background: var(--wm-color-primary);
+    }
   }
   .webmapp-track-details-header {
     font-size: var(--font-md);

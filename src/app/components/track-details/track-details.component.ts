@@ -89,9 +89,5 @@ export class TrackDetailsComponent implements OnInit {
     if (this.track?.properties) {
       this.data = {...this.track.properties};
     }
-
-    if (this.content) {
-      this.content.scrollToTop();
-    }
   }
 }

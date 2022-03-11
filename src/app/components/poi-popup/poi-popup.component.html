@@ -1,0 +1,49 @@
+<ng-container *ngIf="poiProperties!= null">
+  <webmapp-image-modal
+    *ngIf="toggleImage$|async"
+    (closeEVT)="toggleImage()"
+    [image]="poiProperties.feature_image !=null? poiProperties.feature_image.url:defaultPhotoPath"
+  ></webmapp-image-modal>
+  <img
+    class="webmapp-poi-popup-img"
+    [src]="poiProperties.feature_image !=null? poiProperties.feature_image.url:defaultPhotoPath"
+    (click)="toggleImage()"
+  />
+  <div class="webmapp-poi-popup-btns">
+    <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.address">
+      <i class="webmapp-icon icon-fill-pin"></i>
+      <a href="https://www.google.com/maps/place/{{poiProperties.address_link}}" target="_blank">
+        {{poiProperties.address}}
+      </a>
+    </div>
+    <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.contact_phone" target="_blank">
+      <i class="webmapp-icon icon-fill-phone"></i>
+      <p>
+        <a href="tel:{{poiProperties.contact_email}}">
+          {{poiProperties.contact_phone}}
+        </a>
+      </p>
+    </div>
+    <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.contact_email" target="_blank">
+      <i class="webmapp-icon icon-fill-mail"></i>
+      <a [href]="poiProperties.contact_email">
+        {{poiProperties.contact_email}}
+      </a>
+    </div>
+    <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.related_url != null">
+      <i class="webmapp-icon icon-fill-globe"></i>
+      <webmapp-related-urls [relatedUrls]="poiProperties.related_url"></webmapp-related-urls>
+    </div>
+  </div>
+  <div class="webmapp-poi-popup-text">
+    <span class="webmapp-poi-popup-title">
+      {{poiProperties.name|WebmappTranslate}}
+    </span>
+    <p>
+      {{poiProperties.description|WebmappTranslate}}
+    </p>
+  </div>
+  <button class="webmapp-poi-popup-close" (click)="closeEVT.emit()">
+    <i class="icon-outline-close"></i>
+  </button>
+</ng-container>

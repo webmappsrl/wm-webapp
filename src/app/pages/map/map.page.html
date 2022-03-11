@@ -22,8 +22,6 @@
     title="menu"
     (click)="toggleMenu()"
   >
-    {{currentPoiToMap$|async}}
-
     <ion-icon [attr.name]="caretOutLine$|async"></ion-icon>
   </button>
   <webmapp-map

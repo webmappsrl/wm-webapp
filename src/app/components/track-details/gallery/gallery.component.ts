@@ -1,69 +1,45 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { ModalController } from '@ionic/angular';
-import { IWmImage } from 'src/app/types/model';
-import SwiperCore, {
-  Autoplay,
-  Keyboard,
-  Pagination,
-  Scrollbar,
-  Zoom,
-} from 'swiper';
-import { SwiperComponent } from 'swiper/angular';
-import { ModalGalleryComponent } from '../modal-gallery/modal-gallery.component';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  Input,
+  ViewEncapsulation,
+} from '@angular/core';
+import {BehaviorSubject} from 'rxjs';
+import {IWmImage} from 'src/app/types/model';
 
 @Component({
   selector: 'webmapp-gallery',
   templateUrl: './gallery.component.html',
   styleUrls: ['./gallery.component.scss'],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GalleryComponent implements OnInit {
-  @Input('gallery') set imageGallery(value: Array<IWmImage>) {
-    this._initializeGallery(value);
+export class GalleryComponent {
+  currentImage$: BehaviorSubject<IWmImage | null> = new BehaviorSubject<IWmImage | null>(null);
+  public defaultPhotoPath = '/assets/icon/no-photo.svg';
+  public gallery: IWmImage[] = [];
+
+  @Input('gallery') public set imageGallery(value: IWmImage[]) {
+    this.gallery = value;
   }
 
-  @ViewChild('swiper', { static: false }) swiper?: SwiperComponent;
-
-  public gallery: Array<IWmImage>;
-  public currentSlide: number = 0;
-
-  constructor(
-    private _modalController: ModalController
-  ) {
-    SwiperCore.use([Autoplay, Keyboard, Pagination, Scrollbar, Zoom]);
+  @HostListener('document:keydown.Escape', ['$event'])
+  public close(): void {
+    this.currentImage$.next(null);
   }
 
-  ngOnInit() { }
-
-  next() {
-    this.swiper.swiperRef.slideNext(200);
+  @HostListener('document:keydown.ArrowRight', ['$event'])
+  public next(): void {
+    const currentIndex = this.gallery.indexOf(this.currentImage$.value);
+    const nextIndex = (currentIndex + 1) % this.gallery.length;
+    this.currentImage$.next(this.gallery.slice(nextIndex)[0]);
   }
 
-  back() {
-    this.swiper.swiperRef.slidePrev(200);
-  }
-
-  slideChange(ev) {
-    this.currentSlide = ev.activeIndex;
-  }
-
-  open() {
-    if (this.gallery.length > 0) {
-      this._modalController
-        .create({
-          component: ModalGalleryComponent,
-          cssClass: 'modal-gallery-class',
-          componentProps: {
-            gallery: this.gallery,
-          },
-        })
-        .then((modal) => {
-          modal.present();
-        });
-    }
-
-  }
-
-  private _initializeGallery(gallery: Array<IWmImage>): void {
-    this.gallery = gallery;
+  @HostListener('document:keydown.ArrowLeft', ['$event'])
+  public prev(): void {
+    const currentIndex = this.gallery.indexOf(this.currentImage$.value);
+    const prevIndex = (currentIndex - 1) % this.gallery.length;
+    this.currentImage$.next(this.gallery.slice(prevIndex)[0]);
   }
 }

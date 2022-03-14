@@ -6,6 +6,7 @@ import {
   OnInit,
   Output,
   ViewChild,
+  ViewEncapsulation,
 } from '@angular/core';
 
 import {IonContent, ModalController} from '@ionic/angular';
@@ -21,6 +22,7 @@ import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
   templateUrl: './track-details.component.html',
   styleUrls: ['./track-details.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class TrackDetailsComponent implements OnInit {
   @ViewChild('content') content: IonContent;
@@ -86,10 +88,6 @@ export class TrackDetailsComponent implements OnInit {
     }
     if (this.track?.properties) {
       this.data = {...this.track.properties};
-    }
-
-    if (this.content) {
-      this.content.scrollToTop();
     }
   }
 }

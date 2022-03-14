@@ -1,36 +1,10 @@
-<div class="webmapp-gallery-container">
+<img *ngFor="let item of gallery" [src]="item.url" (click)="currentImage$.next(item)" />
 
-<swiper #swiper  [hidden]="!gallery" class="webmapp-gallery-slider" (slideChange)="slideChange($event)">
-  <ng-template
-    class="webmapp-gallery-slide-container"
-    swiperSlide
-    *ngFor="let picture of gallery"
-  >
-    <div
-      class="webmapp-gallery-picture"
-      [ngStyle]="{
-      'backgroundImage': 'url(' + (picture?.sizes?.['335x250'] ?? picture?.sizes?.['400x200'] ?? picture.url) + ')'
-    }"
-    ></div>
-  </ng-template>
-
-</swiper>
-
-<button class="webmapp-gallery-button webmapp-gallery-button-back ion-activatable" type="button" (click)="back()" [hidden]="currentSlide<=0">
-  <ion-icon name="caret-back-outline"></ion-icon>
-  <ion-ripple-effect></ion-ripple-effect>
-</button>
-
-<button class="webmapp-gallery-button webmapp-gallery-button-next ion-activatable" type="button" (click)="next()"  [hidden]="currentSlide>=gallery.length-1">
-  <ion-icon  name="caret-forward-outline"></ion-icon>
-  <ion-ripple-effect></ion-ripple-effect>
-</button>
-
-
-<button class="webmapp-gallery-zoombutton" type="button" (click)="open()">
-  <ion-icon name="search-circle-outline"></ion-icon>
-  <ion-ripple-effect></ion-ripple-effect>
-</button>
-
-</div>
-
+<webmapp-image-modal
+  *ngIf="(currentImage$|async) as currentImage"
+  [image]="currentImage.url !=null? currentImage.url:defaultPhotoPath"
+  [showArrows]="true"
+  (closeEVT)="close()"
+  (nextEVT)="next()"
+  (prevEVT)="prev()"
+></webmapp-image-modal>

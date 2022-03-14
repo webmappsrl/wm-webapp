@@ -1,0 +1,12 @@
+<img [src]="imagePath" />
+<button class="webmapp-image-modal-close" (click)="closeEVT.emit()">
+  <i class="icon-outline-close"></i>
+</button>
+<span class="webmapp-image-modal-header" *ngIf="showArrow">
+  <button class="webmapp-image-modal-left" (click)="prevEVT.emit()">
+    <i class="icon-outline-arrow-left"></i>
+  </button>
+  <button class="webmapp-image-modal-right" (click)="nextEVT.emit()">
+    <i class="icon-outline-arrow-right"></i>
+  </button>
+</span>

@@ -3,7 +3,7 @@
     <webmapp-track-details
       [track]="track$|async"
       [hidden]="trackid <= 0"
-      [poi]="currentPoiFromMap$|async"
+      [poi]="currentPoiToMap$|async"
       (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
       (poi-click)="setCurrentPoi($event)"
       (dismiss)="toggleDetails()"
@@ -33,4 +33,11 @@
     (feature-click)="toggleDetails($event)"
     (poi-click)="updateCurrentPoi($event)"
   ></webmapp-map>
+  <webmapp-poi-popup
+    *ngIf="currentPoi$|async as currentPoi"
+    [poi]="currentPoi"
+    (closeEVT)="unselectPOI()"
+    (nextEVT)="next()"
+    (prevEVT)="prev()"
+  ></webmapp-poi-popup>
 </ng-container>

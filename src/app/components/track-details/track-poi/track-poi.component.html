@@ -1,14 +1,34 @@
-<ion-list id="webmapp-track-poi">
-  <ng-container *ngFor="let item of poi">
-    <ion-item
-      button
-      (click)="selectPoi(item)"
-      fill="solid"
-      [ngClass]="{'selected': currentPoi !== null &&item.id === currentPoi.id}"
-    >
-      <ion-label>
+<div *ngFor="let item of poi" class="webmapp-track-poi-list">
+  <div
+    class="webmapp-track-poi-item"
+    (click)="selectPoi(item)"
+    [ngClass]="{'selected': currentPoi != null &&item.id === currentPoi.id}"
+  >
+    <img
+      class="webmapp-track-poi-img"
+      [src]="item.feature_image !=null? item.feature_image.url:defaultPhotoPath"
+    />
+    <div class="webmapp-track-poi-text">
+      <div class="webmapp-track-poi-title">
         {{ item.name | WebmappTranslate }}
-      </ion-label>
-    </ion-item>
-  </ng-container>
-</ion-list>
+      </div>
+      <div class="webmapp-track-poi-description">
+        {{ item.description | WebmappTranslate }}
+      </div>
+      <div class="webmapp-track-poi-btns">
+        <div class="webmapp-poi-popup-btn" *ngIf="item.address">
+          <i class="webmapp-icon icon-fill-pin"></i>
+        </div>
+        <div class="webmapp-poi-popup-btn" *ngIf="item.contact_phone" target="_blank">
+          <i class="webmapp-icon icon-fill-phone"></i>
+        </div>
+        <div class="webmapp-poi-popup-btn" *ngIf="item.contact_email" target="_blank">
+          <i class="webmapp-icon icon-fill-mail"></i>
+        </div>
+        <div class="webmapp-poi-popup-btn" *ngIf="item.related_url != null">
+          <i class="webmapp-icon icon-fill-globe"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

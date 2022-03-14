@@ -3,10 +3,7 @@
     <canvas #chartCanvas class="webmapp-track-elevation-chart-canvas"></canvas>
   </div>
   <div class="webmapp-track-elevation-chart-legend-container">
-    <div
-      class="webmapp-track-elevation-chart-legend-slope-container"
-      *ngIf="slope?.available"
-    >
+    <div class="webmapp-track-elevation-chart-legend-slope-container" *ngIf="slope?.available">
       <div class="webmapp-track-elevation-chart-legend-slope-label">
         {{ "trackDetails.elevationChart.slope.label" | WebmappTranslate }}
       </div>
@@ -21,9 +18,7 @@
           <div class="webmapp-track-elevation-chart-legend-slope-selected-text">
             {{ slope.selectedValue }}%
           </div>
-          <div
-            class="webmapp-track-elevation-chart-legend-slope-selected-dot"
-          ></div>
+          <div class="webmapp-track-elevation-chart-legend-slope-selected-dot"></div>
         </div>
       </div>
     </div>
@@ -31,10 +26,7 @@
       class="webmapp-track-elevation-chart-legend-surface-container"
       *ngIf="surfaces && surfaces.length > 0"
     >
-      <div
-        *ngFor="let surface of surfaces"
-        class="webmapp-track-elevation-chart-legend-surface"
-      >
+      <div *ngFor="let surface of surfaces" class="webmapp-track-elevation-chart-legend-surface">
         <span
           [ngStyle]="{
             background: 'rgb(' + surface.backgroundColor + ')'

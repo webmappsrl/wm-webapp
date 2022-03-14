@@ -1,0 +1,788 @@
+@font-face {
+  font-family: 'webmapp';
+  src:  url('fonts/webmapp.eot?i3p6k');
+  src:  url('fonts/webmapp.eot?i3p6k#iefix') format('embedded-opentype'),
+    url('fonts/webmapp.ttf?i3p6k') format('truetype'),
+    url('fonts/webmapp.woff?i3p6k') format('woff'),
+    url('fonts/webmapp.svg?i3p6k#webmapp') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'webmapp' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-outline-activities:before {
+  content: "\e900";
+}
+.icon-outline-add-user-outline:before {
+  content: "\e901";
+}
+.icon-outline-add-user:before {
+  content: "\e902";
+}
+.icon-outline-arrival:before {
+  content: "\e903";
+}
+.icon-outline-arrow-down:before {
+  content: "\e904";
+}
+.icon-outline-arrow-left-outline:before {
+  content: "\e905";
+}
+.icon-outline-arrow-left:before {
+  content: "\e906";
+}
+.icon-outline-arrow-right-outline:before {
+  content: "\e907";
+}
+.icon-outline-arrow-right:before {
+  content: "\e908";
+}
+.icon-outline-arrow-up:before {
+  content: "\e909";
+}
+.icon-outline-baby-backpack-outline:before {
+  content: "\e90a";
+}
+.icon-outline-baby-backpack:before {
+  content: "\e90b";
+}
+.icon-outline-baby-carriage-outline:before {
+  content: "\e90c";
+}
+.icon-outline-baby-carriage:before {
+  content: "\e90d";
+}
+.icon-outline-background:before {
+  content: "\e90e";
+}
+.icon-outline-basket-outline:before {
+  content: "\e90f";
+}
+.icon-outline-basket:before {
+  content: "\e910";
+}
+.icon-outline-bell-outline:before {
+  content: "\e911";
+}
+.icon-outline-bell:before {
+  content: "\e912";
+}
+.icon-outline-bike_1:before {
+  content: "\e913";
+}
+.icon-outline-bike_2:before {
+  content: "\e914";
+}
+.icon-outline-bike_3:before {
+  content: "\e915";
+}
+.icon-outline-bike_4:before {
+  content: "\e916";
+}
+.icon-outline-bike-outline:before {
+  content: "\e917";
+}
+.icon-outline-bike:before {
+  content: "\e918";
+}
+.icon-outline-camera-outline:before {
+  content: "\e919";
+}
+.icon-outline-camera:before {
+  content: "\e91a";
+}
+.icon-outline-check-outline:before {
+  content: "\e91b";
+}
+.icon-outline-check:before {
+  content: "\e91c";
+}
+.icon-outline-chevron-down-outline:before {
+  content: "\e91d";
+}
+.icon-outline-chevron-down:before {
+  content: "\e91e";
+}
+.icon-outline-chevron-left-outline:before {
+  content: "\e91f";
+}
+.icon-outline-chevron-left:before {
+  content: "\e920";
+}
+.icon-outline-chevron-right-outline:before {
+  content: "\e921";
+}
+.icon-outline-chevron-right:before {
+  content: "\e922";
+}
+.icon-outline-chevron-up-outline:before {
+  content: "\e923";
+}
+.icon-outline-chevron-up:before {
+  content: "\e924";
+}
+.icon-outline-children:before {
+  content: "\e925";
+}
+.icon-outline-city-tour:before {
+  content: "\e926";
+}
+.icon-outline-close-outline:before {
+  content: "\e927";
+}
+.icon-outline-close:before {
+  content: "\e928";
+}
+.icon-outline-difficulty:before {
+  content: "\e929";
+}
+.icon-outline-directions-outline:before {
+  content: "\e92a";
+}
+.icon-outline-directions:before {
+  content: "\e92b";
+}
+.icon-outline-dislivello-negativo:before {
+  content: "\e92c";
+}
+.icon-outline-dislivello-positivo:before {
+  content: "\e92d";
+}
+.icon-outline-distance:before {
+  content: "\e92e";
+}
+.icon-outline-document:before {
+  content: "\e92f";
+}
+.icon-outline-donwload-outline:before {
+  content: "\e930";
+}
+.icon-outline-donwload:before {
+  content: "\e931";
+}
+.icon-outline-downhill:before {
+  content: "\e932";
+}
+.icon-outline-duration:before {
+  content: "\e933";
+}
+.icon-outline-edit-outline:before {
+  content: "\e934";
+}
+.icon-outline-edit:before {
+  content: "\e935";
+}
+.icon-outline-family:before {
+  content: "\e936";
+}
+.icon-outline-filters-outline:before {
+  content: "\e937";
+}
+.icon-outline-filters:before {
+  content: "\e938";
+}
+.icon-outline-flag:before {
+  content: "\e939";
+}
+.icon-outline-globe:before {
+  content: "\e93a";
+}
+.icon-outline-group:before {
+  content: "\e93b";
+}
+.icon-outline-groups-outline:before {
+  content: "\e93c";
+}
+.icon-outline-groups:before {
+  content: "\e93d";
+}
+.icon-outline-heart-outline:before {
+  content: "\e93e";
+}
+.icon-outline-heart:before {
+  content: "\e93f";
+}
+.icon-outline-hiking:before {
+  content: "\e940";
+}
+.icon-outline-home-outline:before {
+  content: "\e941";
+}
+.icon-outline-home:before {
+  content: "\e942";
+}
+.icon-outline-horse-outline:before {
+  content: "\e943";
+}
+.icon-outline-horse:before {
+  content: "\e944";
+}
+.icon-outline-info-outline:before {
+  content: "\e945";
+}
+.icon-outline-info:before {
+  content: "\e946";
+}
+.icon-outline-kebab-outline:before {
+  content: "\e947";
+}
+.icon-outline-kebab:before {
+  content: "\e948";
+}
+.icon-outline-lake:before {
+  content: "\e949";
+}
+.icon-outline-levels-outline:before {
+  content: "\e94a";
+}
+.icon-outline-levels:before {
+  content: "\e94b";
+}
+.icon-outline-list:before {
+  content: "\e94c";
+}
+.icon-outline-mail:before {
+  content: "\e94d";
+}
+.icon-outline-map-outline:before {
+  content: "\e94e";
+}
+.icon-outline-map:before {
+  content: "\e94f";
+}
+.icon-outline-microphone:before {
+  content: "\e950";
+}
+.icon-outline-minus:before {
+  content: "\e951";
+}
+.icon-outline-mountain:before {
+  content: "\e952";
+}
+.icon-outline-MTB:before {
+  content: "\e953";
+}
+.icon-outline-nav-outline:before {
+  content: "\e954";
+}
+.icon-outline-nav:before {
+  content: "\e955";
+}
+.icon-outline-nordic-walking:before {
+  content: "\e956";
+}
+.icon-outline-pause-outline:before {
+  content: "\e957";
+}
+.icon-outline-pause:before {
+  content: "\e958";
+}
+.icon-outline-phone:before {
+  content: "\e959";
+}
+.icon-outline-pin-outline:before {
+  content: "\e95a";
+}
+.icon-outline-pin:before {
+  content: "\e95b";
+}
+.icon-outline-play-outline:before {
+  content: "\e95c";
+}
+.icon-outline-play:before {
+  content: "\e95d";
+}
+.icon-outline-plus:before {
+  content: "\e95e";
+}
+.icon-outline-recording-outline:before {
+  content: "\e95f";
+}
+.icon-outline-recording:before {
+  content: "\e960";
+}
+.icon-outline-refuge:before {
+  content: "\e961";
+}
+.icon-outline-river:before {
+  content: "\e962";
+}
+.icon-outline-running:before {
+  content: "\e963";
+}
+.icon-outline-search-outline:before {
+  content: "\e964";
+}
+.icon-outline-search:before {
+  content: "\e965";
+}
+.icon-outline-self-guided:before {
+  content: "\e966";
+}
+.icon-outline-settings-outline:before {
+  content: "\e967";
+}
+.icon-outline-settings:before {
+  content: "\e968";
+}
+.icon-outline-share-outline:before {
+  content: "\e969";
+}
+.icon-outline-share:before {
+  content: "\e96a";
+}
+.icon-outline-ski-outline:before {
+  content: "\e96b";
+}
+.icon-outline-ski:before {
+  content: "\e96c";
+}
+.icon-outline-snowshoes:before {
+  content: "\e96d";
+}
+.icon-outline-sporting:before {
+  content: "\e96e";
+}
+.icon-outline-star-outline:before {
+  content: "\e96f";
+}
+.icon-outline-star:before {
+  content: "\e970";
+}
+.icon-outline-starting-point .path1:before {
+  content: "\e971";
+  color: rgb(50, 48, 49);
+}
+.icon-outline-starting-point .path2:before {
+  content: "\e972";
+  margin-left: -1em;
+  color: rgb(255, 255, 255);
+}
+.icon-outline-stop-outline:before {
+  content: "\e973";
+}
+.icon-outline-stop:before {
+  content: "\e974";
+}
+.icon-outline-track:before {
+  content: "\e975";
+}
+.icon-outline-trekking-outline:before {
+  content: "\e976";
+}
+.icon-outline-trekking:before {
+  content: "\e977";
+}
+.icon-outline-user-outline:before {
+  content: "\e978";
+}
+.icon-outline-user:before {
+  content: "\e979";
+}
+.icon-outline-viewpoint:before {
+  content: "\e97a";
+}
+.icon-outline-walking-copy:before {
+  content: "\e97b";
+}
+.icon-outline-walking:before {
+  content: "\e97c";
+}
+.icon-outline-waterfall:before {
+  content: "\e97d";
+}
+.icon-outline-weekend:before {
+  content: "\e97e";
+}
+.icon-outline-with-guide:before {
+  content: "\e97f";
+}
+.icon-fill-activities:before {
+  content: "\e980";
+}
+.icon-fill-add-user:before {
+  content: "\e981";
+}
+.icon-fill-arrival:before {
+  content: "\e982";
+}
+.icon-fill-arrow-down:before {
+  content: "\e983";
+}
+.icon-fill-arrow-left:before {
+  content: "\e984";
+}
+.icon-fill-arrow-right:before {
+  content: "\e985";
+}
+.icon-fill-arrow-up:before {
+  content: "\e986";
+}
+.icon-fill-baby-backpack:before {
+  content: "\e987";
+}
+.icon-fill-baby-carriage:before {
+  content: "\e988";
+}
+.icon-fill-background:before {
+  content: "\e989";
+}
+.icon-fill-basket:before {
+  content: "\e98a";
+}
+.icon-fill-bell:before {
+  content: "\e98b";
+}
+.icon-fill-bike_1:before {
+  content: "\e98c";
+}
+.icon-fill-bike_2:before {
+  content: "\e98d";
+}
+.icon-fill-bike_3:before {
+  content: "\e98e";
+}
+.icon-fill-bike_4:before {
+  content: "\e98f";
+}
+.icon-fill-bike:before {
+  content: "\e990";
+}
+.icon-fill-camera:before {
+  content: "\e991";
+}
+.icon-fill-check:before {
+  content: "\e992";
+}
+.icon-fill-chevron-left:before {
+  content: "\e993";
+}
+.icon-fill-chevron-right:before {
+  content: "\e994";
+}
+.icon-fill-chevron-up:before {
+  content: "\e995";
+}
+.icon-fill-children:before {
+  content: "\e996";
+}
+.icon-fill-city-tour:before {
+  content: "\e997";
+}
+.icon-fill-close:before {
+  content: "\e998";
+}
+.icon-fill-difficulty-easy .path1:before {
+  content: "\e999";
+  color: rgb(50, 48, 49);
+}
+.icon-fill-difficulty-easy .path2:before {
+  content: "\e99a";
+  margin-left: -1em;
+  color: rgb(50, 48, 49);
+  opacity: 0.4;
+}
+.icon-fill-difficulty-easy .path3:before {
+  content: "\e99b";
+  margin-left: -1em;
+  color: rgb(50, 48, 49);
+  opacity: 0.4;
+}
+.icon-fill-difficulty-high:before {
+  content: "\e99c";
+}
+.icon-fill-difficulty-medium .path1:before {
+  content: "\e99d";
+  color: rgb(50, 48, 49);
+}
+.icon-fill-difficulty-medium .path2:before {
+  content: "\e99e";
+  margin-left: -1em;
+  color: rgb(50, 48, 49);
+}
+.icon-fill-difficulty-medium .path3:before {
+  content: "\e99f";
+  margin-left: -1em;
+  color: rgb(50, 48, 49);
+  opacity: 0.4;
+}
+.icon-fill-difficulty-new:before {
+  content: "\e9a0";
+}
+.icon-fill-directions:before {
+  content: "\e9a1";
+}
+.icon-fill-dislivello-negativo:before {
+  content: "\e9a2";
+}
+.icon-fill-dislivello-positivo:before {
+  content: "\e9a3";
+}
+.icon-fill-distance:before {
+  content: "\e9a4";
+}
+.icon-fill-document:before {
+  content: "\e9a5";
+}
+.icon-fill-downhill:before {
+  content: "\e9a6";
+}
+.icon-fill-download:before {
+  content: "\e9a7";
+}
+.icon-fill-duration:before {
+  content: "\e9a8";
+}
+.icon-fill-edit:before {
+  content: "\e9a9";
+}
+.icon-fill-family:before {
+  content: "\e9aa";
+}
+.icon-fill-filters:before {
+  content: "\e9ab";
+}
+.icon-fill-flag .path1:before {
+  content: "\e9ac";
+}
+.icon-fill-flag .path2:before {
+  content: "\e9ad";
+  margin-left: -1em;
+  color: rgb(255, 255, 255);
+}
+.icon-fill-globe:before {
+  content: "\e9ae";
+}
+.icon-fill-group:before {
+  content: "\e9af";
+}
+.icon-fill-groups:before {
+  content: "\e9b0";
+}
+.icon-fill-heart:before {
+  content: "\e9b1";
+}
+.icon-fill-home:before {
+  content: "\e9b2";
+}
+.icon-fill-horse:before {
+  content: "\e9b3";
+}
+.icon-fill-info:before {
+  content: "\e9b4";
+}
+.icon-fill-kebab:before {
+  content: "\e9b5";
+}
+.icon-fill-lake:before {
+  content: "\e9b6";
+}
+.icon-fill-levels:before {
+  content: "\e9b7";
+}
+.icon-fill-list:before {
+  content: "\e9b8";
+}
+.icon-fill-mail:before {
+  content: "\e9b9";
+}
+.icon-fill-map:before {
+  content: "\e9ba";
+}
+.icon-fill-microphone:before {
+  content: "\e9bb";
+}
+.icon-fill-minus:before {
+  content: "\e9bc";
+}
+.icon-fill-mountain:before {
+  content: "\e9bd";
+}
+.icon-fill-MTB:before {
+  content: "\e9be";
+}
+.icon-fill-nav:before {
+  content: "\e9bf";
+}
+.icon-fill-nordik-walking:before {
+  content: "\e9c0";
+}
+.icon-fill-pause:before {
+  content: "\e9c1";
+}
+.icon-fill-phone:before {
+  content: "\e9c2";
+}
+.icon-fill-pin:before {
+  content: "\e9c3";
+}
+.icon-fill-play:before {
+  content: "\e9c4";
+}
+.icon-fill-plus:before {
+  content: "\e9c5";
+}
+.icon-fill-recording:before {
+  content: "\e9c6";
+}
+.icon-fill-refuge:before {
+  content: "\e9c7";
+}
+.icon-fill-river:before {
+  content: "\e9c8";
+}
+.icon-fill-running .path1:before {
+  content: "\e9c9";
+  color: rgb(50, 48, 49);
+}
+.icon-fill-running .path2:before {
+  content: "\e9ca";
+  margin-left: -1em;
+  color: rgb(50, 48, 49);
+}
+.icon-fill-running .path3:before {
+  content: "\e9cb";
+  margin-left: -1em;
+  color: rgb(50, 48, 49);
+}
+.icon-fill-running .path4:before {
+  content: "\e9cc";
+  margin-left: -1em;
+  color: rgb(50, 48, 49);
+}
+.icon-fill-running .path5:before {
+  content: "\e9cd";
+  margin-left: -1em;
+  color: rgb(50, 48, 49);
+}
+.icon-fill-running .path6:before {
+  content: "\e9ce";
+  margin-left: -1em;
+  color: rgb(255, 255, 255);
+}
+.icon-fill-running .path7:before {
+  content: "\e9cf";
+  margin-left: -1em;
+  color: rgb(255, 255, 255);
+}
+.icon-fill-search:before {
+  content: "\e9d0";
+}
+.icon-fill-self-guided:before {
+  content: "\e9d1";
+}
+.icon-fill-settings:before {
+  content: "\e9d2";
+}
+.icon-fill-share:before {
+  content: "\e9d3";
+}
+.icon-fill-ski:before {
+  content: "\e9d4";
+}
+.icon-fill-snowshoes:before {
+  content: "\e9d5";
+}
+.icon-fill-sporting:before {
+  content: "\e9d6";
+}
+.icon-fill-star:before {
+  content: "\e9d7";
+}
+.icon-fill-starting-point .path1:before {
+  content: "\e9d8";
+}
+.icon-fill-starting-point .path2:before {
+  content: "\e9d9";
+  margin-left: -1em;
+  color: rgb(255, 255, 255);
+}
+.icon-fill-stop:before {
+  content: "\e9da";
+}
+.icon-fill-Tavola-disegno-1:before {
+  content: "\e9db";
+}
+.icon-fill-track:before {
+  content: "\e9dc";
+}
+.icon-fill-trekking:before {
+  content: "\e9dd";
+}
+.icon-fill-user:before {
+  content: "\e9de";
+}
+.icon-fill-viewpoint:before {
+  content: "\e9df";
+}
+.icon-fill-walking-copy:before {
+  content: "\e9e0";
+}
+.icon-fill-walking .path1:before {
+  content: "\e9e1";
+  color: rgb(0, 0, 0);
+}
+.icon-fill-walking .path2:before {
+  content: "\e9e2";
+  margin-left: -1em;
+  color: none;
+}
+.icon-fill-walking .path3:before {
+  content: "\e9e3";
+  margin-left: -1em;
+  color: none;
+}
+.icon-fill-walking .path4:before {
+  content: "\e9e4";
+  margin-left: -1em;
+  color: none;
+}
+.icon-fill-walking .path5:before {
+  content: "\e9e5";
+  margin-left: -1em;
+  color: rgb(50, 48, 49);
+}
+.icon-fill-walking .path6:before {
+  content: "\e9e6";
+  margin-left: -1em;
+  color: none;
+}
+.icon-fill-walking .path7:before {
+  content: "\e9e7";
+  margin-left: -1em;
+  color: none;
+}
+.icon-fill-walking .path8:before {
+  content: "\e9e8";
+  margin-left: -1em;
+  color: none;
+}
+.icon-fill-walking .path9:before {
+  content: "\e9e9";
+  margin-left: -1em;
+  color: none;
+}
+.icon-fill-waterfall:before {
+  content: "\e9ea";
+}
+.icon-fill-weekend:before {
+  content: "\e9eb";
+}
+.icon-fill-with-guide:before {
+  content: "\e9ec";
+}

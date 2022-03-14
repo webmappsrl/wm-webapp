@@ -13,66 +13,111 @@
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
-  <ion-content #content id="webmapp-track-details-content">
-    <div class="webmapp-track-activity">
-      <span *ngFor="let act of data?.activity">{{act.name  | WebmappTranslate}}</span>
+  <div #content id="webmapp-track-details-content">
+    <div class="webmapp-track-title" *ngIf="data?.name as name">
+      {{name  | WebmappTranslate}}
     </div>
 
-    <div class="webmapp-track-title">
-      {{data?.name  | WebmappTranslate}}
-    </div>
-
-    <webmapp-gallery
-      *ngIf="data?.gallery"
-      [gallery]="data.gallery"
-      id="webmapp-track-details-gallery"
-    >
-    </webmapp-gallery>
-
-    <div *ngIf="!data?.gallery?.length && data?.featureImage" class="webmapp-track-picture">
-      <img
-        [src]="data?.featureImage?.sizes?.['335x250'] ?? data?.featureImage?.sizes?.['400x200'] ?? data?.featureImage.url"
-      />
-      <button class="webmapp-track-picture-zoombutton" type="button" (click)="open()">
-        <ion-icon name="search-circle-outline"></ion-icon>
-        <ion-ripple-effect></ion-ripple-effect>
-      </button>
-    </div>
-
-    <webmapp-track-description
-      *ngIf="data?.description"
-      [description]="data.description | WebmappTranslate"
-    >
-    </webmapp-track-description>
-    <ion-card *ngIf="track && (track.properties.from || track.properties.to)">
-      <ion-card-header *ngIf="track.properties.from as from">
-        <ion-card-subtitle>inizio percorso</ion-card-subtitle>
-        <ion-card-title>{{from}}</ion-card-title>
-      </ion-card-header>
-      <ion-card-header *ngIf="track.properties.to as to">
-        <ion-card-subtitle>fine percorso</ion-card-subtitle>
-        <ion-card-title>{{to}}</ion-card-title>
-      </ion-card-header>
-    </ion-card>
-    <ion-text color="primary">
-      <h2 style="margin-left: 10px;">Punti di interesse</h2>
-    </ion-text>
-    <webmapp-track-poi
-      [track]="track"
-      [poi]="poiId"
-      (poi-click)="poiClick.emit($event)"
-    ></webmapp-track-poi>
-
-    <webmapp-track-technical-data [feature]="track" id="webmapp-track-details-technical-data">
-    </webmapp-track-technical-data>
     <webmapp-track-elevation-chart
+      *ngIf="track !=null"
       [feature]="track"
       (hover)="onLocationHover($event)"
       id="webmapp-track-details-elevation-chart"
     >
     </webmapp-track-elevation-chart>
-    <webmapp-track-related-urls [relatedUrls]="data.related_url"> </webmapp-track-related-urls>
-    <webmapp-track-download-urls [feature]="track" id="webmapp-track-details-download-urls">
-    </webmapp-track-download-urls>
-  </ion-content>
+
+    <div
+      *ngIf="track && (track.properties.from || track.properties.to)"
+      class="webmapp-track-details-from-to"
+    >
+      <div *ngIf="track.properties.from as from" class="webmapp-track-details-from-to-box">
+        <div>Punto di partenza</div>
+        <div>{{from}}</div>
+      </div>
+      <div *ngIf="track.properties.to as to" class="webmapp-track-details-from-to-box">
+        <div>Punto di arrivo</div>
+        <div>{{to}}</div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="track != null">
+      <span class="webmapp-title">Dettagli tecnici</span>
+      <webmapp-track-technical-data [feature]="track" id="webmapp-track-details-technical-data">
+      </webmapp-track-technical-data>
+    </ng-container>
+
+    <ng-container *ngIf="true">
+      <div class="webmapp-title">Percorribilità</div>
+      <div class="webmapp-walkability">
+        <div class="webmapp-walkability-box">
+          <i class="icon-fill-trekking"></i>
+          <span class="webmapp-walkability-label">Trekking</span>
+        </div>
+        <div class="webmapp-walkability-box">
+          <i class="icon-outline-bike"></i>
+          <span class="webmapp-walkability-label">In bici</span>
+        </div>
+        <div class="webmapp-walkability-box">
+          <i class="icon-fill-horse"></i>
+          <span class="webmapp-walkability-label">A cavallo</span>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="true">
+      <div class="webmapp-title">Come arrivare</div>
+      <div class="webmapp-how-to-get">
+        <div class="webmapp-hot-to-get-box">
+          <i class="icon-outline-bike"></i>
+          <span class="webmapp-how-to-get-label">Bici muscolari</span>
+        </div>
+        <div class="webmapp-hot-to-get-box">
+          <i class="icon-outline-bike_1"></i>
+          <span class="webmapp-how-to-get-label">Bici elettriche</span>
+        </div>
+        <div class="webmapp-hot-to-get-box">
+          <i class="icon-outline-bike_2"></i>
+          <span class="webmapp-how-to-get-label">Mezzi pubblici</span>
+        </div>
+        <div class="webmapp-hot-to-get-box">
+          <i class="icon-outline-bike_4"></i>
+          <span class="webmapp-how-to-get-label">NCC</span>
+        </div>
+        <div class="webmapp-hot-to-get-box">
+          <i class="icon-outline-bike_3"></i>
+          <span class="webmapp-how-to-get-label">Auto Propria</span>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="track != null">
+      <div class="webmapp-title">Punti di interesse</div>
+      <webmapp-track-poi
+        [track]="track"
+        [poi]="poiId"
+        (poi-click)="poiClick.emit($event)"
+      ></webmapp-track-poi>
+    </ng-container>
+
+    <ng-container *ngIf="data?.description as description">
+      <div class="webmapp-title">Descrizione</div>
+      <webmapp-track-description
+        *ngIf="data?.description"
+        [description]="description| WebmappTranslate"
+      ></webmapp-track-description>
+    </ng-container>
+
+    <webmapp-gallery *ngIf="data?.image_gallery" [gallery]="data.image_gallery"> </webmapp-gallery>
+
+    <ng-container *ngIf="data.related_url as relatedUrl">
+      <div class="webmapp-title">Link relativi</div>
+      <webmapp-related-urls [relatedUrls]="relatedUrl"> </webmapp-related-urls>
+    </ng-container>
+
+    <ng-container *ngIf="track != null">
+      <div class="webmapp-title">Downloads</div>
+      <webmapp-track-download-urls [feature]="track" id="webmapp-track-details-download-urls">
+      </webmapp-track-download-urls>
+    </ng-container>
+  </div>
 </ng-container>

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {UtilsService} from 'src/app/services/utils.service';
 import {ILocaleString} from 'src/app/types/model';
@@ -7,6 +7,7 @@ import {ILocaleString} from 'src/app/types/model';
   selector: 'webmapp-track-technical-data',
   templateUrl: './track-technical-data.component.html',
   styleUrls: ['./track-technical-data.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class TrackTechnicalDataComponent implements OnInit {
   @Input('feature') set feature(value: CGeojsonLineStringFeature) {
@@ -15,6 +16,7 @@ export class TrackTechnicalDataComponent implements OnInit {
   }
 
   public technicalData?: Array<{
+    icon: string;
     label: string | ILocaleString;
     value: string | ILocaleString;
   }>;
@@ -26,10 +28,12 @@ export class TrackTechnicalDataComponent implements OnInit {
   ngOnInit() {}
 
   private _initializeTechnicalData(): Array<{
+    icon: string;
     label: string | ILocaleString;
     value: string;
   }> {
     const technicalData: Array<{
+      icon: string;
       label: string | ILocaleString;
       value: string;
     }> = [];
@@ -38,6 +42,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Ascent
     if (this?._feature?.properties?.ascent) {
       technicalData.push({
+        icon: 'icon-outline-dislivello-positivo',
         label: technicalDataLabelPrefix + 'ascent',
         value: this._utilsService.formatAscent(this._feature.properties.ascent),
       });
@@ -45,6 +50,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Descent
     if (this?._feature?.properties?.descent) {
       technicalData.push({
+        icon: 'icon-outline-dislivello-negativo',
         label: technicalDataLabelPrefix + 'descent',
         value: this._utilsService.formatDescent(this._feature.properties.descent),
       });
@@ -52,6 +58,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Ele from
     if (this?._feature?.properties?.ele_from) {
       technicalData.push({
+        icon: 'icon-fill-starting-point',
         label: technicalDataLabelPrefix + 'ele_from',
         value: this._utilsService.formatElevation(this._feature.properties.ele_from),
       });
@@ -59,6 +66,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Ele to
     if (this?._feature?.properties?.ele_to) {
       technicalData.push({
+        icon: 'icon-fill-flag',
         label: technicalDataLabelPrefix + 'ele_to',
         value: this._utilsService.formatElevation(this._feature.properties.ele_to),
       });
@@ -66,6 +74,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Ele min
     if (this?._feature?.properties?.ele_min) {
       technicalData.push({
+        icon: 'icon-outline-minus',
         label: technicalDataLabelPrefix + 'ele_min',
         value: this._utilsService.formatElevation(this._feature.properties.ele_min),
       });
@@ -73,6 +82,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Ele max
     if (this?._feature?.properties?.ele_max) {
       technicalData.push({
+        icon: 'icon-outline-plus',
         label: technicalDataLabelPrefix + 'ele_max',
         value: this._utilsService.formatElevation(this._feature.properties.ele_max),
       });
@@ -80,6 +90,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Duration forward
     if (this?._feature?.properties?.duration_forward) {
       technicalData.push({
+        icon: 'icon-outline-duration',
         label: technicalDataLabelPrefix + 'duration_forward',
         value: this._utilsService.formatDuration(this._feature.properties.duration_forward),
       });
@@ -87,6 +98,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Duration backward
     if (this?._feature?.properties?.duration_backward) {
       technicalData.push({
+        icon: 'icon-outline-duration',
         label: technicalDataLabelPrefix + 'duration_backward',
         value: this._utilsService.formatDuration(this._feature.properties.duration_backward),
       });
@@ -94,6 +106,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Distance
     if (this?._feature?.properties?.distance) {
       technicalData.push({
+        icon: 'icon-outline-distance',
         label: technicalDataLabelPrefix + 'distance',
         value: this._utilsService.formatDistance(this._feature.properties.distance),
       });
@@ -101,6 +114,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // difficulty
     if (this?._feature?.properties?.difficulty) {
       technicalData.push({
+        icon: 'icon-outline-difficulty',
         label: technicalDataLabelPrefix + 'difficulty',
         value: this._feature.properties.difficulty as any,
       });

@@ -104,9 +104,15 @@ export class MapComponent implements OnDestroy {
     }
   }
   @Input('poi') set setPoi(id: number) {
-    const currentPoi = this._poiMarkers.find(p => +p.id === +id);
-    if (currentPoi != null) {
-      this._fitView(currentPoi.icon.getGeometry() as any);
+    if (id === -1 && this._selectedPoiLayer != null) {
+      this._map.removeLayer(this._selectedPoiLayer);
+      this._selectedPoiLayer = undefined;
+    } else {
+      const currentPoi = this._poiMarkers.find(p => +p.id === +id);
+      if (currentPoi != null) {
+        this._fitView(currentPoi.icon.getGeometry() as any);
+        this._selectCurrentPoi(currentPoi);
+      }
     }
   }
 
@@ -130,6 +136,8 @@ export class MapComponent implements OnDestroy {
   private _elevationChartPoint: Feature<Point>;
   private _elevationChartTrack: Feature<LineString>;
   private _poisLayer: VectorLayer;
+  private _selectedPoiLayer: VectorLayer;
+  private _selectedPoiMarker: PoiMarker;
   private _poiMarkers: PoiMarker[] = [];
   private _updateMapSub: Subscription = Subscription.EMPTY;
 
@@ -261,9 +269,18 @@ export class MapComponent implements OnDestroy {
       }
     });
   }
-
+  private async _selectCurrentPoi(poiMarker: PoiMarker) {
+    if (this._selectedPoiMarker != null) {
+      this._map.removeLayer(this._selectedPoiLayer);
+      this._selectedPoiLayer = undefined;
+    }
+    this._selectedPoiLayer = this._createLayer(this._selectedPoiLayer, 9999);
+    this._selectedPoiMarker = poiMarker;
+    const {marker} = await this._createPoiCanvasIcon(poiMarker.poi, null, true);
+    this._addIconToLayer(this._selectedPoiLayer, marker.icon);
+  }
   private async _addPoisMarkers(poiCollection: Array<IGeojsonFeature>) {
-    this._poisLayer = this._createLayer(this._poisLayer, 9999);
+    this._poisLayer = this._createLayer(this._poisLayer, 9998);
     for (let i = this._poiMarkers?.length - 1; i >= 0; i--) {
       const ov = this._poiMarkers[i];
       if (!poiCollection?.find(x => x.properties.id + '' === ov.id)) {
@@ -289,8 +306,9 @@ export class MapComponent implements OnDestroy {
   private async _createPoiCanvasIcon(
     poi: any,
     geometry = null,
+    selected = false,
   ): Promise<{marker: PoiMarker; style: Style}> {
-    const img = await this._createPoiCavasImage(poi);
+    const img = await this._createPoiCavasImage(poi, selected);
     const {iconFeature, style} = await this._createIconFeature(
       geometry
         ? geometry
@@ -339,12 +357,18 @@ export class MapComponent implements OnDestroy {
     return {iconFeature, style};
   }
 
-  private async _createPoiCavasImage(poi: IGeojsonFeature): Promise<HTMLImageElement> {
-    const htmlTextCanvas = await this._createPoiMarkerHtmlForCanvas(poi);
+  private async _createPoiCavasImage(
+    poi: IGeojsonFeature,
+    selected = false,
+  ): Promise<HTMLImageElement> {
+    const htmlTextCanvas = await this._createPoiMarkerHtmlForCanvas(poi, selected);
     return this._createCanvasForHtml(htmlTextCanvas, 46);
   }
 
-  private async _createPoiMarkerHtmlForCanvas(value: IGeojsonFeature): Promise<string> {
+  private async _createPoiMarkerHtmlForCanvas(
+    value: IGeojsonFeature,
+    selected = false,
+  ): Promise<string> {
     const img1b64: string | ArrayBuffer = await this._downloadBase64Img(
       value.properties?.feature_image?.sizes['108x137'],
     );
@@ -354,7 +378,7 @@ export class MapComponent implements OnDestroy {
 
     html += `
         <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style=" position: absolute;  width: 46px;  height: 46px;  left: 0px;  top: 0px;">
-          <circle opacity="0.2" cx="23" cy="23" r="23" fill="#2F9E44"/>
+          <circle opacity="${selected ? 1 : 0.2}" cx="23" cy="23" r="23" fill="#2F9E44"/>
           <rect x="5" y="5" width="36" height="36" rx="18" fill="url(#img)" stroke="white" stroke-width="2"/>
           <defs>
             <pattern height="100%" width="100%" patternContentUnits="objectBoundingBox" id="img">

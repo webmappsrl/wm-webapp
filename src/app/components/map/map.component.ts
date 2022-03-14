@@ -24,6 +24,7 @@ import MVT from 'ol/format/MVT';
 import Geometry from 'ol/geom/Geometry';
 import LineString from 'ol/geom/LineString';
 import Point from 'ol/geom/Point';
+import SimpleGeometry from 'ol/geom/SimpleGeometry';
 import {defaults as defaultInteractions} from 'ol/interaction.js';
 import Interaction from 'ol/interaction/Interaction';
 import SelectInteraction, {SelectEvent} from 'ol/interaction/Select';
@@ -44,7 +45,7 @@ import StrokeStyle from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import TextStyle from 'ol/style/Text';
 import TextPlacement from 'ol/style/TextPlacement';
-import View from 'ol/View';
+import View, {FitOptions} from 'ol/View';
 
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {filter, tap} from 'rxjs/operators';
@@ -84,7 +85,8 @@ export class MapComponent implements OnDestroy {
     if (padding != null && padding[3] != null) {
       this.scaleLineStyle$.next(padding[3]);
     }
-    this._view.fit(new Point(this._view.getCenter()), {
+
+    this._fitView(new Point(this._view.getCenter()), {
       padding: this._padding$.value,
       duration: zoomDuration,
       maxZoom: this._view.getZoom(),
@@ -104,10 +106,7 @@ export class MapComponent implements OnDestroy {
   @Input('poi') set setPoi(id: number) {
     const currentPoi = this._poiMarkers.find(p => +p.id === +id);
     if (currentPoi != null) {
-      this._view.fit(currentPoi.icon.getGeometry() as any, {
-        duration: zoomDuration,
-        maxZoom: this._view.getZoom(),
-      });
+      this._fitView(currentPoi.icon.getGeometry() as any);
     }
   }
 
@@ -160,7 +159,7 @@ export class MapComponent implements OnDestroy {
         }),
       )
       .subscribe(() => {
-        this._view.fit(this._selectedFeature$.value.getGeometry().getExtent(), {
+        this._fitView(this._selectedFeature$.value.getGeometry().getExtent(), {
           padding: this._padding$.value,
           duration: zoomDuration,
         });
@@ -169,6 +168,16 @@ export class MapComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this._updateMapSub.unsubscribe();
+  }
+
+  private _fitView(geometryOrExtent: SimpleGeometry | Extent, optOptions?: FitOptions): void {
+    if (optOptions == null) {
+      optOptions = {
+        duration: zoomDuration,
+        maxZoom: this._view.getZoom(),
+      };
+    }
+    this._view.fit(geometryOrExtent, optOptions);
   }
 
   private async _initMap() {
@@ -182,11 +191,13 @@ export class MapComponent implements OnDestroy {
       extent: this._mapService.extentFromLonLat(initExtent),
       padding: this._padding$.value || undefined,
     });
-    this._view.fit(new Point(this._view.getCenter()), {
+
+    this._fitView(new Point(this._view.getCenter()), {
       padding: this._padding$.value,
       duration: zoomDuration,
       maxZoom: this._view.getZoom(),
     });
+
     const baseLayers: Array<Layer> = this._initializeBaseLayers();
     this._dataLayers = await this._initializeDataLayers();
     const interactions: Collection<Interaction> = this._initializeMapInteractions(this._dataLayers);
@@ -238,21 +249,16 @@ export class MapComponent implements OnDestroy {
       }
     });
     this._map.on('click', event => {
+      stopPropagation(event);
       try {
         const poiFeature = this._getNearestFeatureOfLayer(this._poisLayer, event);
         if (poiFeature) {
-          console.log(poiFeature);
           const currentID = +poiFeature.getId() || -1;
           this.poiClick.emit(currentID);
-          this._view.fit(poiFeature.getGeometry() as any, {
-            duration: zoomDuration,
-            maxZoom: this._view.getZoom(),
-          });
         }
       } catch (e) {
         console.log(e);
       }
-      stopPropagation(event);
     });
   }
 
@@ -321,7 +327,6 @@ export class MapComponent implements OnDestroy {
     });
     const style = new Style({
       image: new Icon({
-        crossOrigin: 'anonymous',
         anchor,
         img,
         imgSize: [size, size],
@@ -335,13 +340,11 @@ export class MapComponent implements OnDestroy {
   }
 
   private async _createPoiCavasImage(poi: IGeojsonFeature): Promise<HTMLImageElement> {
-    // console.log('------- ~ MapComponent ~ poi', poi);
     const htmlTextCanvas = await this._createPoiMarkerHtmlForCanvas(poi);
     return this._createCanvasForHtml(htmlTextCanvas, 46);
   }
 
   private async _createPoiMarkerHtmlForCanvas(value: IGeojsonFeature): Promise<string> {
-    // console.log('------- ~ MapComponent ~ _createPoiMarkerHtmlForCanvas ~ value', value);
     const img1b64: string | ArrayBuffer = await this._downloadBase64Img(
       value.properties?.feature_image?.sizes['108x137'],
     );
@@ -411,8 +414,6 @@ export class MapComponent implements OnDestroy {
       domUrl.revokeObjectURL(url);
     };
     img.src = url;
-    img.crossOrigin = 'Anonymous';
-    img.setAttribute('crossOrigin', '');
 
     return img;
   }

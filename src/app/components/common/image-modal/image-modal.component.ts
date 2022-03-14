@@ -15,11 +15,15 @@ import {
   encapsulation: ViewEncapsulation.None,
 })
 export class ImageModalComponent {
-  @Output() closeEVT: EventEmitter<void> = new EventEmitter<void>();
+  @Input('showArrows') public showArrow = false;
+  @Output() public closeEVT: EventEmitter<void> = new EventEmitter<void>();
+  @Output() public nextEVT: EventEmitter<void> = new EventEmitter<void>();
+  @Output() public prevEVT: EventEmitter<void> = new EventEmitter<void>();
 
-  @Input('image') set mapPadding(image: string) {
+  public defaultPhotoPath = '/assets/icon/no-photo.svg';
+  public imagePath: string = this.defaultPhotoPath;
+
+  @Input('image') public set mapPadding(image: string) {
     this.imagePath = image;
   }
-  readonly defaultPhotoPath = '/assets/icon/no-photo.svg';
-  imagePath: string = this.defaultPhotoPath;
 }

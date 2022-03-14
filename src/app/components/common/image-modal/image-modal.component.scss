@@ -8,17 +8,36 @@ webmapp-image-modal {
   right: 0;
   background-color: white;
   z-index: 999999;
-  width: fit-content;
   height: fit-content;
+  width: 50%;
+  padding: 10px;
+  max-width: fit-content;
   img {
     border-radius: 15px;
   }
-  .webmapp-image-modal-close {
+  .webmapp-image-modal-close,
+  .webmapp-image-modal-left,
+  .webmapp-image-modal-right {
     position: absolute;
-    top: 0;
-    right: 0;
     padding: 10px;
     margin: 5px;
     border-radius: 15px;
+  }
+  .webmapp-image-modal-close {
+    top: 0;
+    right: 0;
+  }
+  .webmapp-image-modal-left,
+  .webmapp-image-modal-right {
+    font-size: 30px;
+    border-radius: 25px;
+  }
+  .webmapp-image-modal-left {
+    top: 45%;
+    left: -20px;
+  }
+  .webmapp-image-modal-right {
+    top: 45%;
+    right: -20px;
   }
 }

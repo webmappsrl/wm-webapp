@@ -107,12 +107,7 @@
       ></webmapp-track-description>
     </ng-container>
 
-    <webmapp-gallery
-      *ngIf="data?.gallery"
-      [gallery]="data.gallery"
-      id="webmapp-track-details-gallery"
-    >
-    </webmapp-gallery>
+    <webmapp-gallery *ngIf="data?.image_gallery" [gallery]="data.image_gallery"> </webmapp-gallery>
 
     <ng-container *ngIf="data.related_url as relatedUrl">
       <div class="webmapp-title">Link relativi</div>

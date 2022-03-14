@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable max-len */
 import {
   ChangeDetectionStrategy,
@@ -14,8 +15,9 @@ import {
 import {Collection, MapBrowserEvent} from 'ol';
 import ScaleLineControl from 'ol/control/ScaleLine';
 import ZoomControl from 'ol/control/Zoom';
+import {Coordinate} from 'ol/coordinate';
 import {stopPropagation} from 'ol/events/Event';
-import {Extent} from 'ol/extent';
+import {buffer, Extent} from 'ol/extent';
 import Feature, {FeatureLike} from 'ol/Feature';
 import GeoJSON from 'ol/format/GeoJSON';
 import MVT from 'ol/format/MVT';
@@ -65,6 +67,7 @@ const initMinZoom = 0;
 const projection = 'EPSG:3857';
 const scaleUnits = 'metric';
 const scaleMinWidth = 50;
+const DEF_MAP_CLUSTER_CLICK_TOLERANCE: number = 40;
 @Component({
   selector: 'webmapp-map',
   templateUrl: './map.component.html',
@@ -235,16 +238,16 @@ export class MapComponent implements OnDestroy {
     });
     this._map.on('click', event => {
       try {
-        event.map.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
-          const poiID = this._poiMarkers.map(poi => poi.id);
-          const currentID = +feature.getId() || -1;
-          if (poiID.find(x => +x === currentID)) {
-            this.poiClick.emit(currentID);
-            this._view.fit(feature.getGeometry() as any, {
-              duration: zoomDuration,
-            });
-          }
-        });
+        const poiFeature = this._getNearestFeatureOfLayer(this._poisLayer, event);
+        if (poiFeature) {
+          console.log(poiFeature);
+          const currentID = +poiFeature.getId() || -1;
+          this.poiClick.emit(currentID);
+          this._view.fit(poiFeature.getGeometry() as any, {
+            duration: zoomDuration,
+            maxZoom: this._view.getZoom(),
+          });
+        }
       } catch (e) {
         console.log(e);
       }
@@ -407,8 +410,8 @@ export class MapComponent implements OnDestroy {
       domUrl.revokeObjectURL(url);
     };
     img.src = url;
-    console.log(url);
     img.crossOrigin = 'Anonymous';
+    img.setAttribute('crossOrigin', '');
 
     return img;
   }
@@ -836,5 +839,51 @@ export class MapComponent implements OnDestroy {
     );
 
     return style;
+  }
+
+  private _getNearestFeatureOfLayer(
+    layer: VectorLayer,
+    evt: MapBrowserEvent<UIEvent>,
+  ): Feature<Geometry> {
+    const precision = this._view.getResolution() * DEF_MAP_CLUSTER_CLICK_TOLERANCE;
+    let nearestFeature = null;
+    const features: Feature<Geometry>[] = [];
+
+    if (layer && layer.getSource()) {
+      layer
+        .getSource()
+        .forEachFeatureInExtent(
+          buffer(
+            [evt.coordinate[0], evt.coordinate[1], evt.coordinate[0], evt.coordinate[1]],
+            precision,
+          ),
+          feature => {
+            features.push(feature);
+          },
+        );
+    }
+
+    if (features.length) {
+      nearestFeature = this._getNearest(features, evt.coordinate);
+    }
+
+    return nearestFeature;
+  }
+
+  private _getNearest(features: Feature<Geometry>[], coordinate: Coordinate) {
+    let ret: Feature<Geometry> = features[0];
+    let minDistance = Number.MAX_VALUE;
+    features.forEach(feature => {
+      const geom = feature.getGeometry() as Point;
+      const distance = this._distance(geom.getFlatCoordinates(), coordinate);
+      if (distance < minDistance) {
+        minDistance = distance;
+        ret = feature;
+      }
+    });
+    return ret;
+  }
+  private _distance(c1: Coordinate, c2: Coordinate) {
+    return Math.sqrt(Math.pow(c1[0] - c2[0], 2) + Math.pow(c1[1] - c2[1], 2));
   }
 }

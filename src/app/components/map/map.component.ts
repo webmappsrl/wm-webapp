@@ -700,7 +700,7 @@ export class MapComponent implements OnDestroy {
     });
     this._selectInteraction = new SelectInteraction({
       layers: selectLayers,
-      hitTolerance: 10,
+      hitTolerance: 1,
       style: null,
     });
 

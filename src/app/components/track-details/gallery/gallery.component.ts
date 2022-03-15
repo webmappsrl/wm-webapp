@@ -29,14 +29,14 @@ export class GalleryComponent {
     this.currentImage$.next(null);
   }
 
-  @HostListener('document:keydown.ArrowRight', ['$event'])
+  @HostListener('keydown.ArrowRight', ['$event'])
   public next(): void {
     const currentIndex = this.gallery.indexOf(this.currentImage$.value);
     const nextIndex = (currentIndex + 1) % this.gallery.length;
     this.currentImage$.next(this.gallery.slice(nextIndex)[0]);
   }
 
-  @HostListener('document:keydown.ArrowLeft', ['$event'])
+  @HostListener('keydown.ArrowLeft', ['$event'])
   public prev(): void {
     const currentIndex = this.gallery.indexOf(this.currentImage$.value);
     const prevIndex = (currentIndex - 1) % this.gallery.length;

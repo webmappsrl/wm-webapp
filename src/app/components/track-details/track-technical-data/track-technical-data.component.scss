@@ -22,11 +22,11 @@ webmapp-track-technical-data {
 
       .webmapp-track-technical-data-label {
         flex: 1 1 auto;
+        font-family: var(--wm-font-family-content);
         &::first-letter {
           text-transform: capitalize;
         }
-        font-family: Inter;
-        font-size: 16px;
+        font-size: var(--wm-font-mf);
         font-style: normal;
         font-weight: 400;
         line-height: 20px;
@@ -38,7 +38,7 @@ webmapp-track-technical-data {
         display: inline-flex;
         white-space: nowrap;
 
-        font-size: 16px;
+        font-size: var(--wm-font-mf);
         font-style: normal;
         font-weight: 400;
         line-height: 20px;

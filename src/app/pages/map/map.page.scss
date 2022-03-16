@@ -12,8 +12,8 @@
   left: 0;
   transition: width 500ms;
   z-index: 10000;
-  background: var(--ion-color-light);
-  color: var(--ion-color-dark);
+  background: var(--wm-color-light);
+  color: var(--wm-color-dark);
 
   &.details-container-visible,
   .webmapp-track-details {
@@ -32,8 +32,8 @@
   left: 0px;
   transition: left 500ms;
   z-index: 10000;
-  background: var(--ion-color-light);
-  color: var(--ion-color-primary);
+  background: var(--wm-color-light);
+  color: var(--wm-color-primary);
   width: 22px;
   height: 56px;
   &.webmapp-menubtn-opened {

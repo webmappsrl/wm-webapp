@@ -1,5 +1,6 @@
 .webmapp-track-download-urls-item {
   .webmapp-track-download-urls-item-label {
+    font-family: var(--wm-font-family-content);
     &::first-letter {
       text-transform: capitalize;
     }

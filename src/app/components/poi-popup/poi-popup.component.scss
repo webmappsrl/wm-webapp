@@ -49,7 +49,8 @@ webmapp-poi-popup {
       align-self: auto;
     }
     .webmapp-poi-popup-title {
-      font-size: 18px;
+      font-family: var(--wm-font-family-header);
+      font-size: var(--wm-font-md);
       font-weight: 700;
       line-height: 22px;
       letter-spacing: 0em;
@@ -60,6 +61,7 @@ webmapp-poi-popup {
   }
 
   .webmapp-poi-popup-text {
+    font-family: var(--wm-font-family-content);
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -90,6 +92,7 @@ webmapp-poi-popup {
       align-content: center;
       align-items: center;
       height: 27px;
+      font-family: var(--wm-font-family-content);
       i {
         flex: 0 1 20px;
         align-self: auto;

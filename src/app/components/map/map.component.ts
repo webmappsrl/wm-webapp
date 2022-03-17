@@ -178,7 +178,7 @@ export class MapComponent implements OnDestroy {
         });
       });
 
-    this._confTHEME$.pipe(take(1)).subscribe(theme => {
+    this._confTHEME$.pipe(take(2)).subscribe(theme => {
       this._primaryColor = theme.primary;
     });
   }

@@ -1,14 +1,14 @@
 import {createReducer, on} from '@ngrx/store';
 import {loadConfSuccess} from './conf.actions';
-import {IConf} from './model';
 
 export const confFeatureKey = 'conf';
 export interface IConfRootState {
-  [confFeatureKey]: IConf;
+  [confFeatureKey]: ICONF;
 }
-const initialConfState: IConf = {
+const initialConfState: ICONF = {
   APP: {
     name: 'Webmapp',
+    geohubId: 3,
   },
   THEME: {
     primary: '#3880ff',
@@ -33,7 +33,6 @@ const initialConfState: IConf = {
     defaultFeatureColor: '#000000',
     theme: 'webmapp',
   },
-  error: '',
 };
 export const confReducer = createReducer(
   initialConfState,

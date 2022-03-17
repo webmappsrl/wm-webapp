@@ -1,10 +1,8 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
-import {BehaviorSubject} from 'rxjs';
 import {getCSSVariables} from '../functions/theme';
-import {confFeatureKey, IConfRootState} from './conf.reducer';
-import {IConfState} from './model';
+import {confFeatureKey} from './conf.reducer';
 
-const confFeature = createFeatureSelector<IConfState>(confFeatureKey);
+const confFeature = createFeatureSelector<ICONF>(confFeatureKey);
 export const confAPP = createSelector(confFeature, state => state.APP);
 export const confTHEME = createSelector(confFeature, state => state.THEME);
 export const confTHEMEVariables = createSelector(confTHEME, (theme: ITHEME) =>

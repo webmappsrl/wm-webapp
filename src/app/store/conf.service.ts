@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
-import {IConf} from './model';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +11,7 @@ export class ConfService {
 
   constructor(private _http: HttpClient) {}
 
-  getConf(): Observable<IConf> {
-    return this._http.get<IConf>(`${this._apiConf}/config.json`);
+  getConf(): Observable<ICONF> {
+    return this._http.get<ICONF>(`${this._apiConf}/config.json`);
   }
 }

@@ -40,7 +40,11 @@ export const confReducer = createReducer(
     localStorage.setItem('appname', state.APP.name);
     return {
       ...state,
-      ...{APP: {...state.APP, ...conf.APP}, THEME: {...state.THEME, ...conf.THEME}},
+      ...{
+        APP: {...state.APP, ...conf.APP},
+        THEME: {...state.THEME, ...conf.THEME},
+        LANGUAGES: {...state.LANGUAGES, ...conf.LANGUAGES},
+      },
     };
   }),
 );

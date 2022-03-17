@@ -10,6 +10,7 @@ import {
   OnDestroy,
   Output,
   ViewChild,
+  ViewEncapsulation,
 } from '@angular/core';
 import {Store} from '@ngrx/store';
 
@@ -77,6 +78,7 @@ const DEF_MAP_CLUSTER_CLICK_TOLERANCE: number = 40;
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class MapComponent implements OnDestroy {
   @ViewChild('mapContainer') mapContainer: ElementRef;
@@ -144,11 +146,11 @@ export class MapComponent implements OnDestroy {
   private _poiMarkers: PoiMarker[] = [];
   private _updateMapSub: Subscription = Subscription.EMPTY;
   private _confTHEME$: Observable<ITHEME> = this._store.select(confTHEME);
-  private _primaryColor = '#2F9E44';
   private _confMap$: Observable<any> = this._store.select(confMAP);
   private _maxZoom: number = initMaxZoom;
   private _minZoom: number = initMinZoom;
 
+  private _defaultFeatureColor = '#000000';
   constructor(
     private _communicationService: CommunicationService,
     private _geohubService: GeohubService,
@@ -183,7 +185,7 @@ export class MapComponent implements OnDestroy {
       });
 
     this._confTHEME$.pipe(take(2)).subscribe(theme => {
-      this._primaryColor = theme.primary;
+      this._defaultFeatureColor = theme.defaultFeatureColor;
     });
 
     this._confMap$.pipe(filter(f => f != null)).subscribe((map: IMAP) => {
@@ -405,7 +407,7 @@ export class MapComponent implements OnDestroy {
     html += `
         <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style=" position: absolute;  width: 46px;  height: 46px;  left: 0px;  top: 0px;">
           <circle opacity="${selected ? 1 : 0.2}" cx="23" cy="23" r="23" fill="${
-      this._primaryColor
+      this._defaultFeatureColor
     }"/>
           <rect x="5" y="5" width="36" height="36" rx="18" fill="url(#img)" stroke="white" stroke-width="2"/>
           <defs>

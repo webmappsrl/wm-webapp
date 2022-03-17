@@ -24,6 +24,7 @@ import MVT from 'ol/format/MVT';
 import Geometry from 'ol/geom/Geometry';
 import LineString from 'ol/geom/LineString';
 import Point from 'ol/geom/Point';
+import SimpleGeometry from 'ol/geom/SimpleGeometry';
 import {defaults as defaultInteractions} from 'ol/interaction.js';
 import Interaction from 'ol/interaction/Interaction';
 import SelectInteraction, {SelectEvent} from 'ol/interaction/Select';
@@ -44,7 +45,7 @@ import StrokeStyle from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import TextStyle from 'ol/style/Text';
 import TextPlacement from 'ol/style/TextPlacement';
-import View from 'ol/View';
+import View, {FitOptions} from 'ol/View';
 
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {filter, tap} from 'rxjs/operators';
@@ -84,7 +85,8 @@ export class MapComponent implements OnDestroy {
     if (padding != null && padding[3] != null) {
       this.scaleLineStyle$.next(padding[3]);
     }
-    this._view.fit(new Point(this._view.getCenter()), {
+
+    this._fitView(new Point(this._view.getCenter()), {
       padding: this._padding$.value,
       duration: zoomDuration,
       maxZoom: this._view.getZoom(),
@@ -102,12 +104,15 @@ export class MapComponent implements OnDestroy {
     }
   }
   @Input('poi') set setPoi(id: number) {
-    const currentPoi = this._poiMarkers.find(p => +p.id === +id);
-    if (currentPoi != null) {
-      this._view.fit(currentPoi.icon.getGeometry() as any, {
-        duration: zoomDuration,
-        maxZoom: this._view.getZoom(),
-      });
+    if (id === -1 && this._selectedPoiLayer != null) {
+      this._map.removeLayer(this._selectedPoiLayer);
+      this._selectedPoiLayer = undefined;
+    } else {
+      const currentPoi = this._poiMarkers.find(p => +p.id === +id);
+      if (currentPoi != null) {
+        this._fitView(currentPoi.icon.getGeometry() as any);
+        this._selectCurrentPoi(currentPoi);
+      }
     }
   }
 
@@ -131,6 +136,8 @@ export class MapComponent implements OnDestroy {
   private _elevationChartPoint: Feature<Point>;
   private _elevationChartTrack: Feature<LineString>;
   private _poisLayer: VectorLayer;
+  private _selectedPoiLayer: VectorLayer;
+  private _selectedPoiMarker: PoiMarker;
   private _poiMarkers: PoiMarker[] = [];
   private _updateMapSub: Subscription = Subscription.EMPTY;
 
@@ -160,7 +167,7 @@ export class MapComponent implements OnDestroy {
         }),
       )
       .subscribe(() => {
-        this._view.fit(this._selectedFeature$.value.getGeometry().getExtent(), {
+        this._fitView(this._selectedFeature$.value.getGeometry().getExtent(), {
           padding: this._padding$.value,
           duration: zoomDuration,
         });
@@ -169,6 +176,16 @@ export class MapComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this._updateMapSub.unsubscribe();
+  }
+
+  private _fitView(geometryOrExtent: SimpleGeometry | Extent, optOptions?: FitOptions): void {
+    if (optOptions == null) {
+      optOptions = {
+        duration: zoomDuration,
+        maxZoom: this._view.getZoom(),
+      };
+    }
+    this._view.fit(geometryOrExtent, optOptions);
   }
 
   private async _initMap() {
@@ -182,11 +199,13 @@ export class MapComponent implements OnDestroy {
       extent: this._mapService.extentFromLonLat(initExtent),
       padding: this._padding$.value || undefined,
     });
-    this._view.fit(new Point(this._view.getCenter()), {
+
+    this._fitView(new Point(this._view.getCenter()), {
       padding: this._padding$.value,
       duration: zoomDuration,
       maxZoom: this._view.getZoom(),
     });
+
     const baseLayers: Array<Layer> = this._initializeBaseLayers();
     this._dataLayers = await this._initializeDataLayers();
     const interactions: Collection<Interaction> = this._initializeMapInteractions(this._dataLayers);
@@ -238,26 +257,30 @@ export class MapComponent implements OnDestroy {
       }
     });
     this._map.on('click', event => {
+      stopPropagation(event);
       try {
         const poiFeature = this._getNearestFeatureOfLayer(this._poisLayer, event);
         if (poiFeature) {
-          console.log(poiFeature);
           const currentID = +poiFeature.getId() || -1;
           this.poiClick.emit(currentID);
-          this._view.fit(poiFeature.getGeometry() as any, {
-            duration: zoomDuration,
-            maxZoom: this._view.getZoom(),
-          });
         }
       } catch (e) {
         console.log(e);
       }
-      stopPropagation(event);
     });
   }
-
+  private async _selectCurrentPoi(poiMarker: PoiMarker) {
+    if (this._selectedPoiMarker != null) {
+      this._map.removeLayer(this._selectedPoiLayer);
+      this._selectedPoiLayer = undefined;
+    }
+    this._selectedPoiLayer = this._createLayer(this._selectedPoiLayer, 9999);
+    this._selectedPoiMarker = poiMarker;
+    const {marker} = await this._createPoiCanvasIcon(poiMarker.poi, null, true);
+    this._addIconToLayer(this._selectedPoiLayer, marker.icon);
+  }
   private async _addPoisMarkers(poiCollection: Array<IGeojsonFeature>) {
-    this._poisLayer = this._createLayer(this._poisLayer, 9999);
+    this._poisLayer = this._createLayer(this._poisLayer, 9998);
     for (let i = this._poiMarkers?.length - 1; i >= 0; i--) {
       const ov = this._poiMarkers[i];
       if (!poiCollection?.find(x => x.properties.id + '' === ov.id)) {
@@ -283,8 +306,9 @@ export class MapComponent implements OnDestroy {
   private async _createPoiCanvasIcon(
     poi: any,
     geometry = null,
+    selected = false,
   ): Promise<{marker: PoiMarker; style: Style}> {
-    const img = await this._createPoiCavasImage(poi);
+    const img = await this._createPoiCavasImage(poi, selected);
     const {iconFeature, style} = await this._createIconFeature(
       geometry
         ? geometry
@@ -321,7 +345,6 @@ export class MapComponent implements OnDestroy {
     });
     const style = new Style({
       image: new Icon({
-        crossOrigin: 'anonymous',
         anchor,
         img,
         imgSize: [size, size],
@@ -334,14 +357,18 @@ export class MapComponent implements OnDestroy {
     return {iconFeature, style};
   }
 
-  private async _createPoiCavasImage(poi: IGeojsonFeature): Promise<HTMLImageElement> {
-    // console.log('------- ~ MapComponent ~ poi', poi);
-    const htmlTextCanvas = await this._createPoiMarkerHtmlForCanvas(poi);
+  private async _createPoiCavasImage(
+    poi: IGeojsonFeature,
+    selected = false,
+  ): Promise<HTMLImageElement> {
+    const htmlTextCanvas = await this._createPoiMarkerHtmlForCanvas(poi, selected);
     return this._createCanvasForHtml(htmlTextCanvas, 46);
   }
 
-  private async _createPoiMarkerHtmlForCanvas(value: IGeojsonFeature): Promise<string> {
-    // console.log('------- ~ MapComponent ~ _createPoiMarkerHtmlForCanvas ~ value', value);
+  private async _createPoiMarkerHtmlForCanvas(
+    value: IGeojsonFeature,
+    selected = false,
+  ): Promise<string> {
     const img1b64: string | ArrayBuffer = await this._downloadBase64Img(
       value.properties?.feature_image?.sizes['108x137'],
     );
@@ -351,7 +378,7 @@ export class MapComponent implements OnDestroy {
 
     html += `
         <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style=" position: absolute;  width: 46px;  height: 46px;  left: 0px;  top: 0px;">
-          <circle opacity="0.2" cx="23" cy="23" r="23" fill="#2F9E44"/>
+          <circle opacity="${selected ? 1 : 0.2}" cx="23" cy="23" r="23" fill="#2F9E44"/>
           <rect x="5" y="5" width="36" height="36" rx="18" fill="url(#img)" stroke="white" stroke-width="2"/>
           <defs>
             <pattern height="100%" width="100%" patternContentUnits="objectBoundingBox" id="img">
@@ -411,8 +438,6 @@ export class MapComponent implements OnDestroy {
       domUrl.revokeObjectURL(url);
     };
     img.src = url;
-    img.crossOrigin = 'Anonymous';
-    img.setAttribute('crossOrigin', '');
 
     return img;
   }
@@ -675,7 +700,7 @@ export class MapComponent implements OnDestroy {
     });
     this._selectInteraction = new SelectInteraction({
       layers: selectLayers,
-      hitTolerance: 10,
+      hitTolerance: 1,
       style: null,
     });
 

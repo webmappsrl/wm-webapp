@@ -110,7 +110,7 @@
     <webmapp-gallery *ngIf="data?.image_gallery" [gallery]="data.image_gallery"> </webmapp-gallery>
 
     <ng-container *ngIf="data.related_url as relatedUrl">
-      <div class="webmapp-title">Link relativi</div>
+      <div class="webmapp-title">Collegamenti esterni</div>
       <webmapp-related-urls [relatedUrls]="relatedUrl"> </webmapp-related-urls>
     </ng-container>
 

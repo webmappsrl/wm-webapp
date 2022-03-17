@@ -43,7 +43,6 @@ export const confReducer = createReducer(
       ...{
         APP: {...state.APP, ...conf.APP},
         THEME: {...state.THEME, ...conf.THEME},
-        LANGUAGES: {...state.LANGUAGES, ...conf.LANGUAGES},
       },
     };
   }),

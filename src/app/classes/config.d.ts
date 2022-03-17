@@ -34,8 +34,22 @@ interface IAPP {
   appStoreUrl?: string;
   googlePlayUrl?: string;
 }
+
+interface IHOME {
+  view: string;
+  title?: string;
+  subtitle?: string;
+  taxonomy?: string;
+  types?: string[];
+  terms?: string[];
+  features?: string[];
+  url?: string;
+  color?: string;
+  noElements?: string;
+}
 interface ICONF {
   APP: IAPP;
   LANGUAGES?: ILANGUAGES;
   THEME?: ITHEME;
+  HOME?: IHOME;
 }

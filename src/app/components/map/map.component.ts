@@ -49,7 +49,7 @@ import TextPlacement from 'ol/style/TextPlacement';
 import View, {FitOptions} from 'ol/View';
 
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
-import {filter, skip, take, tap} from 'rxjs/operators';
+import {filter, take, tap} from 'rxjs/operators';
 
 import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
@@ -57,7 +57,7 @@ import {CommunicationService} from 'src/app/services/communication.service';
 import {GeohubService} from 'src/app/services/geohub.service';
 import {MapService} from 'src/app/services/map.service';
 import {IConfRootState} from 'src/app/store/conf.reducer';
-import {confTHEME, confTHEMEVariables} from 'src/app/store/conf.selector';
+import {confMAP, confTHEME} from 'src/app/store/conf.selector';
 import {ILocation} from 'src/app/types/location';
 import {IGeojsonFeature, ILineString} from 'src/app/types/model';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
@@ -67,7 +67,7 @@ const zoomDuration = 500;
 const startView = [10.4147, 43.7118, 9];
 const initExtent: Extent = [-180, -85, 180, 85];
 const initMaxZoom = 17;
-const initMinZoom = 0;
+const initMinZoom = 10;
 const projection = 'EPSG:3857';
 const scaleUnits = 'metric';
 const scaleMinWidth = 50;
@@ -92,7 +92,7 @@ export class MapComponent implements OnDestroy {
     this._fitView(new Point(this._view.getCenter()), {
       padding: this._padding$.value,
       duration: zoomDuration,
-      maxZoom: this._view.getZoom(),
+      maxZoom: this._maxZoom,
     });
   }
   @Input('trackElevationChartElements') set trackElevationChartElements(
@@ -145,6 +145,10 @@ export class MapComponent implements OnDestroy {
   private _updateMapSub: Subscription = Subscription.EMPTY;
   private _confTHEME$: Observable<ITHEME> = this._store.select(confTHEME);
   private _primaryColor = '#2F9E44';
+  private _confMap$: Observable<any> = this._store.select(confMAP);
+  private _maxZoom: number = initMaxZoom;
+  private _minZoom: number = initMinZoom;
+
   constructor(
     private _communicationService: CommunicationService,
     private _geohubService: GeohubService,
@@ -181,6 +185,20 @@ export class MapComponent implements OnDestroy {
     this._confTHEME$.pipe(take(2)).subscribe(theme => {
       this._primaryColor = theme.primary;
     });
+
+    this._confMap$.pipe(filter(f => f != null)).subscribe((map: IMAP) => {
+      if (map.maxZoom) {
+        this._maxZoom = map.maxZoom;
+        this._view.setMaxZoom(this._maxZoom);
+      }
+      if (map.minZoom) {
+        this._minZoom = map.minZoom;
+        this._view.setMinZoom(this._minZoom);
+      }
+      if (map.defZoom) {
+        this._view.setZoom(map.defZoom);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -191,9 +209,9 @@ export class MapComponent implements OnDestroy {
     if (optOptions == null) {
       optOptions = {
         duration: zoomDuration,
-        maxZoom: this._view.getZoom(),
       };
     }
+    this._view.setMinZoom(this._minZoom);
     this._view.fit(geometryOrExtent, optOptions);
   }
 
@@ -201,8 +219,8 @@ export class MapComponent implements OnDestroy {
     this._view = new View({
       center: this._mapService.coordsFromLonLat([this.startView[0], this.startView[1]]),
       zoom: this.startView[2],
-      maxZoom: initMaxZoom,
-      minZoom: initMinZoom,
+      maxZoom: this._maxZoom,
+      minZoom: this._minZoom,
       projection,
       constrainOnlyCenter: true,
       extent: this._mapService.extentFromLonLat(initExtent),
@@ -212,7 +230,6 @@ export class MapComponent implements OnDestroy {
     this._fitView(new Point(this._view.getCenter()), {
       padding: this._padding$.value,
       duration: zoomDuration,
-      maxZoom: this._view.getZoom(),
     });
 
     const baseLayers: Array<Layer> = this._initializeBaseLayers();
@@ -498,7 +515,7 @@ export class MapComponent implements OnDestroy {
    */
   private _initializeBaseSource() {
     return new XYZ({
-      maxZoom: 17,
+      maxZoom: this._maxZoom,
       minZoom: 0,
       url: 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
       projection: 'EPSG:3857',

@@ -90,7 +90,7 @@ export const confReducer = createReducer(
   on(loadConfSuccess, (state, {conf}) => {
     localStorage.setItem('appname', state.APP.name);
     return {
-      ...state,
+      ...conf,
       ...{
         APP: {...state.APP, ...conf.APP},
         THEME: {...state.THEME, ...conf.THEME},

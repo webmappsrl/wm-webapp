@@ -99,7 +99,29 @@ interface IOPTIONS {
   galleryAnimationType?: string;
   mapAttributions?: IMAPATTRIBUTION[];
 }
+interface IAUTH {
+  enable?: boolean;
+  showAtStartup?: boolean;
+  loginToGeohub?: boolean;
+  force?: boolean;
+  skipToDownloadPublicRoute?: boolean;
+  hideCountry?: boolean;
+  customCreatePostRoles?: boolean;
+  facebook?: IFACEBOOK;
+  google?: IGOOGLE;
+}
+
 type IDETAILSMAPBEHAVIOUR = 'all' | 'track' | 'poi' | 'route';
+
+interface IFACEBOOK {
+  id: string;
+  name: string;
+}
+interface IGOOGLE {
+  id: string;
+  iosId: string;
+  name: string;
+}
 interface ICLUSTERING {
   enable: boolean;
   radius: number;
@@ -119,6 +141,7 @@ interface IAPPDOWNLOADBUTTONS {
 interface ICONF {
   APP: IAPP;
   OPTIONS: IOPTIONS;
+  AUTH?: IAUTH;
   LANGUAGES?: ILANGUAGES;
   THEME?: ITHEME;
   HOME?: IHOME;

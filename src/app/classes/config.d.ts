@@ -111,7 +111,56 @@ interface IAUTH {
   google?: IGOOGLE;
 }
 
+interface IMAP {
+  maxZoom: number;
+  minZoom: number;
+  defZoom: number;
+  center: [number, number];
+  bbox: [number, number, number, number];
+  layers?: ILAYERS;
+  overlays?: IOVERLAYERS;
+}
+
+interface ILAYERS {
+  id: string;
+  name: string;
+  type: string;
+  tilesUrl: string;
+  opacity: number;
+  tileSize?: number | [number, number];
+  default?: boolean;
+  grayscale?: number;
+  params?: {[id: string]: string};
+}
+interface IOVERLAYERS {
+  id: string;
+  type: string;
+  tilesUrl: string;
+  minZoom?: number;
+  maxZoom?: number;
+  fill_opacity?: number;
+  stroke_width?: number;
+  stroke_opacity?: number;
+  line_dash?: number[];
+  zindex?: number;
+  icon?: string;
+  name?: string;
+  description?: string;
+  color?: string;
+  fill_color?: string;
+  geojsonUrl?: string;
+  noDetails?: boolean;
+  noInteraction?: boolean;
+  preventFilter?: boolean;
+  invertPolygons?: boolean;
+  alert?: boolean;
+  show_label?: boolean;
+  createTaxonomy?: ITAXONOMY;
+  params?: {[id: string]: string};
+}
+
 type IDETAILSMAPBEHAVIOUR = 'all' | 'track' | 'poi' | 'route';
+type ITAXONOMY = 'activity' | 'theme' | 'when' | 'where' | 'who' | 'webmapp_category';
 
 interface IFACEBOOK {
   id: string;
@@ -141,6 +190,7 @@ interface IAPPDOWNLOADBUTTONS {
 interface ICONF {
   APP: IAPP;
   OPTIONS: IOPTIONS;
+  MAP?: IMAP;
   AUTH?: IAUTH;
   LANGUAGES?: ILANGUAGES;
   THEME?: ITHEME;

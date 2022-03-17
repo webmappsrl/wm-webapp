@@ -10,6 +10,7 @@ export const confLANGUAGES = createSelector(confFeature, state => state.LANGUAGE
 export const confHOME = createSelector(confFeature, state => state.HOME);
 export const confOPTIONS = createSelector(confFeature, state => state.OPTIONS);
 export const confAUTH = createSelector(confFeature, state => state.AUTH);
+export const confMAP = createSelector(confFeature, state => state.MAP);
 
 export const confTHEMEVariables = createSelector(confTHEME, (theme: ITHEME) =>
   getCSSVariables(theme),

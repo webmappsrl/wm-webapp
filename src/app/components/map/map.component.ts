@@ -94,7 +94,6 @@ export class MapComponent implements OnDestroy {
     this._fitView(new Point(this._view.getCenter()), {
       padding: this._padding$.value,
       duration: zoomDuration,
-      maxZoom: this._maxZoom,
     });
   }
   @Input('trackElevationChartElements') set trackElevationChartElements(
@@ -149,8 +148,8 @@ export class MapComponent implements OnDestroy {
   private _confMap$: Observable<any> = this._store.select(confMAP);
   private _maxZoom: number = initMaxZoom;
   private _minZoom: number = initMinZoom;
-
   private _defaultFeatureColor = '#000000';
+
   constructor(
     private _communicationService: CommunicationService,
     private _geohubService: GeohubService,
@@ -211,9 +210,9 @@ export class MapComponent implements OnDestroy {
     if (optOptions == null) {
       optOptions = {
         duration: zoomDuration,
+        maxZoom: this._view.getZoom(),
       };
     }
-    this._view.setMinZoom(this._minZoom);
     this._view.fit(geometryOrExtent, optOptions);
   }
 
@@ -424,9 +423,6 @@ export class MapComponent implements OnDestroy {
 
   private async _downloadBase64Img(url): Promise<string | ArrayBuffer> {
     const opt = {};
-    // if (this.platform.is('mobile')) {
-    //   opt = { mode: 'no-cors' };
-    // }
     const data = await fetch(url, opt);
     const blob = await data.blob();
     return new Promise(resolve => {
@@ -438,7 +434,6 @@ export class MapComponent implements OnDestroy {
           resolve(base64data);
         };
       } catch (error) {
-        // console.log('------- ~ getB64img ~ error', error);
         resolve('');
       }
     });
@@ -496,8 +491,6 @@ export class MapComponent implements OnDestroy {
     if (source.hasFeature(icon)) {
       source.removeFeature(icon);
     }
-    // this._map.removeOverlay(cm.icon);
-    //cm.component.destroy();
   }
 
   private _initializeBaseLayers(): Array<TileLayer> {

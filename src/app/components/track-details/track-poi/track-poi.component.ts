@@ -21,6 +21,7 @@ export class TrackPoiComponent {
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
 
   @Input('track') set feature(track: CGeojsonLineStringFeature) {
+    this.poi = [];
     if (track != null && track.properties != null && track.properties.related_pois != null) {
       this.poi = track.properties.related_pois.map(relatedPoi => {
         const properties = relatedPoi.properties;

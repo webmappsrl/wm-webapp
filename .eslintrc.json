@@ -68,7 +68,6 @@
           {
             "selector": "variable",
             "format": [
-              "UPPER_CASE"
             ],
             "modifiers": [
               "exported",
@@ -134,7 +133,6 @@
           {
             "selector": "default",
             "format": [
-              "camelCase"
             ],
             "leadingUnderscore": "allow",
             "trailingUnderscore": "forbid"

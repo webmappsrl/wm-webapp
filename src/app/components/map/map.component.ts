@@ -10,7 +10,9 @@ import {
   OnDestroy,
   Output,
   ViewChild,
+  ViewEncapsulation,
 } from '@angular/core';
+import {Store} from '@ngrx/store';
 
 import {Collection, MapBrowserEvent} from 'ol';
 import ScaleLineControl from 'ol/control/ScaleLine';
@@ -47,14 +49,16 @@ import TextStyle from 'ol/style/Text';
 import TextPlacement from 'ol/style/TextPlacement';
 import View, {FitOptions} from 'ol/View';
 
-import {BehaviorSubject, Subscription} from 'rxjs';
-import {filter, tap} from 'rxjs/operators';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
+import {filter, take, tap} from 'rxjs/operators';
 
 import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {CommunicationService} from 'src/app/services/communication.service';
 import {GeohubService} from 'src/app/services/geohub.service';
 import {MapService} from 'src/app/services/map.service';
+import {IConfRootState} from 'src/app/store/conf/conf.reducer';
+import {confMAP, confTHEME} from 'src/app/store/conf/conf.selector';
 import {ILocation} from 'src/app/types/location';
 import {IGeojsonFeature, ILineString} from 'src/app/types/model';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
@@ -64,7 +68,7 @@ const zoomDuration = 500;
 const startView = [10.4147, 43.7118, 9];
 const initExtent: Extent = [-180, -85, 180, 85];
 const initMaxZoom = 17;
-const initMinZoom = 0;
+const initMinZoom = 10;
 const projection = 'EPSG:3857';
 const scaleUnits = 'metric';
 const scaleMinWidth = 50;
@@ -74,6 +78,7 @@ const DEF_MAP_CLUSTER_CLICK_TOLERANCE: number = 40;
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class MapComponent implements OnDestroy {
   @ViewChild('mapContainer') mapContainer: ElementRef;
@@ -89,7 +94,6 @@ export class MapComponent implements OnDestroy {
     this._fitView(new Point(this._view.getCenter()), {
       padding: this._padding$.value,
       duration: zoomDuration,
-      maxZoom: this._view.getZoom(),
     });
   }
   @Input('trackElevationChartElements') set trackElevationChartElements(
@@ -140,12 +144,18 @@ export class MapComponent implements OnDestroy {
   private _selectedPoiMarker: PoiMarker;
   private _poiMarkers: PoiMarker[] = [];
   private _updateMapSub: Subscription = Subscription.EMPTY;
+  private _confTHEME$: Observable<ITHEME> = this._store.select(confTHEME);
+  private _confMap$: Observable<any> = this._store.select(confMAP);
+  private _maxZoom: number = initMaxZoom;
+  private _minZoom: number = initMinZoom;
+  private _defaultFeatureColor = '#000000';
 
   constructor(
     private _communicationService: CommunicationService,
     private _geohubService: GeohubService,
     private _mapService: MapService,
     private _zone: NgZone,
+    private _store: Store<IConfRootState>,
   ) {
     this._zone.run(() => this._initMap());
 
@@ -172,6 +182,24 @@ export class MapComponent implements OnDestroy {
           duration: zoomDuration,
         });
       });
+
+    this._confTHEME$.pipe(take(2)).subscribe(theme => {
+      this._defaultFeatureColor = theme.defaultFeatureColor;
+    });
+
+    this._confMap$.pipe(filter(f => f != null)).subscribe((map: IMAP) => {
+      if (map.maxZoom) {
+        this._maxZoom = map.maxZoom;
+        this._view.setMaxZoom(this._maxZoom);
+      }
+      if (map.minZoom) {
+        this._minZoom = map.minZoom;
+        this._view.setMinZoom(this._minZoom);
+      }
+      if (map.defZoom) {
+        this._view.setZoom(map.defZoom);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -192,8 +220,8 @@ export class MapComponent implements OnDestroy {
     this._view = new View({
       center: this._mapService.coordsFromLonLat([this.startView[0], this.startView[1]]),
       zoom: this.startView[2],
-      maxZoom: initMaxZoom,
-      minZoom: initMinZoom,
+      maxZoom: this._maxZoom,
+      minZoom: this._minZoom,
       projection,
       constrainOnlyCenter: true,
       extent: this._mapService.extentFromLonLat(initExtent),
@@ -203,7 +231,6 @@ export class MapComponent implements OnDestroy {
     this._fitView(new Point(this._view.getCenter()), {
       padding: this._padding$.value,
       duration: zoomDuration,
-      maxZoom: this._view.getZoom(),
     });
 
     const baseLayers: Array<Layer> = this._initializeBaseLayers();
@@ -378,7 +405,9 @@ export class MapComponent implements OnDestroy {
 
     html += `
         <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style=" position: absolute;  width: 46px;  height: 46px;  left: 0px;  top: 0px;">
-          <circle opacity="${selected ? 1 : 0.2}" cx="23" cy="23" r="23" fill="#2F9E44"/>
+          <circle opacity="${selected ? 1 : 0.2}" cx="23" cy="23" r="23" fill="${
+      this._defaultFeatureColor
+    }"/>
           <rect x="5" y="5" width="36" height="36" rx="18" fill="url(#img)" stroke="white" stroke-width="2"/>
           <defs>
             <pattern height="100%" width="100%" patternContentUnits="objectBoundingBox" id="img">
@@ -394,9 +423,6 @@ export class MapComponent implements OnDestroy {
 
   private async _downloadBase64Img(url): Promise<string | ArrayBuffer> {
     const opt = {};
-    // if (this.platform.is('mobile')) {
-    //   opt = { mode: 'no-cors' };
-    // }
     const data = await fetch(url, opt);
     const blob = await data.blob();
     return new Promise(resolve => {
@@ -408,7 +434,6 @@ export class MapComponent implements OnDestroy {
           resolve(base64data);
         };
       } catch (error) {
-        // console.log('------- ~ getB64img ~ error', error);
         resolve('');
       }
     });
@@ -466,8 +491,6 @@ export class MapComponent implements OnDestroy {
     if (source.hasFeature(icon)) {
       source.removeFeature(icon);
     }
-    // this._map.removeOverlay(cm.icon);
-    //cm.component.destroy();
   }
 
   private _initializeBaseLayers(): Array<TileLayer> {
@@ -487,7 +510,7 @@ export class MapComponent implements OnDestroy {
    */
   private _initializeBaseSource() {
     return new XYZ({
-      maxZoom: 17,
+      maxZoom: this._maxZoom,
       minZoom: 0,
       url: 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
       projection: 'EPSG:3857',

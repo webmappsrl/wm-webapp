@@ -54,32 +54,32 @@
     border-radius: 50%;
     margin: 10px 0;
     font-size: x-large;
-    box-shadow: 1px 2px 9px -3px var(--ion-color-dark);
+    box-shadow: 1px 2px 9px -3px var(--wm-color-dark);
   }
 
   .ol-zoom-in,
   .ol-zoom-out {
-    color: var(--ion-color-dark);
-    background: var(--ion-color-light);
+    color: var(--wm-color-dark);
+    background: var(--wm-color-light);
 
     &:focus {
-      background: var(--ion-color-light);
+      background: var(--wm-color-light);
     }
 
     &:hover {
-      background: var(--ion-color-light-shade);
+      background: var(--wm-color-light-shade);
     }
   }
 }
 
 .ol-scale-line {
   z-index: 500;
-  background: rgba(var(--ion-color-light-rgb), 0.5);
-  box-shadow: 1px 2px 9px -3px var(--ion-color-dark);
+  background: rgba(var(--wm-color-light-rgb), 0.5);
+  box-shadow: 1px 2px 9px -3px var(--wm-color-dark);
   .ol-scale-line-inner {
     background: rgba(0, 0, 0, 0);
-    color: var(--ion-color-dark);
-    border: 1px solid var(--ion-color-dark);
+    color: var(--wm-color-dark);
+    border: 1px solid var(--wm-color-dark);
     border-top: 0;
   }
 }

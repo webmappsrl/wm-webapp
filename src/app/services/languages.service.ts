@@ -8,10 +8,13 @@
  *
  * */
 
-import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject } from 'rxjs';
-import { TranslateService } from '@ngx-translate/core';
-import { take } from 'rxjs/operators';
+import {Injectable} from '@angular/core';
+import {Observable, ReplaySubject} from 'rxjs';
+import {TranslateService} from '@ngx-translate/core';
+import {filter, take} from 'rxjs/operators';
+import {confLANGUAGES} from '../store/conf/conf.selector';
+import {Store} from '@ngrx/store';
+import {IConfRootState} from '../store/conf/conf.reducer';
 
 @Injectable({
   providedIn: 'root',
@@ -21,9 +24,19 @@ export class LanguagesService {
   private _currentLanguage: string;
   private _availableLanguages: Array<string>;
   private _onCurrentLanguageChange: ReplaySubject<string>;
-
-  constructor(private _translateService: TranslateService) {
+  private _confLANGUAGES$: Observable<any> = this._store.select(confLANGUAGES);
+  constructor(private _translateService: TranslateService, private _store: Store<IConfRootState>) {
     this._onCurrentLanguageChange = new ReplaySubject<string>(1);
+    this._confLANGUAGES$
+      .pipe(
+        take(2),
+        filter(langs => langs != null),
+      )
+      .subscribe((langs: ILANGUAGES) => {
+        if (langs.default != null) {
+          this._translateService.setDefaultLang(langs.default);
+        }
+      });
   }
 
   public get onCurrentLanguageChange(): Observable<string> {
@@ -63,9 +76,9 @@ export class LanguagesService {
           () => {
             this._onCurrentLanguageChange.next(this._currentLanguage);
           },
-          (err) => {
+          err => {
             console.warn(err);
-          }
+          },
         );
     }
   }
@@ -78,12 +91,7 @@ export class LanguagesService {
    * @returns
    */
   isAvailable(lang: string): boolean {
-    if (
-      typeof lang === 'undefined' ||
-      lang === null ||
-      lang === '' ||
-      lang.length < 2
-    ) {
+    if (typeof lang === 'undefined' || lang === null || lang === '' || lang.length < 2) {
       return false;
     }
 
@@ -154,9 +162,7 @@ export class LanguagesService {
       this._translateService.getBrowserLang() !== undefined &&
       this.isAvailable(this._translateService.getBrowserLang())
     ) {
-      this._currentLanguage = this._translateService
-        .getBrowserLang()
-        .substring(0, 2);
+      this._currentLanguage = this._translateService.getBrowserLang().substring(0, 2);
     } else {
       this._currentLanguage = this._defaultLanguage;
     }
@@ -168,9 +174,9 @@ export class LanguagesService {
         () => {
           this._onCurrentLanguageChange.next(this._currentLanguage);
         },
-        (err) => {
+        err => {
           console.warn(err);
-        }
+        },
       );
   }
 }

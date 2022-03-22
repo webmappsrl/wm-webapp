@@ -15,7 +15,7 @@ webmapp-track-details {
   scrollbar-width: none; /* Firefox */
 
   .webmapp-title {
-    font-size: 18px;
+    font-size: var(--wm-font-md);
     font-weight: 700;
     line-height: 22px;
     letter-spacing: 0em;
@@ -60,7 +60,7 @@ webmapp-track-details {
         margin: 8px 0px;
       }
       .webmapp-walkability-label {
-        font-family: Inter;
+        font-family: var(--wm-font-family-header);
         font-size: 14px;
         font-style: normal;
         font-weight: 400;
@@ -144,7 +144,7 @@ webmapp-track-details {
   #webmapp-track-details-content {
     width: 100%;
     height: calc(100% - 56px);
-    font-family: var(--font-family-content);
+    font-family: var(--wm-font-family-content);
     padding: 15px 20px 20px;
 
     #webmapp-track-details-technical-data,
@@ -163,9 +163,9 @@ webmapp-track-details {
       letter-spacing: 0em;
       text-align: left;
 
-      color: var(--ion-color-dark);
-      font-size: var(--font-md);
-      font-family: var(--font-family-header);
+      color: var(--wm-color-dark);
+      font-size: var(--wm-font-md);
+      font-family: var(--wm-font-family-header);
     }
     .webmapp-track-details-from-to {
       display: flex;
@@ -188,11 +188,11 @@ webmapp-track-details {
       }
     }
     .webmapp-track-activity {
-      color: var(--ion-color-primary);
+      color: var(--wm-color-primary);
       text-transform: uppercase;
       padding: 10px 20px 0;
       font-weight: 700;
-      font-family: var(--font-family-header);
+      font-family: var(--wm-font-family-header);
     }
     .webmapp-track-picture {
       text-align: center;
@@ -207,7 +207,7 @@ webmapp-track-details {
         height: 32px;
         border-radius: 16px;
         background-color: #33333367;
-        color: var(--ion-color-light);
+        color: var(--wm-color-light);
         bottom: 5px;
         right: 2px;
         z-index: 100;

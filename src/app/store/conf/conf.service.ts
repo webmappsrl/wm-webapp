@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {GEOHUB_DOMAIN, GEOHUB_PROTOCOL} from '../constants/geohub';
+import {GEOHUB_DOMAIN, GEOHUB_PROTOCOL} from '../../constants/geohub';
 
 @Injectable({
   providedIn: 'root',

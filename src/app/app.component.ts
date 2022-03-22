@@ -4,9 +4,9 @@ import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {LanguagesService} from './services/languages.service';
-import {loadConf} from './store/conf.actions';
-import {IConfRootState} from './store/conf.reducer';
-import {confTHEMEVariables} from './store/conf.selector';
+import {loadConf} from './store/conf/conf.actions';
+import {IConfRootState} from './store/conf/conf.reducer';
+import {confTHEMEVariables} from './store/conf/conf.selector';
 @Component({
   selector: 'webmapp-app-root',
   templateUrl: 'app.component.html',

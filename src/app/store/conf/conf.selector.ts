@@ -1,5 +1,5 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
-import {getCSSVariables} from '../functions/theme';
+import {getCSSVariables} from '../../functions/theme';
 import {confFeatureKey} from './conf.reducer';
 
 const confFeature = createFeatureSelector<ICONF>(confFeatureKey);

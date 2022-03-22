@@ -12,9 +12,9 @@ import {Injectable} from '@angular/core';
 import {Observable, ReplaySubject} from 'rxjs';
 import {TranslateService} from '@ngx-translate/core';
 import {filter, take} from 'rxjs/operators';
-import {confLANGUAGES} from '../store/conf.selector';
+import {confLANGUAGES} from '../store/conf/conf.selector';
 import {Store} from '@ngrx/store';
-import {IConfRootState} from '../store/conf.reducer';
+import {IConfRootState} from '../store/conf/conf.reducer';
 
 @Injectable({
   providedIn: 'root',

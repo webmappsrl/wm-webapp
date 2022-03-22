@@ -57,8 +57,8 @@ import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-
 import {CommunicationService} from 'src/app/services/communication.service';
 import {GeohubService} from 'src/app/services/geohub.service';
 import {MapService} from 'src/app/services/map.service';
-import {IConfRootState} from 'src/app/store/conf.reducer';
-import {confMAP, confTHEME} from 'src/app/store/conf.selector';
+import {IConfRootState} from 'src/app/store/conf/conf.reducer';
+import {confMAP, confTHEME} from 'src/app/store/conf/conf.selector';
 import {ILocation} from 'src/app/types/location';
 import {IGeojsonFeature, ILineString} from 'src/app/types/model';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';

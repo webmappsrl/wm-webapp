@@ -1,8 +1,8 @@
 import {Component} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
-import {IConfRootState} from './store/conf.reducer';
-import {confAPP} from './store/conf.selector';
+import {IConfRootState} from './store/conf/conf.reducer';
+import {confAPP} from './store/conf/conf.selector';
 
 @Component({
   selector: 'webmapp-meta',

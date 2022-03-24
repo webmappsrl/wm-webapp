@@ -29,18 +29,4 @@ export class ElasticService {
       inputTyped ? `${this._baseUrl}&query=${inputTyped}` : this._baseUrl,
     );
   }
-
-  private _baseQuery(search = ''): any {
-    return {
-      '_source': {
-        'excludes': ['geometry'],
-      },
-      'query': {
-        'query_string': {
-          'fields': ['name'],
-          'query': `*${search}*`,
-        },
-      },
-    };
-  }
 }

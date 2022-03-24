@@ -50,7 +50,7 @@ import TextPlacement from 'ol/style/TextPlacement';
 import View, {FitOptions} from 'ol/View';
 
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
-import {filter, take, tap} from 'rxjs/operators';
+import {filter, switchMap, take, tap} from 'rxjs/operators';
 
 import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
@@ -133,6 +133,7 @@ export class MapComponent implements OnDestroy {
     new BehaviorSubject<FeatureLike | null>(null);
   private _currentTrack$: BehaviorSubject<CGeojsonLineStringFeature | null> =
     new BehaviorSubject<CGeojsonLineStringFeature | null>(null);
+  private _mapInit$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _selectInteraction: SelectInteraction;
   private _styleJson: any;
   private _elevationChartLayer: VectorLayer;
@@ -159,8 +160,10 @@ export class MapComponent implements OnDestroy {
   ) {
     this._zone.run(() => this._initMap());
 
-    this._updateMapSub = this._currentTrack$
+    this._updateMapSub = this._mapInit$
       .pipe(
+        filter(init => init),
+        switchMap(_ => this._currentTrack$),
         filter(trackid => trackid != null),
         tap(selectedGeohubFeature => {
           this._selectedFeature$.next(
@@ -295,7 +298,10 @@ export class MapComponent implements OnDestroy {
         console.log(e);
       }
     });
+
+    this._mapInit$.next(true);
   }
+
   private async _selectCurrentPoi(poiMarker: PoiMarker) {
     if (this._selectedPoiMarker != null) {
       this._map.removeLayer(this._selectedPoiLayer);

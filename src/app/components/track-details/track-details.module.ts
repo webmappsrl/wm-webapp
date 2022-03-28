@@ -14,7 +14,7 @@ import {TrackElevationChartComponent} from './track-elevation-chart/track-elevat
 import {TrackPoiComponent} from './track-poi/track-poi.component';
 import {TrackTechnicalDataComponent} from './track-technical-data/track-technical-data.component';
 import {TrackRelatedUrlsComponent} from './track-related-urls/track-related-urls.component';
-import {MapCommonModule} from '../common/map-common.module';
+import {WMCommonModule} from '../common/wm-common.module';
 
 @NgModule({
   declarations: [
@@ -28,7 +28,7 @@ import {MapCommonModule} from '../common/map-common.module';
     ModalGalleryComponent,
     TrackRelatedUrlsComponent,
   ],
-  imports: [CommonModule, MapCommonModule, FormsModule, IonicModule, PipeModule, SwiperModule],
+  imports: [CommonModule, WMCommonModule, FormsModule, IonicModule, PipeModule, SwiperModule],
   exports: [TrackDetailsComponent],
 })
 export class TrackDetailsModule {}

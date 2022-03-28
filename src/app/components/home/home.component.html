@@ -2,12 +2,11 @@
   <webmapp-search *ngIf="showSearch" [initSearch]="title"></webmapp-search>
 
   <ion-content scrollY="true" class="wm-home-cardcontainer">
-    <webmapp-result
-      class="wm-home-result"
+    <webmapp-box
       *ngFor="let result of cards$|async"
       [data]="result"
-      (click)="select(result)"
+      (clickEVT)="searchCard(result.id)"
     >
-    </webmapp-result>
+    </webmapp-box>
   </ion-content>
 </div>

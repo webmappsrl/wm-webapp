@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {map} from 'rxjs/operators';
 import {CGeojsonLineStringFeature} from '../classes/features/cgeojson-line-string-feature';
-import {SearchResult, SEARCHRESULTMOCK} from '../classes/searchresult';
 import {GEOHUB_DOMAIN, GEOHUB_PROTOCOL} from '../constants/geohub';
 import {CommunicationService} from './communication.service';
 import {ConfigService} from './config.service';
@@ -61,9 +60,7 @@ export class GeohubService {
     return await this._communicationService.get(this._configService.vectorStyleUrl).toPromise();
   }
 
-  async search(searchString: string): Promise<SearchResult[]> {
-    return SEARCHRESULTMOCK;
-
+  async search(searchString: string): Promise<IHIT[]> {
     const result = await this._communicationService
       .get(`${GEOHUB_PROTOCOL}://${GEOHUB_DOMAIN}/api/ec/track/${searchString}`)
       .pipe(

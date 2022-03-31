@@ -22,3 +22,12 @@ webmapp-gallery {
     max-width: fit-content;
   }
 }
+
+@media only screen and (max-width: 600px) {
+  webmapp-gallery {
+    webmapp-image-modal {
+      width: 100%;
+      max-width: fit-content;
+    }
+  }
+}

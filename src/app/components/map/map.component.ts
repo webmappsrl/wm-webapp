@@ -95,7 +95,17 @@ export class MapComponent implements OnDestroy {
       padding: this._padding$.value,
       duration: zoomDuration,
     });
+    if (this._map != null) {
+      this._map.updateSize();
+    }
   }
+  @Input('resize') set resizeMap(_) {
+    console.log(_);
+    if (this._map != null) {
+      this._map.updateSize();
+    }
+  }
+
   @Input('trackElevationChartElements') set trackElevationChartElements(
     value: ITrackElevationChartHoverElements,
   ) {

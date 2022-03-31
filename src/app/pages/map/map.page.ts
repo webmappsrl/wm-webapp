@@ -2,18 +2,18 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  ElementRef,
   EventEmitter,
-  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 
-import {BehaviorSubject, from, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, from, merge, Observable, of} from 'rxjs';
 import {
   distinctUntilChanged,
   filter,
   map,
+  mergeAll,
+  shareReplay,
   startWith,
   switchMap,
   tap,
@@ -41,9 +41,8 @@ export class MapPage {
   readonly trackid$: Observable<number>;
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
   currentPoi$: Observable<any>;
-  currentPoiFromMap$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
-  currentPoiToMap$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
+  currentPoiIDToMap$: Observable<number | null>;
   leftPadding$: Observable<number>;
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
@@ -51,6 +50,7 @@ export class MapPage {
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
   isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  popupCloseEVT$: EventEmitter<null> = new EventEmitter<null>();
 
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   constructor(
@@ -86,22 +86,25 @@ export class MapPage {
     const relatedPois$ = this.track$.pipe(
       map(track => track.properties),
       map(properties => properties.related_pois || []),
-      distinctUntilChanged((a, b) => JSON.stringify(a) !== JSON.stringify(b)),
+      distinctUntilChanged((a, b) => {
+        return JSON.stringify(a) !== JSON.stringify(b);
+      }),
     );
 
-    this.currentPoi$ = this.currentPoiToMap$.pipe(
-      withLatestFrom(relatedPois$),
+    const currentPoi = combineLatest([this.currentPoiID$, relatedPois$]).pipe(
       map(([id, pois]) => {
-        const relatedPoi = pois.filter(poi => {
+        const relatedPois = pois.filter(poi => {
           const poiProperties = poi.properties;
           return +poiProperties.id === +id;
         });
-        return relatedPoi.length > 0 ? relatedPoi[0] : null;
+        const relatedPoi = relatedPois[0] ?? null;
+        return relatedPoi;
       }),
-      tap(currentPoi => {
-        this.currentPoiID$.next(currentPoi?.properties?.id || -1);
-      }),
-      distinctUntilChanged(),
+      shareReplay(),
+    );
+    this.currentPoi$ = merge(currentPoi, this.popupCloseEVT$);
+    this.currentPoiIDToMap$ = merge(this.currentPoiID$, this.popupCloseEVT$).pipe(
+      map(val => val ?? -1),
     );
   }
 
@@ -127,8 +130,8 @@ export class MapPage {
 
   public setCurrentPoi(id) {
     this._cdr.detectChanges();
-    if (id !== this.currentPoiToMap$.value) {
-      this.currentPoiToMap$.next(id);
+    if (id !== this.currentPoiID$.value) {
+      this.currentPoiID$.next(id);
     }
   }
 
@@ -157,12 +160,13 @@ export class MapPage {
   }
 
   public unselectPOI(): void {
-    this.setCurrentPoi(-1);
+    // this.setCurrentPoi(-1);
+    this.popupCloseEVT$.emit(null);
   }
 
   public updateCurrentPoi(id) {
-    if (id !== this.currentPoiToMap$.value) {
-      this.currentPoiToMap$.next(id);
+    if (id !== this.currentPoiID$.value) {
+      this.currentPoiID$.next(id);
     }
   }
 

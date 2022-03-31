@@ -4,7 +4,7 @@
       <webmapp-map
         [padding]="mapPadding$|async"
         [track]="track$|async"
-        [poi]="currentPoiToMap$|async"
+        [poi]="currentPoiIDToMap$|async"
         [trackElevationChartElements]="trackElevationChartHoverElements$|async"
         (feature-click)="toggleDetails($event)"
         (poi-click)="updateCurrentPoi($event)"
@@ -18,7 +18,7 @@
         <webmapp-track-details
           [track]="track$|async"
           [hidden]="trackid <= 0 || (currentPoi$|async)!=null?true:false"
-          [poi]="currentPoiToMap$|async"
+          [poi]="currentPoiIDToMap$|async"
           (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
           (poi-click)="setCurrentPoi($event)"
           (dismiss)="toggleDetails()"
@@ -48,7 +48,7 @@
       <webmapp-track-details
         [track]="track$|async"
         [hidden]="trackid <= 0"
-        [poi]="currentPoiToMap$|async"
+        [poi]="currentPoiIDToMap$|async"
         (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
         (poi-click)="setCurrentPoi($event)"
         (dismiss)="toggleDetails()"
@@ -71,7 +71,7 @@
       id="map-container"
       [padding]="mapPadding$|async"
       [track]="track$|async"
-      [poi]="currentPoiToMap$|async"
+      [poi]="currentPoiIDToMap$|async"
       [trackElevationChartElements]="trackElevationChartHoverElements$|async"
       (feature-click)="toggleDetails($event)"
       (poi-click)="updateCurrentPoi($event)"

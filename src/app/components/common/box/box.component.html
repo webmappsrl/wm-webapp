@@ -1,0 +1,20 @@
+<div class="wm-box" (click)="clickEVT.emit()">
+  <img class="wm-result-img" [src]="data.feature_image?data.feature_image:defaultPhotoPath" />
+  <div class="wm-box-taxonomies" *ngIf="data.taxonomyActivities">
+    <div class="wm-box-taxonomy" *ngFor="let item of data.taxonomyActivities.split(',')">
+      <i class="icon-outline-{{item}}"></i>
+      <div>{{item}}</div>
+    </div>
+  </div>
+  <div class="wm-box-where">trentino alto adige</div>
+  <div class="wm-box-name">{{data.name}}</div>
+  <div class="wm-box-tags">
+    <div class="wm-box-tag" *ngIf="data.distance">
+      <i class="icon-outline-distance"></i>
+      <div>{{data.distance}}</div>
+    </div>
+    <div class="wm-box-badge" *ngIf="data.cai_scale && data.cai_scale.length> 0">
+      Difficolta: {{data.cai_scale}}
+    </div>
+  </div>
+</div>

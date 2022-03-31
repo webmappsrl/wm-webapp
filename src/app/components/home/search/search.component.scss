@@ -1,0 +1,59 @@
+webmapp-search {
+  display: flex;
+  position: relative;
+  align-items: center;
+  color: var(--color);
+  font-family: var(--ion-font-family, inherit);
+  box-sizing: border-box;
+  background: inherit;
+  padding-inline-start: 7px;
+  padding-inline-end: 7px;
+  min-height: 46px;
+  visibility: inherit;
+  -webkit-font-smoothing: antialiased;
+  color: var(--color);
+  border-radius: 2px;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  flex-shrink: 1;
+  width: auto;
+  margin: 10px;
+  form {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: flex-start;
+    width: 100%;
+    ion-icon {
+      position: inherit;
+      order: 0;
+      flex: 0 1 auto;
+      align-self: auto;
+      color: var(--wm-color-primary);
+      pointer-events: none;
+      font-size: 24px;
+    }
+    input {
+      flex: 1 1 auto;
+      align-self: auto;
+      border-color: unset;
+      border-style: unset;
+      -webkit-appearance: none;
+      outline: none;
+      width: 100%;
+      border-width: unset;
+      padding: 5px;
+      margin-left: 5px;
+      background-color: unset;
+      font: unset;
+    }
+    input:focus {
+      outline: none;
+      border-color: inherit;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+  }
+}

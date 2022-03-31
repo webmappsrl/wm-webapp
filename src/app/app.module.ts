@@ -18,6 +18,8 @@ import {ConfEffects} from './store/conf/conf.effects';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {environment} from 'src/environments/environment';
 import {MetaComponent} from './meta.component';
+import {elasticReducer} from './store/elastic/elastic.reducer';
+import {ElasticEffects} from './store/elastic/elastic.effects';
 
 registerLocaleData(localeIt);
 
@@ -41,10 +43,11 @@ registerLocaleData(localeIt);
     StoreModule.forRoot(
       {
         conf: confReducer,
+        elastic: elasticReducer,
       },
       {},
     ),
-    EffectsModule.forRoot([ConfEffects]),
+    EffectsModule.forRoot([ConfEffects, ElasticEffects]),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states
       logOnly: environment.production, // Restrict extension to log-only mode

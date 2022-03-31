@@ -116,7 +116,7 @@ export class TrackTechnicalDataComponent implements OnInit {
       technicalData.push({
         icon: 'icon-outline-difficulty',
         label: technicalDataLabelPrefix + 'difficulty',
-        value: this._feature.properties.difficulty as any,
+        value: this._feature.properties.cai_scale as any,
       });
     }
 

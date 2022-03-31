@@ -2,13 +2,12 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
-
+const baseUrl = 'https://elastic-passtrough.herokuapp.com/search';
 @Injectable({
   providedIn: 'root',
 })
 export class ElasticService {
   private _geohubAppId: number = 4;
-  private _params = new HttpParams();
 
   constructor(private _http: HttpClient) {
     const hostname: string = window.location.hostname;
@@ -21,24 +20,13 @@ export class ElasticService {
   }
 
   private get _baseUrl(): string {
-    return `https://elastic.sis-te.com/geohub_app_${this._geohubAppId}/_search/`;
+    return this._geohubAppId ? `${baseUrl}/?id=${this._geohubAppId}` : baseUrl;
   }
 
-  public getSearch(): Observable<any> {
-    return this._http.get(this._baseUrl);
-  }
-
-  private _baseQuery(search = ''): any {
-    return {
-      '_source': {
-        'excludes': ['geometry'],
-      },
-      'query': {
-        'query_string': {
-          'fields': ['name'],
-          'query': `*${search}*`,
-        },
-      },
-    };
+  public getSearch(inputTyped: string): Observable<IELASTIC> {
+    return this._http.request(
+      'get',
+      inputTyped ? `${this._baseUrl}&query=${inputTyped}` : this._baseUrl,
+    );
   }
 }

@@ -1,23 +1,12 @@
 <div class="root">
-  <ion-toolbar class="wm-toolbar">
-    <ion-buttons slot="start">
-      <ion-menu-button *ngIf="!isBackAvailable"></ion-menu-button>
-      <ion-button *ngIf="isBackAvailable" (click)="goBack()">
-        <ion-icon mode="ios" name="arrow-back"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <div *ngIf="!showSearch" class="wm-toolbar-title" [innerHtml]="title"></div>
-    <ion-searchbar class="wm-searchbar" *ngIf="showSearch" [(ngModel)]="searchString" (ionChange)="searchBarChanged()"
-      animated debounce="300" mode="md" (ionClear)="searchBarCleared()">
-    </ion-searchbar>
-  </ion-toolbar>
+  <webmapp-search *ngIf="showSearch" [initSearch]="title"></webmapp-search>
 
-  <ion-content scrollY="true"class="wm-home-cardcontainer" *ngIf="!searchresults?.length">
-    <webmapp-card class="wm-home-card" *ngFor="let card of cards" [data]="card" (click)="searchCard(card)"> </webmapp-card>
+  <ion-content scrollY="true" class="wm-home-cardcontainer">
+    <webmapp-box
+      *ngFor="let result of cards$|async"
+      [data]="result"
+      (clickEVT)="searchCard(result.id)"
+    >
+    </webmapp-box>
   </ion-content>
-
-  <ion-content scrollY="true"class="wm-home-cardcontainer" *ngIf="searchresults?.length">
-    <webmapp-result class="wm-home-result" *ngFor="let result of searchresults" [data]="result" (click)="select(result)"> </webmapp-result>
-  </ion-content>
-
 </div>

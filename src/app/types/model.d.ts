@@ -56,7 +56,7 @@ export interface IGeojsonProperties {
   image?: IWmImage;
   image_gallery?: IWmImage[];
   taxonomy?: {
-    activity?: string[];
+    activity?: any[];
     where?: string[];
   };
   duration?: {

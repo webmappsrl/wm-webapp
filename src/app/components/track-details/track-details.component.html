@@ -56,14 +56,22 @@
               <i class="icon-outline-bike"></i>
               <span class="webmapp-walkability-label">In bici</span>
             </div>
-            <div class="webmapp-walkability-box" *ngIf="item.identifier === 'equitation'">
-              <i class="icon-fill-horse"></i>
-              <span class="webmapp-walkability-label">A cavallo</span>
+            <div class="webmapp-walkability-box" *ngIf="item.identifier === 'running'">
+              <i class="icon-outline-running"></i>
+              <span class="webmapp-walkability-label">Corsa</span>
+            </div>
+            <div class="webmapp-walkability-box" *ngIf="item.identifier === 'walking'">
+              <i class="icon-outline-walking"></i>
+              <span class="webmapp-walkability-label">Passeggiata</span>
+            </div>
+            <div class="webmapp-walkability-box" *ngIf="item.identifier === 'skitouring'">
+              <i class="icon-outline-nordic-walking"></i>
+              <span class="webmapp-walkability-label">scialpinismo</span>
             </div>
           </ng-container>
         </div>
       </ng-container>
-      <ng-container *ngIf="true">
+      <ng-container *ngIf="false">
         <div class="webmapp-title">Come arrivare</div>
         <div class="webmapp-how-to-get">
           <div class="webmapp-hot-to-get-box">

@@ -26,7 +26,6 @@ export class PoiPopupComponent {
   toggleImage$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   @Input('poi') public set setPoi(poi: any) {
-    this._resetView();
     if (poi != null && poi.properties != null) {
       poi.properties.address = [poi.properties.addr_locality, poi.properties.addr_street]
         .filter(f => f != null)
@@ -63,11 +62,5 @@ export class PoiPopupComponent {
 
   public toggleImage(): void {
     this.toggleImage$.next(!this.toggleImage$.value);
-  }
-
-  private _resetView(): void {
-    this.poiProperties = null;
-    this.toggleImage$.next(false);
-    this.closeEVT.emit();
   }
 }

@@ -1,42 +1,112 @@
-#details-container::-webkit-scrollbar {
-  display: none;
-}
-#details-container {
-  width: 0;
-  overflow: auto;
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  transition: width 500ms;
-  z-index: 10000;
-  background: var(--wm-color-light);
-  color: var(--wm-color-dark);
-
-  &.details-container-visible,
-  .webmapp-track-details {
-    width: 400px;
+webmapp-map-page {
+  webmapp-map {
+    width: 100%;
+    height: 100%;
   }
-}
+  .details-container::-webkit-scrollbar {
+    display: none;
+  }
+  .details-container {
+    width: 0;
+    overflow: auto;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: width 500ms;
+    z-index: 10000;
+    background: var(--wm-color-light);
+    color: var(--wm-color-dark);
 
-#map-container {
-  width: 100%;
-  height: 100%;
-}
+    &.details-container-visible,
+    webmapp-track-details {
+      width: 400px;
+    }
+  }
 
-.webmapp-menubtn {
-  position: absolute;
-  top: 20px;
-  left: 0px;
-  transition: left 500ms;
-  z-index: 10000;
-  background: var(--wm-color-light);
-  color: var(--wm-color-primary);
-  width: 22px;
-  height: 56px;
-  &.webmapp-menubtn-opened {
-    left: 400px;
+  #map-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  .webmapp-menubtn {
+    position: absolute;
+    top: 20px;
+    left: 0px;
+    transition: left 500ms;
+    z-index: 10000;
+    background: var(--wm-color-light);
+    color: var(--wm-color-primary);
+    width: 22px;
+    height: 56px;
+    &.webmapp-menubtn-opened {
+      left: 400px;
+    }
+  }
+
+  .mobile-wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: stretch;
+    z-index: 1;
+
+    webmapp-map {
+      order: 0;
+      flex: 0 1 60%;
+      align-self: auto;
+    }
+    .mobile-details {
+      webmapp-track-details {
+        #webmapp-track-details-content {
+          webmapp-gallery {
+            webmapp-image-modal {
+              width: 90% !important;
+              top: -20%;
+            }
+          }
+        }
+      }
+      align-self: auto;
+      position: absolute;
+      height: 40%;
+      width: 100%;
+      bottom: 0;
+
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-content: stretch;
+      align-items: stretch;
+
+      overflow: auto;
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+      > * {
+        order: 0;
+        flex: 0 1 auto;
+        align-self: auto;
+      }
+      webmapp-home {
+        height: 100%;
+      }
+      webmapp-poi-popup {
+        width: 100%;
+        height: fit-content;
+        margin: auto;
+        top: 0;
+        position: initial;
+        .webmapp-poi-popup-close {
+          position: fixed;
+          right: 0;
+        }
+      }
+    }
   }
 }

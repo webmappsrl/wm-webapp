@@ -2,23 +2,39 @@ import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {of} from 'rxjs';
 import {catchError, map, switchMap} from 'rxjs/operators';
-import {loadElastic, loadElasticFail, loadElasticSuccess} from './elastic.actions';
+import {
+  allElastic,
+  allElasticFail,
+  allElasticSuccess,
+  searchElastic,
+  searchElasticFail,
+  searchElasticSuccess,
+} from './elastic.actions';
 import {ElasticService} from './elastic.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ElasticEffects {
-  loadElastic$ = createEffect(() =>
+  searchElastic$ = createEffect(() =>
     this._actions$.pipe(
-      ofType(loadElastic),
+      ofType(searchElastic),
       switchMap(action =>
         this._elasticSVC.getSearch((action as any).search).pipe(
-          map(elastic => loadElasticSuccess({elastic})),
-          catchError(e => {
-            console.log(e);
-            return of(loadElasticFail());
-          }),
+          map(search => searchElasticSuccess({search})),
+          catchError(e => of(searchElasticFail())),
+        ),
+      ),
+    ),
+  );
+
+  allElastic$ = createEffect(() =>
+    this._actions$.pipe(
+      ofType(allElastic),
+      switchMap(_ =>
+        this._elasticSVC.getALL().pipe(
+          map(all => allElasticSuccess({all})),
+          catchError(e => of(allElasticFail())),
         ),
       ),
     ),

@@ -29,4 +29,7 @@ export class ElasticService {
       inputTyped ? `${this._baseUrl}&query=${inputTyped}` : this._baseUrl,
     );
   }
+  public getALL(): Observable<IELASTIC> {
+    return this._http.request('get', this._baseUrl);
+  }
 }

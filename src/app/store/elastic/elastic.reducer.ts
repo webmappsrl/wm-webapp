@@ -1,12 +1,20 @@
 import {createReducer, on} from '@ngrx/store';
-import {loadElasticSuccess} from './elastic.actions';
+import {allElasticSuccess, searchElasticSuccess} from './elastic.actions';
 
-export const featureKey = 'elastic';
-export interface IElasticRootState {
-  [featureKey]: IELASTIC;
+export const searchKey = 'search';
+export const allKey = 'all';
+export interface IElasticSearchRootState {
+  [searchKey]: IELASTIC;
+}
+export interface IElasticAllRootState {
+  [allKey]: IELASTIC;
 }
 const initialConfState: IELASTIC = {};
-export const elasticReducer = createReducer(
+export const elasticSearchReducer = createReducer(
   initialConfState,
-  on(loadElasticSuccess, (state, {elastic}) => ({state, ...elastic})),
+  on(searchElasticSuccess, (state, {search}) => ({state, ...search})),
+);
+export const elasticAllReducer = createReducer(
+  initialConfState,
+  on(allElasticSuccess, (state, {all}) => ({state, ...all})),
 );

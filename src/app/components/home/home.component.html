@@ -1,12 +1,40 @@
 <div class="root">
-  <webmapp-search *ngIf="showSearch" [initSearch]="title"></webmapp-search>
+  <webmapp-search
+    *ngIf="showSearch &&(currentLayer$|async) === null"
+    [initSearch]="title"
+    (words)="isTyping$.next($event)"
+  ></webmapp-search>
+  <ng-container *ngIf="(currentLayer$|async) as currentLayer">
+    <ng-container *ngIf="(isTyping$|async)===false && currentLayer!=null">
+      <div class="reset-layer" (click)="setLayer(null)">
+        <ion-icon name="caret-back-outline"></ion-icon>
+        <div>{{currentLayer.title}}</div>
+      </div>
+    </ng-container>
+  </ng-container>
 
   <ion-content scrollY="true" class="wm-home-cardcontainer">
-    <webmapp-box
-      *ngFor="let result of cards$|async"
-      [data]="result"
-      (clickEVT)="searchCard(result.id)"
-    >
-    </webmapp-box>
+    <ng-container *ngIf="(isTyping$|async)||(layerCards$|async)!=null; else layers">
+      <webmapp-search-box
+        *ngFor="let card of cards$|async"
+        [data]="card"
+        (clickEVT)="searchCard(card.id)"
+      >
+      </webmapp-search-box>
+    </ng-container>
+
+    <ng-template #layers>
+      <div *ngFor="let home of confHOME$|async">
+        <h1 *ngIf="home.title">{{home.title}}</h1>
+        <webmapp-compact-horizontal *ngIf="home.view === 'compact-horizontal'">
+          <webmapp-layer-box
+            *ngFor="let term of home.terms"
+            [data]="term"
+            (clickEVT)="setLayer(term)"
+          >
+          </webmapp-layer-box>
+        </webmapp-compact-horizontal>
+      </div>
+    </ng-template>
   </ion-content>
 </div>

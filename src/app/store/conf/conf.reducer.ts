@@ -84,6 +84,14 @@ const initialConfState: ICONF = {
     defaultFeatureColor: '#000000',
     theme: 'webmapp',
   },
+  MAP: {
+    bbox: [-180, -85, 180, 85],
+    maxZoom: 17,
+    minZoom: 10,
+    defZoom: 14,
+    center: [10.4147, 43.7118],
+    layers: [],
+  },
 };
 export const confReducer = createReducer(
   initialConfState,
@@ -95,6 +103,7 @@ export const confReducer = createReducer(
         APP: {...state.APP, ...conf.APP},
         THEME: {...state.THEME, ...conf.THEME},
         OPTIONS: {...state.OPTIONS, ...conf.OPTIONS},
+        MAP: {...state.MAP, ...conf.MAP},
       },
     };
   }),

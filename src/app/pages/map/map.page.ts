@@ -7,17 +7,15 @@ import {
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 
-import {BehaviorSubject, combineLatest, from, merge, Observable, of} from 'rxjs';
+import {BehaviorSubject, combineLatest, from, merge, Observable} from 'rxjs';
 import {
   distinctUntilChanged,
   filter,
   map,
-  mergeAll,
   shareReplay,
   startWith,
   switchMap,
   tap,
-  withLatestFrom,
 } from 'rxjs/operators';
 
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';

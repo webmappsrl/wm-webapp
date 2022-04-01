@@ -3,4 +3,40 @@ webmapp-home {
     width: 100%;
     height: 100%;
   }
+  .reset-layer {
+    box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.1);
+    background: var(--wm-color-primary);
+    color: var(-wm-color-secondary-contrast);
+    cursor: pointer;
+    position: relative;
+    margin: 10px;
+    border-radius: 15px;
+    margin: 10px;
+    padding: 4%;
+    text-align: center;
+    text-transform: capitalize;
+    font-size: var(--wm-font-sm);
+    font-family: var(--wm-font-family-header);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 19px;
+    color: #323031;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: stretch;
+    ion-icon {
+      order: 0;
+      flex: 0 1 auto;
+      align-self: auto;
+    }
+    div {
+      order: 0;
+      flex: 1 1 auto;
+      align-self: auto;
+    }
+  }
 }

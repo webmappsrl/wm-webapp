@@ -8,5 +8,7 @@ interface IHIT {
   distance: string;
   name: string;
   id: number;
-  taxonomyActivities: string;
+  taxonomyActivities: string[];
+  taxonomyWheres: string[];
+  layers: number[];
 }

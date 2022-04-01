@@ -6,7 +6,9 @@
       <div>{{item}}</div>
     </div>
   </div>
-  <div class="wm-box-where">trentino alto adige</div>
+  <div class="wm-box-where" *ngIf="data.taxonomyWheres!= null && data.taxonomyWheres.length>0">
+    {{data.taxonomyWheres[0]}}
+  </div>
   <div class="wm-box-name">{{data.name}}</div>
   <div class="wm-box-tags">
     <div class="wm-box-tag" *ngIf="data.distance">

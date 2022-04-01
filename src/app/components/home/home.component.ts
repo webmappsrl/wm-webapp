@@ -7,10 +7,12 @@ import {
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Store} from '@ngrx/store';
-import {Observable, of} from 'rxjs';
+import {BehaviorSubject, merge, Observable, of} from 'rxjs';
 import {startWith, tap} from 'rxjs/operators';
-import {IElasticRootState} from 'src/app/store/elastic/elastic.reducer';
-import {elasticHits} from 'src/app/store/elastic/elastic.selector';
+import {IConfRootState} from 'src/app/store/conf/conf.reducer';
+import {confHOME} from 'src/app/store/conf/conf.selector';
+import {IElasticSearchRootState} from 'src/app/store/elastic/elastic.reducer';
+import {elasticSearch} from 'src/app/store/elastic/elastic.selector';
 
 @Component({
   selector: 'webmapp-home',
@@ -23,7 +25,11 @@ export class HomeComponent {
   @Output('searchId') searchIdEvent: EventEmitter<number> = new EventEmitter<number>();
 
   cards$: Observable<IHIT[]> = of([]);
-  elasticHits$: Observable<IHIT[]> = this._store.select(elasticHits);
+  elasticSearch$: Observable<IHIT[]> = this._storeSearch.select(elasticSearch);
+  confHOME$: Observable<IHOME[]> = this._storeConf.select(confHOME);
+  isTyping$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  layerCards$: BehaviorSubject<IHIT[] | null> = new BehaviorSubject<IHIT[] | null>(null);
+  currentLayer$: BehaviorSubject<ILAYER | null> = new BehaviorSubject<ILAYER | null>(null);
 
   public isBackAvailable: boolean = false;
   public showSearch: boolean = true;
@@ -31,15 +37,13 @@ export class HomeComponent {
   public searchString: string;
 
   constructor(
-    private _store: Store<IElasticRootState>,
+    private _storeSearch: Store<IElasticSearchRootState>,
+    private _storeConf: Store<IConfRootState>,
     private _router: Router,
     private _route: ActivatedRoute,
   ) {
-    this.elasticHits$.subscribe(sad => console.log(sad));
-    this.cards$ = this.elasticHits$.pipe(
-      tap(d => console.table(d)),
-      startWith([]),
-    );
+    this.cards$ = merge(this.elasticSearch$, this.layerCards$).pipe(startWith([]));
+    this.confHOME$.subscribe(asd => console.table(asd));
   }
 
   searchCard(id: string | number) {
@@ -48,5 +52,15 @@ export class HomeComponent {
       queryParams: {track: id ? id : null},
       queryParamsHandling: 'merge',
     });
+  }
+
+  setLayer(layer: ILAYER | null) {
+    if (layer != null) {
+      const cards = layer.tracks[layer.id] ?? [];
+      this.layerCards$.next(cards);
+    } else {
+      this.layerCards$.next(null);
+    }
+    this.currentLayer$.next(layer);
   }
 }

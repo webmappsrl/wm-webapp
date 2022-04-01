@@ -41,7 +41,7 @@ interface IHOME {
   subtitle?: string;
   taxonomy?: string;
   types?: string[];
-  terms?: string[];
+  terms?: any[];
   features?: string[];
   url?: string;
   color?: string;
@@ -115,22 +115,23 @@ interface IMAP {
   maxZoom: number;
   minZoom: number;
   defZoom: number;
-  center: [number, number];
   bbox: [number, number, number, number];
-  layers?: ILAYERS;
-  overlays?: IOVERLAYERS;
+  center?: [number, number];
+  layers?: ILAYER[];
 }
-
-interface ILAYERS {
+interface ILAYER {
   id: string;
   name: string;
-  type: string;
-  tilesUrl: string;
-  opacity: number;
-  tileSize?: number | [number, number];
-  default?: boolean;
-  grayscale?: number;
+  title: string;
+  subtitle: string;
+  description: string;
+  icon?: any;
   params?: {[id: string]: string};
+  data_use_bbox: boolean;
+  data_use_only_my_data: boolean;
+  style: {[name: string]: string};
+  behaviour: {[name: string]: string};
+  tracks?: {[name: string]: IHIT[]};
 }
 interface IOVERLAYERS {
   id: string;
@@ -190,9 +191,9 @@ interface IAPPDOWNLOADBUTTONS {
 interface ICONF {
   APP: IAPP;
   OPTIONS: IOPTIONS;
-  MAP?: IMAP;
+  MAP: IMAP;
   AUTH?: IAUTH;
   LANGUAGES?: ILANGUAGES;
   THEME?: ITHEME;
-  HOME?: IHOME;
+  HOME?: IHOME[];
 }

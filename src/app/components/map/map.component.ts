@@ -168,8 +168,6 @@ export class MapComponent implements OnDestroy {
     private _zone: NgZone,
     private _store: Store<IConfRootState>,
   ) {
-    this._zone.run(() => this._initMap());
-
     this._updateMapSub = this._mapInit$
       .pipe(
         filter(init => init),
@@ -201,6 +199,8 @@ export class MapComponent implements OnDestroy {
     });
 
     this._confMap$.pipe(filter(f => f != null)).subscribe((map: IMAP) => {
+      this._zone.run(() => this._initMap(map));
+
       if (map.maxZoom) {
         this._maxZoom = map.maxZoom;
         this._view.setMaxZoom(this._maxZoom);
@@ -229,7 +229,7 @@ export class MapComponent implements OnDestroy {
     this._view.fit(geometryOrExtent, optOptions);
   }
 
-  private async _initMap() {
+  private async _initMap(map: IMAP) {
     this._view = new View({
       center: this._mapService.coordsFromLonLat([this.startView[0], this.startView[1]]),
       zoom: this.startView[2],
@@ -237,7 +237,7 @@ export class MapComponent implements OnDestroy {
       minZoom: this._minZoom,
       projection,
       constrainOnlyCenter: true,
-      extent: this._mapService.extentFromLonLat(initExtent),
+      extent: this._mapService.extentFromLonLat(map.bbox ?? initExtent),
       padding: this._padding$.value || undefined,
     });
 

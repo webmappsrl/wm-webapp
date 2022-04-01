@@ -1,0 +1,12 @@
+webmapp-compact-horizontal {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  justify-content: center;
+  > * {
+    order: 0;
+    flex: 1 1 90%;
+    align-self: auto;
+  }
+}

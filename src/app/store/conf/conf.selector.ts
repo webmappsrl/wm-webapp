@@ -26,6 +26,8 @@ export const confHOME = createSelector(confFeature, elasticAll, (state, all) => 
         const terms = getLayers(el.terms, state.MAP.layers, all);
 
         home.push({...el, terms});
+      } else {
+        home.push(el);
       }
     });
     return home;

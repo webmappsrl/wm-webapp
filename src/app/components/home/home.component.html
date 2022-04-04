@@ -25,7 +25,9 @@
 
     <ng-template #layers>
       <div *ngFor="let home of confHOME$|async">
-        <h1 *ngIf="home.title">{{home.title}}</h1>
+        <div *ngIf="home.view === 'title'" class="webmapp-home-title">
+          {{home.title}}
+        </div>
         <webmapp-compact-horizontal *ngIf="home.view === 'compact-horizontal'">
           <webmapp-layer-box
             *ngFor="let term of home.terms"

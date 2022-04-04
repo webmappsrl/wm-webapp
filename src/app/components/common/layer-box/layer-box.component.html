@@ -1,5 +1,4 @@
 <div class="wm-box" (click)="clickEVT.emit()">
   <img class="wm-result-img" [src]="data.feature_image?data.feature_image:defaultPhotoPath" />
-  <div class="wm-box-where">{{data.subTitle}}</div>
-  <div class="wm-box-name">{{data.description}}</div>
+  <div class="wm-box-title">{{data.title}}</div>
 </div>

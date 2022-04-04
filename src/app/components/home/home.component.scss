@@ -3,7 +3,11 @@ webmapp-home {
     width: 100%;
     height: 100%;
     padding: 1%;
+    ion-content {
+      --padding-bottom: 100px;
+    }
   }
+
   .reset-layer {
     box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.1);
     background: var(--wm-color-primary);
@@ -41,7 +45,6 @@ webmapp-home {
     }
   }
   .webmapp-home-title {
-    font-family: Inter;
     font-size: 21px;
     font-weight: 700;
     line-height: 25px;

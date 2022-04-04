@@ -65,7 +65,6 @@ webmapp-search-box {
       margin-right: 10px;
     }
     .wm-box-name {
-      text-transform: capitalize;
       font-size: var(--wm-font-sm);
       font-family: var(--wm-font-family-header);
       font-style: normal;
@@ -73,12 +72,13 @@ webmapp-search-box {
       line-height: 19px;
       color: #323031;
     }
-
+    .wm-box-name:first-letter {
+      text-transform: uppercase;
+    }
     .wm-box-where {
       text-transform: uppercase;
       font-family: var(--wm-font-family-header);
       color: var(--wm-color-primary);
-      font-size: var(--wm-font-lg);
     }
     .wm-box-tags {
       position: absolute;

@@ -4,7 +4,7 @@
       <ion-toolbar class="webmapp-track-details-toolbar">
         <ion-title
           *ngIf="properties?.name"
-          [innerHtml]="properties.name | WebmappTranslate"
+          [innerHtml]="properties.name | WebmappTranslate | lowercase"
           class="webmapp-track-details-header"
         ></ion-title>
         <ion-buttons slot="end">
@@ -16,7 +16,7 @@
     </ion-header>
     <div #content id="webmapp-track-details-content">
       <div class="webmapp-track-title" *ngIf="properties?.name as name">
-        {{name  | WebmappTranslate}}
+        {{name | WebmappTranslate | lowercase}}
       </div>
 
       <webmapp-track-elevation-chart
@@ -50,23 +50,23 @@
           <ng-container *ngFor="let item of activity">
             <div class="webmapp-walkability-box" *ngIf="item.identifier ==='hiking'">
               <i class="icon-fill-trekking"></i>
-              <span class="webmapp-walkability-label">Trekking</span>
+              <span class="webmapp-walkability-label">{{item.identifier|WebmappTranslate}}</span>
             </div>
             <div class="webmapp-walkability-box" *ngIf="item.identifier === 'cycling'">
               <i class="icon-outline-bike"></i>
-              <span class="webmapp-walkability-label">In bici</span>
+              <span class="webmapp-walkability-label">{{item.identifier|WebmappTranslate}}</span>
             </div>
             <div class="webmapp-walkability-box" *ngIf="item.identifier === 'running'">
               <i class="icon-outline-running"></i>
-              <span class="webmapp-walkability-label">Corsa</span>
+              <span class="webmapp-walkability-label">{{item.identifier|WebmappTranslate}}</span>
             </div>
             <div class="webmapp-walkability-box" *ngIf="item.identifier === 'walking'">
               <i class="icon-outline-walking"></i>
-              <span class="webmapp-walkability-label">Passeggiata</span>
+              <span class="webmapp-walkability-label">{{item.identifier|WebmappTranslate}}</span>
             </div>
             <div class="webmapp-walkability-box" *ngIf="item.identifier === 'skitouring'">
               <i class="icon-outline-nordic-walking"></i>
-              <span class="webmapp-walkability-label">scialpinismo</span>
+              <span class="webmapp-walkability-label">{{item.identifier|WebmappTranslate}}</span>
             </div>
           </ng-container>
         </div>

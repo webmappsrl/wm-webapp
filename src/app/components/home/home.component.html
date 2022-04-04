@@ -13,7 +13,7 @@
     </ng-container>
   </ng-container>
 
-  <ion-content scrollY="true" class="wm-home-cardcontainer">
+  <ion-content style="--offset-top:56px; --offset-bottom:56px;" class="wm-home-cardcontainer">
     <ng-container *ngIf="(isTyping$|async)||(layerCards$|async)!=null; else layers">
       <webmapp-search-box
         *ngFor="let card of cards$|async"
@@ -24,7 +24,7 @@
     </ng-container>
 
     <ng-template #layers>
-      <div *ngFor="let home of confHOME$|async">
+      <ng-container *ngFor="let home of confHOME$|async">
         <div *ngIf="home.view === 'title'" class="webmapp-home-title">
           {{home.title}}
         </div>
@@ -36,7 +36,7 @@
           >
           </webmapp-layer-box>
         </webmapp-compact-horizontal>
-      </div>
+      </ng-container>
     </ng-template>
   </ion-content>
 </div>

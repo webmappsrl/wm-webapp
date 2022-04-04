@@ -73,6 +73,8 @@ const projection = 'EPSG:3857';
 const scaleUnits = 'metric';
 const scaleMinWidth = 50;
 const DEF_MAP_CLUSTER_CLICK_TOLERANCE: number = 40;
+const DEF_LINE_COLOR = 'green';
+const DEF_LINE_COLOR_SELECTED = 'rgba(226, 249, 0, 0.6)';
 @Component({
   selector: 'webmapp-map',
   templateUrl: './map.component.html',
@@ -159,7 +161,7 @@ export class MapComponent implements OnDestroy {
   private _confMap$: Observable<any> = this._store.select(confMAP);
   private _maxZoom: number = initMaxZoom;
   private _minZoom: number = initMinZoom;
-  private _defaultFeatureColor = '#000000';
+  private _defaultFeatureColor = DEF_LINE_COLOR;
 
   constructor(
     private _communicationService: CommunicationService,
@@ -247,7 +249,7 @@ export class MapComponent implements OnDestroy {
     });
 
     const baseLayers: Array<Layer> = this._initializeBaseLayers();
-    this._dataLayers = await this._initializeDataLayers();
+    this._dataLayers = await this._initializeDataLayers(map);
     const interactions: Collection<Interaction> = this._initializeMapInteractions(this._dataLayers);
 
     this._map = new Map({
@@ -539,15 +541,117 @@ export class MapComponent implements OnDestroy {
    *
    * @returns the array of created layers
    */
-  private async _initializeDataLayers(): Promise<Array<VectorTileLayer>> {
-    const styleJson: any = await this._geohubService.getVectorLayerStyle();
+  private async _initializeDataLayers(map: IMAP): Promise<Array<VectorTileLayer>> {
+    const styleJson: any = {
+      version: 8,
+      name: 'tracks',
+      metadata: {'maputnik:renderer': 'ol'},
+      sources: {
+        tracks1: {
+          type: 'vector',
+          url: 'https://geohub.webmapp.it/api/app/webapp/4/vector_layer',
+        },
+      },
+      sprite: '',
+      glyphs: 'https://orangemug.github.io/font-glyphs/glyphs/{fontstack}/{range}.pbf',
+      layers: [
+        {
+          id: 'EEA',
+          type: 'line',
+          source: 'tracks',
+          'source-layer': 'tracks',
+          filter: ['all', ['==', 'cai_scale', 'EEA']],
+          layout: {'line-join': 'round', 'line-cap': 'round', visibility: 'visible'},
+          paint: {
+            'line-color': 'rgba(255, 0, 218, 0.8)',
+            'line-width': {
+              stops: [
+                [10, 1],
+                [20, 10],
+              ],
+            },
+            'line-dasharray': [0.001, 2],
+          },
+        },
+        {
+          id: 'EE',
+          type: 'line',
+          source: 'tracks',
+          'source-layer': 'tracks',
+          filter: ['all', ['==', 'cai_scale', 'EE']],
+          layout: {'line-join': 'round', 'line-cap': 'round'},
+          paint: {
+            'line-color': 'rgba(255, 57, 0, 0.8)',
+            'line-width': {
+              stops: [
+                [10, 1],
+                [20, 10],
+              ],
+            },
+            'line-dasharray': [0.01, 2],
+          },
+        },
+        {
+          id: 'E',
+          type: 'line',
+          source: 'tracks',
+          'source-layer': 'tracks',
+          filter: ['all', ['==', 'cai_scale', 'E']],
+          layout: {'line-join': 'round', 'line-cap': 'round'},
+          paint: {
+            'line-color': 'rgba(255, 57, 0, 0.8)',
+            'line-width': {
+              stops: [
+                [10, 1],
+                [20, 10],
+              ],
+            },
+            'line-dasharray': [2, 2],
+          },
+        },
+        {
+          id: 'T',
+          type: 'line',
+          source: 'tracks',
+          'source-layer': 'tracks',
+          filter: ['all', ['==', 'cai_scale', 'T']],
+          layout: {'line-join': 'round', 'line-cap': 'round', visibility: 'visible'},
+          paint: {
+            'line-color': 'rgba(255, 57, 0, 0.8)',
+            'line-width': {
+              stops: [
+                [10, 1],
+                [20, 10],
+              ],
+            },
+          },
+        },
+        {
+          id: 'ref',
+          type: 'symbol',
+          source: 'tracks',
+          'source-layer': 'tracks',
+          minzoom: 10,
+          maxzoom: 16,
+          layout: {
+            'text-field': '{ref}',
+            visibility: 'visible',
+            'symbol-placement': 'line',
+            'text-size': 12,
+            'text-allow-overlap': true,
+          },
+          paint: {'text-color': 'rgba(255, 57, 0,0.8)'},
+        },
+      ],
+      id: '63fa0rhhq',
+    };
 
     const layers: Array<VectorTileLayer> = [];
 
     if (styleJson.sources) {
       this._styleJson = styleJson;
       for (const i in styleJson.sources) {
-        layers.push(await this._initializeDataLayer(i, styleJson.sources[i]));
+        layers.push(await this._initializeDataLayer(styleJson.sources[i], map));
       }
     }
 
@@ -559,7 +663,7 @@ export class MapComponent implements OnDestroy {
    *
    * @returns the created layer
    */
-  private async _initializeDataLayer(layerId: string, layerConfig: any): Promise<VectorTileLayer> {
+  private async _initializeDataLayer(layerConfig: any, map: IMAP): Promise<VectorTileLayer> {
     if (!layerConfig.url) {
       return;
     }
@@ -578,8 +682,13 @@ export class MapComponent implements OnDestroy {
       }),
       style: (feature: FeatureLike) => {
         const properties = feature.getProperties();
+        const layers: number[] = JSON.parse(properties.layers);
+        const activatedLayers: ILAYER[] = (map.layers ?? []).filter(
+          l => layers.indexOf(+l.id) > -1,
+        );
         let featureStyle: any;
         let featureSymbolStyle: any;
+
         for (const layerStyle of this._styleJson.layers) {
           if (layerStyle.id === properties.cai_scale) {
             featureStyle = layerStyle;
@@ -590,8 +699,17 @@ export class MapComponent implements OnDestroy {
 
         const strokeStyle: StrokeStyle = new StrokeStyle();
 
-        if (featureStyle?.paint?.['line-color']) {
-          strokeStyle.setColor(featureStyle.paint['line-color']);
+        if (
+          activatedLayers[0] != null &&
+          activatedLayers[0].style != null &&
+          activatedLayers[0].style.color != null
+        ) {
+          // strokeStyle.setColor(featureStyle.paint['line-color']);
+          // strokeStyle.setColor(activatedLayers[0].style.color);
+          // TODO momentaneamente settiamo sempre il colore di default
+          strokeStyle.setColor(this._defaultFeatureColor);
+        } else {
+          strokeStyle.setColor(this._defaultFeatureColor);
         }
         if (featureStyle?.layout?.['line-cap']) {
           strokeStyle.setLineCap(featureStyle.layout['line-cap']);
@@ -696,7 +814,7 @@ export class MapComponent implements OnDestroy {
           const selectedStyle = new Style({
             stroke: new StrokeStyle({
               width: Math.max(10, strokeStyle.getWidth() + 8),
-              color: 'rgba(226, 249, 0, 0.6)',
+              color: DEF_LINE_COLOR_SELECTED,
             }),
             zIndex: 999,
           });
@@ -705,7 +823,7 @@ export class MapComponent implements OnDestroy {
             style.getText().setStroke(
               new StrokeStyle({
                 width: 4,
-                color: 'rgba(226, 249, 0, 0.6)',
+                color: DEF_LINE_COLOR_SELECTED,
               }),
             );
           }
@@ -873,7 +991,7 @@ export class MapComponent implements OnDestroy {
       style.push(
         new Style({
           stroke: new StrokeStyle({
-            color: 'rgba(226, 249, 0, 0.6)',
+            color: DEF_LINE_COLOR_SELECTED,
             width: 10,
           }),
           zIndex: zIndex + 5,

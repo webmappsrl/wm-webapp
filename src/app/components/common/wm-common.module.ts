@@ -5,6 +5,7 @@ import {ImageModalComponent} from './image-modal/image-modal.component';
 import {SearchBoxComponent} from './search-box/search-box.component';
 import {CompactHorizontalComponent} from './compact-horizontal/compact-horizontal.component';
 import {LayerBoxComponent} from './layer-box/layer-box.component';
+import {PipeModule} from 'src/app/pipes/pipe.module';
 
 const components = [
   RelatedUrlsComponent,
@@ -15,7 +16,7 @@ const components = [
 ];
 @NgModule({
   declarations: components,
-  imports: [CommonModule],
+  imports: [CommonModule, PipeModule],
   exports: components,
 })
 export class WMCommonModule {}

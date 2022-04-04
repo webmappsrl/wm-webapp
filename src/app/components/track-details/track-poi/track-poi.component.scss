@@ -1,4 +1,7 @@
 webmapp-track-poi {
+  .webmapp-track-poi-title :first-letter {
+    text-transform: uppercase;
+  }
   .webmapp-track-poi-list {
     margin-top: 10px;
     display: flex;
@@ -33,6 +36,9 @@ webmapp-track-poi {
         line-height: 22px;
         letter-spacing: 0em;
         text-align: left;
+      }
+      .webmapp-track-poi-title :first-letter {
+        text-transform: uppercase;
       }
       .webmapp-track-poi-description {
         align-self: stretch;

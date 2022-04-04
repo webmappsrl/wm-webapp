@@ -51,9 +51,14 @@
       }
     }
   },
-  "home":{
-    "duration":"Durata",
-    "length":"Lunghezza",
-    "difference":"Dislivello"
-  }
+  "home": {
+    "duration": "Durata",
+    "length": "Lunghezza",
+    "difference": "Dislivello"
+  },
+  "hiking": "escursionismo",
+  "skitouring": "Scialpinismo",
+  "walking": "Passeggiata",
+  "running": "Corsa",
+  "cycling": "In bicicletta"
 }

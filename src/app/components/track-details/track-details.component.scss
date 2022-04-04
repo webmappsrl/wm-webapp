@@ -21,6 +21,9 @@ webmapp-track-details {
     letter-spacing: 0em;
     text-align: left;
   }
+  .webmapp-track-title:first-letter {
+    text-transform: uppercase;
+  }
   .webmapp-walkability {
     display: flex;
     flex-direction: row;
@@ -37,7 +40,7 @@ webmapp-track-details {
       padding: 10px;
 
       height: 82px;
-      width: 80px;
+      min-width: 80px;
       left: 0px;
       top: 932px;
       border-radius: 15px;

@@ -5,7 +5,7 @@ webmapp-layer-box {
     border-radius: 15px;
     box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.1);
     transition: all 500ms;
-    height: 250px;
+    height: 176px;
     cursor: pointer;
 
     display: flex;
@@ -25,7 +25,7 @@ webmapp-layer-box {
 
     .wm-box-title {
       text-transform: capitalize;
-      font-size: var(--wm-font-xxx-lg);
+      font-size: 26px;
       font-family: var(--wm-font-family-header);
       font-style: normal;
       font-weight: 700;
@@ -33,7 +33,7 @@ webmapp-layer-box {
       position: absolute;
       bottom: 0;
       padding: 1%;
-      text-shadow: 2px 2px black;
+      text-shadow: 0.5px 0.5px black;
     }
   }
 }

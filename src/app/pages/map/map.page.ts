@@ -86,16 +86,14 @@ export class MapPage {
       map(showMenu => (showMenu ? 'caret-back-outline' : 'caret-forward-outline')),
     );
     this.leftPadding$ = this.showMenu$.pipe(map(showMenu => (showMenu ? menuOpenLeft : 0)));
-
     const relatedPois$ = this.track$.pipe(
-      map(track => track.properties),
-      map(properties => properties.related_pois || []),
-      distinctUntilChanged((a, b) => {
-        return JSON.stringify(a) !== JSON.stringify(b);
-      }),
-      catchError(e => of(null)),
+      map(track => (track != null && track.properties != null ? track.properties : null)),
+      map(properties =>
+        properties != null && properties.related_pois != null ? properties.related_pois : [],
+      ),
+      catchError(e => of([])),
+      shareReplay(1),
     );
-
     const currentPoi = combineLatest([this.currentPoiID$, relatedPois$]).pipe(
       map(([id, pois]) => {
         const relatedPois = pois.filter(poi => {

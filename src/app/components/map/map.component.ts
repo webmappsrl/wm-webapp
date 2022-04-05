@@ -119,6 +119,7 @@ export class MapComponent implements OnDestroy {
   }
   @Input('start-view') startView: number[] = startView;
   @Input('track') set setTrack(track: CGeojsonLineStringFeature) {
+    console.log('track', track);
     this._currentTrack$.next(track);
     if (track == null) {
       if (this._mapInit$.value) {
@@ -406,7 +407,9 @@ export class MapComponent implements OnDestroy {
   }
   private _removePoiLayer() {
     this._poisLayer.getSource().clear();
-    this._elevationChartLayer.getSource().clear();
+    if (this._elevationChartLayer != null) {
+      this._elevationChartLayer.getSource().clear();
+    }
     this._poiMarkers = [];
   }
   private async _createIconFeature(

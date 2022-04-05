@@ -10,7 +10,9 @@ export const confLANGUAGES = createSelector(confFeature, state => state.LANGUAGE
 export const confOPTIONS = createSelector(confFeature, state => state.OPTIONS);
 export const confAUTH = createSelector(confFeature, state => state.AUTH);
 
-export const confMAP = createSelector(confFeature, state => state.MAP);
+export const confMAP = createSelector(confFeature, state => {
+  return state.MAP;
+});
 export const confMAPLAYERS = createSelector(confMAP, map => map.layers);
 export const confTHEME = createSelector(confFeature, state => state.THEME);
 

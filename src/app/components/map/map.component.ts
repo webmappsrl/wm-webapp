@@ -92,10 +92,13 @@ export class MapComponent implements OnDestroy {
       this.scaleLineStyle$.next(padding[3]);
     }
 
-    this._fitView(new Point(this._view.getCenter()), {
-      padding: this._padding$.value,
-      duration: zoomDuration,
-    });
+    if (this._view != null) {
+      this._fitView(new Point(this._view.getCenter()), {
+        padding: this._padding$.value,
+        duration: zoomDuration,
+      });
+    }
+
     if (this._map != null) {
       this._map.updateSize();
     }
@@ -204,19 +207,8 @@ export class MapComponent implements OnDestroy {
         take(1),
       )
       .subscribe((map: IMAP) => {
+        console.log('init map ', map);
         this._zone.run(() => this._initMap(map));
-
-        if (map.maxZoom) {
-          this._maxZoom = map.maxZoom;
-          this._view.setMaxZoom(this._maxZoom);
-        }
-        if (map.minZoom) {
-          this._minZoom = map.minZoom;
-          this._view.setMinZoom(this._minZoom);
-        }
-        if (map.defZoom) {
-          this._view.setZoom(map.defZoom);
-        }
       });
   }
 
@@ -237,19 +229,24 @@ export class MapComponent implements OnDestroy {
   private async _initMap(map: IMAP) {
     this._view = new View({
       center: this._mapService.coordsFromLonLat([this.startView[0], this.startView[1]]),
-      zoom: this.startView[2],
-      maxZoom: this._maxZoom,
-      minZoom: this._minZoom,
+      zoom: map.defZoom,
+      maxZoom: map.maxZoom,
+      minZoom: map.minZoom,
       projection,
       constrainOnlyCenter: true,
       extent: this._mapService.extentFromLonLat(map.bbox ?? initExtent),
       padding: this._padding$.value || undefined,
     });
 
-    this._fitView(new Point(this._view.getCenter()), {
-      padding: this._padding$.value,
-      duration: zoomDuration,
-    });
+    if (map.maxZoom) {
+      this._maxZoom = map.maxZoom;
+    }
+    if (map.minZoom) {
+      this._minZoom = map.minZoom;
+    }
+    if (map.defZoom) {
+      this._view.setZoom(map.defZoom);
+    }
 
     const baseLayers: Array<Layer> = this._initializeBaseLayers();
     this._dataLayers = await this._initializeDataLayers(map);

@@ -119,8 +119,18 @@ export class MapComponent implements OnDestroy {
   }
   @Input('start-view') startView: number[] = startView;
   @Input('track') set setTrack(track: CGeojsonLineStringFeature) {
-    if (track != null) {
-      this._currentTrack$.next(track);
+    this._currentTrack$.next(track);
+    if (track == null) {
+      if (this._mapInit$.value) {
+        this._map.removeLayer(this._selectedPoiLayer);
+        this._selectedPoiLayer = undefined;
+        this._removePoiLayer();
+        this._updateMap();
+        this._fitView(new Point(this._view.getCenter()), {
+          maxZoom: this._defZoom + 2,
+          duration: zoomDuration * 2,
+        });
+      }
     }
   }
   @Input('poi') set setPoi(id: number) {
@@ -207,11 +217,7 @@ export class MapComponent implements OnDestroy {
           );
           this._addPoisMarkers(selectedGeohubFeature.properties.related_pois);
         }),
-        tap(() => {
-          for (const layer of this._dataLayers) {
-            layer.changed();
-          }
-        }),
+        tap(() => this._updateMap()),
       )
       .subscribe(() => {
         this._fitView(this._selectedFeature$.value.getGeometry().getExtent(), {
@@ -247,7 +253,11 @@ export class MapComponent implements OnDestroy {
     }
     this._view.fit(geometryOrExtent, optOptions);
   }
-
+  private _updateMap() {
+    for (const layer of this._dataLayers) {
+      layer.changed();
+    }
+  }
   private async _initMap(map: IMAP) {
     this._view = new View({
       center: this._mapService.coordsFromLonLat([this.startView[0], this.startView[1]]),
@@ -394,7 +404,11 @@ export class MapComponent implements OnDestroy {
       style,
     };
   }
-
+  private _removePoiLayer() {
+    this._poisLayer.getSource().clear();
+    this._elevationChartLayer.getSource().clear();
+    this._poiMarkers = [];
+  }
   private async _createIconFeature(
     coordinates: number[],
     img: HTMLImageElement,

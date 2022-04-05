@@ -7,8 +7,9 @@ import {
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 
-import {BehaviorSubject, combineLatest, from, merge, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, from, merge, Observable, of} from 'rxjs';
 import {
+  catchError,
   distinctUntilChanged,
   filter,
   map,
@@ -35,7 +36,7 @@ const maxWidth = 600;
   encapsulation: ViewEncapsulation.None,
 })
 export class MapPage {
-  readonly track$: Observable<CGeojsonLineStringFeature>;
+  readonly track$: Observable<CGeojsonLineStringFeature | null>;
   readonly trackid$: Observable<number>;
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
   currentPoi$: Observable<any>;
@@ -68,11 +69,16 @@ export class MapPage {
       startWith(-1),
     );
     this.track$ = this.trackid$.pipe(
-      filter(trackid => trackid > -1),
-      switchMap(trackid => from(this._geohubService.getEcTrack(trackid))),
+      switchMap(trackid =>
+        trackid > -1 ? from(this._geohubService.getEcTrack(trackid)) : of(null),
+      ),
       tap(track => {
-        const poiIDs = (track.properties.related_pois || []).map(poi => poi.properties.id);
-        this.poiIDs$.next(poiIDs);
+        if (track != null) {
+          const poiIDs = (track.properties.related_pois || []).map(poi => poi.properties.id);
+          this.poiIDs$.next(poiIDs);
+        } else {
+          this.poiIDs$.next([]);
+        }
       }),
     );
 
@@ -87,6 +93,7 @@ export class MapPage {
       distinctUntilChanged((a, b) => {
         return JSON.stringify(a) !== JSON.stringify(b);
       }),
+      catchError(e => of(null)),
     );
 
     const currentPoi = combineLatest([this.currentPoiID$, relatedPois$]).pipe(
@@ -98,6 +105,7 @@ export class MapPage {
         const relatedPoi = relatedPois[0] ?? null;
         return relatedPoi;
       }),
+      catchError(e => of(null)),
       shareReplay(),
     );
     this.currentPoi$ = merge(currentPoi, this.popupCloseEVT$);
@@ -124,13 +132,6 @@ export class MapPage {
 
   public selectTrack(trackid: number = -1) {
     this.updateUrl(trackid);
-  }
-
-  public setCurrentPoi(id) {
-    this._cdr.detectChanges();
-    if (id !== this.currentPoiID$.value) {
-      this.currentPoiID$.next(id);
-    }
   }
 
   public setTrackElevationChartHoverElements(elements?: ITrackElevationChartHoverElements): void {
@@ -161,11 +162,11 @@ export class MapPage {
     // this.setCurrentPoi(-1);
     this.popupCloseEVT$.emit(null);
   }
-
-  public updateCurrentPoi(id) {
+  public setCurrentPoi(id) {
     if (id !== this.currentPoiID$.value) {
       this.currentPoiID$.next(id);
     }
+    this._cdr.detectChanges();
   }
 
   public updateUrl(trackid: number) {

@@ -7,7 +7,7 @@
         [poi]="currentPoiIDToMap$|async"
         [trackElevationChartElements]="trackElevationChartHoverElements$|async"
         (feature-click)="toggleDetails($event)"
-        (poi-click)="updateCurrentPoi($event)"
+        (poi-click)="setCurrentPoi($event)"
       ></webmapp-map>
       <div class="mobile-details">
         <webmapp-home
@@ -74,7 +74,7 @@
       [poi]="currentPoiIDToMap$|async"
       [trackElevationChartElements]="trackElevationChartHoverElements$|async"
       (feature-click)="toggleDetails($event)"
-      (poi-click)="updateCurrentPoi($event)"
+      (poi-click)="setCurrentPoi($event)"
     ></webmapp-map>
   </ng-template>
 </ng-container>

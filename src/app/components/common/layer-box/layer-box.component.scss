@@ -21,6 +21,7 @@ webmapp-layer-box {
       align-self: stretch;
       height: 100%;
       width: 100%;
+      filter: brightness(75%);
     }
 
     .wm-box-title {
@@ -32,7 +33,11 @@ webmapp-layer-box {
       position: absolute;
       bottom: 0;
       padding: 6%;
-      text-shadow: 0.5px 0.5px black;
+
+      line-height: 31px;
+      letter-spacing: 0em;
+      text-align: left;
+      white-space: break-spaces;
     }
   }
 }

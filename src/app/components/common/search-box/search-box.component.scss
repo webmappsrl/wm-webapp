@@ -5,7 +5,7 @@ webmapp-search-box {
     border-radius: 15px;
     box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.1);
     transition: all 500ms;
-    height: 250px;
+    min-height: 229px;
     cursor: pointer;
 
     display: flex;
@@ -19,7 +19,7 @@ webmapp-search-box {
       border-radius: 15px 15px 0 0;
       object-fit: cover;
       align-self: stretch;
-      height: 50%;
+      height: 115px;
       width: 100%;
     }
 
@@ -63,22 +63,32 @@ webmapp-search-box {
     .wm-box-tags {
       margin-left: 10px;
       margin-right: 10px;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .wm-box-name {
-      font-size: var(--wm-font-sm);
       font-family: var(--wm-font-family-header);
       font-style: normal;
       font-weight: 700;
-      line-height: 19px;
       color: #323031;
+      font-size: 16px;
+      line-height: 27px;
+      letter-spacing: 0em;
+      text-align: left;
     }
-    .wm-box-name:first-letter {
-      text-transform: uppercase;
-    }
+
     .wm-box-where {
+      margin-top: 2%;
       text-transform: uppercase;
       font-family: var(--wm-font-family-header);
       color: var(--wm-color-primary);
+
+      font-style: normal;
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 22px;
     }
     .wm-box-tags {
       position: absolute;

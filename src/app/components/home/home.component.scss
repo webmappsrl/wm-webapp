@@ -9,9 +9,11 @@ webmapp-home {
   }
 
   .reset-layer {
-    box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.1);
-    background: var(--wm-color-primary);
-    color: var(-wm-color-secondary-contrast);
+    box-shadow: 0 2px 2px 0 rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 20%),
+      0 1px 5px 0 rgb(0 0 0 / 12%);
+    color: -internal-light-dark(black, white);
+    border-radius: inherit !important;
+    color: black;
     cursor: pointer;
     position: relative;
     margin: 10px;
@@ -19,11 +21,10 @@ webmapp-home {
     margin: 10px;
     padding: 4%;
     text-align: center;
-    text-transform: capitalize;
+
     font-size: var(--wm-font-sm);
-    font-family: var(--wm-font-family-header);
+    font-family: var(--wm-font-family-content);
     font-style: normal;
-    font-weight: 700;
     line-height: 19px;
     color: #323031;
 
@@ -33,10 +34,14 @@ webmapp-home {
     justify-content: flex-start;
     align-content: stretch;
     align-items: stretch;
+
+    white-space: break-spaces;
     ion-icon {
+      position: absolute;
       order: 0;
       flex: 0 1 auto;
       align-self: auto;
+      color: var(--wm-color-primary);
     }
     div {
       order: 0;
@@ -45,10 +50,11 @@ webmapp-home {
     }
   }
   .webmapp-home-title {
-    font-size: 28px;
+    padding: 3%;
+    font-size: 21px;
     font-weight: 700;
+    line-height: 25px;
     letter-spacing: 0em;
     text-align: left;
-    padding: 3%;
   }
 }

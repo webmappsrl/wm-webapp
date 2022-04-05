@@ -43,7 +43,6 @@ export class HomeComponent {
     private _route: ActivatedRoute,
   ) {
     this.cards$ = merge(this.elasticSearch$, this.layerCards$).pipe(startWith([]));
-    this.confHOME$.subscribe(asd => console.table(asd));
   }
 
   searchCard(id: string | number) {

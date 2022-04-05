@@ -55,7 +55,6 @@ import {filter, switchMap, take, tap} from 'rxjs/operators';
 import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {CommunicationService} from 'src/app/services/communication.service';
-import {GeohubService} from 'src/app/services/geohub.service';
 import {MapService} from 'src/app/services/map.service';
 import {IConfRootState} from 'src/app/store/conf/conf.reducer';
 import {confMAP, confTHEME} from 'src/app/store/conf/conf.selector';
@@ -165,7 +164,6 @@ export class MapComponent implements OnDestroy {
 
   constructor(
     private _communicationService: CommunicationService,
-    private _geohubService: GeohubService,
     private _mapService: MapService,
     private _zone: NgZone,
     private _store: Store<IConfRootState>,
@@ -200,21 +198,26 @@ export class MapComponent implements OnDestroy {
       this._defaultFeatureColor = theme.defaultFeatureColor;
     });
 
-    this._confMap$.pipe(filter(f => f != null)).subscribe((map: IMAP) => {
-      this._zone.run(() => this._initMap(map));
+    this._confMap$
+      .pipe(
+        filter(f => f != null),
+        take(1),
+      )
+      .subscribe((map: IMAP) => {
+        this._zone.run(() => this._initMap(map));
 
-      if (map.maxZoom) {
-        this._maxZoom = map.maxZoom;
-        this._view.setMaxZoom(this._maxZoom);
-      }
-      if (map.minZoom) {
-        this._minZoom = map.minZoom;
-        this._view.setMinZoom(this._minZoom);
-      }
-      if (map.defZoom) {
-        this._view.setZoom(map.defZoom);
-      }
-    });
+        if (map.maxZoom) {
+          this._maxZoom = map.maxZoom;
+          this._view.setMaxZoom(this._maxZoom);
+        }
+        if (map.minZoom) {
+          this._minZoom = map.minZoom;
+          this._view.setMinZoom(this._minZoom);
+        }
+        if (map.defZoom) {
+          this._view.setZoom(map.defZoom);
+        }
+      });
   }
 
   ngOnDestroy(): void {

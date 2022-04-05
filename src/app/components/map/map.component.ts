@@ -721,38 +721,13 @@ export class MapComponent implements OnDestroy {
           strokeStyle.setLineDash(featureStyle.layout['line-dasharray']);
         }
 
-        if (featureStyle?.paint?.['line-width']) {
-          if (featureStyle?.paint?.['line-width']?.stops) {
-            let maxWidthPos: number = -1;
-            const currentZoom: number = this._view.getZoom();
-            for (const key in featureStyle.paint['line-width'].stops) {
-              if (
-                featureStyle.paint['line-width'].stops[key]?.[0] &&
-                featureStyle.paint['line-width'].stops[key]?.[0] >= currentZoom
-              ) {
-                maxWidthPos = parseInt(key, 10);
-                break;
-              }
-            }
-            if (maxWidthPos === -1) {
-              maxWidthPos = featureStyle.paint['line-width'].stops.length - 1;
-            }
+        const currentZoom: number = this._view.getZoom();
 
-            if (maxWidthPos === 0) {
-              strokeStyle.setWidth(featureStyle.paint['line-width'].stops[maxWidthPos]?.[1] ?? 1);
-            } else {
-              const minWidth: number =
-                featureStyle.paint['line-width'].stops[maxWidthPos - 1]?.[1] ?? 1;
-              const maxWidth: number =
-                featureStyle.paint['line-width'].stops[maxWidthPos]?.[1] ?? 1;
-              const minZoom: number = featureStyle.paint['line-width'].stops[maxWidthPos - 1][0];
-              const maxZoom: number = featureStyle.paint['line-width'].stops[maxWidthPos][0];
-              const factor: number = (currentZoom - minZoom) / (maxZoom - minZoom);
-
-              strokeStyle.setWidth(minWidth + (maxWidth - minWidth) * factor);
-            }
-          }
-        }
+        const minW = 1;
+        const maxW = 10;
+        const delta = (currentZoom - map.minZoom) / (map.maxZoom - map.minZoom);
+        const newWidth = minW + (maxW - minW) * delta;
+        strokeStyle.setWidth(newWidth);
 
         const style: Style = new Style({
           stroke: strokeStyle,

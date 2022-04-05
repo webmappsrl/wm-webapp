@@ -22,24 +22,26 @@
         </div>
       </div>
     </div>
-    <div
-      class="webmapp-track-elevation-chart-legend-surface-container"
-      *ngIf="surfaces && surfaces.length > 0"
-    >
-      <div *ngFor="let surface of surfaces" class="webmapp-track-elevation-chart-legend-surface">
-        <span
-          [ngStyle]="{
-            background: 'rgb(' + surface.backgroundColor + ')'
-          }"
-          class="webmapp-track-elevation-chart-legend-surface-dot"
-        ></span>
-        <div class="webmapp-track-elevation-chart-legend-surface-label">
-          {{
-            "trackDetails.elevationChart.surfaces." + surface.id + ".label"
-              | WebmappTranslate
-          }}
+    <ng-container *ngIf="false">
+      <div
+        class="webmapp-track-elevation-chart-legend-surface-container"
+        *ngIf="surfaces && surfaces.length > 0"
+      >
+        <div *ngFor="let surface of surfaces" class="webmapp-track-elevation-chart-legend-surface">
+          <span
+            [ngStyle]="{
+          background: 'rgb(' + surface.backgroundColor + ')'
+        }"
+            class="webmapp-track-elevation-chart-legend-surface-dot"
+          ></span>
+          <div class="webmapp-track-elevation-chart-legend-surface-label">
+            {{
+          "trackDetails.elevationChart.surfaces." + surface.id + ".label"
+            | WebmappTranslate
+            }}
+          </div>
         </div>
       </div>
-    </div>
+    </ng-container>
   </div>
 </div>

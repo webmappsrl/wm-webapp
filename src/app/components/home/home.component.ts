@@ -13,6 +13,8 @@ import {IConfRootState} from 'src/app/store/conf/conf.reducer';
 import {confHOME} from 'src/app/store/conf/conf.selector';
 import {IElasticSearchRootState} from 'src/app/store/elastic/elastic.reducer';
 import {elasticSearch} from 'src/app/store/elastic/elastic.selector';
+import {setCurrentLayer} from 'src/app/store/UI/UI.actions';
+import {IUIRootState} from 'src/app/store/UI/UI.reducer';
 
 @Component({
   selector: 'webmapp-home',
@@ -39,6 +41,8 @@ export class HomeComponent {
   constructor(
     private _storeSearch: Store<IElasticSearchRootState>,
     private _storeConf: Store<IConfRootState>,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    private _StoreUi: Store<IUIRootState>,
     private _router: Router,
     private _route: ActivatedRoute,
   ) {
@@ -60,6 +64,7 @@ export class HomeComponent {
     } else {
       this.layerCards$.next(null);
     }
+    this._StoreUi.dispatch(setCurrentLayer({currentLayer: layer}));
     this.currentLayer$.next(layer);
   }
 }

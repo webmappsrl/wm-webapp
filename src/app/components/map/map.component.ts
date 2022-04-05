@@ -58,6 +58,8 @@ import {CommunicationService} from 'src/app/services/communication.service';
 import {MapService} from 'src/app/services/map.service';
 import {IConfRootState} from 'src/app/store/conf/conf.reducer';
 import {confMAP, confTHEME} from 'src/app/store/conf/conf.selector';
+import {IUIRootState} from 'src/app/store/UI/UI.reducer';
+import {UICurrentLAyer} from 'src/app/store/UI/UI.selector';
 import {ILocation} from 'src/app/types/location';
 import {IGeojsonFeature, ILineString} from 'src/app/types/model';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
@@ -147,6 +149,7 @@ export class MapComponent implements OnDestroy {
     new BehaviorSubject<FeatureLike | null>(null);
   private _currentTrack$: BehaviorSubject<CGeojsonLineStringFeature | null> =
     new BehaviorSubject<CGeojsonLineStringFeature | null>(null);
+  private _currentLayer$: BehaviorSubject<ILAYER | null> = new BehaviorSubject<ILAYER | null>(null);
   private _mapInit$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _selectInteraction: SelectInteraction;
   private _styleJson: any;
@@ -161,8 +164,10 @@ export class MapComponent implements OnDestroy {
   private _updateMapSub: Subscription = Subscription.EMPTY;
   private _confTHEME$: Observable<ITHEME> = this._store.select(confTHEME);
   private _confMap$: Observable<any> = this._store.select(confMAP);
+  private _UICurrentLayer$: Observable<any> = this._UIstore.select(UICurrentLAyer);
   private _maxZoom: number = initMaxZoom;
-  private _minZoom: number = initMinZoom;
+  private _minZoom: number = initMaxZoom;
+  private _defZoom: number = initMinZoom;
   private _defaultFeatureColor = DEF_LINE_COLOR;
 
   constructor(
@@ -170,7 +175,25 @@ export class MapComponent implements OnDestroy {
     private _mapService: MapService,
     private _zone: NgZone,
     private _store: Store<IConfRootState>,
+    private _UIstore: Store<IUIRootState>,
   ) {
+    this._UICurrentLayer$.subscribe(val => {
+      this._currentLayer$.next(val);
+
+      if (this._view != null) {
+        if (val != null) {
+          this._fitView(new Point(this._view.getCenter()), {
+            maxZoom: this._view.getZoom() + 0.1,
+            duration: zoomDuration,
+          });
+        } else {
+          this._fitView(new Point(this._view.getCenter()), {
+            maxZoom: this._defZoom,
+            duration: zoomDuration,
+          });
+        }
+      }
+    });
     this._updateMapSub = this._mapInit$
       .pipe(
         filter(init => init),
@@ -207,7 +230,6 @@ export class MapComponent implements OnDestroy {
         take(1),
       )
       .subscribe((map: IMAP) => {
-        console.log('init map ', map);
         this._zone.run(() => this._initMap(map));
       });
   }
@@ -246,6 +268,7 @@ export class MapComponent implements OnDestroy {
     }
     if (map.defZoom) {
       this._view.setZoom(map.defZoom);
+      this._defZoom = map.defZoom;
     }
 
     const baseLayers: Array<Layer> = this._initializeBaseLayers();
@@ -723,16 +746,22 @@ export class MapComponent implements OnDestroy {
 
         const currentZoom: number = this._view.getZoom();
 
-        const minW = 1;
-        const maxW = 10;
+        const minW = 0.1;
+        const maxW = 5;
         const delta = (currentZoom - map.minZoom) / (map.maxZoom - map.minZoom);
         const newWidth = minW + (maxW - minW) * delta;
         strokeStyle.setWidth(newWidth);
 
-        const style: Style = new Style({
+        let style: Style = new Style({
           stroke: strokeStyle,
           zIndex: 100,
         });
+        if (this._currentLayer$.value != null) {
+          const currentIDLayer = +this._currentLayer$.value.id;
+          if (layers.indexOf(currentIDLayer) < 0) {
+            style = new Style({});
+          }
+        }
 
         if (
           (!featureSymbolStyle?.minzoom || featureSymbolStyle?.minzoom <= this._view.getZoom()) &&

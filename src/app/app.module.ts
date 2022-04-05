@@ -20,6 +20,7 @@ import {environment} from 'src/environments/environment';
 import {MetaComponent} from './meta.component';
 import {elasticAllReducer, elasticSearchReducer} from './store/elastic/elastic.reducer';
 import {ElasticEffects} from './store/elastic/elastic.effects';
+import {UIReducer} from './store/UI/UI.reducer';
 
 registerLocaleData(localeIt);
 
@@ -45,6 +46,7 @@ registerLocaleData(localeIt);
         conf: confReducer,
         search: elasticSearchReducer,
         all: elasticAllReducer,
+        UI: UIReducer,
       },
       {},
     ),

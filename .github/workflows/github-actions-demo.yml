@@ -19,10 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: Use Node.js 12.8
+      - name: Use Node.js 14.15
         uses: actions/setup-node@v1
         with:
-          node-version: 12.8
+          node-version: 14.15
       - name: Install dependencies
         run: npm install
       - name: Lint
@@ -30,7 +30,7 @@ jobs:
       - name: Build
         run: npm run build -- --prod
       - name: Test
-        run: npm test -- --configuration=ci
+        run: npm test
       - name: E2E
-        run: npm run e2e -- --configuration=ci
+        run: npm run e2e
 

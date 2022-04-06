@@ -52,7 +52,7 @@ import View, {FitOptions} from 'ol/View';
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {filter, switchMap, take, tap} from 'rxjs/operators';
 
-import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
+import {IPoiMarker} from 'src/app/classes/features/cgeojson-feature';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {CommunicationService} from 'src/app/services/communication.service';
 import {MapService} from 'src/app/services/map.service';
@@ -171,8 +171,8 @@ export class MapComponent implements OnDestroy {
   private _elevationChartTrack: Feature<LineString>;
   private _poisLayer: VectorLayer;
   private _selectedPoiLayer: VectorLayer;
-  private _selectedPoiMarker: PoiMarker;
-  private _poiMarkers: PoiMarker[] = [];
+  private _selectedPoiMarker: IPoiMarker;
+  private _poiMarkers: IPoiMarker[] = [];
   private _updateMapSub: Subscription = Subscription.EMPTY;
   private _confTHEME$: Observable<ITHEME> = this._store.select(confTHEME);
   private _confMap$: Observable<any> = this._store.select(confMAP);
@@ -350,7 +350,7 @@ export class MapComponent implements OnDestroy {
     this._mapInit$.next(true);
   }
 
-  private async _selectCurrentPoi(poiMarker: PoiMarker) {
+  private async _selectCurrentPoi(poiMarker: IPoiMarker) {
     if (this._selectedPoiMarker != null) {
       this._map.removeLayer(this._selectedPoiLayer);
       this._selectedPoiLayer = undefined;
@@ -388,7 +388,7 @@ export class MapComponent implements OnDestroy {
     poi: any,
     geometry = null,
     selected = false,
-  ): Promise<{marker: PoiMarker; style: Style}> {
+  ): Promise<{marker: IPoiMarker; style: Style}> {
     const img = await this._createPoiCavasImage(poi, selected);
     const {iconFeature, style} = await this._createIconFeature(
       geometry

@@ -31,6 +31,9 @@ export class ConfService {
     return `${this._geohubApiBaseUrl}vector_style`;
   }
 
+  public get vectorLayerUrl(): string {
+    return `https://geohub.webmapp.it/api/app/webapp/${this._geohubAppId}/vector_layer`;
+  }
   private get _geohubApiBaseUrl(): string {
     return `${GEOHUB_PROTOCOL}://${GEOHUB_DOMAIN}/api/app/webmapp/${this._geohubAppId}/`;
   }

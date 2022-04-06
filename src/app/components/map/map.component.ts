@@ -58,6 +58,7 @@ import {CommunicationService} from 'src/app/services/communication.service';
 import {MapService} from 'src/app/services/map.service';
 import {IConfRootState} from 'src/app/store/conf/conf.reducer';
 import {confMAP, confTHEME} from 'src/app/store/conf/conf.selector';
+import {ConfService} from 'src/app/store/conf/conf.service';
 import {IUIRootState} from 'src/app/store/UI/UI.reducer';
 import {UICurrentLAyer} from 'src/app/store/UI/UI.selector';
 import {ILocation} from 'src/app/types/location';
@@ -187,6 +188,7 @@ export class MapComponent implements OnDestroy {
     private _zone: NgZone,
     private _store: Store<IConfRootState>,
     private _UIstore: Store<IUIRootState>,
+    private _confService: ConfService,
   ) {
     this._UICurrentLayer$.subscribe(val => {
       this._currentLayer$.next(val);
@@ -582,6 +584,7 @@ export class MapComponent implements OnDestroy {
    * @returns the array of created layers
    */
   private async _initializeDataLayers(map: IMAP): Promise<Array<VectorTileLayer>> {
+    const vectorLayerUrl = this._confService.vectorLayerUrl;
     const styleJson: any = {
       version: 8,
       name: 'tracks',
@@ -589,7 +592,7 @@ export class MapComponent implements OnDestroy {
       sources: {
         tracks1: {
           type: 'vector',
-          url: 'https://geohub.webmapp.it/api/app/webapp/4/vector_layer',
+          url: vectorLayerUrl,
         },
       },
       sprite: '',

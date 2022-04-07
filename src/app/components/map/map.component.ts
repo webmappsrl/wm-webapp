@@ -410,7 +410,7 @@ export class MapComponent implements OnDestroy {
   private _removePoiLayer() {
     this._poisLayer.getSource().clear();
     if (this._elevationChartLayer != null) {
-      this._elevationChartLayer.getSource().clear();
+      this._drawTemporaryLocationFeature();
     }
     this._poiMarkers = [];
   }

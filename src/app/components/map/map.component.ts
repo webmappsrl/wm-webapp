@@ -305,6 +305,7 @@ export class MapComponent implements OnDestroy {
       interactions,
       moveTolerance: 3,
     });
+    this._fitView(map.bbox);
 
     this._selectInteraction.on('select', async (event: SelectEvent) => {
       const clickedFeature = event?.selected?.[0] ?? undefined;

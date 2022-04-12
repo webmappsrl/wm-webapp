@@ -95,13 +95,6 @@ export class MapComponent implements OnDestroy {
       this.scaleLineStyle$.next(padding[3]);
     }
 
-    if (this._view != null) {
-      this._fitView(new Point(this._view.getCenter()), {
-        padding: this._padding$.value,
-        duration: zoomDuration,
-      });
-    }
-
     if (this._map != null) {
       this._map.updateSize();
     }
@@ -263,7 +256,6 @@ export class MapComponent implements OnDestroy {
   }
   private async _initMap(map: IMAP) {
     this._view = new View({
-      center: this._mapService.coordsFromLonLat([this.startView[0], this.startView[1]]),
       zoom: map.defZoom,
       maxZoom: map.maxZoom,
       minZoom: map.minZoom,
@@ -272,7 +264,12 @@ export class MapComponent implements OnDestroy {
       extent: this._mapService.extentFromLonLat(map.bbox ?? initExtent),
       padding: this._padding$.value || undefined,
     });
-
+    if (map.bbox) {
+      this._fitView(this._mapService.extentFromLonLat(map.bbox), {
+        duration: zoomDuration,
+        maxZoom: map.defZoom,
+      });
+    }
     if (map.maxZoom) {
       this._maxZoom = map.maxZoom;
     }
@@ -305,7 +302,6 @@ export class MapComponent implements OnDestroy {
       interactions,
       moveTolerance: 3,
     });
-    this._fitView(map.bbox);
 
     this._selectInteraction.on('select', async (event: SelectEvent) => {
       const clickedFeature = event?.selected?.[0] ?? undefined;

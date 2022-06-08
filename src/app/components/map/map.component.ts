@@ -773,10 +773,19 @@ export class MapComponent implements OnDestroy {
           stroke: strokeStyle,
           zIndex: 100,
         });
-        if (this._currentLayer$.value != null) {
+        if (
+          this._currentLayer$.value != null &&
+          this._currentLayer$.value.style != null &&
+          this._currentLayer$.value.style.color
+        ) {
           const currentIDLayer = +this._currentLayer$.value.id;
           if (layers.indexOf(currentIDLayer) < 0) {
             style = new Style({});
+          } else {
+            strokeStyle.setColor(this._currentLayer$.value.style.color);
+            style = new Style({
+              stroke: strokeStyle,
+            });
           }
         }
 

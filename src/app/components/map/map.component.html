@@ -1,5 +1,12 @@
 <div class="webmapp-map-container">
-  <div #mapContainer id="webmapp-map-map-container"></div>
+  <div
+    #mapContainer
+    id="webmapp-map-map-container"
+    navMapTrack
+    [map]="map"
+    [track]="_currentTrack$|async"
+  ></div>
+  <canvas id="canvas" width="100" height="100"></canvas>
   <div #zoomContainer id="webmapp-map-zoom-container"></div>
   <div
     #scaleLineContainer

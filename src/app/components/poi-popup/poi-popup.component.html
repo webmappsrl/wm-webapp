@@ -44,11 +44,10 @@
       <webmapp-related-urls [relatedUrls]="poiProperties.related_url"></webmapp-related-urls>
     </div>
   </div>
-  <div class="webmapp-poi-popup-text">
-    <p>
-      {{poiProperties.description|WebmappTranslate}}
-    </p>
-  </div>
+  <div
+    class="webmapp-poi-popup-text"
+    [innerHTML]="poiProperties.description|WebmappTranslate"
+  ></div>
   <button class="webmapp-poi-popup-close" (click)="closeEVT.emit()">
     <i class="icon-outline-close"></i>
   </button>

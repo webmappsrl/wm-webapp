@@ -149,10 +149,13 @@ export class MapComponent implements OnDestroy {
   private _padding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   private _view: View;
   private _map: Map;
+  get map(): Map {
+    return this._map;
+  }
   private _dataLayers: Array<VectorTileLayer>;
   private _selectedFeature$: BehaviorSubject<FeatureLike | null> =
     new BehaviorSubject<FeatureLike | null>(null);
-  private _currentTrack$: BehaviorSubject<CGeojsonLineStringFeature | null> =
+  _currentTrack$: BehaviorSubject<CGeojsonLineStringFeature | null> =
     new BehaviorSubject<CGeojsonLineStringFeature | null>(null);
   private _currentLayer$: BehaviorSubject<ILAYER | null> = new BehaviorSubject<ILAYER | null>(null);
   private _mapInit$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -358,7 +361,7 @@ export class MapComponent implements OnDestroy {
     this._addIconToLayer(this._selectedPoiLayer, marker.icon);
   }
   private async _addPoisMarkers(poiCollection: Array<IGeojsonFeature>) {
-    this._poisLayer = this._createLayer(this._poisLayer, 9998);
+    this._poisLayer = this._createLayer(this._poisLayer, 100);
     for (let i = this._poiMarkers?.length - 1; i >= 0; i--) {
       const ov = this._poiMarkers[i];
       if (!poiCollection?.find(x => x.properties.id + '' === ov.id)) {
@@ -773,10 +776,19 @@ export class MapComponent implements OnDestroy {
           stroke: strokeStyle,
           zIndex: 100,
         });
-        if (this._currentLayer$.value != null) {
+        if (
+          this._currentLayer$.value != null &&
+          this._currentLayer$.value.style != null &&
+          this._currentLayer$.value.style.color
+        ) {
           const currentIDLayer = +this._currentLayer$.value.id;
           if (layers.indexOf(currentIDLayer) < 0) {
             style = new Style({});
+          } else {
+            strokeStyle.setColor(this._currentLayer$.value.style.color);
+            style = new Style({
+              stroke: strokeStyle,
+            });
           }
         }
 

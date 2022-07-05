@@ -21,6 +21,8 @@ import {MetaComponent} from './meta.component';
 import {elasticAllReducer, elasticSearchReducer} from './store/elastic/elastic.reducer';
 import {ElasticEffects} from './store/elastic/elastic.effects';
 import {UIReducer} from './store/UI/UI.reducer';
+import {poisReducer} from './store/pois/pois.reducer';
+import {PoisEffects} from './store/pois/pois.effects';
 
 registerLocaleData(localeIt);
 
@@ -47,10 +49,11 @@ registerLocaleData(localeIt);
         search: elasticSearchReducer,
         all: elasticAllReducer,
         UI: UIReducer,
+        pois: poisReducer,
       },
       {},
     ),
-    EffectsModule.forRoot([ConfEffects, ElasticEffects]),
+    EffectsModule.forRoot([ConfEffects, ElasticEffects, PoisEffects]),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states
       logOnly: environment.production, // Restrict extension to log-only mode

@@ -4,7 +4,13 @@ import {WmMapTrackDirective} from './track.directive';
 import {WmMapLayerDirective} from './layer.directive';
 import {WmMapComponent} from './component/map.component';
 import {WmMapRelatedPoisDirective} from './related-pois.directive';
-const directives = [WmMapTrackDirective, WmMapLayerDirective, WmMapRelatedPoisDirective];
+import {WmMapPoisDirective} from './pois.directive';
+const directives = [
+  WmMapTrackDirective,
+  WmMapLayerDirective,
+  WmMapRelatedPoisDirective,
+  WmMapPoisDirective,
+];
 const components = [WmMapComponent];
 
 @NgModule({

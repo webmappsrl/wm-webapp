@@ -10,11 +10,19 @@
     (click)="toggleImage()"
   />
   <span class="webmapp-poi-popup-header">
-    <button class="webmapp-poi-popup-left" (click)="prevEVT.emit()">
+    <button
+      class="webmapp-poi-popup-left"
+      *ngIf="!poiProperties.noRelated"
+      (click)="prevEVT.emit()"
+    >
       <i class="icon-outline-arrow-left"></i>
     </button>
     <p class="webmapp-poi-popup-title">{{poiProperties.name|WebmappTranslate}}</p>
-    <button class="webmapp-poi-popup-right" (click)="nextEVT.emit()">
+    <button
+      class="webmapp-poi-popup-right"
+      (click)="nextEVT.emit()"
+      *ngIf="!poiProperties.noRelated"
+    >
       <i class="icon-outline-arrow-right"></i>
     </button>
   </span>

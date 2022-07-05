@@ -20,6 +20,8 @@ import {MapService} from 'src/app/services/map.service';
 import {DEF_MAP_MAX_ZOOM, DEF_MAP_MIN_ZOOM, initExtent} from '../constants';
 import {transformExtent} from 'ol/proj';
 import SimpleGeometry from 'ol/geom/SimpleGeometry';
+import {Store} from '@ngrx/store';
+import {IpoisRootState} from 'src/app/store/pois/pois.reducer';
 
 @Component({
   selector: 'wm-map',
@@ -39,16 +41,32 @@ export class WmMapComponent implements OnChanges {
   map: Map;
   map$: BehaviorSubject<Map> = new BehaviorSubject<Map | null>(null);
 
-  constructor(private _mapSvc: MapService) {}
+  constructor(private _mapSvc: MapService, private _store: Store<IpoisRootState>) {}
 
   @Input() set reset(_) {
     this._reset();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['conf'] != null && changes['conf'].firstChange) {
+    console.log(changes['conf']);
+    if (
+      changes['conf'] != null &&
+      changes['conf'].currentValue != null &&
+      changes['conf'].previousValue == null
+    ) {
       this._initMap(this.conf);
     }
+  }
+
+  private _fitView(geometryOrExtent: SimpleGeometry | Extent, optOptions?: FitOptions): void {
+    console.log('asd');
+    if (optOptions == null) {
+      optOptions = {
+        duration: 500,
+        maxZoom: this._view.getZoom(),
+      };
+    }
+    this._view.fit(geometryOrExtent, optOptions);
   }
 
   private _initDefaultInteractions(): Collection<Interaction> {
@@ -125,20 +143,5 @@ export class WmMapComponent implements OnChanges {
       this._view.fit(this._centerExtent);
       this._view.setZoom(this._defZoom);
     }
-  }
-
-  private _extentFromLonLat(extent: Extent): Extent {
-    return transformExtent(extent, 'EPSG:4326', 'EPSG:3857');
-  }
-
-  private _fitView(geometryOrExtent: SimpleGeometry | Extent, optOptions?: FitOptions): void {
-    console.log('asd');
-    if (optOptions == null) {
-      optOptions = {
-        duration: 500,
-        maxZoom: this._view.getZoom(),
-      };
-    }
-    this._view.fit(geometryOrExtent, optOptions);
   }
 }

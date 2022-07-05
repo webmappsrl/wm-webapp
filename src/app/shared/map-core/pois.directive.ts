@@ -27,9 +27,9 @@ import MapBrowserEvent from 'ol/MapBrowserEvent';
 import {DEF_LINE_COLOR, DEF_MAP_CLUSTER_CLICK_TOLERANCE} from './constants';
 import {logoBase64} from 'src/assets/logoBase64';
 @Directive({
-  selector: '[wmMapRelatedPois]',
+  selector: '[wmMapPois]',
 })
-export class WmMapRelatedPoisDirective implements OnInit, OnChanges {
+export class WmMapPoisDirective implements OnInit, OnChanges {
   private _defaultFeatureColor = DEF_LINE_COLOR;
   private _initPois;
   private _poiMarkers: PoiMarker[] = [];
@@ -39,8 +39,8 @@ export class WmMapRelatedPoisDirective implements OnInit, OnChanges {
 
   @Input() conf: IMAP;
   @Input() map: Map;
-  @Input() track;
-  @Output('related-poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
+  @Input() pois: any;
+  @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
 
   @Input('poi') set setPoi(id: number) {
     if (id === -1 && this._selectedPoiLayer != null) {
@@ -56,6 +56,7 @@ export class WmMapRelatedPoisDirective implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log(changes['map']);
     if (
       changes['map'] != null &&
       changes['map'].currentValue != null &&
@@ -63,6 +64,7 @@ export class WmMapRelatedPoisDirective implements OnInit, OnChanges {
     ) {
       this.map.on('click', event => {
         try {
+          console.log('click poiiii');
           const poiFeature = this._getNearestFeatureOfLayer(this._poisLayer, event);
           if (poiFeature) {
             this.map.getInteractions().forEach(i => i.setActive(false));
@@ -77,25 +79,8 @@ export class WmMapRelatedPoisDirective implements OnInit, OnChanges {
         }
       });
     }
-    const resetCondition =
-      (changes['track'] &&
-        changes['track'].previousValue != null &&
-        changes['track'].currentValue != null &&
-        changes['track'].previousValue.properties.id !=
-          changes['track'].currentValue.properties.id) ??
-      false;
-    if (this.track == null || this.map == null || resetCondition) {
-      this._resetView();
-      this._initPois = false;
-    }
-    if (
-      this.track != null &&
-      this.track.properties != null &&
-      this.track.properties.related_pois != null &&
-      this.map != null &&
-      this._initPois === false
-    ) {
-      this._addPoisMarkers(this.track.properties.related_pois);
+    if (this.map != null && this.pois != null) {
+      this._addPoisMarkers(this.pois.features as any);
       this._initPois = true;
     }
   }
@@ -103,9 +88,7 @@ export class WmMapRelatedPoisDirective implements OnInit, OnChanges {
   ngOnInit() {}
 
   private _addIconToLayer(layer: VectorLayer, icon: Feature<Geometry>) {
-    if (layer != null) {
-      layer.getSource().addFeature(icon);
-    }
+    layer.getSource().addFeature(icon);
   }
 
   private async _addPoisMarkers(poiCollection: Array<IGeojsonFeature>) {
@@ -353,26 +336,12 @@ export class WmMapRelatedPoisDirective implements OnInit, OnChanges {
     }
   }
 
-  private _resetView(): void {
-    if (this._poisLayer != null) {
-      this.map.removeLayer(this._poisLayer);
-      this._poisLayer = undefined;
-    }
-    if (this._selectedPoiLayer != null) {
-      this.map.removeLayer(this._selectedPoiLayer);
-      this._selectedPoiLayer = undefined;
-    }
-    if (this.map != null) {
-      this.map.render();
-    }
-  }
-
   private async _selectCurrentPoi(poiMarker: PoiMarker) {
     if (this._selectedPoiMarker != null) {
       this.map.removeLayer(this._selectedPoiLayer);
       this._selectedPoiLayer = undefined;
     }
-    this._selectedPoiLayer = this._createLayer(this._selectedPoiLayer, 999999999999999);
+    this._selectedPoiLayer = this._createLayer(this._selectedPoiLayer, 99999999999999);
     this._selectedPoiMarker = poiMarker;
     const {marker} = await this._createPoiCanvasIcon(poiMarker.poi, null, true);
     this._addIconToLayer(this._selectedPoiLayer, marker.icon);

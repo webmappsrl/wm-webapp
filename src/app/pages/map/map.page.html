@@ -72,15 +72,18 @@
       #wmap
       wmMapLayer
       wmMapTrack
+      wmMapPois
       wmMapRelatedPois
       [track]="track$|async"
       [layer]="currentLayer$|async"
       [conf]="confMap$|async"
       [map]="wmap.map$|async"
       [poi]="currentPoiIDToMap$|async"
+      [pois]="pois$|async"
       [trackElevationChartElements]="trackElevationChartHoverElements$|async"
       (trackSelectedFromLayerEVT)="toggleDetails($event)"
-      (related-poi-click)="setCurrentPoi($event)"
+      (related-poi-click)="setCurrentRelatedPoi($event)"
+      (poi-click)="setCurrentPoi($event)"
     ></wm-map>
   </ng-template>
 </ng-container>

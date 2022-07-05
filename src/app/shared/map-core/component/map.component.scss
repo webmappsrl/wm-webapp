@@ -1,0 +1,11 @@
+wm-map {
+  display: flex;
+
+  .map-container {
+    flex-grow: 1;
+    height: 100%;
+  }
+  canvas {
+    position: absolute;
+  }
+}

@@ -6,6 +6,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {Store} from '@ngrx/store';
 
 import {BehaviorSubject, combineLatest, from, merge, Observable, of} from 'rxjs';
 import {
@@ -18,10 +19,12 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators';
-
+import {confMAP, confTHEME} from 'src/app/store/conf/conf.selector';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {GeohubService} from 'src/app/services/geohub.service';
+import {UICurrentLAyer} from 'src/app/store/UI/UI.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
+import {stopPropagation} from 'ol/events/Event';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -38,25 +41,28 @@ const maxWidth = 600;
 export class MapPage {
   readonly track$: Observable<CGeojsonLineStringFeature | null>;
   readonly trackid$: Observable<number>;
+
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
+  currentLayer$ = this._store.select(UICurrentLAyer);
   currentPoi$: Observable<any>;
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiIDToMap$: Observable<number | null>;
+  isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   leftPadding$: Observable<number>;
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
+  popupCloseEVT$: EventEmitter<null> = new EventEmitter<null>();
+  resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
-  isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  popupCloseEVT$: EventEmitter<null> = new EventEmitter<null>();
-
-  resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  confMap$: Observable<any> = this._store.select(confMAP);
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
     private _geohubService: GeohubService,
     private _cdr: ChangeDetectorRef,
+    private _store: Store,
   ) {
     if (window.innerWidth < maxWidth) {
       this.isMobile$.next(true);
@@ -132,6 +138,13 @@ export class MapPage {
     this.updateUrl(trackid);
   }
 
+  public setCurrentPoi(id) {
+    if (id !== this.currentPoiID$.value) {
+      this.currentPoiID$.next(id);
+    }
+    this._cdr.detectChanges();
+  }
+
   public setTrackElevationChartHoverElements(elements?: ITrackElevationChartHoverElements): void {
     if (elements != null) {
       this.trackElevationChartHoverElements$.next(elements);
@@ -159,12 +172,6 @@ export class MapPage {
   public unselectPOI(): void {
     // this.setCurrentPoi(-1);
     this.popupCloseEVT$.emit(null);
-  }
-  public setCurrentPoi(id) {
-    if (id !== this.currentPoiID$.value) {
-      this.currentPoiID$.next(id);
-    }
-    this._cdr.detectChanges();
   }
 
   public updateUrl(trackid: number) {

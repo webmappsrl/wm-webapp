@@ -1,5 +1,5 @@
 webmapp-map-page {
-  webmapp-map {
+  wm-map {
     width: 100%;
     height: 100%;
   }
@@ -56,7 +56,7 @@ webmapp-map-page {
     align-items: stretch;
     z-index: 1;
 
-    webmapp-map {
+    wm-map {
       order: 0;
       flex: 0 1 60%;
       align-self: auto;

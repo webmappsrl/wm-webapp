@@ -39,7 +39,11 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
   @Input() set layer(l: ILAYER) {
     this._currentLayer = l;
     if (l != null && l.bbox != null) {
-      this.fitView(l.bbox);
+      const optOptions = {
+        duration: 500,
+        padding: [100, 100, 100, 100],
+      };
+      this.fitView(l.bbox, optOptions);
     } else if (this.conf != null && this.conf.bbox != null) {
       this.fitView(this.conf.bbox);
     }

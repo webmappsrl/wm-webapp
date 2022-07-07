@@ -18,7 +18,6 @@ export abstract class WmMaBaseDirective {
       if (optOptions == null) {
         optOptions = {
           duration: 500,
-          maxZoom: view.getZoom(),
         };
       }
       console.log('fit view ', geometryOrExtent);

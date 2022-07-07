@@ -82,23 +82,16 @@ export class WmMapComponent implements OnChanges {
   private _initMap(conf: IMAP): void {
     this._centerExtent = this._mapSvc.extentFromLonLat(conf.bbox ?? initExtent);
     this._view = new View({
-      zoom: conf.defZoom ?? 10,
       maxZoom: conf.maxZoom,
+      zoom: conf.defZoom || 10,
       minZoom: conf.minZoom,
       projection: 'EPSG:3857',
       constrainOnlyCenter: true,
-      extent: this._centerExtent,
+      padding: this.padding,
     });
 
     if (conf.bbox) {
-      this._fitView(this._centerExtent, {
-        duration: 500,
-        maxZoom: conf.defZoom,
-      });
-    }
-    if (conf.defZoom) {
-      this._defZoom = conf.defZoom;
-      this._view.setZoom(conf.defZoom);
+      this._fitView(this._centerExtent);
     }
 
     this.map = new Map({
@@ -140,7 +133,6 @@ export class WmMapComponent implements OnChanges {
   private _reset(): void {
     if (this._view != null) {
       this._view.fit(this._centerExtent);
-      this._view.setZoom(this._defZoom);
     }
   }
 }

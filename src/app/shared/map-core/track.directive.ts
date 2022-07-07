@@ -92,7 +92,11 @@ export class WmMapTrackDirective extends WmMaBaseDirective implements OnChanges 
           (this.layer && this.layer.bbox) ??
           this.conf.bbox ??
           new Point(this.map.getView().getCenter());
-        this.fitView(ext);
+        const optOptions = {
+          duration: 500,
+          padding: [100, 100, 100, 100],
+        };
+        this.fitView(ext, optOptions);
       } else {
         const ext =
           this._trackFeatures[0].getGeometry().getExtent() ??

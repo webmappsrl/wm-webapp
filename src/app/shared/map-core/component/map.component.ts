@@ -59,11 +59,9 @@ export class WmMapComponent implements OnChanges {
   }
 
   private _fitView(geometryOrExtent: SimpleGeometry | Extent, optOptions?: FitOptions): void {
-    console.log('asd');
     if (optOptions == null) {
       optOptions = {
         duration: 500,
-        maxZoom: this._view.getZoom(),
       };
     }
     this._view.fit(geometryOrExtent, optOptions);
@@ -81,6 +79,7 @@ export class WmMapComponent implements OnChanges {
 
   private _initMap(conf: IMAP): void {
     this._centerExtent = this._mapSvc.extentFromLonLat(conf.bbox ?? initExtent);
+    console.log(this.padding);
     this._view = new View({
       maxZoom: conf.maxZoom,
       zoom: conf.defZoom || 10,

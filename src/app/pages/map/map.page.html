@@ -80,6 +80,7 @@
       [map]="wmap.map$|async"
       [poi]="currentPoiIDToMap$|async"
       [pois]="pois$|async"
+      [padding]="this.mapPadding$|async"
       [trackElevationChartElements]="trackElevationChartHoverElements$|async"
       (trackSelectedFromLayerEVT)="toggleDetails($event)"
       (related-poi-click)="setCurrentRelatedPoi($event)"

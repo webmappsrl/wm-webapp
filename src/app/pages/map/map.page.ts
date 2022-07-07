@@ -30,7 +30,7 @@ import {loadPois} from 'src/app/store/pois/pois.actions';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
-const initPadding = [20, 50, 20, menuOpenLeft];
+const initPadding = [100, 100, 100, menuOpenLeft];
 const initMenuOpened = true;
 const maxWidth = 600;
 @Component({
@@ -67,6 +67,7 @@ export class MapPage {
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
+
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,

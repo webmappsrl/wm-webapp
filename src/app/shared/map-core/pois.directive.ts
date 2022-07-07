@@ -26,10 +26,11 @@ import {buffer} from 'ol/extent';
 import MapBrowserEvent from 'ol/MapBrowserEvent';
 import {DEF_LINE_COLOR, DEF_MAP_CLUSTER_CLICK_TOLERANCE} from './constants';
 import {logoBase64} from 'src/assets/logoBase64';
+import {WmMaBaseDirective} from './base.directive';
 @Directive({
   selector: '[wmMapPois]',
 })
-export class WmMapPoisDirective implements OnInit, OnChanges {
+export class WmMapPoisDirective extends WmMaBaseDirective implements OnInit, OnChanges {
   private _defaultFeatureColor = DEF_LINE_COLOR;
   private _initPois;
   private _poiMarkers: PoiMarker[] = [];
@@ -38,7 +39,6 @@ export class WmMapPoisDirective implements OnInit, OnChanges {
   private _selectedPoiMarker: PoiMarker;
 
   @Input() conf: IMAP;
-  @Input() map: Map;
   @Input() pois: any;
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
 

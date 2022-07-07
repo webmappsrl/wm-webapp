@@ -88,7 +88,6 @@ export class WmMapComponent implements OnChanges {
       projection: 'EPSG:3857',
       constrainOnlyCenter: true,
       extent: this._centerExtent,
-      padding: this.padding,
     });
 
     if (conf.bbox) {

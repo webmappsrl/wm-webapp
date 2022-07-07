@@ -22,10 +22,11 @@ import CircleStyle from 'ol/style/Circle';
 import {ILineString} from 'src/app/types/model';
 import {Coordinate} from 'ol/coordinate';
 import {FLAG_TRACK_ZINDEX, POINTER_TRACK_ZINDEX, SELECTED_TRACK_ZINDEX} from './zIndex';
+import {WmMaBaseDirective} from './base.directive';
 @Directive({
   selector: '[wmMapTrack]',
 })
-export class WmMapTrackDirective implements OnChanges {
+export class WmMapTrackDirective extends WmMaBaseDirective implements OnChanges {
   private _elevationChartLayer: VectorLayer;
   private _elevationChartPoint: Feature<Point>;
   private _elevationChartSource: VectorSource;
@@ -38,7 +39,7 @@ export class WmMapTrackDirective implements OnChanges {
   private _trackLayer: VectorLayer;
 
   @Input() conf: IMAP;
-  @Input() map: Map;
+  @Input() layer;
   @Input() track;
   @Input() trackElevationChartElements: ITrackElevationChartHoverElements;
 
@@ -84,6 +85,27 @@ export class WmMapTrackDirective implements OnChanges {
         this.trackElevationChartElements?.location,
         this.trackElevationChartElements?.track,
       );
+    }
+    if (this.map != null && changes['track'] != null) {
+      if (changes['track'].currentValue == null) {
+        const ext =
+          (this.layer && this.layer.bbox) ??
+          this.conf.bbox ??
+          new Point(this.map.getView().getCenter());
+        this.fitView(ext);
+      } else {
+        const ext =
+          this._trackFeatures[0].getGeometry().getExtent() ??
+          this.conf.bbox ??
+          new Point(this.map.getView().getCenter());
+        const size = this.map.getSize();
+        const optOptions: FitOptions = {
+          duration: 500,
+          size,
+          padding: [100, 100, 100, 100],
+        };
+        this.map.getView().fit(ext, optOptions);
+      }
     }
   }
 
@@ -213,17 +235,6 @@ export class WmMapTrackDirective implements OnChanges {
     }
   }
 
-  private _fitView(geometryOrExtent: any, optOptions?: FitOptions): void {
-    if (optOptions == null) {
-      const size = this.map.getSize();
-      optOptions = {
-        duration: 500,
-        size,
-      };
-    }
-    this.map.getView().fit(geometryOrExtent, optOptions);
-  }
-
   private _getLineStyle(color?: string): Array<Style> {
     const style: Array<Style> = [],
       selected: boolean = false;
@@ -295,14 +306,6 @@ export class WmMapTrackDirective implements OnChanges {
     });
     this.map.addLayer(this._startEndLayer);
     this.drawTrack(this.track);
-    const ext = this._trackFeatures[0].getGeometry().getExtent();
-    const size = this.map.getSize();
-    const optOptions: FitOptions = {
-      duration: 500,
-      size,
-      padding: [100, 100, 100, 100],
-    };
-    this._fitView(ext, optOptions);
   }
 
   private _resetView(): void {
@@ -322,13 +325,6 @@ export class WmMapTrackDirective implements OnChanges {
     if (this._trackLayer != null) {
       this.map.removeLayer(this._trackLayer);
       this._trackLayer = undefined;
-    }
-    if (this.map != null) {
-      this._fitView(new Point(this.map.getView().getCenter()), {
-        maxZoom: this.conf.defZoom ?? 10,
-        duration: 500,
-      });
-      this.map.render();
     }
   }
 

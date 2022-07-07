@@ -1,9 +1,8 @@
-import {Directive, EventEmitter, Input, OnChanges, Output} from '@angular/core';
+import {Directive, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {FeatureLike} from 'ol/Feature';
 import VectorTileLayer from 'ol/layer/VectorTile';
 import Map from 'ol/Map';
 import StrokeStyle from 'ol/style/Stroke';
-import View from 'ol/View';
 import {ConfService} from 'src/app/store/conf/conf.service';
 import VectorTileSource from 'ol/source/VectorTile';
 import MVT from 'ol/format/MVT';
@@ -16,33 +15,38 @@ import {Collection} from 'ol';
 import {CommunicationService} from 'src/app/services/communication.service';
 import {DEF_LINE_COLOR} from './constants';
 import {TRACK_ZINDEX} from './zIndex';
-import {stopPropagation} from 'ol/events/Event';
-
+import Point from 'ol/geom/Point';
+import {WmMaBaseDirective} from './base.directive';
 @Directive({
   selector: '[wmMapLayer]',
 })
-export class WmMapLayerDirective implements OnChanges {
+export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges {
   private _currentLayer: ILAYER;
   private _dataLayers: Array<VectorTileLayer>;
   private _defaultFeatureColor = DEF_LINE_COLOR;
   private _mapIsInit = false;
   private _selectInteraction: SelectInteraction;
   private _styleJson: any;
-  private _view: View;
 
   @Input() conf: IMAP;
   @Input() map: Map;
   @Output() trackSelectedFromLayerEVT: EventEmitter<number> = new EventEmitter<number>();
 
-  constructor(private _confSvc: ConfService, private _communicationSvc: CommunicationService) {}
+  constructor(private _confSvc: ConfService, private _communicationSvc: CommunicationService) {
+    super();
+  }
 
   @Input() set layer(l: ILAYER) {
     this._currentLayer = l;
+    if (l != null && l.bbox != null) {
+      this.fitView(l.bbox);
+    } else if (this.conf != null && this.conf.bbox != null) {
+      this.fitView(this.conf.bbox);
+    }
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(changes: SimpleChanges): void {
     if (this.map != null && this.conf != null && this._mapIsInit == false) {
-      this._view = this.map.getView();
       this._initLayer(this.conf);
       this._mapIsInit = true;
     }
@@ -52,7 +56,7 @@ export class WmMapLayerDirective implements OnChanges {
   }
 
   private _handlingStrokeStyleWidth(strokeStyle: StrokeStyle, conf: IMAP): void {
-    const currentZoom: number = this._view.getZoom();
+    const currentZoom: number = this.map.getView().getZoom();
     const minW = 0.1;
     const maxW = 5;
     const delta = (currentZoom - conf.minZoom) / (conf.maxZoom - conf.minZoom);
@@ -67,7 +71,6 @@ export class WmMapLayerDirective implements OnChanges {
       this.map.addInteraction(interaction);
     });
     this._selectInteraction.on('select', async (event: SelectEvent) => {
-      console.log('click su select');
       const clickedFeature = event?.selected?.[0] ?? undefined;
       const clickedFeatureId: number = clickedFeature?.getProperties()?.id ?? undefined;
       if (clickedFeatureId > -1) {

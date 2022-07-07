@@ -1,12 +1,4 @@
-import {
-  Directive,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import {Directive, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import Feature from 'ol/Feature';
 import Geometry from 'ol/geom/Geometry';
 import Point from 'ol/geom/Point';
@@ -26,10 +18,11 @@ import {buffer} from 'ol/extent';
 import MapBrowserEvent from 'ol/MapBrowserEvent';
 import {DEF_LINE_COLOR, DEF_MAP_CLUSTER_CLICK_TOLERANCE} from './constants';
 import {logoBase64} from 'src/assets/logoBase64';
+import {WmMaBaseDirective} from './base.directive';
 @Directive({
   selector: '[wmMapRelatedPois]',
 })
-export class WmMapRelatedPoisDirective implements OnInit, OnChanges {
+export class WmMapRelatedPoisDirective extends WmMaBaseDirective implements OnChanges {
   private _defaultFeatureColor = DEF_LINE_COLOR;
   private _initPois;
   private _poiMarkers: PoiMarker[] = [];
@@ -99,8 +92,6 @@ export class WmMapRelatedPoisDirective implements OnInit, OnChanges {
       this._initPois = true;
     }
   }
-
-  ngOnInit() {}
 
   private _addIconToLayer(layer: VectorLayer, icon: Feature<Geometry>) {
     if (layer != null) {

@@ -6,22 +6,27 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {Store} from '@ngrx/store';
 
 import {BehaviorSubject, combineLatest, from, merge, Observable, of} from 'rxjs';
 import {
   catchError,
-  distinctUntilChanged,
   filter,
   map,
   shareReplay,
   startWith,
   switchMap,
   tap,
+  withLatestFrom,
 } from 'rxjs/operators';
-
+import {confMAP} from 'src/app/store/conf/conf.selector';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {GeohubService} from 'src/app/services/geohub.service';
+import {UICurrentLAyer} from 'src/app/store/UI/UI.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
+import {IGeojsonFeature} from 'src/app/types/model';
+import {pois} from 'src/app/store/pois/pois.selector';
+import {loadPois} from 'src/app/store/pois/pois.actions';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -38,25 +43,36 @@ const maxWidth = 600;
 export class MapPage {
   readonly track$: Observable<CGeojsonLineStringFeature | null>;
   readonly trackid$: Observable<number>;
+
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
+  confMap$: Observable<any> = this._store.select(confMAP).pipe(
+    tap(c => {
+      if (c != null && c.pois != null && c.pois.apppoisApiLayer == true) {
+        this._store.dispatch(loadPois());
+      }
+    }),
+  );
+  currentLayer$ = this._store.select(UICurrentLAyer);
   currentPoi$: Observable<any>;
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiIDToMap$: Observable<number | null>;
+  currentRelatedPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
+  isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   leftPadding$: Observable<number>;
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
+  pois$: Observable<any> = this._store.select(pois);
+  popupCloseEVT$: EventEmitter<null> = new EventEmitter<null>();
+  resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
-  isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  popupCloseEVT$: EventEmitter<null> = new EventEmitter<null>();
-
-  resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
     private _geohubService: GeohubService,
     private _cdr: ChangeDetectorRef,
+    private _store: Store,
   ) {
     if (window.innerWidth < maxWidth) {
       this.isMobile$.next(true);
@@ -94,7 +110,7 @@ export class MapPage {
       catchError(e => of([])),
       shareReplay(1),
     );
-    const currentPoi = combineLatest([this.currentPoiID$, relatedPois$]).pipe(
+    const currentRelatedPoi = combineLatest([this.currentRelatedPoiID$, relatedPois$]).pipe(
       map(([id, pois]) => {
         const relatedPois = pois.filter(poi => {
           const poiProperties = poi.properties;
@@ -106,43 +122,73 @@ export class MapPage {
       catchError(e => of(null)),
       shareReplay(),
     );
-    this.currentPoi$ = merge(currentPoi, this.popupCloseEVT$);
-    this.currentPoiIDToMap$ = merge(this.currentPoiID$, this.popupCloseEVT$).pipe(
-      map(val => val ?? -1),
+    const currentPoi = this.currentPoiID$.pipe(
+      withLatestFrom(this.pois$.pipe(filter(p => p != null))),
+      map(([id, pois]) => {
+        const relatedPois = pois.features.filter(poi => {
+          const poiProperties = poi.properties;
+          return +poiProperties.id === +id;
+        });
+        const relatedPoi = relatedPois[0] ?? null;
+        const properties = {...relatedPoi.properties, ...{noRelated: true}};
+        return {...relatedPoi, properties};
+      }),
+      catchError(e => of(null)),
+      shareReplay(),
     );
+    this.currentPoi$ = merge(currentRelatedPoi, currentPoi, this.popupCloseEVT$);
+    this.currentPoiIDToMap$ = merge(
+      this.currentRelatedPoiID$,
+      this.currentPoiID$,
+      this.popupCloseEVT$,
+    ).pipe(map(val => val ?? -1));
   }
 
-  public next(): void {
-    const currentPoiID = this.currentPoiID$.value;
+  next(): void {
+    const currentRelatedPoiID = this.currentRelatedPoiID$.value;
     const poiIDs = this.poiIDs$.value;
-    const indexOfCurrentID = poiIDs.indexOf(currentPoiID);
+    const indexOfCurrentID = poiIDs.indexOf(currentRelatedPoiID);
     const nextIndex = (indexOfCurrentID + 1) % poiIDs.length;
-    this.setCurrentPoi(poiIDs[nextIndex]);
+    this.setCurrentRelatedPoi(poiIDs[nextIndex]);
   }
 
-  public prev(): void {
-    const currentPoiID = this.currentPoiID$.value;
+  prev(): void {
+    const currentRelatedPoiID = this.currentRelatedPoiID$.value;
     const poiIDs = this.poiIDs$.value;
-    const indexOfCurrentID = poiIDs.indexOf(currentPoiID);
+    const indexOfCurrentID = poiIDs.indexOf(currentRelatedPoiID);
     const prevIndex = (indexOfCurrentID - 1) % poiIDs.length;
-    this.setCurrentPoi(poiIDs.slice(prevIndex)[0]);
+    this.setCurrentRelatedPoi(poiIDs.slice(prevIndex)[0]);
   }
 
-  public selectTrack(trackid: number = -1) {
+  selectTrack(trackid: number = -1) {
     this.updateUrl(trackid);
   }
 
-  public setTrackElevationChartHoverElements(elements?: ITrackElevationChartHoverElements): void {
+  setCurrentPoi(id) {
+    if (id !== this.currentPoiID$.value) {
+      this.currentPoiID$.next(id);
+    }
+    this._cdr.detectChanges();
+  }
+
+  setCurrentRelatedPoi(id) {
+    if (id !== this.currentRelatedPoiID$.value) {
+      this.currentRelatedPoiID$.next(id);
+    }
+    this._cdr.detectChanges();
+  }
+
+  setTrackElevationChartHoverElements(elements?: ITrackElevationChartHoverElements): void {
     if (elements != null) {
       this.trackElevationChartHoverElements$.next(elements);
     }
   }
 
-  public toggleDetails(trackid: number = -1) {
+  toggleDetails(trackid: number = -1) {
     this.updateUrl(trackid);
   }
 
-  public toggleMenu() {
+  toggleMenu() {
     this.showMenu$.next(!this.showMenu$.value);
     if (!this.isMobile$.value) {
       this.mapPadding$.next([
@@ -156,18 +202,12 @@ export class MapPage {
     }
   }
 
-  public unselectPOI(): void {
-    // this.setCurrentPoi(-1);
+  unselectPOI(): void {
+    // this.setCurrentRelatedPoi(-1);
     this.popupCloseEVT$.emit(null);
   }
-  public setCurrentPoi(id) {
-    if (id !== this.currentPoiID$.value) {
-      this.currentPoiID$.next(id);
-    }
-    this._cdr.detectChanges();
-  }
 
-  public updateUrl(trackid: number) {
+  updateUrl(trackid: number) {
     this._router.navigate([], {
       relativeTo: this._route,
       queryParams: {track: trackid ? trackid : null},

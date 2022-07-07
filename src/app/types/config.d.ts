@@ -1,163 +1,164 @@
 interface ITHEME {
-  primary?: string;
-  secondary?: string;
-  tertiary?: string;
-  select?: string;
-  success?: string;
-  warning?: string;
   danger?: string;
   dark?: string;
-  medium?: string;
-  light?: string;
-  fontXxxlg?: string;
-  fontXxlg?: string;
-  fontXlg?: string;
+  defaultFeatureColor?: string;
+  fontFamilyContent?: string;
+  fontFamilyHeader?: string;
   fontLg?: string;
   fontMd?: string;
   fontSm?: string;
+  fontXlg?: string;
   fontXsm?: string;
-  fontFamilyHeader?: string;
-  fontFamilyContent?: string;
-  defaultFeatureColor?: string;
+  fontXxlg?: string;
+  fontXxxlg?: string;
+  light?: string;
+  medium?: string;
+  primary?: string;
+  secondary?: string;
+  select?: string;
+  success?: string;
+  tertiary?: string;
   theme?: string;
+  warning?: string;
 }
 interface ILANGUAGES {
-  default?: string;
   available?: string[];
+  default?: string;
 }
 
 interface IAPP {
-  name: string;
-  geohubId: number;
-  id?: string;
-  customerName?: string;
   appStoreUrl?: string;
+  customerName?: string;
+  geohubId: number;
   googlePlayUrl?: string;
+  id?: string;
+  name: string;
 }
 
 interface IHOME {
-  view: string;
-  title?: string;
+  color?: string;
+  features?: string[];
+  noElements?: string;
   subtitle?: string;
   taxonomy?: string;
-  types?: string[];
   terms?: any[];
-  features?: string[];
+  title?: string;
+  types?: string[];
   url?: string;
-  color?: string;
-  noElements?: string;
+  view: string;
 }
 interface IOPTIONS {
-  trackRefLabelZoom: number;
+  addArrowsOverTracks: boolean;
+  baseUrl: string;
+  beBaseUrl?: string;
   caiScaleStyleZoom: number;
-  poiSelectedRadius: number;
-  poiMaxRadius: number;
-  poiMinZoom: number;
+  clustering: ICLUSTERING;
+  customBackgroundImageUrl?: string;
+  detailsMapBehaviour?: IDETAILSMAPBEHAVIOUR;
+  downloadFullGemoetryRouteIndex: boolean;
+  downloadRoutesInWebapp: boolean;
+  enableTrackAdoption: boolean;
+  forceDefaultFeatureColor: boolean;
+  forceWelcomePagePopup: boolean;
+  galleryAnimationType?: string;
+  hideDisclaimer: boolean;
+  hideFilters: boolean;
+  hideGlobalMap: boolean;
+  hideNewsletterInSignup: boolean;
+  hideSearch: boolean;
+  highlightMapButton: boolean;
+  highlightReadMoreButton: boolean;
+  mapAttributions?: IMAPATTRIBUTION[];
+  maxFitZoom?: number;
+  minDynamicOverlayLayersZoom: number;
+  passwordRecoveryUrl: string;
   poiIconRadius: number;
   poiIconZoom: number;
-  poiMinRadius: number;
   poiLabelMinZoom: number;
-  minDynamicOverlayLayersZoom: number;
-  baseUrl: string;
-  startUrl: string;
+  poiMaxRadius: number;
+  poiMinRadius: number;
+  poiMinZoom: number;
+  poiSelectedRadius: number;
   privacyUrl: string;
-  passwordRecoveryUrl: string;
-  hideGlobalMap: boolean;
-  addArrowsOverTracks: boolean;
-  showTrackRefLabel: boolean;
-  useCaiScaleStyle: boolean;
-  forceDefaultFeatureColor: boolean;
-  useFeatureClassicSelectionStyle: boolean;
-  downloadRoutesInWebapp: boolean;
-  showPoiListOffline: boolean;
-  showHelp: boolean;
-  hideDisclaimer: boolean;
+  resetFiltersAtStartup: boolean;
+  showAppDownloadButtons: IAPPDOWNLOADBUTTONS;
   showDifficultyLegend: boolean;
   showEditLink: boolean;
-  hideSearch: boolean;
-  hideFilters: boolean;
-  startFiltersDisabled: boolean;
-  resetFiltersAtStartup: boolean;
+  showHelp: boolean;
   showMapViewfinder: boolean;
-  highlightMapButton: boolean;
-  hideNewsletterInSignup: boolean;
-  forceWelcomePagePopup: boolean;
+  showPoiListOffline: boolean;
+  showTrackRefLabel: boolean;
   skipRouteIndexDownload: boolean;
-  downloadFullGemoetryRouteIndex: boolean;
-  enableTrackAdoption: boolean;
-  highlightReadMoreButton: boolean;
-  clustering: ICLUSTERING;
-  showAppDownloadButtons: IAPPDOWNLOADBUTTONS;
-  maxFitZoom?: number;
-  detailsMapBehaviour?: IDETAILSMAPBEHAVIOUR;
-  beBaseUrl?: string;
+  startFiltersDisabled: boolean;
+  startUrl: string;
   termsAndConditionsUrl?: string;
-  voucherUrl?: string;
-  customBackgroundImageUrl?: string;
   trackAdoptionUrl?: string;
   trackReconnaissanceUrl?: string;
-  galleryAnimationType?: string;
-  mapAttributions?: IMAPATTRIBUTION[];
+  trackRefLabelZoom: number;
+  useCaiScaleStyle: boolean;
+  useFeatureClassicSelectionStyle: boolean;
+  voucherUrl?: string;
 }
 interface IAUTH {
-  enable?: boolean;
-  showAtStartup?: boolean;
-  loginToGeohub?: boolean;
-  force?: boolean;
-  skipToDownloadPublicRoute?: boolean;
-  hideCountry?: boolean;
   customCreatePostRoles?: boolean;
+  enable?: boolean;
   facebook?: IFACEBOOK;
+  force?: boolean;
   google?: IGOOGLE;
+  hideCountry?: boolean;
+  loginToGeohub?: boolean;
+  showAtStartup?: boolean;
+  skipToDownloadPublicRoute?: boolean;
 }
 
 interface IMAP {
-  maxZoom: number;
-  minZoom: number;
-  defZoom: number;
   bbox: [number, number, number, number];
   center?: [number, number];
+  defZoom: number;
   layers?: ILAYER[];
+  maxZoom: number;
+  minZoom: number;
 }
 interface ILAYER {
-  id: string;
-  name: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  icon?: any;
-  params?: {[id: string]: string};
+  bbox: [number, number, number, number];
+  behaviour: {[name: string]: string};
   data_use_bbox: boolean;
   data_use_only_my_data: boolean;
+  description: string;
+  icon?: any;
+  id: string;
+  name: string;
+  params?: {[id: string]: string};
   style: {[name: string]: string};
-  behaviour: {[name: string]: string};
+  subtitle: string;
+  title: string;
   tracks?: {[name: string]: IHIT[]};
 }
 interface IOVERLAYERS {
-  id: string;
-  type: string;
-  tilesUrl: string;
-  minZoom?: number;
-  maxZoom?: number;
-  fill_opacity?: number;
-  stroke_width?: number;
-  stroke_opacity?: number;
-  line_dash?: number[];
-  zindex?: number;
-  icon?: string;
-  name?: string;
-  description?: string;
+  alert?: boolean;
   color?: string;
+  createTaxonomy?: ITAXONOMY;
+  description?: string;
   fill_color?: string;
+  fill_opacity?: number;
   geojsonUrl?: string;
+  icon?: string;
+  id: string;
+  invertPolygons?: boolean;
+  line_dash?: number[];
+  maxZoom?: number;
+  minZoom?: number;
+  name?: string;
   noDetails?: boolean;
   noInteraction?: boolean;
-  preventFilter?: boolean;
-  invertPolygons?: boolean;
-  alert?: boolean;
-  show_label?: boolean;
-  createTaxonomy?: ITAXONOMY;
   params?: {[id: string]: string};
+  preventFilter?: boolean;
+  show_label?: boolean;
+  stroke_opacity?: number;
+  stroke_width?: number;
+  tilesUrl: string;
+  type: string;
+  zindex?: number;
 }
 
 type IDETAILSMAPBEHAVIOUR = 'all' | 'track' | 'poi' | 'route';
@@ -174,26 +175,26 @@ interface IGOOGLE {
 }
 interface ICLUSTERING {
   enable: boolean;
-  radius: number;
-  highZoomRadius: number;
   highZoom?: number;
+  highZoomRadius: number;
+  radius: number;
 }
 interface IMAPATTRIBUTION {
   label?: string;
   url?: string;
 }
 interface IAPPDOWNLOADBUTTONS {
-  track: boolean;
+  all: boolean;
   poi: boolean;
   route: boolean;
-  all: boolean;
+  track: boolean;
 }
 interface ICONF {
   APP: IAPP;
-  OPTIONS: IOPTIONS;
-  MAP?: IMAP;
   AUTH?: IAUTH;
-  LANGUAGES?: ILANGUAGES;
-  THEME?: ITHEME;
   HOME?: IHOME[];
+  LANGUAGES?: ILANGUAGES;
+  MAP?: IMAP;
+  OPTIONS: IOPTIONS;
+  THEME?: ITHEME;
 }

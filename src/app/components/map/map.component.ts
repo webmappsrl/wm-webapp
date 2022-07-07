@@ -335,10 +335,10 @@ export class MapComponent implements OnDestroy {
       }
     });
     this._map.on('click', event => {
-      stopPropagation(event);
       try {
         const poiFeature = this._getNearestFeatureOfLayer(this._poisLayer, event);
         if (poiFeature) {
+          stopPropagation(event);
           const currentID = +poiFeature.getId() || -1;
           this.poiClick.emit(currentID);
         }

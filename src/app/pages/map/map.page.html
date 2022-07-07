@@ -67,14 +67,23 @@
       (nextEVT)="next()"
       (prevEVT)="prev()"
     ></webmapp-poi-popup>
-    <webmapp-map
-      id="map-container"
-      [padding]="mapPadding$|async"
+
+    <wm-map
+      #wmap
+      wmMapLayer
+      wmMapTrack
+      wmMapPois
+      wmMapRelatedPois
       [track]="track$|async"
+      [layer]="currentLayer$|async"
+      [conf]="confMap$|async"
+      [map]="wmap.map$|async"
       [poi]="currentPoiIDToMap$|async"
+      [pois]="pois$|async"
       [trackElevationChartElements]="trackElevationChartHoverElements$|async"
-      (feature-click)="toggleDetails($event)"
+      (trackSelectedFromLayerEVT)="toggleDetails($event)"
+      (related-poi-click)="setCurrentRelatedPoi($event)"
       (poi-click)="setCurrentPoi($event)"
-    ></webmapp-map>
+    ></wm-map>
   </ng-template>
 </ng-container>

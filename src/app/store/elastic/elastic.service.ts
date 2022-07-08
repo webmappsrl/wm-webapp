@@ -1,13 +1,15 @@
+import {HttpClient, HttpParams} from '@angular/common/http';
+
 /* eslint-disable quote-props */
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
+import {environment} from 'src/environments/environment';
 const baseUrl = 'https://elastic-passtrough.herokuapp.com/search';
 @Injectable({
   providedIn: 'root',
 })
 export class ElasticService {
-  private _geohubAppId: number = 4;
+  private _geohubAppId: number = environment.geohubId;
 
   constructor(private _http: HttpClient) {
     const hostname: string = window.location.hostname;

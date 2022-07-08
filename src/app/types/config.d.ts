@@ -25,6 +25,10 @@ interface ILANGUAGES {
   available?: string[];
   default?: string;
 }
+interface iLocalString {
+  it?: string;
+  en?: string;
+}
 
 interface IAPP {
   appStoreUrl?: string;
@@ -35,18 +39,42 @@ interface IAPP {
   name: string;
 }
 
-interface IHOME {
-  color?: string;
-  features?: string[];
-  noElements?: string;
-  subtitle?: string;
-  taxonomy?: string;
-  terms?: any[];
-  title?: string;
-  types?: string[];
-  url?: string;
-  view: string;
-}
+type IBOX = {
+  box_type: 'title' | 'layer' | 'base' | 'external_url' | 'slug';
+  title: iLocalString | string;
+};
+type ITITLEBOX = IBOX & {
+  box_type: 'title';
+};
+type ILAYERBOX = IBOX & {
+  box_type: 'layer';
+  layer: number | ILAYER;
+};
+type IHOMEBASEITEM = {
+  title: iLocalString | string;
+  image_url: string;
+};
+type IEXTERNALURLBOX = IHOMEBASEITEM & {
+  box_type: 'external_url';
+  url: string;
+};
+
+type IHOMEITEMTRACK = IHOMEBASEITEM & {
+  track_id: number;
+  taxonomy_activities: string[];
+  taaxonomy_where: string[];
+  distance: string;
+  cai_scale: string;
+};
+type IHOMEITEMURL = IHOMEBASEITEM & {
+  url: string;
+};
+type IHOMEITEM = IHOMEITEMTRACK | IHOMEITEMURL;
+type IBASEBOX = IBOX & {
+  box_type: 'base';
+  items: IHOMEITEM[];
+};
+type IHOME = ITITLEBOX | ILAYERBOX | IBASEBOX | IEXTERNALURLBOX;
 interface IOPTIONS {
   addArrowsOverTracks: boolean;
   baseUrl: string;

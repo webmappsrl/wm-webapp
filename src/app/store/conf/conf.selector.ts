@@ -1,7 +1,8 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
-import {getCSSVariables} from '../../functions/theme';
-import {elasticAll} from '../elastic/elastic.selector';
+
 import {confFeatureKey} from './conf.reducer';
+import {elasticAll} from '../elastic/elastic.selector';
+import {getCSSVariables} from '../../functions/theme';
 
 const confFeature = createFeatureSelector<ICONF>(confFeatureKey);
 
@@ -24,10 +25,10 @@ export const confHOME = createSelector(confFeature, elasticAll, (state, all) => 
   if (state.HOME != null && state.MAP != null && state.MAP.layers != null) {
     const home: IHOME[] = [];
     state.HOME.forEach(el => {
-      if (el.terms != null) {
-        const terms = getLayers(el.terms, state.MAP.layers, all);
+      if (el.box_type === 'layer') {
+        const layer: ILAYER = getLayer(el.layer as number, state.MAP.layers, all);
 
-        home.push({...el, terms});
+        home.push({...el, layer});
       } else {
         home.push(el);
       }
@@ -38,21 +39,16 @@ export const confHOME = createSelector(confFeature, elasticAll, (state, all) => 
   return state.HOME;
 });
 
-const getLayers = (layersID: number[], layers: ILAYER[], tracks: IHIT[]) => {
-  return layers
-    .filter(l => layersID.indexOf(+l.id) > -1)
-    .map(el => {
-      if (tracks != null) {
-        const tracksObj: {[layerID: number]: IHIT[]} = {};
-        tracks.forEach(track => {
-          track.layers.forEach(l => {
-            if (layersID.indexOf(l) > -1) {
-              tracksObj[l] = tracksObj[l] != null ? [...tracksObj[l], track] : [track];
-            }
-          });
-        });
-        return {...el, ...{tracks: tracksObj}};
+const getLayer = (layersID: number, layers: ILAYER[], tracks: IHIT[]) => {
+  const layer = layers.filter(l => +l.id === +layersID)[0] || undefined;
+  const tracksObj: {[layerID: number]: IHIT[]} = {};
+
+  (tracks || []).forEach(track => {
+    track.layers.forEach(l => {
+      if (+layersID === +l) {
+        tracksObj[l] = tracksObj[l] != null ? [...tracksObj[l], track] : [track];
       }
-      return el;
     });
+  });
+  return {...layer, ...{tracks: tracksObj}};
 };

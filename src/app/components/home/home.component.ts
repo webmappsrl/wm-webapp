@@ -1,3 +1,5 @@
+import {ActivatedRoute, Router} from '@angular/router';
+import {BehaviorSubject, Observable, merge, of} from 'rxjs';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -5,16 +7,15 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Store} from '@ngrx/store';
-import {BehaviorSubject, merge, Observable, of} from 'rxjs';
 import {startWith, tap} from 'rxjs/operators';
+
 import {IConfRootState} from 'src/app/store/conf/conf.reducer';
-import {confHOME} from 'src/app/store/conf/conf.selector';
 import {IElasticSearchRootState} from 'src/app/store/elastic/elastic.reducer';
+import {IUIRootState} from 'src/app/store/UI/UI.reducer';
+import {Store} from '@ngrx/store';
+import {confHOME} from 'src/app/store/conf/conf.selector';
 import {elasticSearch} from 'src/app/store/elastic/elastic.selector';
 import {setCurrentLayer} from 'src/app/store/UI/UI.actions';
-import {IUIRootState} from 'src/app/store/UI/UI.reducer';
 
 @Component({
   selector: 'webmapp-home',
@@ -57,7 +58,7 @@ export class HomeComponent {
     });
   }
 
-  setLayer(layer: ILAYER | null) {
+  setLayer(layer: ILAYER | null | any) {
     if (layer != null) {
       const cards = layer.tracks[layer.id] ?? [];
       this.layerCards$.next(cards);

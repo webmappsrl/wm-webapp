@@ -18,10 +18,7 @@ import {Extent} from 'ol/extent';
 import Collection from 'ol/Collection';
 import {MapService} from 'src/app/services/map.service';
 import {DEF_MAP_MAX_ZOOM, DEF_MAP_MIN_ZOOM, initExtent} from '../constants';
-import {transformExtent} from 'ol/proj';
 import SimpleGeometry from 'ol/geom/SimpleGeometry';
-import {Store} from '@ngrx/store';
-import {IpoisRootState} from 'src/app/store/pois/pois.reducer';
 
 @Component({
   selector: 'wm-map',
@@ -32,7 +29,6 @@ import {IpoisRootState} from 'src/app/store/pois/pois.reducer';
 })
 export class WmMapComponent implements OnChanges {
   private _centerExtent: Extent;
-  private _defZoom: number;
   private _view: View;
 
   @Input() conf: IMAP;
@@ -41,7 +37,7 @@ export class WmMapComponent implements OnChanges {
   map: Map;
   map$: BehaviorSubject<Map> = new BehaviorSubject<Map | null>(null);
 
-  constructor(private _mapSvc: MapService, private _store: Store<IpoisRootState>) {}
+  constructor(private _mapSvc: MapService) {}
 
   @Input() set reset(_) {
     this._reset();
@@ -79,7 +75,6 @@ export class WmMapComponent implements OnChanges {
 
   private _initMap(conf: IMAP): void {
     this._centerExtent = this._mapSvc.extentFromLonLat(conf.bbox ?? initExtent);
-    console.log(this.padding);
     this._view = new View({
       maxZoom: conf.maxZoom,
       zoom: conf.defZoom || 10,
@@ -121,8 +116,8 @@ export class WmMapComponent implements OnChanges {
    */
   private _initializeBaseSource() {
     return new XYZ({
-      maxZoom: DEF_MAP_MAX_ZOOM,
-      minZoom: DEF_MAP_MIN_ZOOM,
+      maxZoom: this.conf.maxZoom || DEF_MAP_MAX_ZOOM,
+      minZoom: this.conf.minZoom || DEF_MAP_MIN_ZOOM,
       url: 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
       projection: 'EPSG:3857',
       tileSize: [256, 256],

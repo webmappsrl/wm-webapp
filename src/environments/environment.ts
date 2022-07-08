@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  geohubId: 15,
   confRoot: 'https://geohub.webmapp.it/api/app/webmapp/4',
 };
 

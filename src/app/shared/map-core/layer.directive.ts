@@ -111,7 +111,7 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
         if (this._currentLayer != null) {
           const currentIDLayer = +this._currentLayer.id;
           if (layers.indexOf(currentIDLayer) >= 0) {
-            strokeStyle.setColor(this._currentLayer.style.color);
+            strokeStyle.setColor(this._currentLayer.style.color ?? this._defaultFeatureColor);
           } else {
             strokeStyle.setColor('rgba(0,0,0,0)');
           }
@@ -126,7 +126,7 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
         });
         return style;
       },
-      minZoom: 7,
+      minZoom: 1,
       zIndex: TRACK_ZINDEX,
       updateWhileAnimating: true,
       updateWhileInteracting: true,

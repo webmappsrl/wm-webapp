@@ -26,8 +26,9 @@ export const confHOME = createSelector(confFeature, elasticAll, (state, all) => 
     const home: IHOME[] = [];
     state.HOME.forEach(el => {
       if (el.box_type === 'layer') {
-        const layer: ILAYER = getLayer(el.layer as number, state.MAP.layers, all);
-
+        const l: ILAYER = getLayer(el.layer as number, state.MAP.layers, all);
+        // if defined apply conf layer title
+        const layer = {...l, ...{title: el.title ?? l.title}} as ILAYER;
         home.push({...el, layer});
       } else {
         home.push(el);

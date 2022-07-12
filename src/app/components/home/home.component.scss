@@ -58,3 +58,13 @@ webmapp-home {
     text-align: left;
   }
 }
+.wm-modal {
+  .modal-wrapper {    
+    --height: 90%;
+    position: absolute; 
+    top: 5%;
+    --width: 90%;
+    border-radius: 25px!important;
+    display: block;
+ }
+}

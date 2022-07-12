@@ -1,0 +1,7 @@
+
+<ng-container *ngIf="(html$|async) as html">
+    <div class="dismiss" (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+    </div>
+    <div class="content" [innerHTML]="sanitizer.bypassSecurityTrustHtml(html.HTML)"></div>
+</ng-container>

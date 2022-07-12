@@ -1,8 +1,8 @@
-import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {GEOHUB_DOMAIN, GEOHUB_PROTOCOL} from '../../constants/geohub';
 import {IGeojsonFeature} from 'src/app/types/model';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +22,7 @@ export class PoisService {
 
   public getPois(): Observable<IGeojsonFeature> {
     return this._http.get<IGeojsonFeature>(
-      `https://geohub.webmapp.it/api/v1/app/${this._geohubAppId}/pois.geojson`,
+      `${environment.api}/api/v1/app/${this._geohubAppId}/pois.geojson`,
     );
   }
 }

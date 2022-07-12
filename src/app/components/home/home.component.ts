@@ -12,6 +12,8 @@ import {startWith, tap} from 'rxjs/operators';
 import {IConfRootState} from 'src/app/store/conf/conf.reducer';
 import {IElasticSearchRootState} from 'src/app/store/elastic/elastic.reducer';
 import {IUIRootState} from 'src/app/store/UI/UI.reducer';
+import { InnerHtmlComponent } from '../project/project.page.component';
+import { ModalController } from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {confHOME} from 'src/app/store/conf/conf.selector';
 import {elasticSearch} from 'src/app/store/elastic/elastic.selector';
@@ -46,6 +48,7 @@ export class HomeComponent {
     private _StoreUi: Store<IUIRootState>,
     private _router: Router,
     private _route: ActivatedRoute,
+    private _modalCtrl:ModalController
   ) {
     this.cards$ = merge(this.elasticSearch$, this.layerCards$).pipe(startWith([]));
   }
@@ -67,5 +70,20 @@ export class HomeComponent {
     }
     this._StoreUi.dispatch(setCurrentLayer({currentLayer: layer}));
     this.currentLayer$.next(layer);
+  }
+
+  openSlug(slug:string): void {
+    if(slug === 'project') {
+      this._modalCtrl
+      .create({
+        component: InnerHtmlComponent,
+        cssClass:'wm-modal',
+        backdropDismiss:true,
+        keyboardClose:true
+      })
+      .then(modal => {
+        modal.present();
+      });
+    }
   }
 }

@@ -28,6 +28,9 @@
         <div *ngIf="home.box_type === 'title'" class="webmapp-home-title">
           {{home.title}}
         </div>
+        <webmapp-slug-box *ngIf="home.box_type === 'slug'" [data]="home"
+        (clickEVT)="openSlug(home.slug)"> 
+      </webmapp-slug-box>
         <webmapp-layer-box
           *ngIf="home.box_type === 'layer'"
           [data]="home.layer"

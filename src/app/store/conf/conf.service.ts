@@ -1,7 +1,6 @@
-import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {GEOHUB_DOMAIN, GEOHUB_PROTOCOL} from '../../constants/geohub';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -29,7 +28,7 @@ export class ConfService {
   }
 
   public get vectorLayerUrl(): string {
-    return `https://geohub.webmapp.it/api/app/webapp/${this._geohubAppId}/vector_layer`;
+    return `${environment.api}/api/app/webapp/${this._geohubAppId}/vector_layer`;
   }
 
   public get vectorStyleUrl(): string {
@@ -37,7 +36,7 @@ export class ConfService {
   }
 
   private get _geohubApiBaseUrl(): string {
-    return `${GEOHUB_PROTOCOL}://${GEOHUB_DOMAIN}/api/app/webmapp/${this._geohubAppId}/`;
+    return `${environment.api}/api/app/webmapp/${this._geohubAppId}/`;
   }
 
   public getConf(): Observable<ICONF> {

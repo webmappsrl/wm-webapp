@@ -1,3 +1,4 @@
+
 interface ITHEME {
   danger?: string;
   dark?: string;
@@ -21,13 +22,16 @@ interface ITHEME {
   theme?: string;
   warning?: string;
 }
+interface IPROJECT {
+  HTML: string
+}
 interface ILANGUAGES {
   available?: string[];
   default?: string;
 }
 interface iLocalString {
-  it?: string;
   en?: string;
+  it?: string;
 }
 
 interface IAPP {
@@ -58,6 +62,10 @@ type IEXTERNALURLBOX = IHOMEBASEITEM & {
   box_type: 'external_url';
   url: string;
 };
+type ISLUGBOX = IHOMEBASEITEM & {
+  box_type: 'slug';
+  slug: string
+}
 
 type IHOMEITEMTRACK = IHOMEBASEITEM & {
   track_id: number;
@@ -74,7 +82,7 @@ type IBASEBOX = IBOX & {
   box_type: 'base';
   items: IHOMEITEM[];
 };
-type IHOME = ITITLEBOX | ILAYERBOX | IBASEBOX | IEXTERNALURLBOX;
+type IHOME = ITITLEBOX | ILAYERBOX | IBASEBOX | IEXTERNALURLBOX| ISLUGBOX;
 interface IOPTIONS {
   addArrowsOverTracks: boolean;
   baseUrl: string;
@@ -149,18 +157,18 @@ interface IMAP {
 }
 interface ILAYER {
   bbox: [number, number, number, number];
-  behaviour: {[name: string]: string};
+  behaviour: { [name: string]: string };
   data_use_bbox: boolean;
   data_use_only_my_data: boolean;
   description: string;
   icon?: any;
   id: string;
   name: string;
-  params?: {[id: string]: string};
-  style: {[name: string]: string};
+  params?: { [id: string]: string };
+  style: { [name: string]: string };
   subtitle: string;
   title: string;
-  tracks?: {[name: string]: IHIT[]};
+  tracks?: { [name: string]: IHIT[] };
 }
 interface IOVERLAYERS {
   alert?: boolean;
@@ -179,7 +187,7 @@ interface IOVERLAYERS {
   name?: string;
   noDetails?: boolean;
   noInteraction?: boolean;
-  params?: {[id: string]: string};
+  params?: { [id: string]: string };
   preventFilter?: boolean;
   show_label?: boolean;
   stroke_opacity?: number;
@@ -224,5 +232,6 @@ interface ICONF {
   LANGUAGES?: ILANGUAGES;
   MAP?: IMAP;
   OPTIONS: IOPTIONS;
+  PROJECT?: IPROJECT;
   THEME?: ITHEME;
 }

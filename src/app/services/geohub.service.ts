@@ -1,9 +1,9 @@
-import {Injectable} from '@angular/core';
-import {map} from 'rxjs/operators';
 import {CGeojsonLineStringFeature} from '../classes/features/cgeojson-line-string-feature';
-import {GEOHUB_DOMAIN, GEOHUB_PROTOCOL} from '../constants/geohub';
 import {CommunicationService} from './communication.service';
 import {ConfigService} from './config.service';
+import {Injectable} from '@angular/core';
+import { environment } from 'src/environments/environment';
+import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -34,7 +34,7 @@ export class GeohubService {
     }
     if (id > -1) {
       const result = await this._communicationService
-        .get(`${GEOHUB_PROTOCOL}://${GEOHUB_DOMAIN}/api/ec/track/${id}`)
+        .get(`${environment.api}/api/ec/track/${id}`)
         .pipe(
           map((apiResult: CGeojsonLineStringFeature) => {
             return apiResult;
@@ -62,7 +62,7 @@ export class GeohubService {
 
   async search(searchString: string): Promise<IHIT[]> {
     const result = await this._communicationService
-      .get(`${GEOHUB_PROTOCOL}://${GEOHUB_DOMAIN}/api/ec/track/${searchString}`)
+      .get(`${environment.api}/api/ec/track/${searchString}`)
       .pipe(
         map((apiResult: any) => {
           return apiResult;

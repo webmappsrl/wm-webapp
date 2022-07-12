@@ -1,7 +1,6 @@
+import {GeohubService} from './geohub.service';
 import {Injectable} from '@angular/core';
 import {environment} from 'src/environments/environment';
-import {GEOHUB_DOMAIN, GEOHUB_PROTOCOL} from '../constants/geohub';
-import {GeohubService} from './geohub.service';
 
 @Injectable({
   providedIn: 'root',
@@ -34,6 +33,6 @@ export class ConfigService {
   }
 
   private get _geohubApiBaseUrl(): string {
-    return `${GEOHUB_PROTOCOL}://${GEOHUB_DOMAIN}/api/app/webapp/${this._geohubAppId}/`;
+    return `${environment.api}/api/app/webapp/${this._geohubAppId}/`;
   }
 }

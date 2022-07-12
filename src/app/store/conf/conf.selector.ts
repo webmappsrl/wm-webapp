@@ -16,6 +16,7 @@ export const confMAP = createSelector(confFeature, state => {
 });
 export const confMAPLAYERS = createSelector(confMAP, map => map.layers);
 export const confTHEME = createSelector(confFeature, state => state.THEME);
+export const confPROJECT = createSelector(confFeature, state => state.PROJECT);
 
 export const confTHEMEVariables = createSelector(confTHEME, (theme: ITHEME) =>
   getCSSVariables(theme),

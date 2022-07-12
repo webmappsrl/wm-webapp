@@ -7,12 +7,14 @@ import {NgModule} from '@angular/core';
 import {PipeModule} from 'src/app/pipes/pipe.module';
 import {RelatedUrlsComponent} from './related-urls.component';
 import {SearchBoxComponent} from './search-box/search-box.component';
+import {SlugBoxComponent} from './slug-box /slug-box.component';
 
 const components = [
   RelatedUrlsComponent,
   ImageModalComponent,
   SearchBoxComponent,
   LayerBoxComponent,
+  SlugBoxComponent,
   CompactHorizontalComponent,
 ];
 @NgModule({

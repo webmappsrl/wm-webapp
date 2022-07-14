@@ -1,22 +1,24 @@
 import {Directive, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
-import {FeatureLike} from 'ol/Feature';
-import VectorTileLayer from 'ol/layer/VectorTile';
-import Map from 'ol/Map';
-import StrokeStyle from 'ol/style/Stroke';
-import {ConfService} from 'src/app/store/conf/conf.service';
-import VectorTileSource from 'ol/source/VectorTile';
-import MVT from 'ol/format/MVT';
-import Style from 'ol/style/Style';
-import {styleJsonFn} from './utils';
-import {defaults as defaultInteractions, Interaction} from 'ol/interaction.js';
+import {Interaction, defaults as defaultInteractions} from 'ol/interaction.js';
 import SelectInteraction, {SelectEvent} from 'ol/interaction/Select';
-import Layer from 'ol/layer/Layer';
+
 import {Collection} from 'ol';
 import {CommunicationService} from 'src/app/services/communication.service';
+import {ConfService} from 'src/app/store/conf/conf.service';
 import {DEF_LINE_COLOR} from './constants';
-import {TRACK_ZINDEX} from './zIndex';
+import {FeatureLike} from 'ol/Feature';
+import Layer from 'ol/layer/Layer';
+import MVT from 'ol/format/MVT';
+import Map from 'ol/Map';
 import Point from 'ol/geom/Point';
+import StrokeStyle from 'ol/style/Stroke';
+import Style from 'ol/style/Style';
+import {TRACK_ZINDEX} from './zIndex';
+import VectorTileLayer from 'ol/layer/VectorTile';
+import VectorTileSource from 'ol/source/VectorTile';
 import {WmMaBaseDirective} from './base.directive';
+import {styleJsonFn} from './utils';
+
 @Directive({
   selector: '[wmMapLayer]',
 })
@@ -116,7 +118,8 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
             strokeStyle.setColor('rgba(0,0,0,0)');
           }
         } else {
-          strokeStyle.setColor(this._defaultFeatureColor);
+          const layerId = +layers[0];
+          strokeStyle.setColor(this._getColorFromLayer(layerId));
         }
         this._handlingStrokeStyleWidth(strokeStyle, map);
 
@@ -132,6 +135,14 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
       updateWhileInteracting: true,
     });
     return layer;
+  }
+
+  private _getColorFromLayer(id: number): string {
+    const layers = this.conf.layers || [];
+    const layer = layers.filter(l => +l.id === +id);
+    return layer[0] && layer[0].style && layer[0].style.color
+      ? layer[0].style.color
+      : this._defaultFeatureColor;
   }
 
   /**

@@ -6,19 +6,20 @@ import {
   SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
-import Map from 'ol/Map';
-import TileLayer from 'ol/layer/Tile';
+import {DEF_MAP_MAX_ZOOM, DEF_MAP_MIN_ZOOM, initExtent} from '../constants';
 import View, {FitOptions} from 'ol/View';
+
+import {BehaviorSubject} from 'rxjs';
+import Collection from 'ol/Collection';
+import {Extent} from 'ol/extent';
+import {Interaction} from 'ol/interaction';
+import Map from 'ol/Map';
+import {MapService} from 'src/app/services/map.service';
+import SimpleGeometry from 'ol/geom/SimpleGeometry';
+import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import {defaults as defaultControls} from 'ol/control';
-import {Interaction} from 'ol/interaction';
 import {defaults as defaultInteractions} from 'ol/interaction.js';
-import {BehaviorSubject} from 'rxjs';
-import {Extent} from 'ol/extent';
-import Collection from 'ol/Collection';
-import {MapService} from 'src/app/services/map.service';
-import {DEF_MAP_MAX_ZOOM, DEF_MAP_MIN_ZOOM, initExtent} from '../constants';
-import SimpleGeometry from 'ol/geom/SimpleGeometry';
 
 @Component({
   selector: 'wm-map',
@@ -44,11 +45,10 @@ export class WmMapComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes['conf']);
     if (
-      changes['conf'] != null &&
-      changes['conf'].currentValue != null &&
-      changes['conf'].previousValue == null
+      changes.conf != null &&
+      changes.conf.currentValue != null &&
+      changes.conf.previousValue == null
     ) {
       this._initMap(this.conf);
     }
@@ -60,6 +60,7 @@ export class WmMapComponent implements OnChanges {
         duration: 500,
       };
     }
+    console.log('fit view');
     this._view.fit(geometryOrExtent, optOptions);
   }
 
@@ -126,6 +127,7 @@ export class WmMapComponent implements OnChanges {
 
   private _reset(): void {
     if (this._view != null) {
+      console.log('reset');
       this._view.fit(this._centerExtent);
     }
   }

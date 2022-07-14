@@ -1,8 +1,9 @@
+import {Directive, Input} from '@angular/core';
 import View, {FitOptions} from 'ol/View';
-import SimpleGeometry from 'ol/geom/SimpleGeometry';
+
 import {Extent} from 'ol/extent';
 import Map from 'ol/Map';
-import {Directive, Input} from '@angular/core';
+import SimpleGeometry from 'ol/geom/SimpleGeometry';
 import {transformExtent} from 'ol/proj';
 @Directive()
 export abstract class WmMaBaseDirective {

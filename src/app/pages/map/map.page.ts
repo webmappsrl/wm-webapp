@@ -1,3 +1,5 @@
+import {ActivatedRoute, Router} from '@angular/router';
+import {BehaviorSubject, Observable, combineLatest, from, merge, of} from 'rxjs';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -5,10 +7,6 @@ import {
   EventEmitter,
   ViewEncapsulation,
 } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Store} from '@ngrx/store';
-
-import {BehaviorSubject, combineLatest, from, merge, Observable, of} from 'rxjs';
 import {
   catchError,
   filter,
@@ -19,14 +17,16 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators';
-import {confMAP} from 'src/app/store/conf/conf.selector';
+
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {GeohubService} from 'src/app/services/geohub.service';
-import {UICurrentLAyer} from 'src/app/store/UI/UI.selector';
-import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {IGeojsonFeature} from 'src/app/types/model';
-import {pois} from 'src/app/store/pois/pois.selector';
+import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
+import {Store} from '@ngrx/store';
+import {UICurrentLAyer} from 'src/app/store/UI/UI.selector';
+import {confMAP} from 'src/app/store/conf/conf.selector';
 import {loadPois} from 'src/app/store/pois/pois.actions';
+import {pois} from 'src/app/store/pois/pois.selector';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -161,7 +161,7 @@ export class MapPage {
     this.setCurrentRelatedPoi(poiIDs.slice(prevIndex)[0]);
   }
 
-  selectTrack(trackid: number = -1) {
+  selectTrack(trackid: any = -1) {
     this.updateUrl(trackid);
   }
 

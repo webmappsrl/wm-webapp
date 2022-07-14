@@ -66,11 +66,10 @@ export class WmMapTrackDirective extends WmMaBaseDirective implements OnChanges 
 
   ngOnChanges(changes: SimpleChanges): void {
     const resetCondition =
-      (changes['track'] &&
-        changes['track'].previousValue != null &&
-        changes['track'].currentValue != null &&
-        changes['track'].previousValue.properties.id !=
-          changes['track'].currentValue.properties.id) ??
+      (changes.track &&
+        changes.track.previousValue != null &&
+        changes.track.currentValue != null &&
+        changes.track.previousValue.properties.id != changes.track.currentValue.properties.id) ??
       false;
     if (this.track == null || this.map == null || resetCondition) {
       this._resetView();
@@ -86,8 +85,8 @@ export class WmMapTrackDirective extends WmMaBaseDirective implements OnChanges 
         this.trackElevationChartElements?.track,
       );
     }
-    if (this.map != null && changes['track'] != null) {
-      if (changes['track'].currentValue == null) {
+    if (this.map != null && changes.track != null) {
+      if (changes.track.currentValue == null) {
         const ext =
           (this.layer && this.layer.bbox) ??
           this.conf.bbox ??

@@ -49,22 +49,14 @@ webmapp-home {
       align-self: auto;
     }
   }
-  .webmapp-home-title {
-    padding: 3%;
-    font-size: 21px;
-    font-weight: 700;
-    line-height: 25px;
-    letter-spacing: 0em;
-    text-align: left;
-  }
 }
 .wm-modal {
-  .modal-wrapper {    
+  .modal-wrapper {
     --height: 90%;
-    position: absolute; 
+    position: absolute;
     top: 5%;
     --width: 90%;
-    border-radius: 25px!important;
+    border-radius: 25px !important;
     display: block;
- }
+  }
 }

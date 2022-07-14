@@ -24,17 +24,28 @@
     </ng-container>
 
     <ng-template #layers>
-      <ng-container *ngFor="let home of confHOME$|async">
-        <div *ngIf="home.box_type === 'title'" class="webmapp-home-title">
-          {{home.title}}
-        </div>
-        <webmapp-slug-box *ngIf="home.box_type === 'slug'" [data]="home"
-        (clickEVT)="openSlug(home.slug)"> 
-      </webmapp-slug-box>
+      <ng-container *ngFor="let box of confHOME$|async">
+        <webmapp-title *ngIf="box.box_type === 'title'">
+          {{box.title}}
+        </webmapp-title>
+        <webmapp-box *ngIf="box.box_type === 'slug'" [data]="box" (clickEVT)="openSlug(box.slug)">
+        </webmapp-box>
+        <webmapp-box
+          *ngIf="box.box_type === 'external_url'"
+          [data]="box"
+          (clickEVT)="openExternalUrl(box.url)"
+        >
+        </webmapp-box>
+        <webmapp-tracks-box
+          *ngIf="box.box_type === 'base'"
+          [data]="box"
+          (trackIdEVT)="searchCard($event)"
+        >
+        </webmapp-tracks-box>
         <webmapp-layer-box
-          *ngIf="home.box_type === 'layer'"
-          [data]="home.layer"
-          (clickEVT)="setLayer(home.layer)"
+          *ngIf="box.box_type === 'layer'"
+          [data]="box.layer"
+          (clickEVT)="setLayer(box.layer)"
         >
         </webmapp-layer-box>
       </ng-container>

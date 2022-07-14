@@ -6,3 +6,4 @@ export const DEF_MAP_ZOOM_IN: number = 12;
 export const DEF_LINE_COLOR = 'red';
 export const initExtent: Extent = [-180, -85, 180, 85];
 export const DEF_MAP_CLUSTER_CLICK_TOLERANCE: number = 40;
+export const DEF_XYZ_URL = 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png';

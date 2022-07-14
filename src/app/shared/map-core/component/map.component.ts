@@ -6,7 +6,7 @@ import {
   SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
-import {DEF_MAP_MAX_ZOOM, DEF_MAP_MIN_ZOOM, initExtent} from '../constants';
+import {DEF_MAP_MAX_ZOOM, DEF_MAP_MIN_ZOOM, DEF_XYZ_URL, initExtent} from '../constants';
 import View, {FitOptions} from 'ol/View';
 
 import {BehaviorSubject} from 'rxjs';
@@ -97,17 +97,29 @@ export class WmMapComponent implements OnChanges {
         zoom: false,
       }),
       interactions: this._initDefaultInteractions(),
-      layers: [
-        new TileLayer({
-          source: this._initializeBaseSource(),
-          visible: true,
-          zIndex: 0,
-        }),
-      ],
+      layers: this._buildTileLayers(conf.tiles),
       moveTolerance: 3,
       target: 'ol-map',
     });
     this.map$.next(this.map);
+  }
+
+  private _buildTileLayers(tiles: string[]): TileLayer[] {
+    return (
+      tiles.map((tile, index) => {
+        return new TileLayer({
+          source: this._initializeBaseSource(tile),
+          visible: true,
+          zIndex: index,
+        });
+      }) ?? [
+        new TileLayer({
+          source: this._initializeBaseSource(DEF_XYZ_URL),
+          visible: true,
+          zIndex: 0,
+        }),
+      ]
+    );
   }
 
   /**
@@ -115,11 +127,11 @@ export class WmMapComponent implements OnChanges {
    *
    * @returns the XYZ source to use
    */
-  private _initializeBaseSource() {
+  private _initializeBaseSource(tile: string) {
     return new XYZ({
       maxZoom: this.conf.maxZoom || DEF_MAP_MAX_ZOOM,
       minZoom: this.conf.minZoom || DEF_MAP_MIN_ZOOM,
-      url: 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
+      url: tile,
       projection: 'EPSG:3857',
       tileSize: [256, 256],
     });

@@ -42,8 +42,6 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
     this._currentLayer = l;
     if (l != null && l.bbox != null) {
       this.fitView(l.bbox);
-    } else if (this.conf != null && this.conf.bbox != null) {
-      this.fitView(this.conf.bbox);
     }
   }
 

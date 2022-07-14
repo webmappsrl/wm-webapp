@@ -1,3 +1,4 @@
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable max-len */
 import {
@@ -12,58 +13,55 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {Store} from '@ngrx/store';
-
 import {Collection, MapBrowserEvent} from 'ol';
-import ScaleLineControl from 'ol/control/ScaleLine';
-import ZoomControl from 'ol/control/Zoom';
-import {Coordinate} from 'ol/coordinate';
-import {stopPropagation} from 'ol/events/Event';
-import {buffer, Extent} from 'ol/extent';
+import {Extent, buffer} from 'ol/extent';
 import Feature, {FeatureLike} from 'ol/Feature';
-import GeoJSON from 'ol/format/GeoJSON';
-import MVT from 'ol/format/MVT';
-import Geometry from 'ol/geom/Geometry';
-import LineString from 'ol/geom/LineString';
-import Point from 'ol/geom/Point';
-import SimpleGeometry from 'ol/geom/SimpleGeometry';
-import {defaults as defaultInteractions} from 'ol/interaction.js';
-import Interaction from 'ol/interaction/Interaction';
+import {IGeojsonFeature, ILineString} from 'src/app/types/model';
 import SelectInteraction, {SelectEvent} from 'ol/interaction/Select';
-import Layer from 'ol/layer/Layer';
-import TileLayer from 'ol/layer/Tile';
-import VectorLayer from 'ol/layer/Vector';
-import VectorTileLayer from 'ol/layer/VectorTile';
-import Map from 'ol/Map';
-import {fromLonLat} from 'ol/proj';
-import VectorSource from 'ol/source/Vector';
-import VectorTileSource from 'ol/source/VectorTile';
-import XYZ from 'ol/source/XYZ';
-import {getDistance} from 'ol/sphere.js';
-import CircleStyle from 'ol/style/Circle';
-import FillStyle from 'ol/style/Fill';
-import Icon from 'ol/style/Icon';
-import StrokeStyle from 'ol/style/Stroke';
-import Style from 'ol/style/Style';
-import TextStyle from 'ol/style/Text';
-import TextPlacement from 'ol/style/TextPlacement';
 import View, {FitOptions} from 'ol/View';
-
-import {BehaviorSubject, Observable, Subscription} from 'rxjs';
+import {confMAP, confTHEME} from 'src/app/store/conf/conf.selector';
 import {filter, switchMap, take, tap} from 'rxjs/operators';
 
-import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
+import CircleStyle from 'ol/style/Circle';
 import {CommunicationService} from 'src/app/services/communication.service';
-import {MapService} from 'src/app/services/map.service';
-import {IConfRootState} from 'src/app/store/conf/conf.reducer';
-import {confMAP, confTHEME} from 'src/app/store/conf/conf.selector';
 import {ConfService} from 'src/app/store/conf/conf.service';
-import {IUIRootState} from 'src/app/store/UI/UI.reducer';
-import {UICurrentLAyer} from 'src/app/store/UI/UI.selector';
+import {Coordinate} from 'ol/coordinate';
+import FillStyle from 'ol/style/Fill';
+import GeoJSON from 'ol/format/GeoJSON';
+import Geometry from 'ol/geom/Geometry';
+import {IConfRootState} from 'src/app/store/conf/conf.reducer';
 import {ILocation} from 'src/app/types/location';
-import {IGeojsonFeature, ILineString} from 'src/app/types/model';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
+import {IUIRootState} from 'src/app/store/UI/UI.reducer';
+import Icon from 'ol/style/Icon';
+import Interaction from 'ol/interaction/Interaction';
+import Layer from 'ol/layer/Layer';
+import LineString from 'ol/geom/LineString';
+import MVT from 'ol/format/MVT';
+import Map from 'ol/Map';
+import {MapService} from 'src/app/services/map.service';
+import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
+import Point from 'ol/geom/Point';
+import ScaleLineControl from 'ol/control/ScaleLine';
+import SimpleGeometry from 'ol/geom/SimpleGeometry';
+import {Store} from '@ngrx/store';
+import StrokeStyle from 'ol/style/Stroke';
+import Style from 'ol/style/Style';
+import TextPlacement from 'ol/style/TextPlacement';
+import TextStyle from 'ol/style/Text';
+import TileLayer from 'ol/layer/Tile';
+import {UICurrentLAyer} from 'src/app/store/UI/UI.selector';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import VectorTileLayer from 'ol/layer/VectorTile';
+import VectorTileSource from 'ol/source/VectorTile';
+import XYZ from 'ol/source/XYZ';
+import ZoomControl from 'ol/control/Zoom';
+import {defaults as defaultInteractions} from 'ol/interaction.js';
+import {fromLonLat} from 'ol/proj';
+import {getDistance} from 'ol/sphere.js';
+import {stopPropagation} from 'ol/events/Event';
 
 const initPadding = [0, 0, 0, 0];
 const zoomDuration = 500;

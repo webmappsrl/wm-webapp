@@ -1,7 +1,8 @@
 import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
+
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
-import {UtilsService} from 'src/app/services/utils.service';
 import {ILocaleString} from 'src/app/types/model';
+import {UtilsService} from 'src/app/services/utils.service';
 
 @Component({
   selector: 'webmapp-track-technical-data',
@@ -38,7 +39,38 @@ export class TrackTechnicalDataComponent implements OnInit {
       value: string;
     }> = [];
     const technicalDataLabelPrefix: string = 'trackDetails.technicalData.';
-
+    // difficulty
+    if (this?._feature?.properties?.difficulty) {
+      technicalData.push({
+        icon: 'icon-outline-difficulty',
+        label: technicalDataLabelPrefix + 'difficulty',
+        value: this._feature.properties.difficulty as any,
+      });
+    }
+    // Distance
+    if (this?._feature?.properties?.distance) {
+      technicalData.push({
+        icon: 'icon-outline-distance',
+        label: technicalDataLabelPrefix + 'distance',
+        value: this._utilsService.formatDistance(this._feature.properties.distance),
+      });
+    }
+    // Duration forward
+    if (this?._feature?.properties?.duration_forward) {
+      technicalData.push({
+        icon: 'icon-outline-duration',
+        label: technicalDataLabelPrefix + 'duration_forward',
+        value: this._utilsService.formatDuration(this._feature.properties.duration_forward),
+      });
+    }
+    // Duration backward
+    if (this?._feature?.properties?.duration_backward) {
+      technicalData.push({
+        icon: 'icon-outline-duration',
+        label: technicalDataLabelPrefix + 'duration_backward',
+        value: this._utilsService.formatDuration(this._feature.properties.duration_backward),
+      });
+    }
     // Ascent
     if (this?._feature?.properties?.ascent) {
       technicalData.push({
@@ -85,38 +117,6 @@ export class TrackTechnicalDataComponent implements OnInit {
         icon: 'icon-outline-plus',
         label: technicalDataLabelPrefix + 'ele_max',
         value: this._utilsService.formatElevation(this._feature.properties.ele_max),
-      });
-    }
-    // Duration forward
-    if (this?._feature?.properties?.duration_forward) {
-      technicalData.push({
-        icon: 'icon-outline-duration',
-        label: technicalDataLabelPrefix + 'duration_forward',
-        value: this._utilsService.formatDuration(this._feature.properties.duration_forward),
-      });
-    }
-    // Duration backward
-    if (this?._feature?.properties?.duration_backward) {
-      technicalData.push({
-        icon: 'icon-outline-duration',
-        label: technicalDataLabelPrefix + 'duration_backward',
-        value: this._utilsService.formatDuration(this._feature.properties.duration_backward),
-      });
-    }
-    // Distance
-    if (this?._feature?.properties?.distance) {
-      technicalData.push({
-        icon: 'icon-outline-distance',
-        label: technicalDataLabelPrefix + 'distance',
-        value: this._utilsService.formatDistance(this._feature.properties.distance),
-      });
-    }
-    // difficulty
-    if (this?._feature?.properties?.difficulty) {
-      technicalData.push({
-        icon: 'icon-outline-difficulty',
-        label: technicalDataLabelPrefix + 'difficulty',
-        value: this._feature.properties.cai_scale as any,
       });
     }
 

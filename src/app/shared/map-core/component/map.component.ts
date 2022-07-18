@@ -1,11 +1,13 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Input,
   OnChanges,
   SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
+import {Control, defaults as defaultControls} from 'ol/control';
 import {DEF_MAP_MAX_ZOOM, DEF_MAP_MIN_ZOOM, DEF_XYZ_URL, initExtent} from '../constants';
 import View, {FitOptions} from 'ol/View';
 
@@ -18,7 +20,6 @@ import {MapService} from 'src/app/services/map.service';
 import SimpleGeometry from 'ol/geom/SimpleGeometry';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
-import {defaults as defaultControls} from 'ol/control';
 import {defaults as defaultInteractions} from 'ol/interaction.js';
 
 @Component({
@@ -37,8 +38,9 @@ export class WmMapComponent implements OnChanges {
 
   map: Map;
   map$: BehaviorSubject<Map> = new BehaviorSubject<Map | null>(null);
+  tileLayers: TileLayer[] = [];
 
-  constructor(private _mapSvc: MapService) {}
+  constructor(private _mapSvc: MapService, private _cdr: ChangeDetectorRef) {}
 
   @Input() set reset(_) {
     this._reset();
@@ -52,6 +54,26 @@ export class WmMapComponent implements OnChanges {
     ) {
       this._initMap(this.conf);
     }
+  }
+
+  private _buildTileLayers(tiles: {[name: string]: string}[]): TileLayer[] {
+    return (
+      tiles.map((tile, index) => {
+        return new TileLayer({
+          source: this._initializeBaseSource(Object.values(tile)[0]),
+          visible: index === 0,
+          zIndex: index,
+          className: Object.keys(tile)[0],
+        });
+      }) ?? [
+        new TileLayer({
+          source: this._initializeBaseSource(DEF_XYZ_URL),
+          visible: true,
+          zIndex: 0,
+          className: 'webmapp',
+        }),
+      ]
+    );
   }
 
   private _fitView(geometryOrExtent: SimpleGeometry | Extent, optOptions?: FitOptions): void {
@@ -89,6 +111,8 @@ export class WmMapComponent implements OnChanges {
       this._fitView(this._centerExtent);
     }
 
+    this.tileLayers = this._buildTileLayers(conf.tiles);
+    this._cdr.detectChanges();
     this.map = new Map({
       view: this._view,
       controls: defaultControls({
@@ -97,29 +121,11 @@ export class WmMapComponent implements OnChanges {
         zoom: false,
       }),
       interactions: this._initDefaultInteractions(),
-      layers: this._buildTileLayers(conf.tiles),
+      layers: this.tileLayers,
       moveTolerance: 3,
       target: 'ol-map',
     });
     this.map$.next(this.map);
-  }
-
-  private _buildTileLayers(tiles: string[]): TileLayer[] {
-    return (
-      tiles.map((tile, index) => {
-        return new TileLayer({
-          source: this._initializeBaseSource(tile),
-          visible: true,
-          zIndex: index,
-        });
-      }) ?? [
-        new TileLayer({
-          source: this._initializeBaseSource(DEF_XYZ_URL),
-          visible: true,
-          zIndex: 0,
-        }),
-      ]
-    );
   }
 
   /**

@@ -113,6 +113,19 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnInit, OnC
         }
       }
     }
+
+    this.map.on('moveend', e => {
+      const view = this.map.getView();
+      if (view != null) {
+        const newZoom = +view.getZoom();
+        const poisMinZoom = +this.conf.pois.poiMinZoom || 15;
+        if (newZoom >= poisMinZoom) {
+          this._poisLayer.setVisible(true);
+        } else {
+          this._poisLayer.setVisible(false);
+        }
+      }
+    });
   }
 
   private async _createCanvasForHtml(html: string, size: number): Promise<HTMLImageElement> {

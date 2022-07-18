@@ -148,12 +148,13 @@ interface IAUTH {
 
 interface IMAP {
   bbox: [number, number, number, number];
-  tiles: string[];
+  center?: [number, number];
   defZoom: number;
+  layers?: ILAYER[];
   maxZoom: number;
   minZoom: number;
-  layers?: ILAYER[];
-  center?: [number, number];
+  pois?: any;
+  tiles: {[name: string]: string}[];
 }
 interface ILAYER {
   bbox: [number, number, number, number];

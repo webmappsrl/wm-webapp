@@ -2,7 +2,8 @@
   <webmapp-search
     *ngIf="showSearch &&(currentLayer$|async) === null"
     [initSearch]="title"
-    (words)="isTyping$.next($event)"
+    (isTypings)="isTyping$.next($event)"
+    (words)="currentSearch$.next($event)"
   ></webmapp-search>
   <ng-container *ngIf="(currentLayer$|async) as currentLayer">
     <ng-container *ngIf="(isTyping$|async)===false && currentLayer!=null">
@@ -15,12 +16,34 @@
 
   <ion-content style="--offset-top:56px; --offset-bottom:56px;" class="wm-home-cardcontainer">
     <ng-container *ngIf="(isTyping$|async)||(layerCards$|async)!=null; else layers">
-      <webmapp-search-box
-        *ngFor="let card of cards$|async"
-        [data]="card"
-        (clickEVT)="searchCard(card.id)"
-      >
-      </webmapp-search-box>
+      <ion-segment value="tracks" (ionChange)="segmentChanged($event)">
+        <ng-container *ngIf="cards$|async as cards">
+          <ion-segment-button value="tracks" *ngIf="cards != null && cards.length> 0">
+            <ion-label>
+              tracks <ion-badge>{{cards.length}} </ion-badge></ion-label
+            >
+          </ion-segment-button>
+        </ng-container>
+        <ng-container *ngIf="poiCards$|async as poiCards">
+          <ion-segment-button value="pois" *ngIf="poiCards != null && poiCards.length> 0">
+            <ion-label>
+              POI <ion-badge>{{poiCards.length}}</ion-badge></ion-label
+            >
+          </ion-segment-button>
+        </ng-container>
+      </ion-segment>
+      <ng-container *ngIf="currentTab === 'tracks'">
+        <webmapp-search-box
+          *ngFor="let card of cards$|async"
+          [data]="card"
+          (clickEVT)="searchCard(card.id)"
+        >
+        </webmapp-search-box>
+      </ng-container>
+      <ng-container *ngIf="currentTab === 'pois'">
+        <webmapp-poi-box *ngFor="let c of poiCards$|async" [data]="c" (clickEVT)="setPoi(c.id)">
+        </webmapp-poi-box>
+      </ng-container>
     </ng-container>
 
     <ng-template #layers>

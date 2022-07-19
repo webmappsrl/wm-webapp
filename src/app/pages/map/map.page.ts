@@ -7,6 +7,7 @@ import {
   EventEmitter,
   ViewEncapsulation,
 } from '@angular/core';
+import {UICurrentLAyer, UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {
   catchError,
   filter,
@@ -23,7 +24,6 @@ import {GeohubService} from 'src/app/services/geohub.service';
 import {IGeojsonFeature} from 'src/app/types/model';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {Store} from '@ngrx/store';
-import {UICurrentLAyer} from 'src/app/store/UI/UI.selector';
 import {confMAP} from 'src/app/store/conf/conf.selector';
 import {loadPois} from 'src/app/store/pois/pois.actions';
 import {pois} from 'src/app/store/pois/pois.selector';
@@ -53,6 +53,7 @@ export class MapPage {
     }),
   );
   currentLayer$ = this._store.select(UICurrentLAyer);
+  currentPoiIDFromHome$ = this._store.select(UICurrentPoiId);
   currentPoi$: Observable<any>;
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiIDToMap$: Observable<number | null>;
@@ -123,7 +124,7 @@ export class MapPage {
       catchError(e => of(null)),
       shareReplay(),
     );
-    const currentPoi = this.currentPoiID$.pipe(
+    const currentPoi = merge(this.currentPoiID$, this.currentPoiIDFromHome$).pipe(
       withLatestFrom(this.pois$.pipe(filter(p => p != null))),
       map(([id, pois]) => {
         const relatedPois = pois.features.filter(poi => {
@@ -141,6 +142,7 @@ export class MapPage {
     this.currentPoiIDToMap$ = merge(
       this.currentRelatedPoiID$,
       this.currentPoiID$,
+      this.currentPoiIDFromHome$,
       this.popupCloseEVT$,
     ).pipe(map(val => val ?? -1));
   }

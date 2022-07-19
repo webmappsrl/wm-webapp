@@ -1,6 +1,13 @@
 import {ActivatedRoute, Router} from '@angular/router';
 import {BehaviorSubject, Observable, merge, of} from 'rxjs';
-import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ViewEncapsulation,
+} from '@angular/core';
+import {filter, map, shareReplay, startWith, withLatestFrom} from 'rxjs/operators';
+import {setCurrentLayer, setCurrentPoiId} from 'src/app/store/UI/UI.actions';
 
 import {IConfRootState} from 'src/app/store/conf/conf.reducer';
 import {IElasticSearchRootState} from 'src/app/store/elastic/elastic.reducer';
@@ -10,8 +17,7 @@ import {ModalController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {confHOME} from 'src/app/store/conf/conf.selector';
 import {elasticSearch} from 'src/app/store/elastic/elastic.selector';
-import {setCurrentLayer} from 'src/app/store/UI/UI.actions';
-import {startWith} from 'rxjs/operators';
+import {pois} from 'src/app/store/pois/pois.selector';
 
 @Component({
   selector: 'webmapp-home',
@@ -23,26 +29,46 @@ import {startWith} from 'rxjs/operators';
 export class HomeComponent {
   cards$: Observable<IHIT[]> = of([]);
   confHOME$: Observable<IHOME[]> = this._storeConf.select(confHOME);
+  currentSearch$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   currentLayer$: BehaviorSubject<ILAYER | null> = new BehaviorSubject<ILAYER | null>(null);
   elasticSearch$: Observable<IHIT[]> = this._storeSearch.select(elasticSearch);
   isTyping$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   layerCards$: BehaviorSubject<IHIT[] | null> = new BehaviorSubject<IHIT[] | null>(null);
+  poiCards$ = this._storeUi.select(pois).pipe(
+    filter(p => p != null),
+    map(p => ((p as any).features || []).map(p => (p as any).properties || [])),
+    shareReplay(1),
+    withLatestFrom(this.currentSearch$),
+    map(([features, search]) => {
+      console.log('search');
+      return features.filter(f => JSON.stringify(f.name).includes(search));
+    }),
+  );
+
   showSearch: boolean = true;
   title = '';
+  currentTab = 'tracks';
 
   constructor(
     private _storeSearch: Store<IElasticSearchRootState>,
     private _storeConf: Store<IConfRootState>,
-    private _StoreUi: Store<IUIRootState>,
+    private _storeUi: Store<IUIRootState>,
     private _router: Router,
     private _route: ActivatedRoute,
     private _modalCtrl: ModalController,
+    private _cdr: ChangeDetectorRef,
   ) {
-    this.cards$ = merge(this.elasticSearch$, this.layerCards$).pipe(startWith([]));
+    this.cards$ = merge(this.elasticSearch$, this.layerCards$).pipe(startWith([]), shareReplay(1));
+    this.poiCards$.subscribe(v => console.log(v));
   }
 
   openExternalUrl(url: string): void {
     window.open(url);
+  }
+
+  segmentChanged(ev: any) {
+    this.currentTab = ev.detail.value;
+    this._cdr.detectChanges();
   }
 
   openSlug(slug: string): void {
@@ -67,6 +93,9 @@ export class HomeComponent {
       queryParamsHandling: 'merge',
     });
   }
+  setPoi(id: number): void {
+    this._storeUi.dispatch(setCurrentPoiId({currentPoiId: id}));
+  }
 
   setLayer(layer: ILAYER | null | any): void {
     if (layer != null) {
@@ -75,7 +104,7 @@ export class HomeComponent {
     } else {
       this.layerCards$.next(null);
     }
-    this._StoreUi.dispatch(setCurrentLayer({currentLayer: layer}));
+    this._storeUi.dispatch(setCurrentLayer({currentLayer: layer}));
     this.currentLayer$.next(layer);
   }
 }

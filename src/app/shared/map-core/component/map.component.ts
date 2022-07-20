@@ -82,7 +82,6 @@ export class WmMapComponent implements OnChanges {
         duration: 500,
       };
     }
-    console.log('fit view');
     this._view.fit(geometryOrExtent, optOptions);
   }
 

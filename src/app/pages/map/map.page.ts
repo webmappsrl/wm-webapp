@@ -7,7 +7,7 @@ import {
   EventEmitter,
   ViewEncapsulation,
 } from '@angular/core';
-import {UICurrentLAyer, UICurrentPoiId} from 'src/app/store/UI/UI.selector';
+import {UICurrentFilters, UICurrentLAyer, UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {
   catchError,
   filter,
@@ -53,6 +53,7 @@ export class MapPage {
     }),
   );
   currentLayer$ = this._store.select(UICurrentLAyer);
+  currentFilters$ = this._store.select(UICurrentFilters);
   currentPoiIDFromHome$ = this._store.select(UICurrentPoiId);
   currentPoi$: Observable<any>;
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);

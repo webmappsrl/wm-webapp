@@ -1,13 +1,5 @@
 import {DEF_LINE_COLOR, DEF_MAP_CLUSTER_CLICK_TOLERANCE} from './constants';
-import {
-  Directive,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import {Directive, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 
 import {Coordinate} from 'ol/coordinate';
 import {FLAG_TRACK_ZINDEX} from './zIndex';
@@ -16,7 +8,6 @@ import {FitOptions} from 'ol/View';
 import Geometry from 'ol/geom/Geometry';
 import {IGeojsonFeature} from 'src/app/types/model';
 import Icon from 'ol/style/Icon';
-import Map from 'ol/Map';
 import MapBrowserEvent from 'ol/MapBrowserEvent';
 import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
 import Point from 'ol/geom/Point';
@@ -31,7 +22,7 @@ import {logoBase64} from 'src/assets/logoBase64';
 @Directive({
   selector: '[wmMapPois]',
 })
-export class WmMapPoisDirective extends WmMaBaseDirective implements OnInit, OnChanges {
+export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
   private _defaultFeatureColor = DEF_LINE_COLOR;
   private _initPois;
   private _poiMarkers: PoiMarker[] = [];
@@ -40,7 +31,7 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnInit, OnC
   private _selectedPoiMarker: PoiMarker;
 
   @Input() conf: IMAP;
-  @Input() filters: any[] = ['poi'];
+  @Input() filters: any[] = [];
   @Input() pois: any;
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
 
@@ -57,7 +48,7 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnInit, OnC
     }
   }
 
-  async ngOnChanges(changes: SimpleChanges): Promise<void> {
+  ngOnChanges(changes: SimpleChanges): void {
     if (
       changes.map != null &&
       changes.map.currentValue != null &&
@@ -80,14 +71,15 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnInit, OnC
       });
     }
     if (this.map != null && this.pois != null) {
-      await this._addPoisMarkers(this.pois.features as any);
+      this._addPoisMarkers(this.pois.features as any);
       this._initPois = true;
       if (this.filters != null) {
         this._poiMarkers.forEach(poim => {
-          const flatTaxonomies = (Object.values(poim.poi.properties.taxonomyVerbose) as any)
-            .flat()
-            .map(f => f.identifier);
-          if (flatTaxonomies.filter(v => v.includes(this.filters)).length > 0) {
+          if (
+            this.filters.length === 0 ||
+            poim.poi.properties.taxonomyIdentifiers.filter(v => this.filters.indexOf(v) >= 0)
+              .length === this.filters.length
+          ) {
             poim.icon.setStyle(poim.style);
           } else {
             poim.icon.setStyle(null);
@@ -96,8 +88,6 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnInit, OnC
       }
     }
   }
-
-  ngOnInit() {}
 
   private _addIconToLayer(layer: VectorLayer, icon: Feature<Geometry>) {
     layer.getSource().addFeature(icon);
@@ -251,7 +241,12 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnInit, OnC
     selected = false,
   ): Promise<string> {
     let img1b64: string | ArrayBuffer = logoBase64;
-    const url = value.properties?.feature_image?.sizes['108x137'];
+    let url = null;
+    try {
+      url = value.properties?.feature_image?.sizes['108x137'];
+    } catch (e) {
+      console.log('POI error createPoiMarker id:', value.properties.id);
+    }
     if (url) {
       img1b64 = await this._downloadBase64Img(url);
     }

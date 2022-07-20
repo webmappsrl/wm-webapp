@@ -1,13 +1,15 @@
 import {ActivatedRoute, Router} from '@angular/router';
-import {BehaviorSubject, Observable, merge, of} from 'rxjs';
+import {BehaviorSubject, Observable, merge, of, zip} from 'rxjs';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  EventEmitter,
   ViewEncapsulation,
 } from '@angular/core';
-import {filter, map, shareReplay, startWith, withLatestFrom} from 'rxjs/operators';
-import {setCurrentLayer, setCurrentPoiId} from 'src/app/store/UI/UI.actions';
+import {confHOME, confPOISFilter} from 'src/app/store/conf/conf.selector';
+import {filter, map, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {setCurrentFilters, setCurrentLayer, setCurrentPoiId} from 'src/app/store/UI/UI.actions';
 
 import {IConfRootState} from 'src/app/store/conf/conf.reducer';
 import {IElasticSearchRootState} from 'src/app/store/elastic/elastic.reducer';
@@ -15,7 +17,6 @@ import {IUIRootState} from 'src/app/store/UI/UI.reducer';
 import {InnerHtmlComponent} from '../project/project.page.component';
 import {ModalController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
-import {confHOME} from 'src/app/store/conf/conf.selector';
 import {elasticSearch} from 'src/app/store/elastic/elastic.selector';
 import {pois} from 'src/app/store/pois/pois.selector';
 
@@ -29,25 +30,17 @@ import {pois} from 'src/app/store/pois/pois.selector';
 export class HomeComponent {
   cards$: Observable<IHIT[]> = of([]);
   confHOME$: Observable<IHOME[]> = this._storeConf.select(confHOME);
-  currentSearch$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  confPOISFilter$: Observable<any> = this._storeConf.select(confPOISFilter);
   currentLayer$: BehaviorSubject<ILAYER | null> = new BehaviorSubject<ILAYER | null>(null);
+  currentSearch$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  currentTab = 'tracks';
   elasticSearch$: Observable<IHIT[]> = this._storeSearch.select(elasticSearch);
   isTyping$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   layerCards$: BehaviorSubject<IHIT[] | null> = new BehaviorSubject<IHIT[] | null>(null);
-  poiCards$ = this._storeUi.select(pois).pipe(
-    filter(p => p != null),
-    map(p => ((p as any).features || []).map(p => (p as any).properties || [])),
-    shareReplay(1),
-    withLatestFrom(this.currentSearch$),
-    map(([features, search]) => {
-      console.log('search');
-      return features.filter(f => JSON.stringify(f.name).includes(search));
-    }),
-  );
-
-  showSearch: boolean = true;
+  poiCards$: Observable<any[]>;
+  selectedFilters$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  showSearch = true;
   title = '';
-  currentTab = 'tracks';
 
   constructor(
     private _storeSearch: Store<IElasticSearchRootState>,
@@ -59,16 +52,32 @@ export class HomeComponent {
     private _cdr: ChangeDetectorRef,
   ) {
     this.cards$ = merge(this.elasticSearch$, this.layerCards$).pipe(startWith([]), shareReplay(1));
-    this.poiCards$.subscribe(v => console.log(v));
+    const allPois: Observable<any[]> = this._storeUi.select(pois).pipe(
+      filter(p => p != null),
+      map(p => ((p as any).features || []).map(p => (p as any).properties || [])),
+    );
+    const selectedPois = zip(this.currentSearch$, allPois, this.selectedFilters$).pipe(
+      map(([search, features, filters]) => {
+        return features.filter(f => {
+          const firstCondition = JSON.stringify(f.name)
+            .toLowerCase()
+            .includes(search.toLowerCase());
+          let secondCondition = true;
+          if (filters.length > 0) {
+            secondCondition =
+              f.taxonomyIdentifiers.filter(v => filters.indexOf(v) >= 0).length >= filters.length;
+          }
+          return firstCondition && secondCondition;
+        }) as any[];
+      }),
+    );
+    this.poiCards$ = merge(this.currentSearch$, this.selectedFilters$).pipe(
+      switchMap(_ => selectedPois),
+    );
   }
 
   openExternalUrl(url: string): void {
     window.open(url);
-  }
-
-  segmentChanged(ev: any) {
-    this.currentTab = ev.detail.value;
-    this._cdr.detectChanges();
   }
 
   openSlug(slug: string): void {
@@ -93,18 +102,31 @@ export class HomeComponent {
       queryParamsHandling: 'merge',
     });
   }
-  setPoi(id: number): void {
-    this._storeUi.dispatch(setCurrentPoiId({currentPoiId: id}));
+
+  segmentChanged(ev: any) {
+    this.currentTab = ev.detail.value;
+    this._cdr.markForCheck();
+  }
+
+  setCurrentFilters(filters: string[]): void {
+    this._storeUi.dispatch(setCurrentFilters({currentFilters: filters}));
+    console.log(filters);
+    this.selectedFilters$.next(filters);
   }
 
   setLayer(layer: ILAYER | null | any): void {
     if (layer != null) {
       const cards = layer.tracks[layer.id] ?? [];
       this.layerCards$.next(cards);
+      this._cdr.markForCheck();
     } else {
       this.layerCards$.next(null);
     }
     this._storeUi.dispatch(setCurrentLayer({currentLayer: layer}));
     this.currentLayer$.next(layer);
+  }
+
+  setPoi(id: number): void {
+    this._storeUi.dispatch(setCurrentPoiId({currentPoiId: id}));
   }
 }

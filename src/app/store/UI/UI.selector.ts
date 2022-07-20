@@ -5,6 +5,7 @@ import {featureKey} from './UI.reducer';
 const feature = createFeatureSelector<{
   currentLayer?: ILAYER;
   currentPoiId?: number;
+  currentFilters?: string[];
 } | null>(featureKey);
 
 export const UICurrentLAyer = createSelector(feature, state =>
@@ -12,4 +13,7 @@ export const UICurrentLAyer = createSelector(feature, state =>
 );
 export const UICurrentPoiId = createSelector(feature, state =>
   state && state.currentPoiId ? state.currentPoiId : null,
+);
+export const UICurrentFilters = createSelector(feature, state =>
+  state && state.currentFilters ? state.currentFilters : [],
 );

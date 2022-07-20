@@ -1,5 +1,8 @@
-<form [formGroup]="searchForm">
-  <ion-icon name="search"></ion-icon>
-  <input id="first-name" type="text" formControlName="search" placeholder="Search" />
-</form>
-<ion-icon name="close" class="close" (click)="reset()"></ion-icon>
+<div>
+  <form [formGroup]="searchForm">
+    <ion-icon name="search"></ion-icon>
+    <input id="first-name" type="text" formControlName="search" placeholder="Search" />
+  </form>
+  <ion-icon name="close" class="close" (click)="reset()"></ion-icon>
+</div>
+<ng-content></ng-content>

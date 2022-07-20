@@ -25,11 +25,7 @@
     <ng-container
       *ngIf="(isTyping$|async)||(layerCards$|async)!=null||(selectedFilters$|async).length>0; else layers"
     >
-      <ion-segment
-        value="tracks"
-        (ionChange)="segmentChanged($event)"
-        *ngIf="(layerCards$|async)==null"
-      >
+      <ion-segment [value]="currentTab$|async" (ionChange)="segmentChanged($event)">
         <ng-container *ngIf="cards$|async as cards">
           <ion-segment-button value="tracks" *ngIf="cards != null && cards.length> 0">
             <ion-label>
@@ -45,18 +41,20 @@
           </ion-segment-button>
         </ng-container>
       </ion-segment>
-      <ng-container *ngIf="currentTab === 'tracks'">
-        <webmapp-search-box
-          *ngFor="let card of cards$|async"
-          [data]="card"
-          (clickEVT)="searchCard(card.id)"
-        >
-        </webmapp-search-box>
+      <ng-container *ngIf="currentTab$|async as currentTab">
+        <ng-container *ngIf="currentTab === 'tracks'|| currentTab == null">
+          <webmapp-search-box
+            *ngFor="let card of cards$|async"
+            [data]="card"
+            (clickEVT)="searchCard(card.id)"
+          >
+          </webmapp-search-box>
+        </ng-container>
+        <div *ngIf="currentTab === 'pois'">
+          <webmapp-poi-box *ngFor="let c of poiCards$|async" [data]="c" (clickEVT)="setPoi(c.id)">
+          </webmapp-poi-box>
+        </div>
       </ng-container>
-      <div *ngIf="currentTab === 'pois'">
-        <webmapp-poi-box *ngFor="let c of poiCards$|async" [data]="c" (clickEVT)="setPoi(c.id)">
-        </webmapp-poi-box>
-      </div>
     </ng-container>
 
     <ng-template #layers>

@@ -33,7 +33,7 @@ export class HomeComponent {
   confPOISFilter$: Observable<any> = this._storeConf.select(confPOISFilter);
   currentLayer$: BehaviorSubject<ILAYER | null> = new BehaviorSubject<ILAYER | null>(null);
   currentSearch$: BehaviorSubject<string> = new BehaviorSubject<string>('');
-  currentTab = 'tracks';
+  currentTab$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
   elasticSearch$: Observable<IHIT[]> = this._storeSearch.select(elasticSearch);
   isTyping$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   layerCards$: BehaviorSubject<IHIT[] | null> = new BehaviorSubject<IHIT[] | null>(null);
@@ -70,6 +70,11 @@ export class HomeComponent {
           return firstCondition && secondCondition;
         }) as any[];
       }),
+      tap(pois => {
+        if (pois.length === 0) {
+          this.currentTab$.next('tracks');
+        }
+      }),
     );
     this.poiCards$ = merge(this.currentSearch$, this.selectedFilters$).pipe(
       switchMap(_ => selectedPois),
@@ -104,14 +109,13 @@ export class HomeComponent {
   }
 
   segmentChanged(ev: any) {
-    this.currentTab = ev.detail.value;
-    this._cdr.markForCheck();
+    this.currentTab$.next(ev.detail.value);
   }
 
   setCurrentFilters(filters: string[]): void {
     this._storeUi.dispatch(setCurrentFilters({currentFilters: filters}));
-    console.log(filters);
     this.selectedFilters$.next(filters);
+    this.currentTab$.next('pois');
   }
 
   setLayer(layer: ILAYER | null | any): void {

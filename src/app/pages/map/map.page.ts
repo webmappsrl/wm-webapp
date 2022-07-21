@@ -107,6 +107,7 @@ export class MapPage {
     this.leftPadding$ = this.showMenu$.pipe(map(showMenu => (showMenu ? menuOpenLeft : 0)));
     const relatedPois$ = this.track$.pipe(
       map(track => (track != null && track.properties != null ? track.properties : null)),
+      filter(p => p != null),
       map(properties =>
         properties != null && properties.related_pois != null ? properties.related_pois : [],
       ),
@@ -133,7 +134,7 @@ export class MapPage {
           return +poiProperties.id === +id;
         });
         const relatedPoi = relatedPois[0] ?? null;
-        const properties = {...relatedPoi.properties, ...{noRelated: true}};
+        const properties = {...relatedPoi.properties};
         return {...relatedPoi, properties};
       }),
       catchError(e => of(null)),

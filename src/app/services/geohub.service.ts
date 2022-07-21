@@ -2,7 +2,7 @@ import {CGeojsonLineStringFeature} from '../classes/features/cgeojson-line-strin
 import {CommunicationService} from './communication.service';
 import {ConfigService} from './config.service';
 import {Injectable} from '@angular/core';
-import { environment } from 'src/environments/environment';
+import {environment} from 'src/environments/environment';
 import {map} from 'rxjs/operators';
 
 @Injectable({
@@ -37,7 +37,12 @@ export class GeohubService {
         .get(`${environment.api}/api/ec/track/${id}`)
         .pipe(
           map((apiResult: CGeojsonLineStringFeature) => {
-            return apiResult;
+            const related_pois = (apiResult.properties.related_pois || []).map(p => {
+              p.properties.related = true;
+              return p;
+            });
+            const properties = {...apiResult.properties, related_pois};
+            return {...apiResult, properties} as any;
           }),
         )
         .toPromise();
@@ -64,8 +69,13 @@ export class GeohubService {
     const result = await this._communicationService
       .get(`${environment.api}/api/ec/track/${searchString}`)
       .pipe(
-        map((apiResult: any) => {
-          return apiResult;
+        map((apiResult: CGeojsonLineStringFeature) => {
+          const related_pois = apiResult.properties.related_pois.map(p => {
+            p.properties.related = true;
+            return p;
+          });
+          const properties = {...apiResult.properties, related_pois};
+          return {...apiResult, properties} as any;
         }),
       )
       .toPromise();

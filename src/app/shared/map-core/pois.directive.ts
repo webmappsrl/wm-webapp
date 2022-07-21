@@ -24,7 +24,6 @@ import {logoBase64} from 'src/assets/logoBase64';
 })
 export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
   private _defaultFeatureColor = DEF_LINE_COLOR;
-  private _initPois;
   private _poiMarkers: PoiMarker[] = [];
   private _poisLayer: VectorLayer;
   private _selectedPoiLayer: VectorLayer;
@@ -72,7 +71,6 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
     }
     if (this.map != null && this.pois != null) {
       this._addPoisMarkers(this.pois.features as any);
-      this._initPois = true;
       if (this.filters != null) {
         this._poiMarkers.forEach(poim => {
           if (

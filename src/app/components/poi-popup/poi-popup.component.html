@@ -1,28 +1,46 @@
 <ng-container *ngIf="poiProperties!= null">
   <webmapp-image-modal
-    *ngIf="toggleImage$|async"
+    *ngIf="toggleImage$|async as image"
     (closeEVT)="toggleImage()"
-    [image]="poiProperties.feature_image !=null? poiProperties.feature_image.url:defaultPhotoPath"
+    [image]="image"
   ></webmapp-image-modal>
-  <img
-    class="webmapp-poi-popup-img"
-    [src]="poiProperties.feature_image !=null? poiProperties.feature_image.url:defaultPhotoPath"
-    (click)="toggleImage()"
-  />
-  <span class="webmapp-poi-popup-header">
-    <button
-      class="webmapp-poi-popup-left"
-      *ngIf="!poiProperties.noRelated"
-      (click)="prevEVT.emit()"
+  <div class="slides-container">
+    <ion-slides #gallery class="gallery" [options]="slideOptions">
+      <ion-slide
+        pager="true"
+        (click)="toggleImage(poiProperties.feature_image !=null? poiProperties.feature_image.url:defaultPhotoPath)"
+      >
+        <img
+          class="webmapp-poi-popup-img"
+          [src]="poiProperties.feature_image !=null? poiProperties.feature_image.url:defaultPhotoPath"
+        />
+      </ion-slide>
+      <ion-slide
+        *ngFor="let image of poiProperties.image_gallery"
+        pager="true"
+        (click)="toggleImage(image.url)"
+      >
+        <img [src]="image.url" class="webmapp-poi-popup-img" />
+      </ion-slide>
+    </ion-slides>
+    <ng-container
+      *ngIf="poiProperties.image_gallery!= null && poiProperties.image_gallery.length > 0"
     >
+      <button type="submit" ion-button class="webmapp-poi-popup-left left" (click)="prev()">
+        <ion-icon name="caret-back-outline"></ion-icon>
+      </button>
+      <button type="submit" ion-button class="webmapp-poi-popup-right right" (click)="next()">
+        <ion-icon name="caret-forward-outline"></ion-icon>
+      </button>
+    </ng-container>
+  </div>
+
+  <span class="webmapp-poi-popup-header">
+    <button class="webmapp-poi-popup-left" *ngIf="poiProperties.related" (click)="prevEVT.emit()">
       <i class="icon-outline-arrow-left"></i>
     </button>
     <p class="webmapp-poi-popup-title">{{poiProperties.name|WebmappTranslate}}</p>
-    <button
-      class="webmapp-poi-popup-right"
-      (click)="nextEVT.emit()"
-      *ngIf="!poiProperties.noRelated"
-    >
+    <button class="webmapp-poi-popup-right" (click)="nextEVT.emit()" *ngIf="poiProperties.related">
       <i class="icon-outline-arrow-right"></i>
     </button>
   </span>
@@ -52,6 +70,7 @@
       <webmapp-related-urls [relatedUrls]="poiProperties.related_url"></webmapp-related-urls>
     </div>
   </div>
+
   <div
     class="webmapp-poi-popup-text"
     [innerHTML]="poiProperties.description|WebmappTranslate"

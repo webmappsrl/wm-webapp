@@ -3,12 +3,12 @@ interface IELASTIC {
 }
 interface IHIT {
   cai_scale: string;
-  feature_image: string;
-  ref: string;
   distance: string;
-  name: string;
+  feature_image: string | any;
   id: number;
+  layers: number[];
+  name: string;
+  ref: string;
   taxonomyActivities: string[];
   taxonomyWheres: string[];
-  layers: number[];
 }

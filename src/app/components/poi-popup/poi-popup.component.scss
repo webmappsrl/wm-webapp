@@ -23,6 +23,24 @@ webmapp-poi-popup {
   > * {
     padding: 10px;
   }
+  .slides-container {
+    width: -webkit-fill-available !important;
+    max-height: 50%;
+    position: relative;
+
+    .left {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      z-index: 99999;
+    }
+    .right {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      z-index: 99999;
+    }
+  }
   .webmapp-poi-popup-img {
     width: 100%;
     object-fit: cover;
@@ -117,6 +135,7 @@ webmapp-poi-popup {
     padding: 10px;
     margin: 5px;
     border-radius: 15px;
+    z-index: 9999;
   }
   .webmapp-poi-popup-close {
     position: absolute;

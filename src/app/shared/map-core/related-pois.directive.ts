@@ -1,24 +1,25 @@
+import {DEF_LINE_COLOR, DEF_MAP_CLUSTER_CLICK_TOLERANCE} from './constants';
 import {Directive, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
-import Feature from 'ol/Feature';
-import Geometry from 'ol/geom/Geometry';
-import Point from 'ol/geom/Point';
-import VectorLayer from 'ol/layer/Vector';
-import Map from 'ol/Map';
 
-import {fromLonLat} from 'ol/proj';
-import VectorSource from 'ol/source/Vector';
-import Icon from 'ol/style/Icon';
-import Style from 'ol/style/Style';
-import {FitOptions} from 'ol/View';
-import {IGeojsonFeature} from 'src/app/types/model';
 import {Coordinate} from 'ol/coordinate';
 import {FLAG_TRACK_ZINDEX} from './zIndex';
-import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
-import {buffer} from 'ol/extent';
+import Feature from 'ol/Feature';
+import {FitOptions} from 'ol/View';
+import Geometry from 'ol/geom/Geometry';
+import {IGeojsonFeature} from 'src/app/types/model';
+import Icon from 'ol/style/Icon';
+import Map from 'ol/Map';
 import MapBrowserEvent from 'ol/MapBrowserEvent';
-import {DEF_LINE_COLOR, DEF_MAP_CLUSTER_CLICK_TOLERANCE} from './constants';
-import {logoBase64} from 'src/assets/logoBase64';
+import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
+import Point from 'ol/geom/Point';
+import Style from 'ol/style/Style';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
 import {WmMaBaseDirective} from './base.directive';
+import {buffer} from 'ol/extent';
+import {fromLonLat} from 'ol/proj';
+import {logoBase64} from 'src/assets/logoBase64';
+
 @Directive({
   selector: '[wmMapRelatedPois]',
 })

@@ -76,6 +76,7 @@
       wmMapRelatedPois
       [track]="track$|async"
       [layer]="currentLayer$|async"
+      [disableLayers]="(currentFilters$|async).length > 0"
       [conf]="confMap$|async"
       [map]="wmap.map$|async"
       [poi]="currentPoiIDToMap$|async"

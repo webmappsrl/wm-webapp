@@ -29,6 +29,7 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
   private _mapIsInit = false;
   private _selectInteraction: SelectInteraction;
   private _styleJson: any;
+  private _disableLayers = false;
 
   @Input() conf: IMAP;
   @Input() map: Map;
@@ -44,7 +45,12 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
       this.fitView(l.bbox);
     }
   }
-
+  @Input() set disableLayers(disable: boolean) {
+    this._disableLayers = disable;
+    if (this._dataLayers != null) {
+      this._dataLayers[this._dataLayers.length - 1].setVisible(!this._disableLayers);
+    }
+  }
   ngOnChanges(changes: SimpleChanges): void {
     if (this.map != null && this.conf != null && this._mapIsInit == false) {
       this._initLayer(this.conf);

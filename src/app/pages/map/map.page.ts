@@ -52,6 +52,7 @@ export class MapPage {
       }
     }),
   );
+  disableLayers$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   currentLayer$ = this._store.select(UICurrentLAyer);
   currentFilters$ = this._store.select(UICurrentFilters);
   currentPoiIDFromHome$ = this._store.select(UICurrentPoiId);

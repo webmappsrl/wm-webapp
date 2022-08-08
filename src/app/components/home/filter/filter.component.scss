@@ -1,5 +1,42 @@
 webmapp-filter {
-  ion-button {
+  ion-button,
+  ion-segment {
     --background: var(--wm-color-primary);
+  }
+}
+ion-segment {
+  ion-segment-button {
+    --background-hover: var(--wm-color-primary);
+    --color-checked: var(--wm-color-primary);
+  }
+}
+.chip-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: stretch;
+  align-items: stretch;
+  ion-chip {
+    order: 0;
+    flex: 1 1 auto;
+    align-self: stretch;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-content: stretch;
+    align-items: stretch;
+    ion-label {
+      order: 0;
+      flex: 1 1 auto;
+      align-self: stretch;
+    }
+    ion-icon {
+      order: 0;
+      flex: 0 1 auto;
+      align-self: stretch;
+    }
   }
 }

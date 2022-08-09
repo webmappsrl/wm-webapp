@@ -1,25 +1,28 @@
-import {DEF_LINE_COLOR, DEF_MAP_CLUSTER_CLICK_TOLERANCE} from './constants';
+import {Cluster, Vector as VectorSource} from 'ol/source';
 import {Directive, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 
+import CircleStyle from 'ol/style/Circle';
 import {Coordinate} from 'ol/coordinate';
+import {DEF_MAP_CLUSTER_CLICK_TOLERANCE} from './constants';
 import {FLAG_TRACK_ZINDEX} from './zIndex';
 import Feature from 'ol/Feature';
+import Fill from 'ol/style/Fill';
 import {FitOptions} from 'ol/View';
 import Geometry from 'ol/geom/Geometry';
 import {IGeojsonFeature} from 'src/app/types/model';
 import Icon from 'ol/style/Icon';
 import MapBrowserEvent from 'ol/MapBrowserEvent';
-import {PoiMarker} from 'src/app/classes/features/cgeojson-feature';
 import Point from 'ol/geom/Point';
+import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
+import Text from 'ol/style/Text';
 import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
 import {WmMaBaseDirective} from './base.directive';
 import {buffer} from 'ol/extent';
 import {fromLonLat} from 'ol/proj';
-import {logoBase64} from 'src/assets/logoBase64';
 
 const ICN_PATH = 'assets/icons/pois';
+const CLUSTER_DISTANCE = 15;
 @Directive({
   selector: '[wmMapPois]',
 })
@@ -112,6 +115,8 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
 
   private async _addPoisMarkers(poiCollection: Array<IGeojsonFeature>) {
     this._poisLayer = this._createLayer(this._poisLayer, FLAG_TRACK_ZINDEX);
+    const clusterSource: any = this._poisLayer.getSource() as any;
+    const source = clusterSource.getSource();
 
     if (poiCollection) {
       for (const poi of poiCollection) {
@@ -135,9 +140,9 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
         });
         iconFeature.setStyle(iconStyle);
         iconFeature.setId(poi.properties.id);
-        const source = this._poisLayer.getSource();
         source.addFeature(iconFeature);
         source.changed();
+        clusterSource.changed();
       }
     }
 
@@ -157,14 +162,55 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
   private _createLayer(layer: VectorLayer, zIndex: number) {
     if (!layer) {
       layer = new VectorLayer({
-        source: new VectorSource({
-          features: [],
+        source: new Cluster({
+          distance: CLUSTER_DISTANCE,
+          source: new VectorSource({
+            features: [],
+          }),
+          geometryFunction: (feature: Feature): Point | null => {
+            return feature.getGeometry().getType() === 'Point'
+              ? <Point>feature.getGeometry()
+              : null;
+          },
         }),
+        style: function (feature) {
+          const size = feature.get('features').length;
+          let style = styleCache[size];
+          if (size === 1) {
+            const icon = feature.getProperties().features[0];
+            return icon.getStyle() || null;
+          }
+          if (!style) {
+            style = new Style({
+              image: new CircleStyle({
+                radius: 15,
+                stroke: new Stroke({
+                  color: '#fff',
+                }),
+                fill: new Fill({
+                  color: '#3399CC',
+                }),
+              }),
+              text: new Text({
+                text: `${size}`,
+                scale: 1.5,
+                fill: new Fill({
+                  color: '#fff',
+                }),
+                font: '30px ',
+              }),
+            });
+            styleCache[size] = style;
+          }
+          return style;
+        },
         updateWhileAnimating: true,
         updateWhileInteracting: true,
         zIndex,
       });
       this.map.addLayer(layer);
+
+      const styleCache = {};
     }
     return layer;
   }

@@ -19,15 +19,13 @@ import {buffer} from 'ol/extent';
 import {fromLonLat} from 'ol/proj';
 import {logoBase64} from 'src/assets/logoBase64';
 
+const ICN_PATH = 'assets/icons/pois';
 @Directive({
   selector: '[wmMapPois]',
 })
 export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
-  private _defaultFeatureColor = DEF_LINE_COLOR;
-  private _poiMarkers: PoiMarker[] = [];
   private _poisLayer: VectorLayer;
   private _selectedPoiLayer: VectorLayer;
-  private _selectedPoiMarker: PoiMarker;
 
   @Input() conf: IMAP;
   @Input() filters: any[] = [];
@@ -35,14 +33,37 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
 
   @Input('poi') set setPoi(id: number) {
-    if (id === -1 && this._selectedPoiLayer != null) {
-      this.map.removeLayer(this._selectedPoiLayer);
-      this._selectedPoiLayer = undefined;
-    } else {
-      const currentPoi = this._poiMarkers.find(p => +p.id === +id);
-      if (currentPoi != null) {
-        this._fitView(currentPoi.icon.getGeometry() as any);
-        this._selectCurrentPoi(currentPoi);
+    if (this.map != null) {
+      this._selectedPoiLayer = this._createLayer(this._selectedPoiLayer, FLAG_TRACK_ZINDEX + 100);
+      this._selectedPoiLayer.getSource().clear();
+      if (id > -1) {
+        const currentPoi = this.pois.features.find(p => +p.properties.id === +id);
+        if (currentPoi != null) {
+          const icn = this._getIcnFromTaxonomies(currentPoi.properties.taxonomyIdentifiers);
+          const coordinates = [
+            currentPoi.geometry.coordinates[0] as number,
+            currentPoi.geometry.coordinates[1] as number,
+          ] || [0, 0];
+          const position = fromLonLat([coordinates[0] as number, coordinates[1] as number]);
+          const geometry = new Point([position[0], position[1]]);
+          const iconFeature = new Feature({
+            type: 'icon',
+            geometry,
+          });
+          const iconStyle = new Style({
+            image: new Icon({
+              anchor: [0.5, 0.5],
+              scale: 0.7,
+              src: `${ICN_PATH}/${icn}_selected.png`,
+            }),
+          });
+          iconFeature.setStyle(iconStyle);
+          iconFeature.setId(currentPoi.properties.id);
+          const source = this._selectedPoiLayer.getSource();
+          source.addFeature(iconFeature);
+          source.changed();
+          this._fitView(geometry as any);
+        }
       }
     }
   }
@@ -57,6 +78,7 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
         try {
           const poiFeature = this._getNearestFeatureOfLayer(this._poisLayer, event);
           if (poiFeature) {
+            console.log('click');
             this.map.getInteractions().forEach(i => i.setActive(false));
             const currentID = +poiFeature.getId() || -1;
             this.poiClick.emit(currentID);
@@ -70,48 +92,52 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
       });
     }
     if (this.map != null && this.pois != null) {
-      this._addPoisMarkers(this.pois.features as any);
-      if (this.filters != null) {
-        this._poiMarkers.forEach(poim => {
-          if (
-            this.filters.length === 0 ||
-            poim.poi.properties.taxonomyIdentifiers.filter(v => this.filters.indexOf(v) >= 0)
-              .length === this.filters.length
-          ) {
-            poim.icon.setStyle(poim.style);
-          } else {
-            poim.icon.setStyle(null);
-          }
-        });
+      if (this.filters.length > 0) {
+        this._poisLayer.getSource().clear();
+        const selectedFeatures = this.pois.features.filter(
+          p => this._intersection(p.properties.taxonomyIdentifiers, this.filters).length > 0,
+        );
+        this._addPoisMarkers(selectedFeatures);
+      } else {
+        this._addPoisMarkers(this.pois.features);
       }
     }
   }
-
-  private _addIconToLayer(layer: VectorLayer, icon: Feature<Geometry>) {
-    layer.getSource().addFeature(icon);
+  private _intersection(a: any[], b: any[]): any[] {
+    var setA = new Set(a);
+    var setB = new Set(b);
+    var intersection = new Set([...setA].filter(x => setB.has(x)));
+    return Array.from(intersection);
   }
 
   private async _addPoisMarkers(poiCollection: Array<IGeojsonFeature>) {
     this._poisLayer = this._createLayer(this._poisLayer, FLAG_TRACK_ZINDEX);
-    for (let i = this._poiMarkers?.length - 1; i >= 0; i--) {
-      const ov = this._poiMarkers[i];
-      if (!poiCollection?.find(x => x.properties.id + '' === ov.id)) {
-        this._removeIconFromLayer(this._poisLayer, ov.icon);
-        this._poiMarkers.splice(i, 1);
-      }
-    }
+
     if (poiCollection) {
       for (const poi of poiCollection) {
-        if (
-          !this._poiMarkers?.find(
-            x => x.id === poi.properties.id + '' && poi.properties?.feature_image?.sizes,
-          )
-        ) {
-          const {marker, style} = await this._createPoiCanvasIcon(poi);
-          marker.style = style;
-          this._addIconToLayer(this._poisLayer, marker.icon);
-          this._poiMarkers.push(marker);
-        }
+        const icn = this._getIcnFromTaxonomies(poi.properties.taxonomyIdentifiers);
+        const coordinates = [
+          poi.geometry.coordinates[0] as number,
+          poi.geometry.coordinates[1] as number,
+        ] || [0, 0];
+
+        const position = fromLonLat([coordinates[0] as number, coordinates[1] as number]);
+        const iconFeature = new Feature({
+          type: 'icon',
+          geometry: new Point([position[0], position[1]]),
+        });
+        const iconStyle = new Style({
+          image: new Icon({
+            anchor: [0.5, 0.5],
+            scale: 0.5,
+            src: `${ICN_PATH}/${icn}.png`,
+          }),
+        });
+        iconFeature.setStyle(iconStyle);
+        iconFeature.setId(poi.properties.id);
+        const source = this._poisLayer.getSource();
+        source.addFeature(iconFeature);
+        source.changed();
       }
     }
 
@@ -128,65 +154,6 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
       }
     });
   }
-
-  private async _createCanvasForHtml(html: string, size: number): Promise<HTMLImageElement> {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-
-    const canvasHtml =
-      `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">` +
-      '<foreignObject width="100%" height="100%">' +
-      '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:40px">' +
-      html +
-      '</div>' +
-      '</foreignObject>' +
-      '</svg>';
-
-    const domUrl = window.URL; // || window.webkitURL || window;
-
-    const img = new Image();
-    const svg = new Blob([canvasHtml], {
-      type: 'image/svg+xml', //;charset=utf-8',
-    });
-    const url = domUrl.createObjectURL(svg);
-
-    img.onload = () => {
-      domUrl.revokeObjectURL(url);
-    };
-    img.src = url;
-
-    return img;
-  }
-
-  private async _createIconFeature(
-    coordinates: number[],
-    img: HTMLImageElement,
-    size: number,
-    transparent: boolean = false,
-    anchor: number[] = [0.5, 0.5],
-  ): Promise<{iconFeature: Feature<Geometry>; style: Style}> {
-    if (!coordinates) {
-      return;
-    }
-    const position = fromLonLat([coordinates[0] as number, coordinates[1] as number]);
-
-    const iconFeature = new Feature({
-      type: 'icon',
-      geometry: new Point([position[0], position[1]]),
-    });
-    const style = new Style({
-      image: new Icon({
-        anchor,
-        img,
-        imgSize: [size, size],
-        opacity: transparent ? 0.5 : 1,
-      }),
-    });
-
-    iconFeature.setStyle(style);
-
-    return {iconFeature, style};
-  }
-
   private _createLayer(layer: VectorLayer, zIndex: number) {
     if (!layer) {
       layer = new VectorLayer({
@@ -202,94 +169,8 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
     return layer;
   }
 
-  private async _createPoiCanvasIcon(
-    poi: any,
-    geometry = null,
-    selected = false,
-  ): Promise<{marker: PoiMarker; style: Style}> {
-    const img = await this._createPoiCavasImage(poi, selected);
-    const {iconFeature, style} = await this._createIconFeature(
-      geometry
-        ? geometry
-        : [poi.geometry.coordinates[0] as number, poi.geometry.coordinates[1] as number],
-      img,
-      46,
-    );
-    iconFeature.setId(poi.properties.id);
-    return {
-      marker: {
-        poi,
-        icon: iconFeature,
-        id: poi.properties.id + '',
-      },
-      style,
-    };
-  }
-
-  private async _createPoiCavasImage(
-    poi: IGeojsonFeature,
-    selected = false,
-  ): Promise<HTMLImageElement> {
-    const htmlTextCanvas = await this._createPoiMarkerHtmlForCanvas(poi, selected);
-    return this._createCanvasForHtml(htmlTextCanvas, 46);
-  }
-
-  private async _createPoiMarkerHtmlForCanvas(
-    value: IGeojsonFeature,
-    selected = false,
-  ): Promise<string> {
-    let img1b64: string | ArrayBuffer = logoBase64;
-    let url = null;
-    try {
-      url = value.properties?.feature_image?.sizes['108x137'];
-    } catch (e) {
-      console.log('POI error createPoiMarker id:', value.properties.id);
-    }
-    if (url) {
-      img1b64 = await this._downloadBase64Img(url);
-    }
-
-    let html = `
-    <div class="webmapp-map-poimarker-container" style="position: relative;width: 30px;height: 60px;">`;
-
-    html += `
-        <svg width="46" height="46" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style=" position: absolute;  width: 46px;  height: 46px;  left: 0px;  top: 0px;">
-          <circle opacity="${selected ? 1 : 0.2}" cx="23" cy="23" r="23" fill="${
-      this._defaultFeatureColor
-    }"/>
-          <rect x="5" y="5" width="36" height="36" rx="18" fill="url(#img)" stroke="white" stroke-width="2"/>
-          <defs>
-            <pattern height="100%" width="100%" patternContentUnits="objectBoundingBox" id="img">
-              <image height="1" width="1" preserveAspectRatio="xMidYMid slice" xlink:href="${img1b64}">
-              </image>
-            </pattern>
-          </defs>
-        </svg>`;
-    html += ` </div>`;
-
-    return html;
-  }
-
   private _distance(c1: Coordinate, c2: Coordinate) {
     return Math.sqrt(Math.pow(c1[0] - c2[0], 2) + Math.pow(c1[1] - c2[1], 2));
-  }
-
-  private async _downloadBase64Img(url): Promise<string | ArrayBuffer> {
-    const opt = {};
-    const data = await fetch(url, opt);
-    const blob = await data.blob();
-    return new Promise(resolve => {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      try {
-        reader.onloadend = () => {
-          const base64data = reader.result;
-          resolve(base64data);
-        };
-      } catch (error) {
-        resolve('');
-      }
-    });
   }
 
   private _fitView(geometryOrExtent: any, optOptions?: FitOptions): void {
@@ -348,21 +229,11 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
     return nearestFeature;
   }
 
-  private _removeIconFromLayer(layer: VectorLayer, icon: Feature<Geometry>) {
-    const source = layer.getSource();
-    if (source.hasFeature(icon)) {
-      source.removeFeature(icon);
-    }
-  }
-
-  private async _selectCurrentPoi(poiMarker: PoiMarker) {
-    if (this._selectedPoiMarker != null) {
-      this.map.removeLayer(this._selectedPoiLayer);
-      this._selectedPoiLayer = undefined;
-    }
-    this._selectedPoiLayer = this._createLayer(this._selectedPoiLayer, 99999999999999);
-    this._selectedPoiMarker = poiMarker;
-    const {marker} = await this._createPoiCanvasIcon(poiMarker.poi, null, true);
-    this._addIconToLayer(this._selectedPoiLayer, marker.icon);
+  private _getIcnFromTaxonomies(taxonomyIdentifiers: string[]): string {
+    const excludedIcn = ['poi_type_poi', 'theme_ucvs'];
+    const res = taxonomyIdentifiers.filter(
+      p => excludedIcn.indexOf(p) === -1 && p.indexOf('poi_type') > -1,
+    );
+    return res.length > 0 ? res[0] : taxonomyIdentifiers[0];
   }
 }

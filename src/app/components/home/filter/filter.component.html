@@ -24,7 +24,7 @@
           *ngFor="let tab of tabs$|async"
           (click)="segmentChanged(tab)"
         >
-          <ion-label>{{tab}}</ion-label>
+          <ion-label>{{tab|translate}}</ion-label>
         </ion-segment-button>
       </ion-segment>
       <div class="chip-list">
@@ -34,6 +34,7 @@
           (click)="addFilter(item.identifier)"
           [color]="(currentFilters$|async).indexOf(item.identifier) >= 0? 'success': ''"
         >
+          <i [class]="(currentTab$|async) ==='where'? 'icn-town-15':getIcon(item.identifier)"></i>
           <ion-label>{{item.name|WebmappTranslate}}</ion-label>
           <ion-icon
             [name]="(currentFilters$|async).indexOf(item.identifier) >= 0? 'eye': 'eye-off'"

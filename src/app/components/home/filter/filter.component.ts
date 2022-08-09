@@ -64,4 +64,11 @@ export class FilterComponent implements OnChanges {
   segmentChanged(event: any): void {
     this.currentTab$.next(event);
   }
+
+  getIcon(identifier: string): string {
+    const identifierToIcon: {[identifier: string]: string} = {
+      'poi_type_monument': 'wm-icon-monument-15',
+    };
+    return identifierToIcon[identifier] ? identifierToIcon[identifier] : identifier;
+  }
 }

@@ -6,7 +6,7 @@ import {IonicModule} from '@ionic/angular';
 import {LayerBoxComponent} from './layer-box/layer-box.component';
 import {NgModule} from '@angular/core';
 import {PipeModule} from 'src/app/pipes/pipe.module';
-import {PoiBoxComponent} from './poi-box /poi-box.component';
+import {PoiBoxComponent} from './poi-box/poi-box.component';
 import {RelatedUrlsComponent} from './related-urls.component';
 import {SearchBoxComponent} from './search-box/search-box.component';
 import {TitleComponent} from './title/title.component';

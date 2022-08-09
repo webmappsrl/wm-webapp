@@ -42,7 +42,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // difficulty
     if (this?._feature?.properties?.difficulty) {
       technicalData.push({
-        icon: 'icon-outline-difficulty',
+        icon: 'icn-outline-difficulty',
         label: technicalDataLabelPrefix + 'difficulty',
         value: this._feature.properties.difficulty as any,
       });
@@ -50,7 +50,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Distance
     if (this?._feature?.properties?.distance) {
       technicalData.push({
-        icon: 'icon-outline-distance',
+        icon: 'icn-outline-distance',
         label: technicalDataLabelPrefix + 'distance',
         value: this._utilsService.formatDistance(this._feature.properties.distance),
       });
@@ -58,7 +58,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Duration forward
     if (this?._feature?.properties?.duration_forward) {
       technicalData.push({
-        icon: 'icon-outline-duration',
+        icon: 'icn-outline-duration',
         label: technicalDataLabelPrefix + 'duration_forward',
         value: this._utilsService.formatDuration(this._feature.properties.duration_forward),
       });
@@ -66,7 +66,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Duration backward
     if (this?._feature?.properties?.duration_backward) {
       technicalData.push({
-        icon: 'icon-outline-duration',
+        icon: 'icn-outline-duration',
         label: technicalDataLabelPrefix + 'duration_backward',
         value: this._utilsService.formatDuration(this._feature.properties.duration_backward),
       });
@@ -74,7 +74,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Ascent
     if (this?._feature?.properties?.ascent) {
       technicalData.push({
-        icon: 'icon-outline-dislivello-positivo',
+        icon: 'icn-outline-dislivello-positivo',
         label: technicalDataLabelPrefix + 'ascent',
         value: this._utilsService.formatAscent(this._feature.properties.ascent),
       });
@@ -82,7 +82,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Descent
     if (this?._feature?.properties?.descent) {
       technicalData.push({
-        icon: 'icon-outline-dislivello-negativo',
+        icon: 'icn-outline-dislivello-negativo',
         label: technicalDataLabelPrefix + 'descent',
         value: this._utilsService.formatDescent(this._feature.properties.descent),
       });
@@ -90,7 +90,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Ele from
     if (this?._feature?.properties?.ele_from) {
       technicalData.push({
-        icon: 'icon-fill-starting-point',
+        icon: 'icn-fill-starting-point',
         label: technicalDataLabelPrefix + 'ele_from',
         value: this._utilsService.formatElevation(this._feature.properties.ele_from),
       });
@@ -98,7 +98,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Ele to
     if (this?._feature?.properties?.ele_to) {
       technicalData.push({
-        icon: 'icon-fill-flag',
+        icon: 'icn-fill-flag',
         label: technicalDataLabelPrefix + 'ele_to',
         value: this._utilsService.formatElevation(this._feature.properties.ele_to),
       });
@@ -106,7 +106,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Ele min
     if (this?._feature?.properties?.ele_min) {
       technicalData.push({
-        icon: 'icon-outline-minus',
+        icon: 'icn-outline-minus',
         label: technicalDataLabelPrefix + 'ele_min',
         value: this._utilsService.formatElevation(this._feature.properties.ele_min),
       });
@@ -114,7 +114,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Ele max
     if (this?._feature?.properties?.ele_max) {
       technicalData.push({
-        icon: 'icon-outline-plus',
+        icon: 'icn-outline-plus',
         label: technicalDataLabelPrefix + 'ele_max',
         value: this._utilsService.formatElevation(this._feature.properties.ele_max),
       });

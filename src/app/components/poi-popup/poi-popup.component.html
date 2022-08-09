@@ -37,22 +37,22 @@
 
   <span class="webmapp-poi-popup-header">
     <button class="webmapp-poi-popup-left" *ngIf="poiProperties.related" (click)="prevEVT.emit()">
-      <i class="icon-outline-arrow-left"></i>
+      <i class="icn-outline-arrow-left"></i>
     </button>
     <p class="webmapp-poi-popup-title">{{poiProperties.name|WebmappTranslate}}</p>
     <button class="webmapp-poi-popup-right" (click)="nextEVT.emit()" *ngIf="poiProperties.related">
-      <i class="icon-outline-arrow-right"></i>
+      <i class="icn-outline-arrow-right"></i>
     </button>
   </span>
   <div class="webmapp-poi-popup-btns">
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.address">
-      <i class="webmapp-icon icon-fill-pin"></i>
+      <i class="wm-icn icn-fill-pin"></i>
       <a href="https://www.google.com/maps/place/{{poiProperties.address_link}}" target="_blank">
         {{poiProperties.address}}
       </a>
     </div>
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.contact_phone" target="_blank">
-      <i class="webmapp-icon icon-fill-phone"></i>
+      <i class="wm-icn icn-fill-phone"></i>
       <p>
         <a href="tel:{{poiProperties.contact_email}}">
           {{poiProperties.contact_phone}}
@@ -60,13 +60,13 @@
       </p>
     </div>
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.contact_email" target="_blank">
-      <i class="webmapp-icon icon-fill-mail"></i>
+      <i class="wm-icn icn-fill-mail"></i>
       <a [href]="poiProperties.contact_email">
         {{poiProperties.contact_email}}
       </a>
     </div>
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.related_url != null">
-      <i class="webmapp-icon icon-fill-globe"></i>
+      <i class="wm-icn icn-fill-globe"></i>
       <webmapp-related-urls [relatedUrls]="poiProperties.related_url"></webmapp-related-urls>
     </div>
   </div>
@@ -76,6 +76,6 @@
     [innerHTML]="poiProperties.description|WebmappTranslate"
   ></div>
   <button class="webmapp-poi-popup-close" (click)="closeEVT.emit()">
-    <i class="icon-outline-close"></i>
+    <i class="icn-outline-close"></i>
   </button>
 </ng-container>

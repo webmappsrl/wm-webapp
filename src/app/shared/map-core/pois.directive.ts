@@ -253,19 +253,19 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
     const precision = this.map.getView().getResolution() * DEF_MAP_CLUSTER_CLICK_TOLERANCE;
     let nearestFeature = null;
     const features: Feature<Geometry>[] = [];
+    const clusterSource = layer.getSource() as any;
+    const layerSource = clusterSource.getSource();
 
-    if (layer && layer.getSource()) {
-      layer
-        .getSource()
-        .forEachFeatureInExtent(
-          buffer(
-            [evt.coordinate[0], evt.coordinate[1], evt.coordinate[0], evt.coordinate[1]],
-            precision,
-          ),
-          feature => {
-            features.push(feature);
-          },
-        );
+    if (layer && layerSource) {
+      layerSource.forEachFeatureInExtent(
+        buffer(
+          [evt.coordinate[0], evt.coordinate[1], evt.coordinate[0], evt.coordinate[1]],
+          precision,
+        ),
+        feature => {
+          features.push(feature);
+        },
+      );
     }
 
     if (features.length) {

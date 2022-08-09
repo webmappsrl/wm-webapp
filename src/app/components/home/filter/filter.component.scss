@@ -39,8 +39,12 @@ ion-segment {
       flex: 0 1 auto;
       align-self: stretch;
     }
-    i {
-      margin-right: 2px;
+    img {
+      position: relative;
+      height: 25px;
+      display: block;
+      margin-left: -7px;
+      margin-top: -4px;
     }
   }
 }

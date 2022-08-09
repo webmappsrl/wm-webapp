@@ -43,6 +43,7 @@ export class FilterComponent implements OnChanges {
     } else {
       this.currentFilters$.next([...this.currentFilters$.value, filter]);
     }
+    console.log(this.currentFilters$.value);
     this.selectedFilters.emit(this.currentFilters$.value);
   }
 
@@ -63,12 +64,5 @@ export class FilterComponent implements OnChanges {
 
   segmentChanged(event: any): void {
     this.currentTab$.next(event);
-  }
-
-  getIcon(identifier: string): string {
-    const identifierToIcon: {[identifier: string]: string} = {
-      'poi_type_monument': 'wm-icon-monument-15',
-    };
-    return identifierToIcon[identifier] ? identifierToIcon[identifier] : identifier;
   }
 }

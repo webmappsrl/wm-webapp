@@ -34,7 +34,7 @@
           (click)="addFilter(item.identifier)"
           [color]="(currentFilters$|async).indexOf(item.identifier) >= 0? 'success': ''"
         >
-          <i [class]="(currentTab$|async) ==='where'? 'icn-town-15':getIcon(item.identifier)"></i>
+          <img [src]="item.identifier|getFilterIcn:(currentFilters$|async)" />
           <ion-label>{{item.name|WebmappTranslate}}</ion-label>
           <ion-icon
             [name]="(currentFilters$|async).indexOf(item.identifier) >= 0? 'eye': 'eye-off'"

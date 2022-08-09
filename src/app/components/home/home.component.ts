@@ -58,16 +58,24 @@ export class HomeComponent {
     );
     const selectedPois = zip(this.currentSearch$, allPois, this.selectedFilters$).pipe(
       map(([search, features, filters]) => {
+        const isSearch = search.length > 0 || filters.length > 0;
+        const whereFilters = filters.filter(f => f.indexOf('where_') >= 0);
+        const poiTypeFilters = filters.filter(f => f.indexOf('poi_type_') >= 0);
+        let whereCondition = true;
+        let poiTypeCondition = true;
         return features.filter(f => {
-          const firstCondition = JSON.stringify(f.name)
-            .toLowerCase()
-            .includes(search.toLowerCase());
-          let secondCondition = true;
+          const nameCondition = JSON.stringify(f.name).toLowerCase().includes(search.toLowerCase());
           if (filters.length > 0) {
-            secondCondition =
-              f.taxonomyIdentifiers.filter(v => filters.indexOf(v) >= 0).length >= filters.length;
+            whereCondition =
+              whereFilters.length > 0
+                ? f.taxonomyIdentifiers.filter(v => whereFilters.indexOf(v) >= 0).length > 0
+                : true;
+            poiTypeCondition =
+              poiTypeFilters.length > 0
+                ? f.taxonomyIdentifiers.filter(v => poiTypeFilters.indexOf(v) >= 0).length > 0
+                : true;
           }
-          return firstCondition && secondCondition;
+          return nameCondition && whereCondition && poiTypeCondition && isSearch;
         }) as any[];
       }),
       tap(pois => {

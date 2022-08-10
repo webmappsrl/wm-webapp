@@ -3,7 +3,7 @@ import {Directive, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '
 
 import CircleStyle from 'ol/style/Circle';
 import {Coordinate} from 'ol/coordinate';
-import {DEF_MAP_CLUSTER_CLICK_TOLERANCE} from './constants';
+import {CLUSTER_DISTANCE, DEF_MAP_CLUSTER_CLICK_TOLERANCE, ICN_PATH} from './constants';
 import {FLAG_TRACK_ZINDEX} from './zIndex';
 import Feature from 'ol/Feature';
 import Fill from 'ol/style/Fill';
@@ -21,13 +21,11 @@ import {WmMaBaseDirective} from './base.directive';
 import {buffer} from 'ol/extent';
 import {fromLonLat} from 'ol/proj';
 
-const ICN_PATH = 'assets/icons/pois';
-const CLUSTER_DISTANCE = 15;
 @Directive({
   selector: '[wmMapPois]',
 })
 export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
-  private _poisLayer: VectorLayer;
+  private _poisClusterLayer: VectorLayer;
   private _selectedPoiLayer: VectorLayer;
 
   @Input() conf: IMAP;
@@ -79,7 +77,7 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
     ) {
       this.map.on('click', event => {
         try {
-          const poiFeature = this._getNearestFeatureOfLayer(this._poisLayer, event);
+          const poiFeature = this._getNearestFeatureOfCluster(this._poisClusterLayer, event);
           if (poiFeature) {
             console.log('click');
             this.map.getInteractions().forEach(i => i.setActive(false));
@@ -96,27 +94,21 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
     }
     if (this.map != null && this.pois != null) {
       if (this.filters.length > 0) {
-        this._poisLayer.getSource().clear();
+        this._poisClusterLayer.getSource().clear();
         const selectedFeatures = this.pois.features.filter(
           p => this._intersection(p.properties.taxonomyIdentifiers, this.filters).length > 0,
         );
-        this._addPoisMarkers(selectedFeatures);
+        this._addPoisFeature(selectedFeatures);
       } else {
-        this._addPoisMarkers(this.pois.features);
+        this._addPoisFeature(this.pois.features);
       }
     }
   }
-  private _intersection(a: any[], b: any[]): any[] {
-    var setA = new Set(a);
-    var setB = new Set(b);
-    var intersection = new Set([...setA].filter(x => setB.has(x)));
-    return Array.from(intersection);
-  }
 
-  private async _addPoisMarkers(poiCollection: Array<IGeojsonFeature>) {
-    this._poisLayer = this._createLayer(this._poisLayer, FLAG_TRACK_ZINDEX);
-    const clusterSource: any = this._poisLayer.getSource() as any;
-    const source = clusterSource.getSource();
+  private _addPoisFeature(poiCollection: IGeojsonFeature[]) {
+    this._poisClusterLayer = this._createCluster(this._poisClusterLayer, FLAG_TRACK_ZINDEX);
+    const clusterSource: any = this._poisClusterLayer.getSource() as any;
+    const featureSource = clusterSource.getSource();
 
     if (poiCollection) {
       for (const poi of poiCollection) {
@@ -140,8 +132,8 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
         });
         iconFeature.setStyle(iconStyle);
         iconFeature.setId(poi.properties.id);
-        source.addFeature(iconFeature);
-        source.changed();
+        featureSource.addFeature(iconFeature);
+        featureSource.changed();
         clusterSource.changed();
       }
     }
@@ -152,16 +144,17 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
         const newZoom = +view.getZoom();
         const poisMinZoom = +this.conf.pois.poiMinZoom || 15;
         if (newZoom >= poisMinZoom) {
-          this._poisLayer.setVisible(true);
+          this._poisClusterLayer.setVisible(true);
         } else {
-          this._poisLayer.setVisible(false);
+          this._poisClusterLayer.setVisible(false);
         }
       }
     });
   }
-  private _createLayer(layer: VectorLayer, zIndex: number) {
-    if (!layer) {
-      layer = new VectorLayer({
+
+  private _createCluster(clusterLayer: VectorLayer, zIndex: number) {
+    if (!clusterLayer) {
+      clusterLayer = new VectorLayer({
         source: new Cluster({
           distance: CLUSTER_DISTANCE,
           source: new VectorSource({
@@ -208,9 +201,24 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
         updateWhileInteracting: true,
         zIndex,
       });
-      this.map.addLayer(layer);
+      this.map.addLayer(clusterLayer);
 
       const styleCache = {};
+    }
+    return clusterLayer;
+  }
+
+  private _createLayer(layer: VectorLayer, zIndex: number) {
+    if (!layer) {
+      layer = new VectorLayer({
+        source: new VectorSource({
+          features: [],
+        }),
+        updateWhileAnimating: true,
+        updateWhileInteracting: true,
+        zIndex,
+      });
+      this.map.addLayer(layer);
     }
     return layer;
   }
@@ -221,15 +229,20 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
 
   private _fitView(geometryOrExtent: any, optOptions?: FitOptions): void {
     if (optOptions == null) {
-      const size = this.map.getSize();
-      const height = size != null && size.length > 0 ? size[1] : 0;
       optOptions = {
         maxZoom: this.map.getView().getZoom(),
-        duration: 500,
-        size,
+        duration: 1000,
       };
     }
     this.map.getView().fit(geometryOrExtent, optOptions);
+  }
+
+  private _getIcnFromTaxonomies(taxonomyIdentifiers: string[]): string {
+    const excludedIcn = ['poi_type_poi', 'theme_ucvs'];
+    const res = taxonomyIdentifiers.filter(
+      p => excludedIcn.indexOf(p) === -1 && p.indexOf('poi_type') > -1,
+    );
+    return res.length > 0 ? res[0] : taxonomyIdentifiers[0];
   }
 
   private _getNearest(features: Feature<Geometry>[], coordinate: Coordinate) {
@@ -246,7 +259,7 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
     return ret;
   }
 
-  private _getNearestFeatureOfLayer(
+  private _getNearestFeatureOfCluster(
     layer: VectorLayer,
     evt: MapBrowserEvent<UIEvent>,
   ): Feature<Geometry> {
@@ -275,11 +288,10 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
     return nearestFeature;
   }
 
-  private _getIcnFromTaxonomies(taxonomyIdentifiers: string[]): string {
-    const excludedIcn = ['poi_type_poi', 'theme_ucvs'];
-    const res = taxonomyIdentifiers.filter(
-      p => excludedIcn.indexOf(p) === -1 && p.indexOf('poi_type') > -1,
-    );
-    return res.length > 0 ? res[0] : taxonomyIdentifiers[0];
+  private _intersection(a: any[], b: any[]): any[] {
+    var setA = new Set(a);
+    var setB = new Set(b);
+    var intersection = new Set([...setA].filter(x => setB.has(x)));
+    return Array.from(intersection);
   }
 }

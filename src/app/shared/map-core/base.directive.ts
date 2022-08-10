@@ -5,6 +5,7 @@ import {Extent} from 'ol/extent';
 import Map from 'ol/Map';
 import SimpleGeometry from 'ol/geom/SimpleGeometry';
 import {transformExtent} from 'ol/proj';
+
 @Directive()
 export abstract class WmMaBaseDirective {
   @Input() map: Map;
@@ -23,8 +24,6 @@ export abstract class WmMaBaseDirective {
           padding: this.padding ?? undefined,
         };
       }
-      console.log('fit view ', geometryOrExtent);
-      console.log('padding ', this.padding);
       view.fit(this.extentFromLonLat(geometryOrExtent as any), optOptions);
     }
   }

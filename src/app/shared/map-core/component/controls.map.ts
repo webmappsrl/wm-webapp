@@ -17,14 +17,13 @@ import TileLayer from 'ol/layer/Tile';
     <ion-icon name="layers-outline" (click)="toggle$.next(!toggle$.value)"></ion-icon>
   </div>
   <ion-list  *ngIf="toggle$|async" class="layer-content">
-  <ion-radio-group [value]="currentTileLayerIdx$|async">
-    <ion-item *ngFor="let tileLayer of tileLayers;let idx = index">
-      <ion-label>{{tileLayer.getClassName()}}</ion-label>
-      <ion-radio slot="start" [value]="idx" (click)="selectTileLayer(idx)"></ion-radio>
-    </ion-item>
-
-  </ion-radio-group>
-</ion-list>
+    <ion-radio-group value="v0">
+      <ion-item *ngFor="let tileLayer of tileLayers;let idx = index">
+        <ion-label>{{tileLayer.getClassName()}}</ion-label>
+        <ion-radio slot="start" [value]="'v'+idx" (click)="selectTileLayer(idx)"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-list>
 `,
   styleUrls: ['controls.map.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

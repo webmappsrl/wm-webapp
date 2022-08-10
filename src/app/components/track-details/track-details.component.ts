@@ -8,13 +8,11 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-
 import {IonContent, ModalController} from '@ionic/angular';
 
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {IGeojsonProperties} from 'src/app/types/model';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
-
 import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
 
 @Component({

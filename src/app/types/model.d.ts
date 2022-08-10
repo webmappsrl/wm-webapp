@@ -11,71 +11,72 @@ export type IMultiPolygon = Array<Array<Array<IPoint>>>;
  * Define the supported geometries
  */
 export interface IGeojsonGeometry {
-  type: EGeojsonGeometryTypes;
   coordinates: IPoint | ILineString | IMultiLineString | IPolygon | IMultiPolygon;
+  type: EGeojsonGeometryTypes;
 }
 
 export interface ILocaleString {
-  it?: string;
   en?: string;
+  it?: string;
 }
 
 /**
  * Define the supported properties
  */
 export interface IGeojsonProperties {
-  [_: string]: any; // allow to work with custom properties when needed
-  id: number;
-
-  mbtiles?: string[];
-  created_at?: Date;
-  updated_at?: Date;
-  name?: ILocaleString;
-  description?: ILocaleString;
-  excerpt?: ILocaleString;
-  source_id?: string;
-  import_method?: string;
-  source?: string;
-  distance_comp?: number;
-  user_id?: number;
-  audio?: string;
-  distance?: number;
   ascent?: number;
+  audio?: {[lang: string]: string};
+  created_at?: Date;
   descent?: number;
-  ele_from?: number;
-  ele_to?: number;
-  ele_min?: number;
-  ele_max?: number;
-  duration_forward?: number;
-  duration_backward?: number;
+  description?: ILocaleString;
   difficulty?: ILocaleString;
-  geojson_url?: string;
-  kml_url?: string;
-  gpx_url?: string;
-  feature_image?: IWmImage;
-  image?: IWmImage;
-  image_gallery?: IWmImage[];
-  taxonomy?: {
-    activity?: any[];
-    where?: string[];
-  };
+  distance?: number;
+  distance_comp?: number;
   duration?: {
     hiking?: {
       forward?: number;
       backward?: number;
     };
   };
+  duration_backward?: number;
+  duration_forward?: number;
+  ele_from?: number;
+  ele_max?: number;
+  ele_min?: number;
+  ele_to?: number;
+  excerpt?: ILocaleString;
+  feature_image?: IWmImage;
+  geojson_url?: string;
+  gpx_url?: string;
+  // allow to work with custom properties when needed
+  id: number;
+  image?: IWmImage;
+  image_gallery?: IWmImage[];
+  import_method?: string;
+  kml_url?: string;
+  mbtiles?: string[];
+  name?: ILocaleString;
   related_pois?: IGeojsonFeature[];
   related_url?: {[label: string]: string};
+  source?: string;
+  source_id?: string;
+  taxonomy?: {
+    activity?: any[];
+    where?: string[];
+  };
+  updated_at?: Date;
+  user_id?: number;
+
+  [_: string]: any;
 }
 
 /**
  * Define a feature
  */
 export interface IGeojsonFeature {
-  type: 'Feature';
-  properties: IGeojsonProperties;
   geometry: IGeojsonGeometry;
+  properties: IGeojsonProperties;
+  type: 'Feature';
 }
 
 export interface IGeojsonFeatureDownloaded extends IGeojsonFeature {
@@ -83,10 +84,9 @@ export interface IGeojsonFeatureDownloaded extends IGeojsonFeature {
 }
 
 export interface IWmImage {
-  id: number;
-  url: string;
-  caption: string;
   api_url: string;
+  caption: string;
+  id: number;
   sizes: {
     '108x148': string;
     '108x137': string;
@@ -99,29 +99,30 @@ export interface IWmImage {
     '400x200': string;
     '1440x500': string;
   };
+  url: string;
 }
 
 export interface IGeojsonGeneric {
-  type: string;
   geometry: IGeojsonGeometry;
   properties: any;
+  type: string;
 }
 export interface IGeojsonCluster extends IGeojsonGeneric {
-  type: 'Feature';
   properties: {
     ids: number[]; // Id di Ec Track che fanno parte del cluster
     images: string[]; // Massimo 3 url di immagini ottimizzate
     bbox: number[]; // Extent di tutte le ec track assieme
   };
+  type: 'Feature';
 }
 
 export interface IGeojsonPoi extends IGeojsonGeneric {
-  type: 'Point';
+  isSmall?: boolean;
   properties: {
     id: number; // Id del poi
     image: string; // url image
   };
-  isSmall?: boolean;
+  type: 'Point';
 }
 
 export interface IGeojsonPoiDetailed extends IGeojsonPoi {
@@ -142,14 +143,15 @@ export interface IGeojsonClusterApiResponse {
 }
 
 export interface WhereTaxonomy {
-  id: 9;
-  created_at: Date;
-  updated_at: Date;
-  name: ILocaleString;
-  import_method: string;
-  source_id: number;
   admin_level: number;
+  created_at: Date;
   description: string;
+  id: 9;
+  import_method: string;
+  name: ILocaleString;
+  source_id: number;
+  updated_at: Date;
+
   // excerpt: null,
   // source: null,
   // user_id: null,

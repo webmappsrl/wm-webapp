@@ -108,6 +108,10 @@
           [description]="description| WebmappTranslate"
         ></webmapp-track-description>
       </ng-container>
+      <ng-container *ngIf="properties?.audio">
+        <div class="webmapp-title">Descrizione Audio</div>
+        <webmapp-track-audio [audio]="properties?.audio"></webmapp-track-audio>
+      </ng-container>
       <webmapp-gallery *ngIf="properties?.image_gallery as imageGallery" [gallery]="imageGallery">
       </webmapp-gallery>
       <ng-container *ngIf="properties.related_url as relatedUrl">

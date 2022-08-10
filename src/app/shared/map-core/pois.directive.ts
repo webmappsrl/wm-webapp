@@ -110,6 +110,7 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
     if (this.map != null && this.pois != null) {
       if (this.filters.length > 0) {
         this._poisClusterLayer.getSource().clear();
+        (this._poisClusterLayer.getSource() as any).getSource().clear();
         const selectedFeatures = this.pois.features.filter(
           p => this._intersection(p.properties.taxonomyIdentifiers, this.filters).length > 0,
         );
@@ -263,7 +264,7 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
   }
 
   private _getIcnFromTaxonomies(taxonomyIdentifiers: string[]): string {
-    const excludedIcn = ['poi_type_poi', 'theme_ucvs'];
+    const excludedIcn = ['theme_ucvs'];
     const res = taxonomyIdentifiers.filter(
       p => excludedIcn.indexOf(p) === -1 && p.indexOf('poi_type') > -1,
     );

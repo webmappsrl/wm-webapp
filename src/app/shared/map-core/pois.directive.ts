@@ -263,7 +263,7 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
   }
 
   private _getIcnFromTaxonomies(taxonomyIdentifiers: string[]): string {
-    const excludedIcn = ['theme_ucvs'];
+    const excludedIcn = ['poi_type_poi', 'theme_ucvs'];
     const res = taxonomyIdentifiers.filter(
       p => excludedIcn.indexOf(p) === -1 && p.indexOf('poi_type') > -1,
     );

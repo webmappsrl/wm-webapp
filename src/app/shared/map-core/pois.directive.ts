@@ -20,7 +20,9 @@ import VectorLayer from 'ol/layer/Vector';
 import {WmMaBaseDirective} from './base.directive';
 import {buffer} from 'ol/extent';
 import {fromLonLat} from 'ol/proj';
-
+import Select from 'ol/interaction/Select';
+import {altKeyOnly, click, pointerMove, singleClick} from 'ol/events/condition';
+import {stopPropagation} from 'ol/events/Event';
 @Directive({
   selector: '[wmMapPois]',
 })
@@ -75,18 +77,31 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
       changes.map.currentValue != null &&
       changes.map.previousValue == null
     ) {
+      this.map.on('select', event => {
+        console.log('asd');
+      });
       this.map.on('click', event => {
         try {
-          const poiFeature = this._getNearestFeatureOfCluster(this._poisClusterLayer, event);
-          if (poiFeature) {
-            console.log('click');
-            this.map.getInteractions().forEach(i => i.setActive(false));
-            const currentID = +poiFeature.getId() || -1;
-            this.poiClick.emit(currentID);
-            setTimeout(() => {
-              this.map.getInteractions().forEach(i => i.setActive(true));
-            }, 1200);
+          if (this._isCluster(this._poisClusterLayer, event)) {
+            this._deactivateInteractions();
+            const geometry = new Point([event.coordinate[0], event.coordinate[1]]);
+            this._fitView(geometry as any, {
+              maxZoom: this.map.getView().getZoom() + 1,
+              duration: 500,
+            });
+            console.log(event);
+            stopPropagation(event);
+          } else {
+            const poiFeature = this._getNearestFeatureOfCluster(this._poisClusterLayer, event);
+            if (poiFeature) {
+              this._deactivateInteractions();
+              const currentID = +poiFeature.getId() || -1;
+              this.poiClick.emit(currentID);
+            }
           }
+          setTimeout(() => {
+            this._activateInteractions();
+          }, 1200);
         } catch (e) {
           console.log(e);
         }
@@ -103,6 +118,10 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
         this._addPoisFeature(this.pois.features);
       }
     }
+  }
+
+  private _activateInteractions(): void {
+    this.map.getInteractions().forEach(i => i.setActive(true));
   }
 
   private _addPoisFeature(poiCollection: IGeojsonFeature[]) {
@@ -132,6 +151,7 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
         });
         iconFeature.setStyle(iconStyle);
         iconFeature.setId(poi.properties.id);
+
         featureSource.addFeature(iconFeature);
         featureSource.changed();
         clusterSource.changed();
@@ -201,6 +221,7 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
         updateWhileInteracting: true,
         zIndex,
       });
+
       this.map.addLayer(clusterLayer);
 
       const styleCache = {};
@@ -221,6 +242,10 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
       this.map.addLayer(layer);
     }
     return layer;
+  }
+
+  private _deactivateInteractions(): void {
+    this.map.getInteractions().forEach(i => i.setActive(false));
   }
 
   private _distance(c1: Coordinate, c2: Coordinate) {
@@ -288,10 +313,59 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
     return nearestFeature;
   }
 
+  private _getNearestFeatureOfLayer(
+    layer: VectorLayer,
+    evt: MapBrowserEvent<UIEvent>,
+  ): Feature<Geometry> {
+    const precision = this.map.getView().getResolution() * DEF_MAP_CLUSTER_CLICK_TOLERANCE;
+    let nearestFeature = null;
+    const features: Feature<Geometry>[] = [];
+    const layerSource = layer.getSource() as any;
+
+    if (layer && layerSource) {
+      layerSource.forEachFeatureInExtent(
+        buffer(
+          [evt.coordinate[0], evt.coordinate[1], evt.coordinate[0], evt.coordinate[1]],
+          precision,
+        ),
+        feature => {
+          features.push(feature);
+        },
+      );
+    }
+
+    if (features.length) {
+      nearestFeature = this._getNearest(features, evt.coordinate);
+    }
+
+    return nearestFeature;
+  }
+
   private _intersection(a: any[], b: any[]): any[] {
     var setA = new Set(a);
     var setB = new Set(b);
     var intersection = new Set([...setA].filter(x => setB.has(x)));
     return Array.from(intersection);
+  }
+
+  private _isCluster(layer: VectorLayer, evt: MapBrowserEvent<UIEvent>): boolean {
+    const precision = this.map.getView().getResolution() * DEF_MAP_CLUSTER_CLICK_TOLERANCE;
+    const features: Feature<Geometry>[] = [];
+    const clusterSource = layer.getSource() as any;
+    const layerSource = clusterSource.getSource();
+
+    if (layer && layerSource) {
+      layerSource.forEachFeatureInExtent(
+        buffer(
+          [evt.coordinate[0], evt.coordinate[1], evt.coordinate[0], evt.coordinate[1]],
+          precision,
+        ),
+        feature => {
+          features.push(feature);
+        },
+      );
+    }
+
+    return features.length > 1;
   }
 }

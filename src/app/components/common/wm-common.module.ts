@@ -10,6 +10,7 @@ import {PoiBoxComponent} from './poi-box/poi-box.component';
 import {RelatedUrlsComponent} from './related-urls.component';
 import {SearchBoxComponent} from './search-box/search-box.component';
 import {TitleComponent} from './title/title.component';
+import {TrackAudioComponent} from './track-audio/track-audio.component';
 import {TracksBoxComponent} from './tracks-box/tracks-box.component';
 
 const components = [
@@ -22,6 +23,7 @@ const components = [
   PoiBoxComponent,
   BoxComponent,
   ConvertToItemTracksPipe,
+  TrackAudioComponent,
 ];
 @NgModule({
   declarations: components,

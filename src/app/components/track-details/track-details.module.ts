@@ -7,7 +7,7 @@ import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
 import {NgModule} from '@angular/core';
 import {PipeModule} from 'src/app/pipes/pipe.module';
 import {SwiperModule} from 'swiper/angular';
-import {TrackAudioComponent} from './track-audio/track-audio.component';
+import {TrackAudioComponent} from '../common/track-audio/track-audio.component';
 import {TrackDescriptionComponent} from './track-description/track-description.component';
 import {TrackDetailsComponent} from './track-details.component';
 import {TrackDownloadUrlsComponent} from './track-download-urls/track-download-urls.component';
@@ -28,7 +28,6 @@ import {WMCommonModule} from '../common/wm-common.module';
     GalleryComponent,
     ModalGalleryComponent,
     TrackRelatedUrlsComponent,
-    TrackAudioComponent,
   ],
   imports: [CommonModule, WMCommonModule, FormsModule, IonicModule, PipeModule, SwiperModule],
   exports: [TrackDetailsComponent],

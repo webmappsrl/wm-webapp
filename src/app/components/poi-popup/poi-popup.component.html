@@ -75,6 +75,12 @@
     class="webmapp-poi-popup-text"
     [innerHTML]="poiProperties.description|WebmappTranslate"
   ></div>
+
+  <ng-container *ngIf="poiProperties?.audio">
+    <div class="webmapp-title">Descrizione Audio</div>
+    <webmapp-track-audio [audio]="poiProperties?.audio"></webmapp-track-audio>
+  </ng-container>
+
   <button class="webmapp-poi-popup-close" (click)="closeEVT.emit()">
     <i class="icn-outline-close"></i>
   </button>

@@ -20,6 +20,9 @@ webmapp-poi-popup {
   justify-content: flex-start;
   align-content: stretch;
   align-items: stretch;
+  ion-slide {
+    background-color: white;
+  }
   > * {
     padding: 10px;
   }
@@ -27,6 +30,7 @@ webmapp-poi-popup {
     width: -webkit-fill-available !important;
     max-height: 50%;
     position: relative;
+    background-color: white !important;
 
     .left {
       position: absolute;
@@ -50,6 +54,8 @@ webmapp-poi-popup {
     align-self: auto;
     cursor: pointer;
     flex-basis: 225px;
+    height: 250px !important;
+    background-color: white;
   }
 
   .webmapp-poi-popup-header {

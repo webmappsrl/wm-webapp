@@ -21,7 +21,6 @@ import {
 
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {GeohubService} from 'src/app/services/geohub.service';
-import {IGeojsonFeature} from 'src/app/types/model';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {Store} from '@ngrx/store';
 import {confMAP} from 'src/app/store/conf/conf.selector';
@@ -74,6 +73,7 @@ export class MapPage {
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
 
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
 
   constructor(
     private _route: ActivatedRoute,
@@ -183,7 +183,14 @@ export class MapPage {
     }
     this._cdr.detectChanges();
   }
-
+  reloadCustomTrack(): void {
+    console.log(
+      'reload',
+      !this.reloadCustomTracks$.value,
+      !this.reloadCustomTracks$.value ?? false,
+    );
+    this.reloadCustomTracks$.next(!this.reloadCustomTracks$.value ?? false);
+  }
   setCurrentRelatedPoi(id) {
     if (id !== this.currentRelatedPoiID$.value) {
       this.currentRelatedPoiID$.next(id);
@@ -229,13 +236,14 @@ export class MapPage {
   }
 
   saveCurrentCustomTrack(track: any) {
-    this.currentCustomTrack$.next(track);
+    console.log(track);
+    const clonedTrack = JSON.parse(JSON.stringify(track));
+    this.currentCustomTrack$.next(clonedTrack);
   }
 
   toggleDrawTrackEnabled(): void {
-    console.log('ooooo');
     const currentValue = this.drawTrackEnable$.value;
-    console.log('toggle', !currentValue);
+    this.currentCustomTrack$.next(null);
     this.drawTrackEnable$.next(!currentValue);
   }
 }

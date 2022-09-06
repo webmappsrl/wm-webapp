@@ -1,18 +1,16 @@
-import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {DrawTrackModule} from 'src/app/components/draw-track/draw-track.module';
 import {FormsModule} from '@angular/forms';
-
-import {IonicModule} from '@ionic/angular';
-
-import {MapPageRoutingModule} from './map-routing.module';
-
-import {MapPage} from './map.page';
-import {MapModule} from 'src/app/components/map/map.module';
-import {PipeModule} from 'src/app/pipes/pipe.module';
-import {TrackDetailsModule} from 'src/app/components/track-details/track-details.module';
 import {HomeModule} from 'src/app/components/home/home.module';
+import {IonicModule} from '@ionic/angular';
+import {MapModule} from 'src/app/components/map/map.module';
+import {MapPage} from './map.page';
+import {MapPageRoutingModule} from './map-routing.module';
+import {NgModule} from '@angular/core';
+import {PipeModule} from 'src/app/pipes/pipe.module';
 import {PoiPopupModule} from 'src/app/components/poi-popup/poi-popup.module';
 import {SharedModule} from 'src/app/shared/shared.module';
+import {TrackDetailsModule} from 'src/app/components/track-details/track-details.module';
 
 @NgModule({
   imports: [
@@ -26,6 +24,7 @@ import {SharedModule} from 'src/app/shared/shared.module';
     HomeModule,
     PoiPopupModule,
     SharedModule,
+    DrawTrackModule,
   ],
   declarations: [MapPage],
 })

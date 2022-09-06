@@ -1,15 +1,5 @@
 import {BehaviorSubject, Observable, Subject, of, timer} from 'rxjs';
-import {
-  ChangeDetectorRef,
-  Directive,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  Renderer2,
-  SimpleChanges,
-} from '@angular/core';
+import {Directive, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {skip, switchMap, takeWhile} from 'rxjs/operators';
 import {toLonLat, transform} from 'ol/proj';
 
@@ -51,17 +41,20 @@ export class WmMapDrawTrackDirective extends WmMaBaseDirective implements OnChan
   private _points: Coordinate[] = [];
 
   @Input() conf: IMAP;
+  @Input() customTracks: any[];
+
   @Input() trackElevationChartElements: ITrackElevationChartHoverElements;
   @Output() currentCustomTrack: EventEmitter<any> = new EventEmitter<any>();
-
+  @Input() set reloadCustomTracks(val) {
+    console.log('draw-track-reload');
+    if (val != null) {
+      this._clear();
+    }
+  }
   isStable$: Observable<boolean>;
   reset$ = new Subject();
 
-  constructor(
-    private el: ElementRef,
-    private _renderer: Renderer2,
-    private _cdr: ChangeDetectorRef,
-  ) {
+  constructor() {
     super();
     this.isStable$ = this.reset$.pipe(
       switchMap(() => timer(500, 500)),
@@ -81,20 +74,19 @@ export class WmMapDrawTrackDirective extends WmMaBaseDirective implements OnChan
         },
         properties: {
           id: 'wm-current_record_track',
-          name: 'prova',
-          locale: 'it',
-          taxonomy: {},
-          image: '',
+          name: '',
           color: 'rgba(226, 249, 0, 0.6)',
         },
       };
-      if (!this._graphHopperRoutingObj)
+      if (!this._graphHopperRoutingObj) {
         this._graphHopperRoutingObj = new GraphHopperRouting({
           vehicle: 'foot',
           key: GRAPH_HOPPER_API_KEY,
           elevation: true,
           instructions: false,
         });
+        this._graphHopperRoutingObj.defaults.profile = 'hike';
+      }
       this.map.on('singleclick', (evt: MapBrowserEvent<UIEvent>) => {
         console.log('click');
         if (this._enabled$.value) {
@@ -302,7 +294,6 @@ export class WmMapDrawTrackDirective extends WmMaBaseDirective implements OnChan
         updateWhileInteracting: true,
         zIndex: 0,
       });
-
       this.map.addLayer(this._customTrackLayer);
 
       this._customPoiLayer = new VectorLayer({

@@ -1,1 +1,64 @@
-<p>draw-track works!</p>
+<ng-container *ngIf="track$|async as track;else customTrackList">
+  <ion-card class="current-custom-track">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-input [(ngModel)]="track.properties.name"></ion-input>
+      </ion-card-title>
+    </ion-card-header>
+    <ion-item>
+      <ion-label>nome del percorso</ion-label>
+      <ion-input [(ngModel)]="track.properties.name"></ion-input>
+    </ion-item>
+    <webmapp-track-elevation-chart [feature]="track"></webmapp-track-elevation-chart>
+    <webmapp-track-technical-data [feature]="track" id="webmapp-track-details-technical-data">
+    </webmapp-track-technical-data>
+    <webmapp-track-download-urls [feature]="track" id="webmapp-track-details-download-urls">
+    </webmapp-track-download-urls>
+    <ion-button expand="full" (click)="saveCustomTrack()">salva</ion-button>
+  </ion-card>
+</ng-container>
+<ng-template #customTrackList>
+  <ng-container *ngIf="savedTracks$|async as savedTracks">
+    <ion-list *ngIf="savedTracks.length > 0;else savedTracksEmpy">
+      <ion-item>
+        <ion-label>Lista percorsi personali</ion-label>
+      </ion-item>
+      <ion-item *ngFor="let savedTrack of savedTracks;let idx =index">
+        <ion-card (click)="centerCustomTrack(savedTrack)">
+          <ion-card-header>
+            <ion-card-title>{{savedTrack.properties.name}}</ion-card-title>
+          </ion-card-header>
+
+          <ion-card-content>
+            <ion-item>
+              <webmapp-track-elevation-chart [feature]="savedTrack"></webmapp-track-elevation-chart>
+            </ion-item>
+            <ion-item>
+              <webmapp-track-technical-data
+                [feature]="savedTrack"
+                id="webmapp-track-details-technical-data"
+              >
+              </webmapp-track-technical-data>
+            </ion-item>
+          </ion-card-content>
+          <ion-item>
+            <ion-button (click)="deleteCustomTrack(idx)">elimina</ion-button>
+          </ion-item>
+        </ion-card>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+  <ng-template #savedTracksEmpy>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>non hai percorsi</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-label
+          >al momento non hai nessun percorso salvato.<br />
+          Clicca sulla mappa per avviare la creazione di un percorso</ion-label
+        >
+      </ion-card-content>
+    </ion-card>
+  </ng-template>
+</ng-template>

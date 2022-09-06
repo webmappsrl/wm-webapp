@@ -1,3 +1,4 @@
+import {BehaviorSubject, Observable} from 'rxjs';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -11,7 +12,6 @@ import {Control, defaults as defaultControls} from 'ol/control';
 import {DEF_MAP_MAX_ZOOM, DEF_MAP_MIN_ZOOM, DEF_XYZ_URL, initExtent} from '../constants';
 import View, {FitOptions} from 'ol/View';
 
-import {BehaviorSubject} from 'rxjs';
 import Collection from 'ol/Collection';
 import {Extent} from 'ol/extent';
 import {Interaction} from 'ol/interaction';
@@ -39,7 +39,7 @@ export class WmMapComponent implements OnChanges {
   map: Map;
   map$: BehaviorSubject<Map> = new BehaviorSubject<Map | null>(null);
   tileLayers: TileLayer[] = [];
-
+  customTrackEnabled$: Observable<boolean>;
   constructor(private _mapSvc: MapService, private _cdr: ChangeDetectorRef) {}
 
   @Input() set reset(_) {

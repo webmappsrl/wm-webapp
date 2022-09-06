@@ -52,6 +52,8 @@ export class MapPage {
       }
     }),
   );
+  drawTrackEnable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
   disableLayers$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   currentLayer$ = this._store.select(UICurrentLAyer);
   currentFilters$ = this._store.select(UICurrentFilters);
@@ -70,6 +72,8 @@ export class MapPage {
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
+
+  currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
   constructor(
     private _route: ActivatedRoute,
@@ -157,8 +161,11 @@ export class MapPage {
     const nextIndex = (indexOfCurrentID + 1) % poiIDs.length;
     this.setCurrentRelatedPoi(poiIDs[nextIndex]);
   }
-
+  setCustomTrackEnabled(): void {
+    console.log('ffff');
+  }
   prev(): void {
+    console.log('prreee');
     const currentRelatedPoiID = this.currentRelatedPoiID$.value;
     const poiIDs = this.poiIDs$.value;
     const indexOfCurrentID = poiIDs.indexOf(currentRelatedPoiID);
@@ -219,5 +226,16 @@ export class MapPage {
       queryParams: {track: trackid ? trackid : null},
       queryParamsHandling: 'merge',
     });
+  }
+
+  saveCurrentCustomTrack(track: any) {
+    this.currentCustomTrack$.next(track);
+  }
+
+  toggleDrawTrackEnabled(): void {
+    console.log('ooooo');
+    const currentValue = this.drawTrackEnable$.value;
+    console.log('toggle', !currentValue);
+    this.drawTrackEnable$.next(!currentValue);
   }
 }

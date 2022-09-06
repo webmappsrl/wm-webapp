@@ -6,6 +6,7 @@ const feature = createFeatureSelector<{
   currentLayer?: ILAYER;
   currentPoiId?: number;
   currentFilters?: string[];
+  drawTrack: boolean;
 } | null>(featureKey);
 
 export const UICurrentLAyer = createSelector(feature, state =>
@@ -16,4 +17,7 @@ export const UICurrentPoiId = createSelector(feature, state =>
 );
 export const UICurrentFilters = createSelector(feature, state =>
   state && state.currentFilters ? state.currentFilters : [],
+);
+export const enabledDrawTrack = createSelector(feature, state =>
+  state && state.drawTrack ? state.drawTrack : false,
 );

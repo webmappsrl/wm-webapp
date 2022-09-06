@@ -4,7 +4,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  EventEmitter,
   ViewEncapsulation,
 } from '@angular/core';
 import {confHOME, confPOISFilter} from 'src/app/store/conf/conf.selector';

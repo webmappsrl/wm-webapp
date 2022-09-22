@@ -292,12 +292,12 @@ export class WmMapDrawTrackDirective extends WmMaBaseDirective implements OnChan
         },
         updateWhileAnimating: true,
         updateWhileInteracting: true,
-        zIndex: 0,
+        zIndex: 1000,
       });
       this.map.addLayer(this._customTrackLayer);
 
       this._customPoiLayer = new VectorLayer({
-        zIndex: 400,
+        zIndex: 1100,
         source: this._customPoiSource,
       });
       this.map.addLayer(this._customPoiLayer);

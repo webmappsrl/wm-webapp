@@ -1,4 +1,5 @@
 <div class="root">
+  <ng-content></ng-content>
   <webmapp-search
     *ngIf="showSearch &&(currentLayer$|async) === null"
     [initSearch]="title"

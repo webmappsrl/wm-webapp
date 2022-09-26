@@ -30,6 +30,11 @@ import {WMCommonModule} from '../common/wm-common.module';
     TrackRelatedUrlsComponent,
   ],
   imports: [CommonModule, WMCommonModule, FormsModule, IonicModule, PipeModule, SwiperModule],
-  exports: [TrackDetailsComponent],
+  exports: [
+    TrackDetailsComponent,
+    TrackElevationChartComponent,
+    TrackTechnicalDataComponent,
+    TrackDownloadUrlsComponent,
+  ],
 })
 export class TrackDetailsModule {}

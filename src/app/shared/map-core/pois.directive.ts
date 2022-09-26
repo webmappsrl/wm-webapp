@@ -292,8 +292,8 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
     const precision = this.map.getView().getResolution() * DEF_MAP_CLUSTER_CLICK_TOLERANCE;
     let nearestFeature = null;
     const features: Feature<Geometry>[] = [];
-    const clusterSource = layer.getSource() as any;
-    const layerSource = clusterSource.getSource();
+    const clusterSource = layer?.getSource() ?? (null as any);
+    const layerSource = clusterSource?.getSource();
 
     if (layer && layerSource) {
       layerSource.forEachFeatureInExtent(
@@ -352,8 +352,8 @@ export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
   private _isCluster(layer: VectorLayer, evt: MapBrowserEvent<UIEvent>): boolean {
     const precision = this.map.getView().getResolution() * DEF_MAP_CLUSTER_CLICK_TOLERANCE;
     const features: Feature<Geometry>[] = [];
-    const clusterSource = layer.getSource() as any;
-    const layerSource = clusterSource.getSource();
+    const clusterSource = layer?.getSource() ?? (null as any);
+    const layerSource = clusterSource?.getSource();
 
     if (layer && layerSource) {
       layerSource.forEachFeatureInExtent(

@@ -54,11 +54,27 @@
         (dismiss)="toggleDetails()"
         class="webmapp-track-details"
       ></webmapp-track-details>
+
       <webmapp-home
+        *ngIf="(drawTrackEnable$|async)===false;else customTrack"
         [hidden]="trackid > 0"
         class="webmapp-home"
         (searchId)="selectTrack($event)"
-      ></webmapp-home>
+      >
+        <ion-button expand="full" (click)="toggleDrawTrackEnabled()">
+          {{'i miei percorsi'|WebmappTranslate}}
+        </ion-button>
+      </webmapp-home>
+      <ng-template #customTrack>
+        <ion-button expand="full" (click)="toggleDrawTrackEnabled()">
+          {{'esci'|WebmappTranslate}}
+        </ion-button>
+        <wm-draw-track
+          [map]="wmap.map$|async"
+          [track]="currentCustomTrack$|async"
+          (reloadEvt)="reloadCustomTrack()"
+        ></wm-draw-track>
+      </ng-template>
     </div>
     <webmapp-poi-popup
       *ngIf="currentPoi$|async as currentPoi"
@@ -74,6 +90,8 @@
       wmMapTrack
       wmMapPois
       wmMapRelatedPois
+      wmMapCustomTracks
+      [wmMapDrawTrack]="drawTrackEnable$|async"
       [track]="track$|async"
       [layer]="currentLayer$|async"
       [disableLayers]="(currentFilters$|async).length > 0"
@@ -83,10 +101,13 @@
       [pois]="pois$|async"
       [padding]="mapPadding$|async"
       [filters]="currentFilters$|async"
+      [reloadCustomTracks]="reloadCustomTracks$|async"
       [trackElevationChartElements]="trackElevationChartHoverElements$|async"
       (trackSelectedFromLayerEVT)="toggleDetails($event)"
       (related-poi-click)="setCurrentRelatedPoi($event)"
       (poi-click)="setCurrentPoi($event)"
-    ></wm-map>
+      (currentCustomTrack)="saveCurrentCustomTrack($event)"
+    >
+    </wm-map>
   </ng-template>
 </ng-container>

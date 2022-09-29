@@ -11,6 +11,9 @@ const initialConfState: ICONF = {
     name: 'Webmapp',
     geohubId: 3,
   },
+  WEBAPP: {
+    draw_track_show: false,
+  },
   OPTIONS: {
     baseUrl: '-',
     startUrl: '/main/map',
@@ -94,6 +97,7 @@ export const confReducer = createReducer(
       ...conf,
       ...{
         APP: {...state.APP, ...conf.APP},
+        WEBAPP: {...state.WEBAPP, ...conf.WEBAPP},
         THEME: {...state.THEME, ...conf.THEME},
         OPTIONS: {...state.OPTIONS, ...conf.OPTIONS},
         MAP: {...state.MAP, ...conf.MAP},

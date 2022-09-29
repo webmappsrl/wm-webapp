@@ -41,6 +41,9 @@ interface IAPP {
   id?: string;
   name: string;
 }
+interface IWEBAPP {
+  draw_track_show: boolean;
+}
 
 type IBOX = {
   box_type: 'title' | 'layer' | 'base' | 'external_url' | 'slug';
@@ -235,4 +238,5 @@ interface ICONF {
   OPTIONS: IOPTIONS;
   PROJECT?: IPROJECT;
   THEME?: ITHEME;
+  WEBAPP: IWEBAPP;
 }

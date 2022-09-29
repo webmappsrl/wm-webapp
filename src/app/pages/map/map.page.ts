@@ -18,12 +18,12 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators';
+import {confMAP, confShowDrawTrack} from 'src/app/store/conf/conf.selector';
 
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {GeohubService} from 'src/app/services/geohub.service';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {Store} from '@ngrx/store';
-import {confMAP} from 'src/app/store/conf/conf.selector';
 import {loadPois} from 'src/app/store/pois/pois.actions';
 import {pois} from 'src/app/store/pois/pois.selector';
 
@@ -57,6 +57,7 @@ export class MapPage {
   currentLayer$ = this._store.select(UICurrentLAyer);
   currentFilters$ = this._store.select(UICurrentFilters);
   currentPoiIDFromHome$ = this._store.select(UICurrentPoiId);
+  enableDrawTrack$ = this._store.select(confShowDrawTrack);
   currentPoi$: Observable<any>;
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiIDToMap$: Observable<number | null>;

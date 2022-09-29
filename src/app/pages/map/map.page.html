@@ -61,7 +61,7 @@
         class="webmapp-home"
         (searchId)="selectTrack($event)"
       >
-        <ion-button expand="full" (click)="toggleDrawTrackEnabled()">
+        <ion-button expand="full" *ngIf="enableDrawTrack$|async" (click)="toggleDrawTrackEnabled()">
           {{'i miei percorsi'|WebmappTranslate}}
         </ion-button>
       </webmapp-home>

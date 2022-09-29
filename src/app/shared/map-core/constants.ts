@@ -9,3 +9,5 @@ export const DEF_XYZ_URL: string = 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png
 export const initExtent: Extent = [-180, -85, 180, 85];
 export const ICN_PATH: string = 'assets/icons/pois';
 export const CLUSTER_DISTANCE: number = 30;
+export const scaleUnits = 'metric';
+export const scaleMinWidth = 50;

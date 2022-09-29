@@ -3,13 +3,21 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   Input,
   OnChanges,
   SimpleChanges,
+  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {Control, defaults as defaultControls} from 'ol/control';
-import {DEF_MAP_MAX_ZOOM, DEF_MAP_MIN_ZOOM, DEF_XYZ_URL, initExtent} from '../constants';
+import {
+  DEF_MAP_MAX_ZOOM,
+  DEF_MAP_MIN_ZOOM,
+  DEF_XYZ_URL,
+  initExtent,
+  scaleMinWidth,
+  scaleUnits,
+} from '../constants';
 import View, {FitOptions} from 'ol/View';
 
 import Collection from 'ol/Collection';
@@ -17,9 +25,11 @@ import {Extent} from 'ol/extent';
 import {Interaction} from 'ol/interaction';
 import Map from 'ol/Map';
 import {MapService} from 'src/app/services/map.service';
+import ScaleLineControl from 'ol/control/ScaleLine';
 import SimpleGeometry from 'ol/geom/SimpleGeometry';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
+import {defaults as defaultControls} from 'ol/control';
 import {defaults as defaultInteractions} from 'ol/interaction.js';
 
 @Component({
@@ -35,11 +45,13 @@ export class WmMapComponent implements OnChanges {
 
   @Input() conf: IMAP;
   @Input() padding: number[];
+  @ViewChild('scaleLineContainer') scaleLineContainer: ElementRef;
 
+  customTrackEnabled$: Observable<boolean>;
   map: Map;
   map$: BehaviorSubject<Map> = new BehaviorSubject<Map | null>(null);
   tileLayers: TileLayer[] = [];
-  customTrackEnabled$: Observable<boolean>;
+
   constructor(private _mapSvc: MapService, private _cdr: ChangeDetectorRef) {}
 
   @Input() set reset(_) {
@@ -115,10 +127,15 @@ export class WmMapComponent implements OnChanges {
     this.map = new Map({
       view: this._view,
       controls: defaultControls({
-        attribution: false,
         rotate: false,
-        zoom: false,
-      }),
+        attribution: false,
+      }).extend([
+        new ScaleLineControl({
+          units: scaleUnits,
+          minWidth: scaleMinWidth,
+          target: this.scaleLineContainer.nativeElement,
+        }),
+      ]),
       interactions: this._initDefaultInteractions(),
       layers: this.tileLayers,
       moveTolerance: 3,
@@ -144,7 +161,6 @@ export class WmMapComponent implements OnChanges {
 
   private _reset(): void {
     if (this._view != null) {
-      console.log('reset');
       this._view.fit(this._centerExtent);
     }
   }

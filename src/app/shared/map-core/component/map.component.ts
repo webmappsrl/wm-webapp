@@ -36,7 +36,6 @@ import {defaults as defaultInteractions} from 'ol/interaction.js';
   selector: 'wm-map',
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
 export class WmMapComponent implements OnChanges {

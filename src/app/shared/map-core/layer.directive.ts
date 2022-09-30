@@ -26,10 +26,10 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
   private _currentLayer: ILAYER;
   private _dataLayers: Array<VectorTileLayer>;
   private _defaultFeatureColor = DEF_LINE_COLOR;
+  private _disableLayers = false;
   private _mapIsInit = false;
   private _selectInteraction: SelectInteraction;
   private _styleJson: any;
-  private _disableLayers = false;
 
   @Input() conf: IMAP;
   @Input() map: Map;
@@ -39,18 +39,20 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
     super();
   }
 
-  @Input() set layer(l: ILAYER) {
-    this._currentLayer = l;
-    if (l != null && l.bbox != null) {
-      this.fitView(l.bbox);
-    }
-  }
   @Input() set disableLayers(disable: boolean) {
     this._disableLayers = disable;
     if (this._dataLayers != null) {
       this._dataLayers[this._dataLayers.length - 1].setVisible(!this._disableLayers);
     }
   }
+
+  @Input() set layer(l: ILAYER) {
+    this._currentLayer = l;
+    if (l != null && l.bbox != null) {
+      this.fitView(l.bbox);
+    }
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (this.map != null && this.conf != null && this._mapIsInit == false) {
       this._initLayer(this.conf);
@@ -59,6 +61,14 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
     if (this._dataLayers != null) {
       this._updateMap();
     }
+  }
+
+  private _getColorFromLayer(id: number): string {
+    const layers = this.conf.layers || [];
+    const layer = layers.filter(l => +l.id === +id);
+    return layer[0] && layer[0].style && layer[0].style.color
+      ? layer[0].style.color
+      : this._defaultFeatureColor;
   }
 
   private _handlingStrokeStyleWidth(strokeStyle: StrokeStyle, conf: IMAP): void {
@@ -102,13 +112,22 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
     if (!layerJson.tiles) {
       return;
     }
-
+    console.log(layerJson.tiles);
     const layer = new VectorTileLayer({
-      declutter: true,
+      declutter: false,
+      renderBuffer: 300,
+      renderMode: 'image',
+      preload: 10,
       source: new VectorTileSource({
         format: new MVT(),
         urls: layerJson.tiles,
+        overlaps: false,
       }),
+
+      minZoom: 1,
+      zIndex: TRACK_ZINDEX,
+      updateWhileAnimating: false,
+      updateWhileInteracting: false,
       style: (feature: FeatureLike) => {
         const properties = feature.getProperties();
         const layers: number[] = JSON.parse(properties.layers);
@@ -133,20 +152,8 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
         });
         return style;
       },
-      minZoom: 1,
-      zIndex: TRACK_ZINDEX,
-      updateWhileAnimating: true,
-      updateWhileInteracting: true,
     });
     return layer;
-  }
-
-  private _getColorFromLayer(id: number): string {
-    const layers = this.conf.layers || [];
-    const layer = layers.filter(l => +l.id === +id);
-    return layer[0] && layer[0].style && layer[0].style.color
-      ? layer[0].style.color
-      : this._defaultFeatureColor;
   }
 
   /**

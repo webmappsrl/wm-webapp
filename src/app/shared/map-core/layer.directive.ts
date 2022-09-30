@@ -112,22 +112,24 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
     if (!layerJson.tiles) {
       return;
     }
-    console.log(layerJson.tiles);
     const layer = new VectorTileLayer({
       declutter: false,
-      renderBuffer: 300,
       renderMode: 'image',
-      preload: 10,
-      source: new VectorTileSource({
-        format: new MVT(),
-        urls: layerJson.tiles,
-        overlaps: false,
-      }),
-
+      useInterimTilesOnError: true,
+      renderBuffer: 1000,
+      minResolution: 0,
       minZoom: 1,
       zIndex: TRACK_ZINDEX,
       updateWhileAnimating: false,
       updateWhileInteracting: false,
+      source: new VectorTileSource({
+        cacheSize: 3000,
+        format: new MVT(),
+        urls: layerJson.tiles,
+        overlaps: false,
+        tileSize: 128,
+        transition: 1000,
+      }),
       style: (feature: FeatureLike) => {
         const properties = feature.getProperties();
         const layers: number[] = JSON.parse(properties.layers);

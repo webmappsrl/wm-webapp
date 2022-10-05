@@ -43,7 +43,6 @@ export class FilterComponent implements OnChanges {
     } else {
       this.currentFilters$.next([...this.currentFilters$.value, filter]);
     }
-    console.log(this.currentFilters$.value);
     this.selectedFilters.emit(this.currentFilters$.value);
   }
 
@@ -54,8 +53,6 @@ export class FilterComponent implements OnChanges {
   confirm() {
     this.modal.dismiss(this.currentFilters$.value, 'confirm');
   }
-
-  onWillDismiss(event: Event) {}
 
   reset(): void {
     this.currentFilters$.next([]);

@@ -10,6 +10,11 @@ ion-segment {
     --color-checked: var(--wm-color-primary);
   }
 }
+div {
+  svg {
+    height: 200%;
+  }
+}
 .chip-list {
   display: flex;
   flex-direction: row;

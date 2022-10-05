@@ -2,7 +2,7 @@
   <ion-icon name="funnel"></ion-icon>
   Filtri
 </ion-button>
-<ion-modal trigger="open-modal" (willDismiss)="onWillDismiss($event)">
+<ion-modal trigger="open-modal">
   <ng-template>
     <ion-header>
       <ion-toolbar>
@@ -34,7 +34,12 @@
           (click)="addFilter(item.identifier)"
           [color]="(currentFilters$|async).indexOf(item.identifier) >= 0? 'success': ''"
         >
-          <img [src]="item.identifier|getFilterIcn:(currentFilters$|async)" />
+          <ng-container *ngIf="item.icon != null;else imgT">
+            <div appBuildSvg style="height:55%" [svg]="item.icon"></div>
+          </ng-container>
+          <ng-template #imgT>
+            <img [src]="item.identifier|getFilterIcn:(currentFilters$|async)" />
+          </ng-template>
           <ion-label>{{item.name|WebmappTranslate}}</ion-label>
           <ion-icon
             [name]="(currentFilters$|async).indexOf(item.identifier) >= 0? 'eye': 'eye-off'"

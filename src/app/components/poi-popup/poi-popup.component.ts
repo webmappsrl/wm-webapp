@@ -5,13 +5,14 @@ import {
   EventEmitter,
   HostListener,
   Input,
-  OnInit,
   Output,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 
 import {IonSlides} from '@ionic/angular';
+import {Store} from '@ngrx/store';
+import {confShowEditingInline} from 'src/app/store/conf/conf.selector';
 
 @Component({
   selector: 'webmapp-poi-popup',
@@ -20,13 +21,14 @@ import {IonSlides} from '@ionic/angular';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class PoiPopupComponent implements OnInit {
+export class PoiPopupComponent {
   @Output() closeEVT: EventEmitter<void> = new EventEmitter<void>();
   @Output() nextEVT: EventEmitter<void> = new EventEmitter<void>();
   @Output() prevEVT: EventEmitter<void> = new EventEmitter<void>();
   @ViewChild('gallery') slider: IonSlides;
   isEnd$: Observable<boolean>;
   defaultPhotoPath = '/assets/icon/no-photo.svg';
+  enableEditingInline$ = this._store.select(confShowEditingInline);
   poiProperties: any = null;
   slideOptions = {
     slidesPerView: 1,
@@ -99,8 +101,7 @@ export class PoiPopupComponent implements OnInit {
       },
     },
   };
-  ngOnInit(): void {}
-
+  constructor(private _store: Store) {}
   toggleImage$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
 
   @Input('poi') set setPoi(poi: any) {
@@ -161,5 +162,13 @@ export class PoiPopupComponent implements OnInit {
   prev(): void {
     this.slider.slidePrev();
     this.toggleImage(null);
+  }
+
+  openGeohub(): void {
+    const id = this.poiProperties != null && this.poiProperties.id;
+    if (id != null) {
+      const url = `https://geohub.webmapp.it/resources/ec-pois/${id}/edit?viaResource&viaResourceId&viaRelationship`;
+      window.open(url, '_blank').focus();
+    }
   }
 }

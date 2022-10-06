@@ -43,6 +43,7 @@ interface IAPP {
 }
 interface IWEBAPP {
   draw_track_show: boolean;
+  editing_inline_show: boolean;
 }
 
 type IBOX = {
@@ -238,5 +239,5 @@ interface ICONF {
   OPTIONS: IOPTIONS;
   PROJECT?: IPROJECT;
   THEME?: ITHEME;
-  WEBAPP: IWEBAPP;
+  WEBAPP?: IWEBAPP;
 }

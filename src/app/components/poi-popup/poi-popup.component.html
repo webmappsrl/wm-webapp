@@ -80,7 +80,7 @@
     <div class="webmapp-title">Descrizione Audio</div>
     <webmapp-track-audio [audio]="poiProperties?.audio"></webmapp-track-audio>
   </ng-container>
-
+  <ion-button *ngIf="enableEditingInline$|async" (click)="openGeohub()"> edit geohub</ion-button>
   <button class="webmapp-poi-popup-close" (click)="closeEVT.emit()">
     <i class="icn-outline-close"></i>
   </button>

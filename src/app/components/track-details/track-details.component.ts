@@ -3,7 +3,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
   ViewChild,
   ViewEncapsulation,
@@ -14,6 +13,8 @@ import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-
 import {IGeojsonProperties} from 'src/app/types/model';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
+import {Store} from '@ngrx/store';
+import {confShowEditingInline} from 'src/app/store/conf/conf.selector';
 
 @Component({
   selector: 'webmapp-track-details',
@@ -22,42 +23,35 @@ import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class TrackDetailsComponent implements OnInit {
-  @ViewChild('content') content: IonContent;
+export class TrackDetailsComponent {
+  @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
+  @Output('trackElevationChartHover')
+  trackElevationChartHover: EventEmitter<ITrackElevationChartHoverElements> = new EventEmitter<ITrackElevationChartHoverElements>();
+  @ViewChild('content') content: IonContent;
 
-  @Input('track') set setTrack(track: CGeojsonLineStringFeature) {
-    if (track != null) {
-      this.track = track;
-      this._initializeFeature();
-    }
-  }
+  public data: Partial<IGeojsonProperties>;
+  enableEditingInline$ = this._store.select(confShowEditingInline);
+  public feature: CGeojsonLineStringFeature;
+  poiId: number;
+  track: CGeojsonLineStringFeature;
+
+  constructor(private _modalController: ModalController, private _store: Store) {}
 
   @Input('poi') set setPoi(id: number) {
     this.poiId = id;
   }
 
-  @Output('trackElevationChartHover')
-  trackElevationChartHover: EventEmitter<ITrackElevationChartHoverElements> = new EventEmitter<ITrackElevationChartHoverElements>();
-
-  @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
-
-  public feature: CGeojsonLineStringFeature;
-  public data: Partial<IGeojsonProperties>;
-
-  track: CGeojsonLineStringFeature;
-  poiId: number;
-
-  constructor(private _modalController: ModalController) {}
-
-  ngOnInit() {}
+  @Input('track') set setTrack(track: CGeojsonLineStringFeature) {
+    if (track != null) {
+      console.log(track);
+      this.track = track;
+      this._initializeFeature();
+    }
+  }
 
   onLocationHover(event: ITrackElevationChartHoverElements) {
     this.trackElevationChartHover.emit(event);
-  }
-
-  triggerDismiss() {
-    this.dismiss.emit();
   }
 
   open() {
@@ -72,6 +66,18 @@ export class TrackDetailsComponent implements OnInit {
       .then(modal => {
         modal.present();
       });
+  }
+
+  openGeohub(): void {
+    const id = this.track && this.track.properties && this.track.properties.id;
+    if (id != null) {
+      const url = `https://geohub.webmapp.it/resources/ec-tracks/${id}/edit?viaResource&viaResourceId&viaRelationship`;
+      window.open(url, '_blank').focus();
+    }
+  }
+
+  triggerDismiss() {
+    this.dismiss.emit();
   }
 
   /**

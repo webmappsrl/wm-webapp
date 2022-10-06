@@ -38,6 +38,7 @@ export const confTHEMEVariables = createSelector(confTHEME, (theme: ITHEME) =>
   getCSSVariables(theme),
 );
 export const confShowDrawTrack = createSelector(confWEBAPP, state => state.draw_track_show);
+export const confShowEditingInline = createSelector(confWEBAPP, state => state.editing_inline_show);
 export const confHOME = createSelector(confFeature, elasticAll, (state, all) => {
   if (state.HOME != null && state.MAP != null && state.MAP.layers != null) {
     const home: IHOME[] = [];

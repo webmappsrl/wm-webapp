@@ -42,15 +42,9 @@ export class WmMapDrawTrackDirective extends WmMaBaseDirective implements OnChan
 
   @Input() conf: IMAP;
   @Input() customTracks: any[];
-
   @Input() trackElevationChartElements: ITrackElevationChartHoverElements;
   @Output() currentCustomTrack: EventEmitter<any> = new EventEmitter<any>();
-  @Input() set reloadCustomTracks(val) {
-    console.log('draw-track-reload');
-    if (val != null) {
-      this._clear();
-    }
-  }
+
   isStable$: Observable<boolean>;
   reset$ = new Subject();
 
@@ -63,7 +57,6 @@ export class WmMapDrawTrackDirective extends WmMaBaseDirective implements OnChan
       switchMap(_ => of(true)),
     );
     this.isStable$.subscribe(v => {
-      console.log(this.enabled);
       this._initDB();
       this._initializeCustomTrackLayer();
       this._customTrack = {
@@ -199,14 +192,20 @@ export class WmMapDrawTrackDirective extends WmMaBaseDirective implements OnChan
     this._enabled$.next(val);
   }
 
-  private _clear(): void {
-    this._customTrackLayer.getSource().clear();
-    this._customPoiLayer.getSource().clear();
-    this._points = [];
+  @Input() set reloadCustomTracks(val) {
+    if (val != null) {
+      this._clear();
+    }
   }
 
   ngOnChanges(_: SimpleChanges): void {
     this.reset$.next(void 0);
+  }
+
+  private _clear(): void {
+    this._customTrackLayer.getSource().clear();
+    this._customPoiLayer.getSource().clear();
+    this._points = [];
   }
 
   private _fromLonLat(coordinates: Coordinate): Coordinate {
@@ -302,7 +301,6 @@ export class WmMapDrawTrackDirective extends WmMaBaseDirective implements OnChan
       });
       this.map.addLayer(this._customPoiLayer);
       this.map.getRenderer();
-      console.log(this.map.getLayers());
     }
   }
 

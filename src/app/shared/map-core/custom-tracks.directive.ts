@@ -47,7 +47,6 @@ export class WmMapCustomTracksDirective extends WmMaBaseDirective implements OnC
   @Input() trackElevationChartElements: ITrackElevationChartHoverElements;
   @Output() currentCustomTrack: EventEmitter<any> = new EventEmitter<any>();
   @Input() set reloadCustomTracks(val) {
-    console.log('custom-tracks-reload', val);
     if (val != null) {
       this._clear();
       this._initSavedTracks();
@@ -182,7 +181,6 @@ export class WmMapCustomTracksDirective extends WmMaBaseDirective implements OnC
       });
       this.map.addLayer(this._customPoiLayer);
       this.map.getRenderer();
-      console.log(this.map.getLayers());
     }
   }
 

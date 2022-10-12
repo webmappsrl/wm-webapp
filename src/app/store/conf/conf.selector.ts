@@ -28,7 +28,7 @@ export const confPoisIcons = createSelector(confPOISFilter, taxonomies => {
       res[icon.identifier] = icon.icon;
     });
   }
-  console.log(res);
+
   return res;
 });
 export const confTHEME = createSelector(confFeature, state => state.THEME);

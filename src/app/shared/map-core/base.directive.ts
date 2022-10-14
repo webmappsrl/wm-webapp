@@ -7,7 +7,7 @@ import SimpleGeometry from 'ol/geom/SimpleGeometry';
 import {transformExtent} from 'ol/proj';
 
 @Directive()
-export abstract class WmMaBaseDirective {
+export abstract class WmMapBaseDirective {
   @Input() map: Map;
   @Input() padding: number[];
 

@@ -22,11 +22,11 @@ import CircleStyle from 'ol/style/Circle';
 import {ILineString} from 'src/app/types/model';
 import {Coordinate} from 'ol/coordinate';
 import {FLAG_TRACK_ZINDEX, POINTER_TRACK_ZINDEX, SELECTED_TRACK_ZINDEX} from './zIndex';
-import {WmMaBaseDirective} from './base.directive';
+import {WmMapBaseDirective} from './base.directive';
 @Directive({
   selector: '[wmMapTrack]',
 })
-export class WmMapTrackDirective extends WmMaBaseDirective implements OnChanges {
+export class WmMapTrackDirective extends WmMapBaseDirective implements OnChanges {
   private _elevationChartLayer: VectorLayer;
   private _elevationChartPoint: Feature<Point>;
   private _elevationChartSource: VectorSource;

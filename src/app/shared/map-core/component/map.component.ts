@@ -10,14 +10,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {
-  DEF_MAP_MAX_ZOOM,
-  DEF_MAP_MIN_ZOOM,
-  DEF_XYZ_URL,
-  initExtent,
-  scaleMinWidth,
-  scaleUnits,
-} from '../constants';
+import {DEF_XYZ_URL, initExtent, scaleMinWidth, scaleUnits} from '../constants';
 import View, {FitOptions} from 'ol/View';
 
 import Collection from 'ol/Collection';
@@ -37,6 +30,7 @@ import {defaults as defaultInteractions} from 'ol/interaction.js';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WmMapComponent implements OnChanges {
   private _centerExtent: Extent;
@@ -74,6 +68,7 @@ export class WmMapComponent implements OnChanges {
           source: this._initializeBaseSource(Object.values(tile)[0]),
           visible: index === 0,
           zIndex: index,
+          useInterimTilesOnError: true,
           className: Object.keys(tile)[0],
         });
       }) ?? [
@@ -98,7 +93,7 @@ export class WmMapComponent implements OnChanges {
 
   private _initDefaultInteractions(): Collection<Interaction> {
     return defaultInteractions({
-      doubleClickZoom: true,
+      doubleClickZoom: false,
       dragPan: true,
       mouseWheelZoom: true,
       pinchRotate: false,
@@ -150,11 +145,15 @@ export class WmMapComponent implements OnChanges {
    */
   private _initializeBaseSource(tile: string) {
     return new XYZ({
-      maxZoom: this.conf.maxZoom || DEF_MAP_MAX_ZOOM,
-      minZoom: this.conf.minZoom || DEF_MAP_MIN_ZOOM,
+      maxZoom: 20,
+      minZoom: 0,
+      opaque: true,
+      imageSmoothing: true,
+      cacheSize: 50000,
       url: tile,
+      wrapX: true,
       projection: 'EPSG:3857',
-      tileSize: [256, 256],
+      tileSize: [512, 512],
     });
   }
 

@@ -1,4 +1,17 @@
 webmapp-map-page {
+  ion-progress-bar {
+    position: absolute;
+    top: 0;
+    z-index: 10000;
+    left: 0;
+    right: 0;
+    width: 0%;
+  }
+  .success {
+    .progress {
+      background: green;
+    }
+  }
   wm-map {
     width: 100%;
     height: 100%;

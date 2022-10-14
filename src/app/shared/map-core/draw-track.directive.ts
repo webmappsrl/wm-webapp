@@ -19,7 +19,7 @@ import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import {WmMaBaseDirective} from './base.directive';
+import {WmMapBaseDirective} from './base.directive';
 import {stopPropagation} from 'ol/events/Event';
 
 export const GRAPH_HOPPER_API_KEY: string = '92e49c7c-1c0a-4aad-8097-e9bfec06360d';
@@ -28,7 +28,7 @@ export const RECORD_TRACK_ID: string = 'wm-current_record_track';
 @Directive({
   selector: '[wmMapDrawTrack]',
 })
-export class WmMapDrawTrackDirective extends WmMaBaseDirective implements OnChanges {
+export class WmMapDrawTrackDirective extends WmMapBaseDirective implements OnChanges {
   private _customPoiLayer: VectorLayer;
   private _customPoiSource: VectorSource = new VectorSource({
     features: [],
@@ -51,7 +51,7 @@ export class WmMapDrawTrackDirective extends WmMaBaseDirective implements OnChan
   constructor() {
     super();
     this.isStable$ = this.reset$.pipe(
-      switchMap(() => timer(500, 500)),
+      switchMap(() => timer(700, 700)),
       takeWhile(v => v <= 2),
       skip(2),
       switchMap(_ => of(true)),
@@ -293,14 +293,15 @@ export class WmMapDrawTrackDirective extends WmMaBaseDirective implements OnChan
         updateWhileInteracting: true,
         zIndex: 1000,
       });
-      this.map.addLayer(this._customTrackLayer);
-
-      this._customPoiLayer = new VectorLayer({
-        zIndex: 1100,
-        source: this._customPoiSource,
-      });
-      this.map.addLayer(this._customPoiLayer);
-      this.map.getRenderer();
+      if (this.map != null) {
+        this.map.addLayer(this._customTrackLayer);
+        this._customPoiLayer = new VectorLayer({
+          zIndex: 1100,
+          source: this._customPoiSource,
+        });
+        this.map.addLayer(this._customPoiLayer);
+        this.map.getRenderer();
+      }
     }
   }
 

@@ -15,7 +15,7 @@ import Point from 'ol/geom/Point';
 import Style from 'ol/style/Style';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import {WmMaBaseDirective} from './base.directive';
+import {WmMapBaseDirective} from './base.directive';
 import {buffer} from 'ol/extent';
 import {fromLonLat} from 'ol/proj';
 import {logoBase64} from 'src/assets/logoBase64';
@@ -23,7 +23,7 @@ import {logoBase64} from 'src/assets/logoBase64';
 @Directive({
   selector: '[wmMapRelatedPois]',
 })
-export class WmMapRelatedPoisDirective extends WmMaBaseDirective implements OnChanges {
+export class WmMapRelatedPoisDirective extends WmMapBaseDirective implements OnChanges {
   private _defaultFeatureColor = DEF_LINE_COLOR;
   private _initPois;
   private _poiMarkers: PoiMarker[] = [];

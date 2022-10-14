@@ -1,9 +1,18 @@
-import {Collection, ImageTile, Tile, VectorTile} from 'ol';
-import {Directive, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  Renderer2,
+  SimpleChanges,
+} from '@angular/core';
 import {Interaction, defaults as defaultInteractions} from 'ol/interaction.js';
 import SelectInteraction, {SelectEvent} from 'ol/interaction/Select';
 
-import {CommunicationService} from 'src/app/services/communication.service';
+import {Collection} from 'ol';
 import {ConfService} from 'src/app/store/conf/conf.service';
 import {DEF_LINE_COLOR} from './constants';
 import {FeatureLike} from 'ol/Feature';
@@ -13,37 +22,96 @@ import Map from 'ol/Map';
 import StrokeStyle from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import {TRACK_ZINDEX} from './zIndex';
-import TileState from 'ol/TileState';
 import VectorTileLayer from 'ol/layer/VectorTile';
 import VectorTileSource from 'ol/source/VectorTile';
-import {WmMaBaseDirective} from './base.directive';
-import {loadFeaturesXhr} from 'ol/featureloader';
-import {styleJsonFn} from './utils';
+import {WmMapBaseDirective} from './base.directive';
+
+const SWITCH_RESOLUTION_ZOOM_LEVEL = 10;
 
 @Directive({
   selector: '[wmMapLayer]',
 })
-export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges {
+export class WmMapLayerDirective extends WmMapBaseDirective implements OnChanges, OnInit {
   private _currentLayer: ILAYER;
-  private _dataLayers: Array<VectorTileLayer>;
   private _defaultFeatureColor = DEF_LINE_COLOR;
-  private _disableLayers = false;
+  private _highVectorTileLayer: VectorTileLayer;
+  private _ionProgress: any;
+  private _loaded = 0;
+  private _loading = 0;
+  private _lowLoaded = 0;
+  private _lowLoading = 0;
+  private _lowVectorTileLayer: VectorTileLayer;
   private _mapIsInit = false;
   private _selectInteraction: SelectInteraction;
-  private _styleJson: any;
+  private _styleFn = (feature: FeatureLike) => {
+    const map = this.conf;
+    const properties = feature.getProperties();
+    const layers: number[] = JSON.parse(properties.layers);
+    let strokeStyle: StrokeStyle = new StrokeStyle();
+
+    if (this._currentLayer != null) {
+      const currentIDLayer = +this._currentLayer.id;
+      if (layers.indexOf(currentIDLayer) >= 0) {
+        strokeStyle.setColor(this._currentLayer.style.color ?? this._defaultFeatureColor);
+      } else {
+        strokeStyle.setColor('rgba(0,0,0,0)');
+      }
+    } else {
+      const layerId = +layers[0];
+      strokeStyle.setColor(this._getColorFromLayer(layerId));
+    }
+    this._handlingStrokeStyleWidth(strokeStyle, map);
+
+    let style = new Style({
+      stroke: strokeStyle,
+      zIndex: TRACK_ZINDEX + 1,
+    });
+    return style;
+  };
+  private _styleLowFn = (feature: FeatureLike) => {
+    const map = this.conf;
+    const properties = feature.getProperties();
+    const layers: number[] = JSON.parse(properties.layers);
+    let strokeStyle: StrokeStyle = new StrokeStyle();
+
+    if (this._currentLayer != null) {
+      const currentIDLayer = +this._currentLayer.id;
+      if (layers.indexOf(currentIDLayer) >= 0) {
+        strokeStyle.setColor(this._currentLayer.style.color ?? this._defaultFeatureColor);
+      } else {
+        strokeStyle.setColor('rgba(0,0,0,0)');
+      }
+    } else {
+      const layerId = +layers[0];
+      strokeStyle.setColor(this._getColorFromLayer(layerId));
+    }
+    this._handlingStrokeStyleWidth(strokeStyle, map, 2, 5);
+
+    let style = new Style({
+      stroke: strokeStyle,
+      zIndex: TRACK_ZINDEX,
+    });
+    return style;
+  };
 
   @Input() conf: IMAP;
   @Input() map: Map;
   @Output() trackSelectedFromLayerEVT: EventEmitter<number> = new EventEmitter<number>();
 
-  constructor(private _confSvc: ConfService, private _communicationSvc: CommunicationService) {
+  constructor(
+    private _elRef: ElementRef,
+    private _confSvc: ConfService,
+    private _renderer: Renderer2,
+  ) {
     super();
   }
 
   @Input() set disableLayers(disable: boolean) {
-    this._disableLayers = disable;
-    if (this._dataLayers != null) {
-      this._dataLayers[this._dataLayers.length - 1].setVisible(!this._disableLayers);
+    if (this._highVectorTileLayer != null) {
+      this._highVectorTileLayer.setVisible(!disable);
+    }
+    if (this._lowVectorTileLayer != null) {
+      this._lowVectorTileLayer.setVisible(!disable);
     }
   }
 
@@ -54,14 +122,46 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
     }
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(_: SimpleChanges): void {
     if (this.map != null && this.conf != null && this._mapIsInit == false) {
       this._initLayer(this.conf);
       this._mapIsInit = true;
+      this.map.on('moveend', () => {
+        this._resolutionLayerSwitcher();
+      });
+      this.map.on('movestart', () => {
+        setTimeout(() => {
+          this._resolutionLayerSwitcher();
+        }, 500);
+      });
+
+      this._highVectorTileLayer.getSource().on('tileloadstart', () => {
+        ++this._loading;
+        this._updateProgressBar();
+      });
+      this._highVectorTileLayer.getSource().on(['tileloadend', 'tileloaderror'], () => {
+        ++this._loaded;
+        this._updateProgressBar();
+      });
+      this._lowVectorTileLayer.getSource().on('tileloadstart', () => {
+        ++this._lowLoading;
+        this._updateProgressBar();
+      });
+      this._lowVectorTileLayer.getSource().on(['tileloadend', 'tileloaderror'], () => {
+        ++this._lowLoaded;
+        this._updateProgressBar();
+      });
     }
-    if (this._dataLayers != null) {
+
+    if (this._lowVectorTileLayer != null || this._highVectorTileLayer != null) {
       this._updateMap();
     }
+  }
+
+  ngOnInit(): void {
+    this._ionProgress = this._renderer.createElement('ion-progress-bar');
+    this._ionProgress.setAttribute('value', '1');
+    this._renderer.appendChild(this._elRef.nativeElement.parentNode, this._ionProgress);
   }
 
   private _getColorFromLayer(id: number): string {
@@ -72,25 +172,34 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
       : this._defaultFeatureColor;
   }
 
-  private _handlingStrokeStyleWidth(strokeStyle: StrokeStyle, conf: IMAP): void {
+  private _handlingStrokeStyleWidth(
+    strokeStyle: StrokeStyle,
+    conf: IMAP,
+    minW = 0.1,
+    maxW = 5,
+  ): void {
     const currentZoom: number = this.map.getView().getZoom();
-    const minW = 0.1;
-    const maxW = 5;
+
     const delta = (currentZoom - conf.minZoom) / (conf.maxZoom - conf.minZoom);
     const newWidth = minW + (maxW - minW) * delta;
     strokeStyle.setWidth(newWidth);
   }
 
-  private async _initLayer(map: IMAP) {
-    this._dataLayers = await this._initializeDataLayers(map);
-    const interactions: Collection<Interaction> = this._initializeMapInteractions(this._dataLayers);
-    interactions.getArray().forEach(interaction => {
+  private _initLayer(map: IMAP) {
+    this._initializeDataLayers(map);
+    this._resolutionLayerSwitcher();
+    this._highVectorTileLayer.setVisible(false);
+    const interactions: Collection<Interaction> = this._initializeMapInteractions([
+      this._lowVectorTileLayer,
+      this._highVectorTileLayer,
+    ]);
+    interactions.forEach(interaction => {
       this.map.addInteraction(interaction);
     });
     this._selectInteraction.on('select', async (event: SelectEvent) => {
       const clickedFeature = event?.selected?.[0] ?? undefined;
       const clickedFeatureId: number = clickedFeature?.getProperties()?.id ?? undefined;
-      if (clickedFeatureId > -1) {
+      if (clickedFeatureId > -1 && this._highVectorTileLayer.getOpacity() === 1) {
         this.trackSelectedFromLayerEVT.emit(clickedFeatureId);
       }
     });
@@ -99,39 +208,42 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
   }
 
   /**
+   * Create the layers containing the map interactive data
+   *
+   * @returns the array of created layers
+   */
+  private _initializeDataLayers(map: IMAP): void {
+    this._lowVectorTileLayer = this._initializeLowDataLayer(
+      `https://jidotile.webmapp.it/?x={x}&y={y}&z={z}&index=geohub_app_low_${this._confSvc.geohubAppId}`,
+      map,
+    );
+    this._highVectorTileLayer = this._initializeHighDataLayer(
+      `https://jidotile.webmapp.it/?x={x}&y={y}&z={z}&index=geohub_app_${this._confSvc.geohubAppId}`,
+      map,
+    );
+
+    this.map.addLayer(this._lowVectorTileLayer);
+    this.map.addLayer(this._highVectorTileLayer);
+  }
+
+  /**
    * Initialize a specific layer with interactive data
    *
    * @returns the created layer
    */
-  private async _initializeDataLayer(layerConfig: any, map: IMAP): Promise<VectorTileLayer> {
-    if (!layerConfig.url) {
+  private _initializeHighDataLayer(url: any, map: IMAP): VectorTileLayer {
+    if (!url) {
       return;
     }
 
-    const layerJson = await this._communicationSvc.get(layerConfig.url).toPromise();
-
-    if (!layerJson.tiles) {
-      return;
-    }
-    console.log(layerJson.tiles);
     const layer = new VectorTileLayer({
-      declutter: false,
-      renderMode: 'image',
-      useInterimTilesOnError: true,
-      renderBuffer: 1000,
-      minResolution: 0,
-      minZoom: 1,
       zIndex: TRACK_ZINDEX,
-      updateWhileAnimating: false,
-      updateWhileInteracting: false,
+      renderBuffer: 5000,
       source: new VectorTileSource({
-        cacheSize: 3000,
         format: new MVT(),
-        urls: layerJson.tiles,
-        // urls: [`http://0.0.0.0:8080/jido/?x={x}&y={y}&z={z}&index=28`],
-        overlaps: false,
-        tileSize: 128,
-        transition: 1000,
+        url: url,
+        overlaps: true,
+        tileSize: 512,
         tileLoadFunction: (tile: any, url: string) => {
           tile.setLoader(
             this._loadFeaturesXhr(
@@ -146,59 +258,49 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
           );
         },
       }),
-      style: (feature: FeatureLike) => {
-        const properties = feature.getProperties();
-        const layers: number[] = JSON.parse(properties.layers);
-
-        let strokeStyle: StrokeStyle = new StrokeStyle();
-        if (this._currentLayer != null) {
-          const currentIDLayer = +this._currentLayer.id;
-          if (layers.indexOf(currentIDLayer) >= 0) {
-            strokeStyle.setColor(this._currentLayer.style.color ?? this._defaultFeatureColor);
-          } else {
-            strokeStyle.setColor('rgba(0,0,0,0)');
-          }
-        } else {
-          const layerId = +layers[0];
-          strokeStyle.setColor(this._getColorFromLayer(layerId));
-        }
-        this._handlingStrokeStyleWidth(strokeStyle, map);
-
-        let style = new Style({
-          stroke: strokeStyle,
-          zIndex: TRACK_ZINDEX,
-        });
-        return style;
-      },
+      style: this._styleFn,
     });
     return layer;
   }
 
-  /**
-   * Create the layers containing the map interactive data
-   *
-   * @returns the array of created layers
-   */
-  private async _initializeDataLayers(map: IMAP): Promise<Array<VectorTileLayer>> {
-    const vectorLayerUrl = this._confSvc.vectorLayerUrl;
-    const styleJson: any = styleJsonFn(vectorLayerUrl);
-
-    const layers: Array<VectorTileLayer> = [];
-
-    if (styleJson.sources) {
-      this._styleJson = styleJson;
-      for (const i in styleJson.sources) {
-        layers.push(await this._initializeDataLayer(styleJson.sources[i], map));
-        this.map.addLayer(layers[layers.length - 1]);
-      }
+  private _initializeLowDataLayer(url: any, map: IMAP): VectorTileLayer {
+    if (!url) {
+      return;
     }
-
-    return layers;
+    const layer = new VectorTileLayer({
+      zIndex: TRACK_ZINDEX,
+      renderBuffer: 5000,
+      declutter: true,
+      updateWhileAnimating: true,
+      updateWhileInteracting: true,
+      useInterimTilesOnError: true,
+      source: new VectorTileSource({
+        format: new MVT(),
+        tileSize: 128,
+        url: url,
+        overlaps: true,
+        tileLoadFunction: (tile: any, url: string) => {
+          tile.setLoader(
+            this._loadFeaturesXhr(
+              url,
+              tile.getFormat(),
+              tile.extent,
+              tile.resolution,
+              tile.projection,
+              tile.onLoad.bind(tile),
+              tile.onError.bind(tile),
+            ),
+          );
+        },
+      }),
+      style: this._styleLowFn,
+    });
+    return layer;
   }
 
   private _initializeMapInteractions(selectLayers: Array<Layer>): Collection<Interaction> {
     const interactions = defaultInteractions({
-      doubleClickZoom: true,
+      doubleClickZoom: false,
       dragPan: true,
       mouseWheelZoom: true,
       pinchRotate: false,
@@ -268,9 +370,50 @@ export class WmMapLayerDirective extends WmMaBaseDirective implements OnChanges 
     xhr.send(body);
   }
 
+  private _resolutionLayerSwitcher(): void {
+    if (this._highVectorTileLayer != null && this._lowVectorTileLayer != null) {
+      const currentZoom = this.map.getView().getZoom();
+      console.log(currentZoom);
+      if (
+        currentZoom > SWITCH_RESOLUTION_ZOOM_LEVEL - 2 &&
+        this._highVectorTileLayer.getVisible() == false
+      ) {
+        this._highVectorTileLayer.setVisible(true);
+      }
+      if (currentZoom > SWITCH_RESOLUTION_ZOOM_LEVEL) {
+        this._highVectorTileLayer.setOpacity(1);
+        this._lowVectorTileLayer.setOpacity(0);
+      } else {
+        this._highVectorTileLayer.setOpacity(0);
+        this._lowVectorTileLayer.setOpacity(1);
+      }
+    }
+  }
+
   private _updateMap(): void {
-    for (const layer of this._dataLayers) {
-      layer.changed();
+    this._lowVectorTileLayer.changed();
+    this._highVectorTileLayer.changed();
+  }
+
+  private _updateProgressBar(): void {
+    const currentZoom = this.map.getView().getZoom();
+    let loaded = this._lowLoaded;
+    let loading = this._lowLoading;
+    if (currentZoom > SWITCH_RESOLUTION_ZOOM_LEVEL) {
+      loaded = this._loaded;
+      loading = this._loading;
+    }
+    const range = +((loaded / loading) * 100).toFixed(0);
+    this._ionProgress.style.width = `${range}%`;
+
+    if (loaded === loading) {
+      this._ionProgress.setAttribute('color', 'success');
+      setTimeout(() => {
+        this._ionProgress.style.visibility = 'hidden';
+      }, 1000);
+    } else {
+      this._ionProgress.setAttribute('color', 'primary');
+      this._ionProgress.style.visibility = 'visible';
     }
   }
 }

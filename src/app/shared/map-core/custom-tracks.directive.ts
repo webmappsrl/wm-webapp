@@ -20,7 +20,7 @@ import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import {WmMaBaseDirective} from './base.directive';
+import {WmMapBaseDirective} from './base.directive';
 import {transform} from 'ol/proj';
 
 export const GRAPH_HOPPER_API_KEY: string = '92e49c7c-1c0a-4aad-8097-e9bfec06360d';
@@ -29,7 +29,7 @@ export const RECORD_TRACK_ID: string = 'wm-current_record_track';
 @Directive({
   selector: '[wmMapCustomTracks]',
 })
-export class WmMapCustomTracksDirective extends WmMaBaseDirective implements OnChanges {
+export class WmMapCustomTracksDirective extends WmMapBaseDirective implements OnChanges {
   private _customPoiLayer: VectorLayer;
   private _customPoiSource: VectorSource = new VectorSource({
     features: [],
@@ -46,13 +46,7 @@ export class WmMapCustomTracksDirective extends WmMaBaseDirective implements OnC
   @Input() customTracks: any[];
   @Input() trackElevationChartElements: ITrackElevationChartHoverElements;
   @Output() currentCustomTrack: EventEmitter<any> = new EventEmitter<any>();
-  @Input() set reloadCustomTracks(val) {
-    if (val != null) {
-      this._clear();
-      this._initSavedTracks();
-      this._customTrackLayer.getSource().addFeatures(this._savedTracks$.value);
-    }
-  }
+
   isStable$: Observable<boolean>;
   reset$ = new Subject();
 
@@ -85,14 +79,22 @@ export class WmMapCustomTracksDirective extends WmMaBaseDirective implements OnC
     });
   }
 
-  private _clear(): void {
-    this._customTrackLayer.getSource().clear();
-    this._customPoiLayer.getSource().clear();
-    this._points = [];
+  @Input() set reloadCustomTracks(val) {
+    if (val != null) {
+      this._clear();
+      this._initSavedTracks();
+      this._customTrackLayer.getSource().addFeatures(this._savedTracks$.value);
+    }
   }
 
   ngOnChanges(_: SimpleChanges): void {
     this.reset$.next(void 0);
+  }
+
+  private _clear(): void {
+    this._customTrackLayer.getSource().clear();
+    this._customPoiLayer.getSource().clear();
+    this._points = [];
   }
 
   private _fromLonLat(coordinates: Coordinate): Coordinate {
@@ -159,6 +161,27 @@ export class WmMapCustomTracksDirective extends WmMaBaseDirective implements OnC
     return style;
   }
 
+  private _initSavedTracks(): void {
+    const stringedLocalSavedTracks = localStorage.getItem('wm-saved-tracks');
+    if (stringedLocalSavedTracks != null) {
+      const localSavedTracks: Feature<Geometry>[] = JSON.parse(stringedLocalSavedTracks).map(
+        (f, idx) => {
+          const feature = new GeoJSON({
+            featureProjection: 'EPSG:3857',
+          }).readFeature(f.geometry);
+          feature.setProperties(f.properties);
+          feature.setId(`${f.properties.id}-${idx}`);
+
+          return feature;
+        },
+      );
+
+      if (localSavedTracks != null) {
+        this._savedTracks$.next(localSavedTracks);
+      }
+    }
+  }
+
   private _initializeCustomTrackLayer(): void {
     if (!this._customTrackLayer) {
       this._customTrackLayer = new VectorLayer({
@@ -173,8 +196,9 @@ export class WmMapCustomTracksDirective extends WmMaBaseDirective implements OnC
         zIndex: 0,
       });
       this._customTrackLayer.getSource().addFeatures(this._savedTracks$.value);
-      this.map.addLayer(this._customTrackLayer);
-
+      if (this.map != null) {
+        this.map.addLayer(this._customTrackLayer);
+      }
       this._customPoiLayer = new VectorLayer({
         zIndex: 400,
         source: this._customPoiSource,
@@ -201,26 +225,5 @@ export class WmMapCustomTracksDirective extends WmMaBaseDirective implements OnC
 
     this._customTrackLayer.changed();
     this.map.render();
-  }
-
-  private _initSavedTracks(): void {
-    const stringedLocalSavedTracks = localStorage.getItem('wm-saved-tracks');
-    if (stringedLocalSavedTracks != null) {
-      const localSavedTracks: Feature<Geometry>[] = JSON.parse(stringedLocalSavedTracks).map(
-        (f, idx) => {
-          const feature = new GeoJSON({
-            featureProjection: 'EPSG:3857',
-          }).readFeature(f.geometry);
-          feature.setProperties(f.properties);
-          feature.setId(`${f.properties.id}-${idx}`);
-
-          return feature;
-        },
-      );
-
-      if (localSavedTracks != null) {
-        this._savedTracks$.next(localSavedTracks);
-      }
-    }
   }
 }

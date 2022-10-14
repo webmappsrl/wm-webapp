@@ -21,14 +21,14 @@ import Stroke from 'ol/style/Stroke';
 import Style from 'ol/style/Style';
 import Text from 'ol/style/Text';
 import VectorLayer from 'ol/layer/Vector';
-import {WmMaBaseDirective} from './base.directive';
+import {WmMapBaseDirective} from './base.directive';
 import {buffer} from 'ol/extent';
 import {fromLonLat} from 'ol/proj';
 import {stopPropagation} from 'ol/events/Event';
 @Directive({
   selector: '[wmMapPois]',
 })
-export class WmMapPoisDirective extends WmMaBaseDirective implements OnChanges {
+export class WmMapPoisDirective extends WmMapBaseDirective implements OnChanges {
   private _poisClusterLayer: VectorLayer;
   private _selectedPoiLayer: VectorLayer;
 

@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Directive,
   ElementRef,
   EventEmitter,
@@ -60,7 +61,7 @@ export class WmMapLayerDirective extends WmMapBaseDirective implements OnChanges
       const layerId = +layers[0];
       strokeStyle.setColor(this._getColorFromLayer(layerId));
     }
-    this._handlingStrokeStyleWidth(strokeStyle, map);
+    this._handlingStrokeStyleWidth(strokeStyle, map, 2);
 
     let style = new Style({
       stroke: strokeStyle,
@@ -85,7 +86,7 @@ export class WmMapLayerDirective extends WmMapBaseDirective implements OnChanges
       const layerId = +layers[0];
       strokeStyle.setColor(this._getColorFromLayer(layerId));
     }
-    this._handlingStrokeStyleWidth(strokeStyle, map, 2, 5);
+    this._handlingStrokeStyleWidth(strokeStyle, map, 3, 6);
 
     let style = new Style({
       stroke: strokeStyle,
@@ -102,6 +103,7 @@ export class WmMapLayerDirective extends WmMapBaseDirective implements OnChanges
     private _elRef: ElementRef,
     private _confSvc: ConfService,
     private _renderer: Renderer2,
+    private _cdr: ChangeDetectorRef,
   ) {
     super();
   }
@@ -218,7 +220,7 @@ export class WmMapLayerDirective extends WmMapBaseDirective implements OnChanges
       map,
     );
     this._highVectorTileLayer = this._initializeHighDataLayer(
-      `https://jidotile.webmapp.it/?x={x}&y={y}&z={z}&index=geohub_app_${this._confSvc.geohubAppId}`,
+      `https://jidotile.webmapp.it/?x={x}&y={y}&z={z}&index=geohub_app_high_${this._confSvc.geohubAppId}`,
       map,
     );
 
@@ -388,6 +390,7 @@ export class WmMapLayerDirective extends WmMapBaseDirective implements OnChanges
         this._lowVectorTileLayer.setOpacity(1);
       }
     }
+    this._cdr.markForCheck();
   }
 
   private _updateMap(): void {

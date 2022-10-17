@@ -5,7 +5,7 @@ import {elasticAll} from '../elastic/elastic.selector';
 import {getCSSVariables} from '../../functions/theme';
 
 const confFeature = createFeatureSelector<ICONF>(confFeatureKey);
-
+export const MAX_TRACKS = 200;
 export const confAPP = createSelector(confFeature, state => state.APP);
 export const confWEBAPP = createSelector(confFeature, state => state.WEBAPP);
 export const confLANGUAGES = createSelector(confFeature, state => state.LANGUAGES);
@@ -40,7 +40,7 @@ export const confTHEMEVariables = createSelector(confTHEME, (theme: ITHEME) =>
 export const confShowDrawTrack = createSelector(confWEBAPP, state => state.draw_track_show);
 export const confShowEditingInline = createSelector(confWEBAPP, state => state.editing_inline_show);
 export const confHOME = createSelector(confFeature, elasticAll, (state, all) => {
-  if (state.HOME != null && state.MAP != null && state.MAP.layers != null) {
+  if (state.HOME != null && state.MAP != null && state.MAP.layers != null && all.length > 0) {
     const home: IHOME[] = [];
     state.HOME.forEach(el => {
       if (el.box_type === 'layer') {
@@ -52,7 +52,7 @@ export const confHOME = createSelector(confFeature, elasticAll, (state, all) => 
         home.push(el);
       }
     });
-    return home;
+    return [...home];
   }
 
   return state.HOME;
@@ -65,7 +65,11 @@ const getLayer = (layersID: number, layers: ILAYER[], tracks: IHIT[]) => {
   (tracks || []).forEach(track => {
     track.layers.forEach(l => {
       if (+layersID === +l) {
-        tracksObj[l] = tracksObj[l] != null ? [...tracksObj[l], track] : [track];
+        if (tracksObj[l] == null) {
+          tracksObj[l] = [track];
+        } else if (tracksObj[l].length < MAX_TRACKS) {
+          tracksObj[l] = [...tracksObj[l], track];
+        }
       }
     });
   });

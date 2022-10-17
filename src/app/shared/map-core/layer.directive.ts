@@ -396,6 +396,7 @@ export class WmMapLayerDirective extends WmMapBaseDirective implements OnChanges
   private _updateMap(): void {
     this._lowVectorTileLayer.changed();
     this._highVectorTileLayer.changed();
+    this.map.updateSize();
   }
 
   private _updateProgressBar(): void {
@@ -418,5 +419,6 @@ export class WmMapLayerDirective extends WmMapBaseDirective implements OnChanges
       this._ionProgress.setAttribute('color', 'primary');
       this._ionProgress.style.visibility = 'visible';
     }
+    this._updateMap();
   }
 }

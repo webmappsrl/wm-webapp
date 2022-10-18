@@ -21,6 +21,7 @@ import {ILineString} from 'src/app/types/model';
 import {Coordinate} from 'ol/coordinate';
 import {FLAG_TRACK_ZINDEX, POINTER_TRACK_ZINDEX, SELECTED_TRACK_ZINDEX} from './zIndex';
 import {WmMapBaseDirective} from './base.directive';
+import FlowLine from 'ol-ext/style/FlowLine';
 @Directive({
   selector: '[wmMapTrack]',
 })
@@ -42,6 +43,31 @@ export class WmMapTrackDirective extends WmMapBaseDirective implements OnChanges
   @Input() trackElevationChartElements: ITrackElevationChartHoverElements;
 
   drawTrack(trackgeojson: any): void {
+    console.log(this.conf.flow_line_quote_show);
+    const isFlowLine = this.conf.flow_line_quote_show || false;
+    const orangeTreshold = this.conf.flow_line_quote_orange || 800;
+    const redTreshold = this.conf.flow_line_quote_red || 1500;
+    const flowStyle = new FlowLine({
+      lineCap: 'butt',
+      color: function (f, step) {
+        const geometry = f.getGeometry().getCoordinates();
+        const position = +(geometry.length * step).toFixed();
+        const currentLocation = geometry[position];
+        let currentAltitude = 100;
+        try {
+          currentAltitude = currentLocation[2];
+        } catch (_) {}
+
+        if (currentAltitude >= orangeTreshold && currentAltitude < redTreshold) {
+          return 'orange';
+        }
+        if (currentAltitude >= redTreshold) {
+          return 'red';
+        }
+        return 'green';
+      },
+      width: 10,
+    });
     const geojson: any = this.getGeoJson(trackgeojson);
     this._trackFeatures = new GeoJSON({
       featureProjection: 'EPSG:3857',
@@ -52,7 +78,7 @@ export class WmMapTrackDirective extends WmMapBaseDirective implements OnChanges
         features: this._trackFeatures,
       }),
       style: () => {
-        return this._getLineStyle('#caaf15');
+        return isFlowLine ? flowStyle : this._getLineStyle('#caaf15');
       },
       updateWhileAnimating: true,
       updateWhileInteracting: true,
@@ -73,7 +99,7 @@ export class WmMapTrackDirective extends WmMapBaseDirective implements OnChanges
       this._resetView();
       this._initTrack = false;
     }
-    if (this.track != null && this.map != null && this._initTrack === false) {
+    if (this.conf != null && this.track != null && this.map != null && this._initTrack === false) {
       this._init();
       this._initTrack = true;
     }
@@ -290,6 +316,7 @@ export class WmMapTrackDirective extends WmMapBaseDirective implements OnChanges
         features: [this._startFeature, this._endFeature],
       }),
     });
+
     this.map.addLayer(this._startEndLayer);
     this.drawTrack(this.track);
   }

@@ -159,6 +159,9 @@ interface IMAP {
   minZoom: number;
   pois?: any;
   tiles: {[name: string]: string}[];
+  flow_line_quote_show: boolean;
+  flow_line_quote_orange: number;
+  flow_line_quote_red: number;
 }
 interface ILAYER {
   bbox: [number, number, number, number];

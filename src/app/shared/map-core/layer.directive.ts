@@ -375,7 +375,6 @@ export class WmMapLayerDirective extends WmMapBaseDirective implements OnChanges
   private _resolutionLayerSwitcher(): void {
     if (this._highVectorTileLayer != null && this._lowVectorTileLayer != null) {
       const currentZoom = this.map.getView().getZoom();
-      console.log(currentZoom);
       if (
         currentZoom > SWITCH_RESOLUTION_ZOOM_LEVEL - 2 &&
         this._highVectorTileLayer.getVisible() == false

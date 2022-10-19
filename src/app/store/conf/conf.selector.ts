@@ -7,6 +7,7 @@ import {getCSSVariables} from '../../functions/theme';
 const confFeature = createFeatureSelector<ICONF>(confFeatureKey);
 export const MAX_TRACKS = 200;
 export const confAPP = createSelector(confFeature, state => state.APP);
+export const confGeohubId = createSelector(confAPP, state => state.geohubId);
 export const confWEBAPP = createSelector(confFeature, state => state.WEBAPP);
 export const confLANGUAGES = createSelector(confFeature, state => state.LANGUAGES);
 export const confOPTIONS = createSelector(confFeature, state => state.OPTIONS);

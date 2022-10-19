@@ -37,7 +37,6 @@
     "color": "^4.2.0",
     "css-vars-ponyfill": "^2.4.7",
     "geojson-to-kml": "0.0.1",
-    "graphhopper-js-api-client": "^5.0.2",
     "ol": "6.5.1-module.2",
     "ol-ext": "^4.0.2",
     "rxjs": "~6.6.0",

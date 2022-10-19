@@ -18,10 +18,11 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators';
-import {confMAP, confShowDrawTrack} from 'src/app/store/conf/conf.selector';
+import {confGeohubId, confMAP, confShowDrawTrack} from 'src/app/store/conf/conf.selector';
 
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {GeohubService} from 'src/app/services/geohub.service';
+import {IDATALAYER} from 'src/app/shared/map-core/types/layer';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {Store} from '@ngrx/store';
 import {loadPois} from 'src/app/store/pois/pois.actions';
@@ -72,7 +73,7 @@ export class MapPage {
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
-
+  dataLayerUrls$: Observable<IDATALAYER>;
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
 
@@ -88,6 +89,15 @@ export class MapPage {
       this.mapPadding$.next([initPadding[0], initPadding[1], initPadding[2], menuCloseLeft]);
       this.resizeEVT.next(!this.resizeEVT.value);
     }
+    this.dataLayerUrls$ = this._store.select(confGeohubId).pipe(
+      filter(g => g != null),
+      map(geohubId => {
+        return {
+          low: `https://jidotile.webmapp.it/?x={x}&y={y}&z={z}&index=geohub_app_low_${geohubId}`,
+          high: `https://jidotile.webmapp.it/?x={x}&y={y}&z={z}&index=geohub_app_high_${geohubId}`,
+        } as IDATALAYER;
+      }),
+    );
     this.trackid$ = this._route.queryParams.pipe(
       filter(params => params != null && params.track != null),
       map(params => +params.track),

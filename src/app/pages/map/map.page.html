@@ -92,6 +92,7 @@
       wmMapRelatedPois
       wmMapCustomTracks
       [wmMapDrawTrack]="drawTrackEnable$|async"
+      [dataLayerUrls]="dataLayerUrls$|async"
       [track]="track$|async"
       [layer]="currentLayer$|async"
       [disableLayers]="(currentFilters$|async).length > 0"

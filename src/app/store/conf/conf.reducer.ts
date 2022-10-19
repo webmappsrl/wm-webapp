@@ -9,7 +9,7 @@ export interface IConfRootState {
 const initialConfState: ICONF = {
   APP: {
     name: 'Webmapp',
-    geohubId: 3,
+    geohubId: undefined,
   },
   WEBAPP: {
     draw_track_show: false,

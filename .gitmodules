@@ -1,0 +1,3 @@
+[submodule "src/app/shared/map-core"]
+	path = src/app/shared/map-core
+	url = https://github.com/webmappsrl/map-core.git

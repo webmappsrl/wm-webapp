@@ -190,7 +190,7 @@ export class WmMapLayerDirective extends WmMapBaseDirective implements OnChanges
   private _initLayer(map: IMAP) {
     this._initializeDataLayers(map);
     this._resolutionLayerSwitcher();
-    this._highVectorTileLayer.setVisible(false);
+
     const interactions: Collection<Interaction> = this._initializeMapInteractions([
       this._lowVectorTileLayer,
       this._highVectorTileLayer,

@@ -10,6 +10,7 @@ import {
 import {UICurrentFilters, UICurrentLAyer, UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {
   catchError,
+  distinctUntilChanged,
   filter,
   map,
   shareReplay,
@@ -52,30 +53,29 @@ export class MapPage {
       }
     }),
   );
-  drawTrackEnable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-
-  disableLayers$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  currentLayer$ = this._store.select(UICurrentLAyer);
+  currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentFilters$ = this._store.select(UICurrentFilters);
-  currentPoiIDFromHome$ = this._store.select(UICurrentPoiId);
-  enableDrawTrack$ = this._store.select(confShowDrawTrack);
+  currentLayer$ = this._store.select(UICurrentLAyer);
   currentPoi$: Observable<any>;
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
+  currentPoiIDFromHome$ = this._store.select(UICurrentPoiId);
   currentPoiIDToMap$: Observable<number | null>;
   currentRelatedPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
+  dataLayerUrls$: Observable<IDATALAYER>;
+  disableLayers$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  drawTrackEnable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  enableDrawTrack$ = this._store.select(confShowDrawTrack);
   isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   leftPadding$: Observable<number>;
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<any> = this._store.select(pois);
   popupCloseEVT$: EventEmitter<null> = new EventEmitter<null>();
+  reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
-  dataLayerUrls$: Observable<IDATALAYER>;
-  currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
-  reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
 
   constructor(
     private _route: ActivatedRoute,
@@ -156,13 +156,19 @@ export class MapPage {
       catchError(e => of(null)),
       shareReplay(),
     );
-    this.currentPoi$ = merge(currentRelatedPoi, currentPoi, this.popupCloseEVT$);
+    this.currentPoi$ = merge(currentRelatedPoi, currentPoi, this.popupCloseEVT$).pipe(
+      tap(v => console.log(v)),
+    );
     this.currentPoiIDToMap$ = merge(
       this.currentRelatedPoiID$,
       this.currentPoiID$,
       this.currentPoiIDFromHome$,
       this.popupCloseEVT$,
-    ).pipe(map(val => val ?? -1));
+    ).pipe(
+      map(val => val ?? -1),
+      distinctUntilChanged((prev, curr) => +prev === +curr),
+      tap(v => console.log(v)),
+    );
   }
 
   next(): void {
@@ -172,11 +178,8 @@ export class MapPage {
     const nextIndex = (indexOfCurrentID + 1) % poiIDs.length;
     this.setCurrentRelatedPoi(poiIDs[nextIndex]);
   }
-  setCustomTrackEnabled(): void {
-    console.log('ffff');
-  }
+
   prev(): void {
-    console.log('prreee');
     const currentRelatedPoiID = this.currentRelatedPoiID$.value;
     const poiIDs = this.poiIDs$.value;
     const indexOfCurrentID = poiIDs.indexOf(currentRelatedPoiID);
@@ -184,29 +187,35 @@ export class MapPage {
     this.setCurrentRelatedPoi(poiIDs.slice(prevIndex)[0]);
   }
 
-  selectTrack(trackid: any = -1) {
+  reloadCustomTrack(): void {
+    this.reloadCustomTracks$.next(!this.reloadCustomTracks$.value ?? false);
+  }
+
+  saveCurrentCustomTrack(track: any): void {
+    const clonedTrack = JSON.parse(JSON.stringify(track));
+    this.currentCustomTrack$.next(clonedTrack);
+  }
+
+  selectTrack(trackid: any = -1): void {
     this.updateUrl(trackid);
   }
 
-  setCurrentPoi(id) {
+  setCurrentPoi(id): void {
     if (id !== this.currentPoiID$.value) {
       this.currentPoiID$.next(id);
     }
     this._cdr.detectChanges();
   }
-  reloadCustomTrack(): void {
-    console.log(
-      'reload',
-      !this.reloadCustomTracks$.value,
-      !this.reloadCustomTracks$.value ?? false,
-    );
-    this.reloadCustomTracks$.next(!this.reloadCustomTracks$.value ?? false);
-  }
-  setCurrentRelatedPoi(id) {
+
+  setCurrentRelatedPoi(id): void {
     if (id !== this.currentRelatedPoiID$.value) {
       this.currentRelatedPoiID$.next(id);
     }
     this._cdr.detectChanges();
+  }
+
+  setCustomTrackEnabled(): void {
+    console.log('ffff');
   }
 
   setTrackElevationChartHoverElements(elements?: ITrackElevationChartHoverElements): void {
@@ -215,11 +224,17 @@ export class MapPage {
     }
   }
 
-  toggleDetails(trackid: number = -1) {
+  toggleDetails(trackid: number = -1): void {
     this.updateUrl(trackid);
   }
 
-  toggleMenu() {
+  toggleDrawTrackEnabled(): void {
+    const currentValue = this.drawTrackEnable$.value;
+    this.currentCustomTrack$.next(null);
+    this.drawTrackEnable$.next(!currentValue);
+  }
+
+  toggleMenu(): void {
     this.showMenu$.next(!this.showMenu$.value);
     if (!this.isMobile$.value) {
       this.mapPadding$.next([
@@ -234,27 +249,14 @@ export class MapPage {
   }
 
   unselectPOI(): void {
-    // this.setCurrentRelatedPoi(-1);
     this.popupCloseEVT$.emit(null);
   }
 
-  updateUrl(trackid: number) {
+  updateUrl(trackid: number): void {
     this._router.navigate([], {
       relativeTo: this._route,
       queryParams: {track: trackid ? trackid : null},
       queryParamsHandling: 'merge',
     });
-  }
-
-  saveCurrentCustomTrack(track: any) {
-    console.log(track);
-    const clonedTrack = JSON.parse(JSON.stringify(track));
-    this.currentCustomTrack$.next(clonedTrack);
-  }
-
-  toggleDrawTrackEnabled(): void {
-    const currentValue = this.drawTrackEnable$.value;
-    this.currentCustomTrack$.next(null);
-    this.drawTrackEnable$.next(!currentValue);
   }
 }

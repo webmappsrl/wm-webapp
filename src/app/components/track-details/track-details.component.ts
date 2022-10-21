@@ -44,7 +44,6 @@ export class TrackDetailsComponent {
 
   @Input('track') set setTrack(track: CGeojsonLineStringFeature) {
     if (track != null) {
-      console.log(track);
       this.track = track;
       this._initializeFeature();
     }

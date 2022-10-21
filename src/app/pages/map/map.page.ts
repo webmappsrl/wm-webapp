@@ -57,6 +57,7 @@ export class MapPage {
   currentFilters$ = this._store.select(UICurrentFilters);
   currentLayer$ = this._store.select(UICurrentLAyer);
   currentPoi$: Observable<any>;
+  currentRelatedPoi$: Observable<any>;
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiIDFromHome$ = this._store.select(UICurrentPoiId);
   currentPoiIDToMap$: Observable<number | null>;
@@ -69,7 +70,6 @@ export class MapPage {
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<any> = this._store.select(pois);
-  popupCloseEVT$: EventEmitter<null> = new EventEmitter<null>();
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
@@ -128,44 +128,46 @@ export class MapPage {
       catchError(e => of([])),
       shareReplay(1),
     );
-    const currentRelatedPoi = combineLatest([this.currentRelatedPoiID$, relatedPois$]).pipe(
+    this.currentRelatedPoi$ = combineLatest([this.currentRelatedPoiID$, relatedPois$]).pipe(
       map(([id, pois]) => {
-        const relatedPois = pois.filter(poi => {
-          const poiProperties = poi.properties;
-          return +poiProperties.id === +id;
-        });
-        const relatedPoi = relatedPois[0] ?? null;
-        return relatedPoi;
+        if (id != -1) {
+          const relatedPois = pois.filter(poi => {
+            const poiProperties = poi.properties;
+            return +poiProperties.id === +id;
+          });
+          const relatedPoi = relatedPois[0] ?? null;
+          return relatedPoi;
+        }
+        return null;
       }),
       catchError(e => of(null)),
       shareReplay(),
     );
-    const currentPoi = merge(this.currentPoiID$, this.currentPoiIDFromHome$).pipe(
+    this.currentPoi$ = merge(this.currentPoiID$, this.currentPoiIDFromHome$).pipe(
       withLatestFrom(this.pois$.pipe(filter(p => p != null))),
       map(([id, pois]) => {
-        const relatedPois = pois.features.filter(poi => {
-          const poiProperties = poi.properties;
-          return +poiProperties.id === +id;
-        });
-        const relatedPoi = relatedPois[0] ?? null;
-        const properties = {...relatedPoi.properties};
-        return {...relatedPoi, properties};
+        if (id != -1) {
+          const relatedPois = pois.features.filter(poi => {
+            const poiProperties = poi.properties;
+            return +poiProperties.id === +id;
+          });
+          const relatedPoi = relatedPois[0] ?? null;
+          const properties = {...relatedPoi.properties};
+          return {...relatedPoi, properties};
+        }
+        return null;
       }),
       catchError(e => of(null)),
       shareReplay(),
     );
-    this.currentPoi$ = merge(currentRelatedPoi, currentPoi, this.popupCloseEVT$).pipe(
-      tap(v => console.log(v)),
-    );
+
     this.currentPoiIDToMap$ = merge(
       this.currentRelatedPoiID$,
       this.currentPoiID$,
       this.currentPoiIDFromHome$,
-      this.popupCloseEVT$,
     ).pipe(
       map(val => val ?? -1),
       distinctUntilChanged((prev, curr) => +prev === +curr),
-      tap(v => console.log(v)),
     );
   }
 
@@ -199,6 +201,7 @@ export class MapPage {
   }
 
   setCurrentPoi(id): void {
+    this.currentRelatedPoiID$.next(-1);
     if (id !== this.currentPoiID$.value) {
       this.currentPoiID$.next(id);
     }
@@ -206,6 +209,7 @@ export class MapPage {
   }
 
   setCurrentRelatedPoi(id): void {
+    this.currentPoiID$.next(-1);
     if (id !== this.currentRelatedPoiID$.value) {
       this.currentRelatedPoiID$.next(id);
     }
@@ -238,7 +242,8 @@ export class MapPage {
   }
 
   unselectPOI(): void {
-    this.popupCloseEVT$.emit(null);
+    this.currentPoiID$.next(-1);
+    this.currentRelatedPoiID$.next(-1);
   }
 
   updateUrl(trackid: number): void {

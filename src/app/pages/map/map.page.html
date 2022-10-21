@@ -48,7 +48,13 @@
     (nextEVT)="next()"
     (prevEVT)="prev()"
   ></webmapp-poi-popup>
-
+  <webmapp-poi-popup
+    *ngIf="currentRelatedPoi$|async as currentPoi"
+    [poi]="currentPoi"
+    (closeEVT)="unselectPOI()"
+    (nextEVT)="next()"
+    (prevEVT)="prev()"
+  ></webmapp-poi-popup>
   <wm-map
     #wmap
     wmMapLayer
@@ -68,6 +74,7 @@
     [padding]="mapPadding$|async"
     [filters]="currentFilters$|async"
     [reloadCustomTracks]="reloadCustomTracks$|async"
+    [onClick]="wmap.clickEVT$"
     [trackElevationChartElements]="trackElevationChartHoverElements$|async"
     (trackSelectedFromLayerEVT)="toggleDetails($event)"
     (related-poi-click)="setCurrentRelatedPoi($event)"

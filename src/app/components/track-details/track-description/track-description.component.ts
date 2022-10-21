@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import {Component, Input, OnInit} from '@angular/core';
+import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 
 @Component({
   selector: 'webmapp-track-description',
@@ -33,11 +33,11 @@ export class TrackDescriptionComponent implements OnInit {
 
       const interval = setInterval(() => {
         const descriptionDiv: HTMLElement = document.getElementById(
-          'webmapp-track-description-html'
+          'webmapp-track-description-html',
         );
 
         this.isExpandable =
-          descriptionDiv.scrollHeight > window.innerHeight * 0.4;
+          descriptionDiv && descriptionDiv.scrollHeight > window.innerHeight * 0.4;
       }, 100);
 
       setTimeout(() => {

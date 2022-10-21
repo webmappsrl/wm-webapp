@@ -201,7 +201,9 @@ export class MapPage {
   }
 
   setCurrentPoi(id): void {
-    this.currentPoiID$.next(id);
+    if (id !== this.currentPoiID$.value) {
+      this.currentPoiID$.next(id);
+    }
     this._cdr.detectChanges();
   }
 

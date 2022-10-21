@@ -31,6 +31,8 @@
     "@ngrx/store-devtools": "^12.5.1",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
+    "@sentry/angular": "^7.16.0",
+    "@sentry/tracing": "^7.16.0",
     "@types/elasticsearch": "^5.0.40",
     "@types/ol": "^6.5.3",
     "chart.js": "^3.6.0",

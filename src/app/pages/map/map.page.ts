@@ -65,7 +65,6 @@ export class MapPage {
   disableLayers$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   drawTrackEnable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   enableDrawTrack$ = this._store.select(confShowDrawTrack);
-  isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   leftPadding$: Observable<number>;
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
@@ -85,7 +84,6 @@ export class MapPage {
     private _store: Store,
   ) {
     if (window.innerWidth < maxWidth) {
-      this.isMobile$.next(true);
       this.mapPadding$.next([initPadding[0], initPadding[1], initPadding[2], menuCloseLeft]);
       this.resizeEVT.next(!this.resizeEVT.value);
     }
@@ -236,16 +234,7 @@ export class MapPage {
 
   toggleMenu(): void {
     this.showMenu$.next(!this.showMenu$.value);
-    if (!this.isMobile$.value) {
-      this.mapPadding$.next([
-        initPadding[0],
-        initPadding[1],
-        initPadding[2],
-        this.showMenu$.value ? menuOpenLeft : menuCloseLeft,
-      ]);
-    } else {
-      this.resizeEVT.next(!this.resizeEVT.value);
-    }
+    this.resizeEVT.next(!this.resizeEVT.value);
   }
 
   unselectPOI(): void {

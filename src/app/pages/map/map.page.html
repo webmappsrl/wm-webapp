@@ -1,114 +1,78 @@
 <ng-container *ngIf="(trackid$|async) as trackid">
-  <ng-container *ngIf="isMobile$|async;else desktop">
-    <div class="mobile-wrapper">
-      <webmapp-map
-        [padding]="mapPadding$|async"
-        [track]="track$|async"
-        [poi]="currentPoiIDToMap$|async"
-        [trackElevationChartElements]="trackElevationChartHoverElements$|async"
-        (feature-click)="toggleDetails($event)"
-        (poi-click)="setCurrentPoi($event)"
-      ></webmapp-map>
-      <div class="mobile-details">
-        <webmapp-home
-          [hidden]="trackid > 0"
-          class="webmapp-home"
-          (searchId)="selectTrack($event)"
-        ></webmapp-home>
-        <webmapp-track-details
-          [track]="track$|async"
-          [hidden]="trackid <= 0 || (currentPoi$|async)!=null?true:false"
-          [poi]="currentPoiIDToMap$|async"
-          (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
-          (poi-click)="setCurrentPoi($event)"
-          (dismiss)="toggleDetails()"
-        ></webmapp-track-details>
-        <webmapp-poi-popup
-          *ngIf="currentPoi$|async as currentPoi"
-          [poi]="currentPoi"
-          (closeEVT)="unselectPOI()"
-          (nextEVT)="next()"
-          (prevEVT)="prev()"
-        ></webmapp-poi-popup>
-      </div>
-    </div>
-  </ng-container>
-  <ng-template #desktop>
-    <button
-      class="webmapp-menubtn"
-      [class.webmapp-menubtn-opened]="(showMenu$|async)"
-      type="button"
-      title="menu"
-      (click)="toggleMenu()"
-    >
-      <ion-icon [attr.name]="caretOutLine$|async"></ion-icon>
-    </button>
+  <button
+    class="webmapp-menubtn"
+    [class.webmapp-menubtn-opened]="(showMenu$|async)"
+    type="button"
+    title="menu"
+    (click)="toggleMenu()"
+  >
+    <ion-icon [attr.name]="caretOutLine$|async"></ion-icon>
+  </button>
 
-    <div class="details-container" [class.details-container-visible]="(showMenu$|async)">
-      <webmapp-track-details
-        [track]="track$|async"
-        [hidden]="trackid <= 0"
-        [poi]="currentPoiIDToMap$|async"
-        (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
-        (poi-click)="setCurrentPoi($event)"
-        (dismiss)="toggleDetails()"
-        class="webmapp-track-details"
-      ></webmapp-track-details>
-
-      <webmapp-home
-        *ngIf="(drawTrackEnable$|async)===false;else customTrack"
-        [hidden]="trackid > 0"
-        class="webmapp-home"
-        (searchId)="selectTrack($event)"
-      >
-        <ion-button expand="full" *ngIf="enableDrawTrack$|async" (click)="toggleDrawTrackEnabled()">
-          {{'i miei percorsi'|WebmappTranslate}}
-        </ion-button>
-      </webmapp-home>
-      <ng-template #customTrack>
-        <ion-button expand="full" (click)="toggleDrawTrackEnabled()">
-          {{'esci'|WebmappTranslate}}
-        </ion-button>
-        <wm-draw-track
-          [map]="wmap.map$|async"
-          [track]="currentCustomTrack$|async"
-          (reloadEvt)="reloadCustomTrack()"
-        ></wm-draw-track>
-      </ng-template>
-    </div>
-    <webmapp-poi-popup
-      *ngIf="currentPoi$|async as currentPoi"
-      [poi]="currentPoi"
-      (closeEVT)="unselectPOI()"
-      (nextEVT)="next()"
-      (prevEVT)="prev()"
-    ></webmapp-poi-popup>
-
-    <wm-map
-      #wmap
-      wmMapLayer
-      wmMapTrack
-      wmMapPois
-      wmMapRelatedPois
-      wmMapCustomTracks
-      [wmMapDrawTrack]="drawTrackEnable$|async"
-      [dataLayerUrls]="dataLayerUrls$|async"
+  <div class="details-container" [class.details-container-visible]="(showMenu$|async)">
+    <webmapp-track-details
       [track]="track$|async"
-      [layer]="currentLayer$|async"
-      [disableLayers]="(currentFilters$|async).length > 0"
-      [conf]="confMap$|async"
-      [map]="wmap.map$|async"
+      [hidden]="trackid <= 0"
       [poi]="currentPoiIDToMap$|async"
-      [pois]="pois$|async"
-      [padding]="mapPadding$|async"
-      [filters]="currentFilters$|async"
-      [reloadCustomTracks]="reloadCustomTracks$|async"
-      [trackElevationChartElements]="trackElevationChartHoverElements$|async"
-      (trackSelectedFromLayerEVT)="toggleDetails($event)"
-      (related-poi-click)="setCurrentRelatedPoi($event)"
+      (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
       (poi-click)="setCurrentPoi($event)"
-      (currentCustomTrack)="saveCurrentCustomTrack($event)"
+      (dismiss)="toggleDetails()"
+      class="webmapp-track-details"
+    ></webmapp-track-details>
+
+    <webmapp-home
+      *ngIf="(drawTrackEnable$|async)===false;else customTrack"
+      [hidden]="trackid > 0"
+      class="webmapp-home"
+      (searchId)="selectTrack($event)"
     >
-    </wm-map>
-  </ng-template>
+      <ion-button expand="full" *ngIf="enableDrawTrack$|async" (click)="toggleDrawTrackEnabled()">
+        {{'i miei percorsi'|WebmappTranslate}}
+      </ion-button>
+    </webmapp-home>
+    <ng-template #customTrack>
+      <ion-button expand="full" (click)="toggleDrawTrackEnabled()">
+        {{'esci'|WebmappTranslate}}
+      </ion-button>
+      <wm-draw-track
+        [map]="wmap.map$|async"
+        [track]="currentCustomTrack$|async"
+        (reloadEvt)="reloadCustomTrack()"
+      ></wm-draw-track>
+    </ng-template>
+  </div>
+  <webmapp-poi-popup
+    *ngIf="currentPoi$|async as currentPoi"
+    [poi]="currentPoi"
+    (closeEVT)="unselectPOI()"
+    (nextEVT)="next()"
+    (prevEVT)="prev()"
+  ></webmapp-poi-popup>
+
+  <wm-map
+    #wmap
+    wmMapLayer
+    wmMapTrack
+    wmMapPois
+    wmMapRelatedPois
+    wmMapCustomTracks
+    [wmMapDrawTrack]="drawTrackEnable$|async"
+    [dataLayerUrls]="dataLayerUrls$|async"
+    [track]="track$|async"
+    [layer]="currentLayer$|async"
+    [disableLayers]="(currentFilters$|async).length > 0"
+    [conf]="confMap$|async"
+    [map]="wmap.map$|async"
+    [poi]="currentPoiIDToMap$|async"
+    [pois]="pois$|async"
+    [padding]="mapPadding$|async"
+    [filters]="currentFilters$|async"
+    [reloadCustomTracks]="reloadCustomTracks$|async"
+    [trackElevationChartElements]="trackElevationChartHoverElements$|async"
+    (trackSelectedFromLayerEVT)="toggleDetails($event)"
+    (related-poi-click)="setCurrentRelatedPoi($event)"
+    (poi-click)="setCurrentPoi($event)"
+    (currentCustomTrack)="saveCurrentCustomTrack($event)"
+  >
+  </wm-map>
 </ng-container>

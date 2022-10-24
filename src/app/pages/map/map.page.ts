@@ -26,6 +26,7 @@ import {GeohubService} from 'src/app/services/geohub.service';
 import {IDATALAYER} from 'src/app/shared/map-core/types/layer';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {Store} from '@ngrx/store';
+import {environment} from 'src/environments/environment';
 import {loadPois} from 'src/app/store/pois/pois.actions';
 import {pois} from 'src/app/store/pois/pois.selector';
 
@@ -53,6 +54,7 @@ export class MapPage {
       }
     }),
   );
+  graphhopperHost$: Observable<string> = of(environment.graphhopperHost);
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentFilters$ = this._store.select(UICurrentFilters);
   currentLayer$ = this._store.select(UICurrentLAyer);

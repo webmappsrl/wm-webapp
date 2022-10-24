@@ -10,9 +10,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {Chart, ChartDataset, registerables, Tick, TooltipItem, TooltipModel} from 'chart.js';
-import {CLocation} from 'src/app/classes/clocation';
-import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
+import {Chart, ChartDataset, Tick, TooltipItem, TooltipModel, registerables} from 'chart.js';
 import {
   TRACK_ELEVATION_CHART_SLOPE_EASY,
   TRACK_ELEVATION_CHART_SLOPE_HARD,
@@ -21,12 +19,15 @@ import {
   TRACK_ELEVATION_CHART_SLOPE_MEDIUM_HARD,
   TRACK_ELEVATION_CHART_SURFACE,
 } from 'src/app/constants/elevation-chart';
-import {MapService} from 'src/app/services/map.service';
+
+import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
+import {CLocation} from 'src/app/classes/clocation';
 import {EGeojsonGeometryTypes} from 'src/app/types/egeojson-geometry-types.enum';
 import {ETrackElevationChartSurface} from 'src/app/types/etrack-elevation-chart.enum';
-import {ILocation} from 'src/app/types/location';
 import {ILineString} from 'src/app/types/model';
+import {ILocation} from 'src/app/types/location';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
+import {MapService} from 'src/app/services/map.service';
 
 @Component({
   selector: 'webmapp-track-elevation-chart',
@@ -137,7 +138,7 @@ export class TrackElevationChartComponent implements AfterViewInit {
           this._feature.geometry.coordinates[i][1],
           this._feature.geometry.coordinates[i][2],
         );
-        trackLength += this._mapService.getDistanceBetweenPoints(previousLocation, currentLocation);
+        trackLength += this._mapService.distanceBetweenPoints(previousLocation, currentLocation);
 
         if (!maxAlt || maxAlt < currentLocation.altitude) {
           maxAlt = currentLocation.altitude;
@@ -164,7 +165,7 @@ export class TrackElevationChartComponent implements AfterViewInit {
           this._feature.geometry.coordinates[i][1],
           this._feature.geometry.coordinates[i][2],
         );
-        const localDistance: number = this._mapService.getDistanceBetweenPoints(
+        const localDistance: number = this._mapService.distanceBetweenPoints(
           previousLocation,
           currentLocation,
         );

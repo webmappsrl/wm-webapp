@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
-import { Coordinate } from 'ol/coordinate';
-import { Extent } from 'ol/extent';
-import { transform, transformExtent } from 'ol/proj';
-import { ILocation } from '../types/location';
+import {transform, transformExtent} from 'ol/proj';
+
+import {Coordinate} from 'ol/coordinate';
+import {Extent} from 'ol/extent';
+import {ILocation} from '../types/location';
+import {Injectable} from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
@@ -60,7 +61,7 @@ export class MapService {
    * @param point1 the first location
    * @param point2 the second location
    */
-  getDistanceBetweenPoints(point1: ILocation, point2: ILocation): number {
+  distanceBetweenPoints(point1: ILocation, point2: ILocation): number {
     const earthRadius: number = 6371e3;
     const lat1: number = (point1.latitude * Math.PI) / 180;
     const lat2: number = (point2.latitude * Math.PI) / 180;

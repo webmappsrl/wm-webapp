@@ -6,6 +6,7 @@ export const environment = {
   production: false,
   geohubId: 17,
   api: 'https://geohub.webmapp.it',
+  graphhopperHost: 'http://89.105.65.148:8989',
   // api: 'http://127.0.0.1:8000',
 };
 

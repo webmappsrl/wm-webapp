@@ -4,7 +4,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  EventEmitter,
   ViewEncapsulation,
 } from '@angular/core';
 import {UICurrentFilters, UICurrentLAyer, UICurrentPoiId} from 'src/app/store/UI/UI.selector';
@@ -19,7 +18,12 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators';
-import {confGeohubId, confMAP, confShowDrawTrack} from 'src/app/store/conf/conf.selector';
+import {
+  confGeohubId,
+  confJIDOUPDATETIME,
+  confMAP,
+  confShowDrawTrack,
+} from 'src/app/store/conf/conf.selector';
 
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {GeohubService} from 'src/app/services/geohub.service';
@@ -47,6 +51,7 @@ export class MapPage {
   readonly trackid$: Observable<number>;
 
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
+  confJIDOUPDATETIME$: Observable<any> = this._store.select(confJIDOUPDATETIME);
   confMap$: Observable<any> = this._store.select(confMAP).pipe(
     tap(c => {
       if (c != null && c.pois != null && c.pois.apppoisApiLayer == true) {
@@ -54,20 +59,20 @@ export class MapPage {
       }
     }),
   );
-  graphhopperHost$: Observable<string> = of(environment.graphhopperHost);
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentFilters$ = this._store.select(UICurrentFilters);
   currentLayer$ = this._store.select(UICurrentLAyer);
   currentPoi$: Observable<any>;
-  currentRelatedPoi$: Observable<any>;
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiIDFromHome$ = this._store.select(UICurrentPoiId);
   currentPoiIDToMap$: Observable<number | null>;
+  currentRelatedPoi$: Observable<any>;
   currentRelatedPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   dataLayerUrls$: Observable<IDATALAYER>;
   disableLayers$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   drawTrackEnable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   enableDrawTrack$ = this._store.select(confShowDrawTrack);
+  graphhopperHost$: Observable<string> = of(environment.graphhopperHost);
   leftPadding$: Observable<number>;
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);

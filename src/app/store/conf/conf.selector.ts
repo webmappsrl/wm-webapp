@@ -14,6 +14,8 @@ export const confOPTIONS = createSelector(confFeature, state => state.OPTIONS);
 export const confAUTH = createSelector(confFeature, state => state.AUTH);
 
 export const confMAP = createSelector(confFeature, state => state.MAP);
+export const confJIDOUPDATETIME = createSelector(confFeature, state => state.JIDO_UPDATE_TIME);
+
 export const confMAPLAYERS = createSelector(confMAP, map => map.layers ?? undefined);
 export const confPOISFilter = createSelector(confMAP, map => {
   if (map != null && map.pois != null && map.pois.taxonomies != null) {

@@ -154,14 +154,14 @@ interface IMAP {
   bbox: [number, number, number, number];
   center?: [number, number];
   defZoom: number;
+  flow_line_quote_orange: number;
+  flow_line_quote_red: number;
+  flow_line_quote_show: boolean;
   layers?: ILAYER[];
   maxZoom: number;
   minZoom: number;
   pois?: any;
   tiles: {[name: string]: string}[];
-  flow_line_quote_show: boolean;
-  flow_line_quote_orange: number;
-  flow_line_quote_red: number;
 }
 interface ILAYER {
   bbox: [number, number, number, number];
@@ -237,6 +237,7 @@ interface ICONF {
   APP: IAPP;
   AUTH?: IAUTH;
   HOME?: IHOME[];
+  JIDO_UPDATE_TIME?: number;
   LANGUAGES?: ILANGUAGES;
   MAP?: IMAP;
   OPTIONS: IOPTIONS;

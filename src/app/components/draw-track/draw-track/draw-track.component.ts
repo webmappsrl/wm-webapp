@@ -1,3 +1,4 @@
+import {HttpClient} from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,12 +8,12 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 
-import {BehaviorSubject} from 'rxjs';
 import GeoJSON from 'ol/format/GeoJSON';
-import {HttpClient} from '@angular/common/http';
 import Map from 'ol/Map';
-import toGpx from 'togpx';
+
 import tokml from 'geojson-to-kml';
+import {BehaviorSubject} from 'rxjs';
+import toGpx from 'togpx';
 
 @Component({
   selector: 'wm-draw-track',
@@ -22,6 +23,10 @@ import tokml from 'geojson-to-kml';
   encapsulation: ViewEncapsulation.None,
 })
 export class DrawTrackComponent {
+  @Input() set track(t: any) {
+    this.track$.next(t);
+  }
+
   @Input() map: Map;
   @Output() reloadEvt: EventEmitter<void> = new EventEmitter<void>();
 
@@ -30,10 +35,6 @@ export class DrawTrackComponent {
 
   constructor(private _http: HttpClient) {
     this._initSavedTracks();
-  }
-
-  @Input() set track(t: any) {
-    this.track$.next(t);
   }
 
   centerCustomTrack(feature: any): void {

@@ -47,7 +47,10 @@
   <div class="webmapp-poi-popup-btns">
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.address">
       <i class="wm-icn icn-fill-pin"></i>
-      <a href="https://www.google.com/maps/place/{{poiProperties.address_link}}" target="_blank">
+      <a
+        href="https://www.google.com/maps?daddr={{poiProperties.address_link}}&navigate=yes"
+        target="_blank"
+      >
         {{poiProperties.address}}
       </a>
     </div>

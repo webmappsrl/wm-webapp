@@ -27,7 +27,7 @@ export class DrawTrackComponent {
     this.track$.next(t);
   }
 
-  @Input() map: Map;
+  @Input() map: Map | any;
   @Output() reloadEvt: EventEmitter<void> = new EventEmitter<void>();
 
   savedTracks$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);

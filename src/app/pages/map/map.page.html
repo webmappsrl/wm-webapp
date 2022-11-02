@@ -35,7 +35,8 @@
         {{'esci'|WebmappTranslate}}
       </ion-button>
       <wm-draw-track
-        [map]="wmap.map$|async"
+        *ngIf="(wmap.map$|async) as map"
+        [map]="map"
         [track]="currentCustomTrack$|async"
         (reloadEvt)="reloadCustomTrack()"
       ></wm-draw-track>

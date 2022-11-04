@@ -1,5 +1,4 @@
 webmapp-poi-popup {
-  display: block;
   position: absolute;
   background-color: white;
   margin-right: 10px;
@@ -12,43 +11,91 @@ webmapp-poi-popup {
   box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.1);
   transition: all 500ms;
   z-index: 1;
+  padding: 10px;
 
   display: flex;
-  flex: 1;
   flex-direction: column;
   flex-wrap: nowrap;
   justify-content: flex-start;
   align-content: stretch;
   align-items: stretch;
-  ion-slide {
-    background-color: white;
+
+  .row {
+    -webkit-order: 0;
+    -ms-flex-order: 0;
+    order: 0;
+    -webkit-flex: 0 1 auto;
+    -ms-flex: 0 1 auto;
+    flex: 0 1 auto;
+    -webkit-align-self: auto;
+    -ms-flex-item-align: auto;
+    align-self: auto;
   }
-  > * {
-    padding: 10px;
+  .category {
+    color: var(--wm-color-primary);
+    text-transform: uppercase;
   }
-  .slides-container {
+
+  .title {
+    display: -ms-inline-flexbox;
+    display: -webkit-inline-flex;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    -ms-flex-line-pack: stretch;
+    align-content: stretch;
+    align-items: center;
+    width: 100%;
+
+    .webmapp-poi-popup-left,
+    .webmapp-poi-popup-right {
+      order: 0;
+      flex: 0 1 auto;
+      align-self: auto;
+    }
+    .webmapp-poi-popup-left {
+      margin-right: 5px;
+    }
+    .webmapp-poi-popup-right {
+      margin-left: 5px;
+    }
+  }
+  .gallery {
     width: -webkit-fill-available !important;
-    max-height: 50%;
+    max-height: 100%;
     position: relative;
     background-color: white !important;
 
     .left {
       position: absolute;
       left: 0;
-      top: 50%;
+      top: 40%;
       z-index: 99999;
+      margin-left: 5px;
     }
     .right {
       position: absolute;
       right: 0;
-      top: 50%;
+      top: 40%;
       z-index: 99999;
     }
   }
+  .circle {
+    width: 33px;
+    height: 33px;
+    margin: auto;
+  }
+  .webmapp-poi-popup-close {
+    float: right;
+  }
+  ion-slide {
+    background-color: white;
+  }
+
   .webmapp-poi-popup-img {
     width: 100%;
     object-fit: cover;
-    padding: 10px;
     border-radius: 15px;
     flex: 0 0 auto;
     align-self: auto;
@@ -66,25 +113,19 @@ webmapp-poi-popup {
     align-content: stretch;
     align-items: baseline;
     flex-basis: min-content;
-
-    .webmapp-poi-popup-left,
-    .webmapp-poi-popup-right {
-      order: 0;
-      flex: 0 1 auto;
-      align-self: auto;
-    }
-    .webmapp-poi-popup-title {
-      font-family: var(--wm-font-family-header);
-      font-size: var(--wm-font-md);
-      font-weight: 700;
-      line-height: 22px;
-      letter-spacing: 0em;
-      text-align: left;
-      flex: 1 1 auto;
-      flex-basis: min-content;
-    }
   }
 
+  .webmapp-poi-popup-title {
+    font-family: var(--wm-font-family-header);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: 0em;
+    text-align: left;
+    flex: 1 1 auto;
+    flex-basis: min-content;
+    margin: 0;
+  }
   .webmapp-poi-popup-text {
     font-family: var(--wm-font-family-content);
     display: flex;
@@ -97,7 +138,7 @@ webmapp-poi-popup {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
     margin-bottom: 10px;
-
+    margin-top: 10px;
     p {
       margin: unset;
     }
@@ -109,15 +150,19 @@ webmapp-poi-popup {
     flex-wrap: nowrap;
     justify-content: flex-start;
     align-content: stretch;
+    align-items: stretch;
     .webmapp-poi-popup-btn {
-      display: flex;
+      order: 0;
+      flex: 0 1 auto;
+      align-self: auto;
+      font-family: var(--wm-font-family-content);
+
+      display: inline-flex;
       flex-direction: row;
       flex-wrap: nowrap;
       justify-content: flex-start;
-      align-content: center;
-      align-items: center;
-      height: auto;
-      font-family: var(--wm-font-family-content);
+      align-content: stretch;
+      align-items: baseline;
       i {
         flex: 0 1 20px;
         align-self: auto;
@@ -125,13 +170,8 @@ webmapp-poi-popup {
       }
       .wm-icn {
         color: var(--wm-color-primary);
-        padding: 0 5px;
+        margin-right: 5px;
         flex: 0 1 auto;
-      }
-      p,
-      webmapp-related-urls {
-        flex: 1 1 auto;
-        align-self: auto;
       }
     }
   }
@@ -139,12 +179,15 @@ webmapp-poi-popup {
   .webmapp-poi-popup-left,
   .webmapp-poi-popup-right {
     padding: 10px;
-    margin: 5px;
     border-radius: 15px;
     z-index: 9999;
   }
-  .webmapp-poi-popup-close {
+
+  .edit {
     position: absolute;
+    bottom: 0;
+    left: 0;
     right: 0;
+    padding: 3px;
   }
 }

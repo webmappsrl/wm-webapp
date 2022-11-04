@@ -4,7 +4,39 @@
     (closeEVT)="toggleImage()"
     [image]="image"
   ></webmapp-image-modal>
-  <div class="slides-container">
+
+  <div class="row">
+    <button class="webmapp-poi-popup-close" (click)="closeEVT.emit()">
+      <i class="icn-outline-close"></i>
+    </button>
+  </div>
+  <div
+    class="row category"
+    *ngIf="poiProperties.taxonomy && poiProperties.taxonomy.poi_type as poiType"
+    [innerHTML]="poiType.name|WebmappTranslate"
+  ></div>
+  <div class="row">
+    <div class="title">
+      <button
+        class="webmapp-poi-popup-left circle"
+        *ngIf="poiProperties.related"
+        (click)="prevEVT.emit()"
+      >
+        <i class="icn-outline-arrow-left"></i>
+      </button>
+      <p class="webmapp-poi-popup-title">{{poiProperties.name|WebmappTranslate}}</p>
+
+      <button
+        class="webmapp-poi-popup-right circle"
+        (click)="nextEVT.emit()"
+        *ngIf="poiProperties.related"
+      >
+        <i class="icn-outline-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="row gallery">
     <ion-slides #gallery class="gallery" [options]="slideOptions">
       <ion-slide
         pager="true"
@@ -22,28 +54,28 @@
       >
         <img [src]="image.url" class="webmapp-poi-popup-img" />
       </ion-slide>
+      <ng-container
+        *ngIf="poiProperties.image_gallery!= null && poiProperties.image_gallery.length > 0"
+      >
+        <button
+          type="submit"
+          ion-button
+          class="webmapp-poi-popup-left left circle"
+          (click)="prev()"
+        >
+          <ion-icon name="caret-back-outline"></ion-icon>
+        </button>
+        <button
+          type="submit"
+          ion-button
+          class="webmapp-poi-popup-right right circle"
+          (click)="next()"
+        >
+          <ion-icon name="caret-forward-outline"></ion-icon>
+        </button>
+      </ng-container>
     </ion-slides>
-    <ng-container
-      *ngIf="poiProperties.image_gallery!= null && poiProperties.image_gallery.length > 0"
-    >
-      <button type="submit" ion-button class="webmapp-poi-popup-left left" (click)="prev()">
-        <ion-icon name="caret-back-outline"></ion-icon>
-      </button>
-      <button type="submit" ion-button class="webmapp-poi-popup-right right" (click)="next()">
-        <ion-icon name="caret-forward-outline"></ion-icon>
-      </button>
-    </ng-container>
   </div>
-
-  <span class="webmapp-poi-popup-header">
-    <button class="webmapp-poi-popup-left" *ngIf="poiProperties.related" (click)="prevEVT.emit()">
-      <i class="icn-outline-arrow-left"></i>
-    </button>
-    <p class="webmapp-poi-popup-title">{{poiProperties.name|WebmappTranslate}}</p>
-    <button class="webmapp-poi-popup-right" (click)="nextEVT.emit()" *ngIf="poiProperties.related">
-      <i class="icn-outline-arrow-right"></i>
-    </button>
-  </span>
   <div class="webmapp-poi-popup-btns">
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.address">
       <i class="wm-icn icn-fill-pin"></i>
@@ -73,11 +105,6 @@
       <webmapp-related-urls [relatedUrls]="poiProperties.related_url"></webmapp-related-urls>
     </div>
   </div>
-  <pre>{{poiProperties.taxonomy.poi_type|json}}</pre>
-
-  <ng-container *ngIf="poiProperties.taxonomy && poiProperties.taxonomy.poi_type as poiType">
-    <div class="webmapp-poi-popup-text" [innerHTML]="poiType.name|WebmappTranslate"></div>
-  </ng-container>
 
   <div
     class="webmapp-poi-popup-text"
@@ -88,8 +115,7 @@
     <div class="webmapp-title">Descrizione Audio</div>
     <webmapp-track-audio [audio]="poiProperties?.audio"></webmapp-track-audio>
   </ng-container>
-  <ion-button *ngIf="enableEditingInline$|async" (click)="openGeohub()"> edit geohub</ion-button>
-  <button class="webmapp-poi-popup-close" (click)="closeEVT.emit()">
-    <i class="icn-outline-close"></i>
-  </button>
+  <ion-button class="edit" *ngIf="enableEditingInline$|async" (click)="openGeohub()">
+    edit geohub</ion-button
+  >
 </ng-container>

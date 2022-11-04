@@ -5,7 +5,7 @@ import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
   template: `
   <div *ngIf="relatedUrls !== null">
     <ng-container *ngFor="let item of relatedUrls|keyvalue">
-      <a [href]="item.value" target="_blank">{{item.key}}</a>
+      <a [href]="item.value" target="_blank" style="display:block">{{item.key}}</a>
     </ng-container>
   </div>
 `,

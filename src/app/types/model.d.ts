@@ -63,11 +63,17 @@ export interface IGeojsonProperties {
   taxonomy?: {
     activity?: any[];
     where?: string[];
+    poi_type?: PoiTypeTaxonomy;
   };
   updated_at?: Date;
   user_id?: number;
 
   [_: string]: any;
+}
+export interface PoiTypeTaxonomy {
+  description: ILocaleString;
+  id: number;
+  name: ILocaleString;
 }
 
 /**

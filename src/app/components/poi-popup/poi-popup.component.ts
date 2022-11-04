@@ -1,4 +1,3 @@
-import {BehaviorSubject, Observable, from} from 'rxjs';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -9,10 +8,13 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 import {IonSlides} from '@ionic/angular';
 import {Store} from '@ngrx/store';
+
 import {confShowEditingInline} from 'src/app/store/conf/conf.selector';
+import {IGeojsonProperties} from 'src/app/types/model';
 
 @Component({
   selector: 'webmapp-poi-popup',
@@ -22,14 +24,46 @@ import {confShowEditingInline} from 'src/app/store/conf/conf.selector';
   encapsulation: ViewEncapsulation.None,
 })
 export class PoiPopupComponent {
+  @Input('poi') set setPoi(poi: any) {
+    if (poi != null && poi.properties != null) {
+      const prop: {[key: string]: any} = {};
+      try {
+        prop.address =
+          poi.properties.addr_complete ??
+          [poi.properties.addr_locality, poi.properties.addr_street]
+            .filter(f => f != null)
+            .join(', ');
+      } catch (_) {
+        prop.address = '';
+      }
+      try {
+        prop.address_link = [poi.properties.addr_locality, poi.properties.addr_street]
+          .filter(f => f != null)
+          .join('+');
+      } catch (_) {
+        prop.address_link = '';
+      }
+      if (poi.properties.related_url != null) {
+        if (poi.properties.related_url[''] === null) {
+          delete poi.properties.related_url[''];
+        }
+        prop.related_url =
+          Object.keys(poi.properties.related_url).length === 0 ? null : poi.properties.related_url;
+      }
+
+      this.poiProperties = {...poi.properties, ...prop};
+    }
+  }
+
   @Output() closeEVT: EventEmitter<void> = new EventEmitter<void>();
   @Output() nextEVT: EventEmitter<void> = new EventEmitter<void>();
   @Output() prevEVT: EventEmitter<void> = new EventEmitter<void>();
   @ViewChild('gallery') slider: IonSlides;
-  isEnd$: Observable<boolean>;
+
   defaultPhotoPath = '/assets/icon/no-photo.svg';
   enableEditingInline$ = this._store.select(confShowEditingInline);
-  poiProperties: any = null;
+  isEnd$: Observable<boolean>;
+  poiProperties: IGeojsonProperties = null;
   slideOptions = {
     slidesPerView: 1,
     allowTouchMove: false,
@@ -101,66 +135,27 @@ export class PoiPopupComponent {
       },
     },
   };
-  constructor(private _store: Store) {}
   toggleImage$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
 
-  @Input('poi') set setPoi(poi: any) {
-    if (poi != null && poi.properties != null) {
-      const prop: {[key: string]: any} = {};
-      try {
-        prop.address =
-          poi.properties.addr_complete ??
-          [poi.properties.addr_locality, poi.properties.addr_street]
-            .filter(f => f != null)
-            .join(', ');
-      } catch (_) {
-        prop.address = '';
-      }
-      try {
-        prop.address_link = [poi.properties.addr_locality, poi.properties.addr_street]
-          .filter(f => f != null)
-          .join('+');
-      } catch (_) {
-        prop.address_link = '';
-      }
-      if (poi.properties.related_url != null) {
-        if (poi.properties.related_url[''] === null) {
-          delete poi.properties.related_url[''];
-        }
-        prop.related_url =
-          Object.keys(poi.properties.related_url).length === 0 ? null : poi.properties.related_url;
-      }
-
-      this.poiProperties = {...poi.properties, ...prop};
-    }
-  }
+  constructor(private _store: Store) {}
 
   @HostListener('document:keydown.ArrowLeft', ['$event'])
-  handleArrowLeft() {
+  handleArrowLeft(): void {
     this.prevEVT.emit();
   }
 
   @HostListener('document:keydown.ArrowRight', ['$event'])
-  handleArrowRight() {
+  handleArrowRight(): void {
     this.nextEVT.emit();
   }
 
   @HostListener('document:keydown.Escape', ['$event'])
-  handleEscape() {
+  handleEscape(): void {
     this.closeEVT.emit();
-  }
-
-  toggleImage(val = null): void {
-    console.log('click');
-    this.toggleImage$.next(val);
   }
 
   next(): void {
     this.slider.slideNext();
-    this.toggleImage(null);
-  }
-  prev(): void {
-    this.slider.slidePrev();
     this.toggleImage(null);
   }
 
@@ -170,5 +165,15 @@ export class PoiPopupComponent {
       const url = `https://geohub.webmapp.it/resources/ec-pois/${id}/edit?viaResource&viaResourceId&viaRelationship`;
       window.open(url, '_blank').focus();
     }
+  }
+
+  prev(): void {
+    this.slider.slidePrev();
+    this.toggleImage(null);
+  }
+
+  toggleImage(val = null): void {
+    console.log('click');
+    this.toggleImage$.next(val);
   }
 }

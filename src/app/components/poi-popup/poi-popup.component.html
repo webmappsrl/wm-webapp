@@ -73,6 +73,11 @@
       <webmapp-related-urls [relatedUrls]="poiProperties.related_url"></webmapp-related-urls>
     </div>
   </div>
+  <pre>{{poiProperties.taxonomy.poi_type|json}}</pre>
+
+  <ng-container *ngIf="poiProperties.taxonomy && poiProperties.taxonomy.poi_type as poiType">
+    <div class="webmapp-poi-popup-text" [innerHTML]="poiType.name|WebmappTranslate"></div>
+  </ng-container>
 
   <div
     class="webmapp-poi-popup-text"

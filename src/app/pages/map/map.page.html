@@ -61,8 +61,10 @@
     wmMapLayer
     wmMapTrack
     wmMapPois
-    wmMapRelatedPois
+    wmMapTrackRelatedPois
     wmMapCustomTracks
+    [wmMapOverlay]="(enableOverLay$|async)"
+    [wmMapOverlayUrl]="'https://geohub.webmapp.it/api/taxonomy/where/geojson/13'"
     [jidoUpdateTime]="confJIDOUPDATETIME$|async"
     [wmMapCustomTrackDrawTrack]="drawTrackEnable$|async"
     [wmMapCustomTrackDrawTrackHost]="graphhopperHost$|async"

@@ -72,6 +72,8 @@ export class MapPage {
   disableLayers$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   drawTrackEnable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   enableDrawTrack$ = this._store.select(confShowDrawTrack);
+  enableOverLay$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  geohubId$ = this._store.select(confGeohubId);
   graphhopperHost$: Observable<string> = of(environment.graphhopperHost);
   leftPadding$: Observable<number>;
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
@@ -94,9 +96,12 @@ export class MapPage {
       this.mapPadding$.next([initPadding[0], initPadding[1], initPadding[2], menuCloseLeft]);
       this.resizeEVT.next(!this.resizeEVT.value);
     }
-    this.dataLayerUrls$ = this._store.select(confGeohubId).pipe(
+    this.dataLayerUrls$ = this.geohubId$.pipe(
       filter(g => g != null),
       map(geohubId => {
+        if (geohubId == 13) {
+          this.enableOverLay$.next(true);
+        }
         return {
           low: `https://jidotile.webmapp.it/?x={x}&y={y}&z={z}&index=geohub_app_low_${geohubId}`,
           high: `https://jidotile.webmapp.it/?x={x}&y={y}&z={z}&index=geohub_app_high_${geohubId}`,

@@ -4,8 +4,8 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {environment} from 'src/environments/environment';
-const baseUrl = 'https://elastic-passtrough.herokuapp.com/search';
-// const baseUrl = 'https://elastic.webmapp.it:3000/search';
+// const baseUrl = 'https://elastic-passtrough.herokuapp.com/search';
+const baseUrl = 'https://elastic-json.webmapp.it/search';
 @Injectable({
   providedIn: 'root',
 })

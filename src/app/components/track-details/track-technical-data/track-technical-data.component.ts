@@ -39,6 +39,11 @@ export class TrackTechnicalDataComponent implements OnInit {
       value: string;
     }> = [];
     const technicalDataLabelPrefix: string = 'trackDetails.technicalData.';
+    const roundTrip =
+      this?._feature?.properties?.duration_forward != null &&
+      this?._feature?.properties?.duration_backward &&
+      this?._feature?.properties?.duration_forward == this?._feature?.properties?.duration_backward;
+
     // difficulty
     if (this?._feature?.properties?.difficulty) {
       technicalData.push({
@@ -55,6 +60,7 @@ export class TrackTechnicalDataComponent implements OnInit {
         value: this._utilsService.formatDistance(this._feature.properties.distance),
       });
     }
+
     // Duration forward
     if (this?._feature?.properties?.duration_forward) {
       technicalData.push({
@@ -64,13 +70,14 @@ export class TrackTechnicalDataComponent implements OnInit {
       });
     }
     // Duration backward
-    if (this?._feature?.properties?.duration_backward) {
+    if (this?._feature?.properties?.duration_backward && !roundTrip) {
       technicalData.push({
         icon: 'icn-outline-duration',
         label: technicalDataLabelPrefix + 'duration_backward',
         value: this._utilsService.formatDuration(this._feature.properties.duration_backward),
       });
     }
+
     // Ascent
     if (this?._feature?.properties?.ascent) {
       technicalData.push({
@@ -80,7 +87,7 @@ export class TrackTechnicalDataComponent implements OnInit {
       });
     }
     // Descent
-    if (this?._feature?.properties?.descent) {
+    if (this?._feature?.properties?.descent && !roundTrip) {
       technicalData.push({
         icon: 'icn-outline-dislivello-negativo',
         label: technicalDataLabelPrefix + 'descent',
@@ -96,7 +103,7 @@ export class TrackTechnicalDataComponent implements OnInit {
       });
     }
     // Ele to
-    if (this?._feature?.properties?.ele_to) {
+    if (this?._feature?.properties?.ele_to && !roundTrip) {
       technicalData.push({
         icon: 'icn-fill-flag',
         label: technicalDataLabelPrefix + 'ele_to',

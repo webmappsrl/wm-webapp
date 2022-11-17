@@ -18,6 +18,7 @@ import {ModalController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {elasticSearch} from 'src/app/store/elastic/elastic.selector';
 import {pois} from 'src/app/store/pois/pois.selector';
+import {fromHEXToColor} from 'src/app/shared/map-core/utils/styles';
 
 @Component({
   selector: 'webmapp-home',
@@ -29,7 +30,21 @@ import {pois} from 'src/app/store/pois/pois.selector';
 export class HomeComponent {
   cards$: Observable<IHIT[]> = of([]);
   confHOME$: Observable<IHOME[]> = this._storeConf.select(confHOME);
-  confPOISFilter$: Observable<any> = this._storeConf.select(confPOISFilter);
+  confPOISFilter$: Observable<any> = this._storeConf.select(confPOISFilter).pipe(
+    map(p => {
+      if (p.poi_type != null) {
+        let poi_type = p.poi_type.map(p => {
+          if (p.icon != null && p.color != null) {
+            const namedPoiColor = fromHEXToColor[p.color] || 'darkorange';
+            return {...p, ...{icon: p.icon.replaceAll('darkorange', namedPoiColor)}};
+          }
+          return p;
+        });
+        return {where: p.where, poi_type};
+      }
+      return p;
+    }),
+  );
   currentLayer$: BehaviorSubject<ILAYER | null> = new BehaviorSubject<ILAYER | null>(null);
   currentSearch$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   currentTab$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');

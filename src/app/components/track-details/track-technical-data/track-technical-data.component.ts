@@ -39,10 +39,6 @@ export class TrackTechnicalDataComponent implements OnInit {
       value: string;
     }> = [];
     const technicalDataLabelPrefix: string = 'trackDetails.technicalData.';
-    const roundTrip =
-      this?._feature?.properties?.duration_forward != null &&
-      this?._feature?.properties?.duration_backward &&
-      this?._feature?.properties?.duration_forward == this?._feature?.properties?.duration_backward;
 
     // difficulty
     if (this?._feature?.properties?.difficulty) {
@@ -70,7 +66,10 @@ export class TrackTechnicalDataComponent implements OnInit {
       });
     }
     // Duration backward
-    if (this?._feature?.properties?.duration_backward && !roundTrip) {
+    if (
+      this?._feature?.properties?.duration_backward &&
+      this?._feature?.properties?.roundtrip === false
+    ) {
       technicalData.push({
         icon: 'icn-outline-duration',
         label: technicalDataLabelPrefix + 'duration_backward',
@@ -87,7 +86,7 @@ export class TrackTechnicalDataComponent implements OnInit {
       });
     }
     // Descent
-    if (this?._feature?.properties?.descent && !roundTrip) {
+    if (this?._feature?.properties?.descent && this?._feature?.properties?.roundtrip === false) {
       technicalData.push({
         icon: 'icn-outline-dislivello-negativo',
         label: technicalDataLabelPrefix + 'descent',
@@ -103,7 +102,7 @@ export class TrackTechnicalDataComponent implements OnInit {
       });
     }
     // Ele to
-    if (this?._feature?.properties?.ele_to && !roundTrip) {
+    if (this?._feature?.properties?.ele_to && this?._feature?.properties?.roundtrip === false) {
       technicalData.push({
         icon: 'icn-fill-flag',
         label: technicalDataLabelPrefix + 'ele_to',

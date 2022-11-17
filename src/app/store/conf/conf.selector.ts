@@ -19,10 +19,21 @@ export const confJIDOUPDATETIME = createSelector(confFeature, state => state.JID
 export const confMAPLAYERS = createSelector(confMAP, map => map.layers ?? undefined);
 export const confPOISFilter = createSelector(confMAP, map => {
   if (map != null && map.pois != null && map.pois.taxonomies != null) {
-    return map.pois.taxonomies;
+    let res: any = {};
+    const where = map.pois.taxonomies.where;
+    if (where) {
+      res.where = where;
+    }
+    const poi_type = map.pois.taxonomies.poi_type;
+    if (poi_type) {
+      res.poi_type = poi_type;
+    }
+
+    return res;
   }
   return undefined;
 });
+
 export const confPoisIcons = createSelector(confPOISFilter, taxonomies => {
   const res = {};
   if (taxonomies != null && taxonomies.poi_type != null) {

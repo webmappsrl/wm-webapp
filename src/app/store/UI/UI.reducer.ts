@@ -1,11 +1,11 @@
 import {createReducer, on} from '@ngrx/store';
-import {enabledDrawTrack, setCurrentFilters, setCurrentLayer, setCurrentPoiId} from './UI.actions';
+import {enabledDrawTrack, setCurrentFilters, setCurrentLayer, setCurrentPoi} from './UI.actions';
 
 export const featureKey = 'UI';
 export interface IUIRootState {
   [featureKey]: {
     currentLayer?: ILAYER;
-    currentPoiId?: number;
+    currentPoi?: any;
     currentFilters?: any[];
   } | null;
 }
@@ -18,10 +18,10 @@ export const UIReducer = createReducer(
       ...{currentLayer},
     };
   }),
-  on(setCurrentPoiId, (state, {currentPoiId}) => {
+  on(setCurrentPoi, (state, {currentPoi}) => {
     return {
       ...state,
-      ...{currentPoiId},
+      ...{currentPoi},
     };
   }),
   on(setCurrentFilters, (state, {currentFilters}) => {

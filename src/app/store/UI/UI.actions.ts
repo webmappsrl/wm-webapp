@@ -4,9 +4,9 @@ export const setCurrentLayer = createAction(
   '[UI] Set current layer',
   props<{currentLayer: ILAYER}>(),
 );
-export const setCurrentPoiId = createAction(
-  '[UI] Set current poi id',
-  props<{currentPoiId: number}>(),
+export const setCurrentPoi = createAction(
+  '[UI] Set current poi',
+  props<{currentPoi: any}>(),
 );
 export const setCurrentFilters = createAction(
   '[UI] Set current Filters',

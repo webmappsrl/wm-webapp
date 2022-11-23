@@ -1,10 +1,12 @@
 <ng-container *ngIf="poiProperties!= null">
-  <webmapp-image-modal
+  <ng-container>
+    <webmapp-image-modal
     *ngIf="toggleImage$|async as image"
     (closeEVT)="toggleImage()"
     [image]="image"
-  ></webmapp-image-modal>
-
+    ></webmapp-image-modal>
+    
+  </ng-container>
   <div class="row">
     <button class="webmapp-poi-popup-close" (click)="closeEVT.emit()">
       <i class="icn-outline-close"></i>
@@ -36,7 +38,7 @@
     </div>
   </div>
 
-  <div class="row gallery">
+  <div class="row gallery" *ngIf="poiProperties.feature_image !=null">
     <ion-slides #gallery class="gallery" [options]="slideOptions">
       <ion-slide
         pager="true"

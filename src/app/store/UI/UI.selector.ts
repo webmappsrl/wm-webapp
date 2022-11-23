@@ -4,7 +4,7 @@ import {featureKey} from './UI.reducer';
 
 const feature = createFeatureSelector<{
   currentLayer?: ILAYER;
-  currentPoiId?: number;
+  currentPoi?: any;
   currentFilters?: string[];
   drawTrack: boolean;
 } | null>(featureKey);
@@ -12,8 +12,11 @@ const feature = createFeatureSelector<{
 export const UICurrentLAyer = createSelector(feature, state =>
   state && state.currentLayer ? state.currentLayer : null,
 );
-export const UICurrentPoiId = createSelector(feature, state =>
-  state && state.currentPoiId ? state.currentPoiId : null,
+export const UICurrentPoi = createSelector(feature, state =>
+  state && state.currentPoi ? state.currentPoi : null,
+);
+export const UICurrentPoiId = createSelector(UICurrentPoi, state =>
+  state && state.id ? state.id : null,
 );
 export const UICurrentFilters = createSelector(feature, state =>
   state && state.currentFilters ? state.currentFilters : [],

@@ -17,7 +17,7 @@ export const pois = createSelector(poisFeature, confPoisIcons, (state, icons) =>
         if (filteredArray.length > 0) {
           let p = {...f.properties, ...{svgIcon: icons[filteredArray[0]]}};
 
-          return {...f, ...{properties: p}, ...{a: 'suca'}};
+          return {...f, ...{properties: p}};
         }
       }
       return f;

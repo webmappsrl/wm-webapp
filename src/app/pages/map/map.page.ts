@@ -33,6 +33,7 @@ import {Store} from '@ngrx/store';
 import {environment} from 'src/environments/environment';
 import {loadPois} from 'src/app/store/pois/pois.actions';
 import {pois} from 'src/app/store/pois/pois.selector';
+import { setCurrentPoi } from 'src/app/store/UI/UI.actions';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -62,7 +63,7 @@ export class MapPage {
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentFilters$ = this._store.select(UICurrentFilters);
   currentLayer$ = this._store.select(UICurrentLAyer);
-  currentPoi$: Observable<any>;
+  currentPoi$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiIDFromHome$ = this._store.select(UICurrentPoiId);
   currentPoiIDToMap$: Observable<number | null>;
@@ -155,23 +156,6 @@ export class MapPage {
       catchError(e => of(null)),
       shareReplay(),
     );
-    this.currentPoi$ = merge(this.currentPoiID$, this.currentPoiIDFromHome$).pipe(
-      withLatestFrom(this.pois$.pipe(filter(p => p != null))),
-      map(([id, pois]) => {
-        if (id != -1) {
-          const relatedPois = pois.features.filter(poi => {
-            const poiProperties = poi.properties;
-            return +poiProperties.id === +id;
-          });
-          const relatedPoi = relatedPois[0] ?? null;
-          const properties = {...relatedPoi.properties};
-          return {...relatedPoi, properties};
-        }
-        return null;
-      }),
-      catchError(e => of(null)),
-      shareReplay(),
-    );
 
     this.currentPoiIDToMap$ = merge(
       this.currentRelatedPoiID$,
@@ -213,7 +197,6 @@ export class MapPage {
   }
 
   setCurrentPoi(id): void {
-    this.currentRelatedPoiID$.next(-1);
     if (id !== this.currentPoiID$.value) {
       this.currentPoiID$.next(id);
     }
@@ -230,6 +213,10 @@ export class MapPage {
 
   setCustomTrackEnabled(): void {
     console.log('ffff');
+  }
+
+  setPoi(poi:any): void {
+    this.currentPoi$.next(poi);
   }
 
   setTrackElevationChartHoverElements(elements?: ITrackElevationChartHoverElements): void {
@@ -256,6 +243,7 @@ export class MapPage {
   unselectPOI(): void {
     this.currentPoiID$.next(-1);
     this.currentRelatedPoiID$.next(-1);
+    this.currentPoi$.next(null);
   }
 
   updateUrl(trackid: number): void {

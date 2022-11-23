@@ -7,14 +7,14 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {confHOME, confPOISFilter} from 'src/app/store/conf/conf.selector';
-import {filter, map, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
-import {setCurrentFilters, setCurrentLayer, setCurrentPoiId} from 'src/app/store/UI/UI.actions';
+import {filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {setCurrentFilters, setCurrentLayer, setCurrentPoi} from 'src/app/store/UI/UI.actions';
 
 import {IConfRootState} from 'src/app/store/conf/conf.reducer';
 import {IElasticSearchRootState} from 'src/app/store/elastic/elastic.reducer';
 import {IUIRootState} from 'src/app/store/UI/UI.reducer';
 import {InnerHtmlComponent} from '../project/project.page.component';
-import {ModalController} from '@ionic/angular';
+import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {elasticSearch} from 'src/app/store/elastic/elastic.selector';
 import {pois} from 'src/app/store/pois/pois.selector';
@@ -64,6 +64,7 @@ export class HomeComponent {
     private _route: ActivatedRoute,
     private _modalCtrl: ModalController,
     private _cdr: ChangeDetectorRef,
+    private _navCtrl: NavController,
   ) {
     this.cards$ = merge(this.elasticSearch$, this.layerCards$).pipe(startWith([]), shareReplay(1));
     const allPois: Observable<any[]> = this._storeUi.select(pois).pipe(
@@ -119,6 +120,8 @@ export class HomeComponent {
         .then(modal => {
           modal.present();
         });
+    } else {
+      this._navCtrl.navigateForward(slug);
     }
   }
 
@@ -152,7 +155,7 @@ export class HomeComponent {
     this.currentLayer$.next(layer);
   }
 
-  setPoi(id: number): void {
-    this._storeUi.dispatch(setCurrentPoiId({currentPoiId: id}));
+  setPoi(currentPoi: any): void {
+    this._storeUi.dispatch(setCurrentPoi({currentPoi}));
   }
 }

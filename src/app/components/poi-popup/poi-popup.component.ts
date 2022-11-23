@@ -25,6 +25,7 @@ import {IGeojsonProperties} from 'src/app/types/model';
 })
 export class PoiPopupComponent {
   @Input('poi') set setPoi(poi: any) {
+    console.log(poi)
     if (poi != null && poi.properties != null) {
       const prop: {[key: string]: any} = {};
       try {

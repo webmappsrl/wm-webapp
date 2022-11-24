@@ -33,7 +33,7 @@ import {Store} from '@ngrx/store';
 import {environment} from 'src/environments/environment';
 import {loadPois} from 'src/app/store/pois/pois.actions';
 import {pois} from 'src/app/store/pois/pois.selector';
-import { setCurrentPoi } from 'src/app/store/UI/UI.actions';
+import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -81,6 +81,7 @@ export class MapPage {
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<any> = this._store.select(pois);
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  resetSelectedPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
@@ -215,7 +216,7 @@ export class MapPage {
     console.log('ffff');
   }
 
-  setPoi(poi:any): void {
+  setPoi(poi: any): void {
     this.currentPoi$.next(poi);
   }
 
@@ -244,6 +245,7 @@ export class MapPage {
     this.currentPoiID$.next(-1);
     this.currentRelatedPoiID$.next(-1);
     this.currentPoi$.next(null);
+    this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
   }
 
   updateUrl(trackid: number): void {

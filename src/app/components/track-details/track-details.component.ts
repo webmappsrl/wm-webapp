@@ -24,6 +24,19 @@ import {confShowEditingInline} from 'src/app/store/conf/conf.selector';
   encapsulation: ViewEncapsulation.None,
 })
 export class TrackDetailsComponent {
+  @Input('poi') set setPoi(id: number | 'reset') {
+    if (typeof id === 'number') {
+      this.poiId = id;
+    }
+  }
+
+  @Input('track') set setTrack(track: CGeojsonLineStringFeature) {
+    if (track != null) {
+      this.track = track;
+      this._initializeFeature();
+    }
+  }
+
   @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
   @Output('trackElevationChartHover')
@@ -37,17 +50,6 @@ export class TrackDetailsComponent {
   track: CGeojsonLineStringFeature;
 
   constructor(private _modalController: ModalController, private _store: Store) {}
-
-  @Input('poi') set setPoi(id: number) {
-    this.poiId = id;
-  }
-
-  @Input('track') set setTrack(track: CGeojsonLineStringFeature) {
-    if (track != null) {
-      this.track = track;
-      this._initializeFeature();
-    }
-  }
 
   onLocationHover(event: ITrackElevationChartHoverElements) {
     this.trackElevationChartHover.emit(event);

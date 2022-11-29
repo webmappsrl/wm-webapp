@@ -1,3 +1,4 @@
+import {confOPTIONS} from './../../store/conf/conf.selector';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -43,6 +44,7 @@ export class TrackDetailsComponent {
   trackElevationChartHover: EventEmitter<ITrackElevationChartHoverElements> = new EventEmitter<ITrackElevationChartHoverElements>();
   @ViewChild('content') content: IonContent;
 
+  confOPTIONS$ = this._store.select(confOPTIONS);
   public data: Partial<IGeojsonProperties>;
   enableEditingInline$ = this._store.select(confShowEditingInline);
   public feature: CGeojsonLineStringFeature;

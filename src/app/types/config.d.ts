@@ -96,6 +96,7 @@ interface IOPTIONS {
   detailsMapBehaviour?: IDETAILSMAPBEHAVIOUR;
   downloadFullGemoetryRouteIndex: boolean;
   downloadRoutesInWebapp: boolean;
+  download_track_enable: boolean;
   enableTrackAdoption: boolean;
   forceDefaultFeatureColor: boolean;
   forceWelcomePagePopup: boolean;

@@ -1,6 +1,8 @@
+import {BehaviorSubject} from 'rxjs';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -37,11 +39,16 @@ import {MapService} from 'src/app/services/map.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class TrackElevationChartComponent implements AfterViewInit {
-  @ViewChild('chartCanvas') set content(content: ElementRef) {
-    this._chartCanvas = content.nativeElement;
-  }
+  private _chart: Chart;
+  private _chartCanvas: any;
+  private _chartValues: Array<ILocation>;
 
-  @Input('feature') set feature(value: CGeojsonLineStringFeature) {
+  @Input('feature')
+  set feature(value: CGeojsonLineStringFeature) {
+    console.log(value.geometry.coordinates[0]);
+    const condition = (value.geometry.coordinates[0] as any[]).length > 3;
+    this.enableChart$.next(condition);
+    this._cdr.detectChanges();
     this._feature = value;
     if (this._chart) {
       this._chart.destroy();
@@ -54,15 +61,15 @@ export class TrackElevationChartComponent implements AfterViewInit {
     }
   }
 
+  @ViewChild('chartCanvas') set content(content: ElementRef) {
+    this._chartCanvas = content?.nativeElement || undefined;
+  }
+
   @Output('hover') hover: EventEmitter<ITrackElevationChartHoverElements> =
     new EventEmitter<ITrackElevationChartHoverElements>();
 
-  public surfaces: Array<{
-    id: ETrackElevationChartSurface;
-    backgroundColor: string;
-  }> = [];
   public _feature: CGeojsonLineStringFeature;
-  public slopeValues: Array<[number, number]>;
+  enableChart$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   public slope: {
     available: boolean;
     selectedValue: number;
@@ -72,345 +79,18 @@ export class TrackElevationChartComponent implements AfterViewInit {
     selectedValue: undefined,
     selectedPercentage: 0,
   };
+  public slopeValues: Array<[number, number]>;
+  public surfaces: Array<{
+    id: ETrackElevationChartSurface;
+    backgroundColor: string;
+  }> = [];
 
-  private _chartCanvas: any;
-  private _chart: Chart;
-  private _chartValues: Array<ILocation>;
-
-  constructor(private _mapService: MapService) {
+  constructor(private _mapService: MapService, private _cdr: ChangeDetectorRef) {
     Chart.register(...registerables);
   }
 
   ngAfterViewInit(): void {
     this._setChart();
-  }
-
-  /**
-   * Calculate all the chart values and trigger the chart representation
-   */
-  private _setChart() {
-    if (!!this._chartCanvas && !!this._feature) {
-      let surfaceValues: Array<{
-        surface: string;
-        values: Array<number>;
-        locations: Array<ILocation>;
-      }> = [];
-      const slopeValues: Array<[number, number]> = [];
-      const labels: Array<number> = [];
-      const steps: number = 100;
-      let trackLength: number = 0;
-      let currentDistance: number = 0;
-      let previousLocation: ILocation;
-      let currentLocation: ILocation;
-      let maxAlt: number;
-      let minAlt: number;
-      const usedSurfaces: Array<ETrackElevationChartSurface> = [];
-
-      this._chartValues = [];
-
-      labels.push(0);
-      currentLocation = new CLocation(
-        this._feature.geometry.coordinates[0][0],
-        this._feature.geometry.coordinates[0][1],
-        this._feature.geometry.coordinates[0][2],
-      );
-      this._chartValues.push(currentLocation);
-      maxAlt = currentLocation.altitude;
-      minAlt = currentLocation.altitude;
-
-      const surface = Object.values(ETrackElevationChartSurface)[0];
-      surfaceValues = this._setSurfaceValue(
-        surface,
-        this._feature.geometry.coordinates[0][2],
-        [currentLocation],
-        surfaceValues,
-      );
-      if (!usedSurfaces.includes(surface)) {
-        usedSurfaces.push(surface);
-      }
-      slopeValues.push([this._feature.geometry.coordinates[0][2], 0]);
-
-      // Calculate track length and max/min altitude
-      for (let i = 1; i < this._feature.geometry.coordinates.length; i++) {
-        previousLocation = currentLocation;
-        currentLocation = new CLocation(
-          this._feature.geometry.coordinates[i][0],
-          this._feature.geometry.coordinates[i][1],
-          this._feature.geometry.coordinates[i][2],
-        );
-        trackLength += this._mapService.distanceBetweenPoints(previousLocation, currentLocation);
-
-        if (!maxAlt || maxAlt < currentLocation.altitude) {
-          maxAlt = currentLocation.altitude;
-        }
-        if (!minAlt || minAlt > currentLocation.altitude) {
-          minAlt = currentLocation.altitude;
-        }
-      }
-
-      let step: number = 1;
-      let locations: Array<ILocation> = [];
-      currentLocation = new CLocation(
-        this._feature.geometry.coordinates[0][0],
-        this._feature.geometry.coordinates[0][1],
-        this._feature.geometry.coordinates[0][2],
-      );
-
-      // Create the chart datasets
-      for (let i = 1; i < this._feature.geometry.coordinates.length && step <= steps; i++) {
-        locations.push(currentLocation);
-        previousLocation = currentLocation;
-        currentLocation = new CLocation(
-          this._feature.geometry.coordinates[i][0],
-          this._feature.geometry.coordinates[i][1],
-          this._feature.geometry.coordinates[i][2],
-        );
-        const localDistance: number = this._mapService.distanceBetweenPoints(
-          previousLocation,
-          currentLocation,
-        );
-        currentDistance += localDistance;
-
-        while (currentDistance >= (trackLength / steps) * step) {
-          const difference: number =
-            localDistance - (currentDistance - (trackLength / steps) * step);
-          const deltaLongitude: number = currentLocation.longitude - previousLocation.longitude;
-          const deltaLatitude: number = currentLocation.latitude - previousLocation.latitude;
-          const deltaAltitude: number = currentLocation.altitude - previousLocation.altitude;
-          const longitude: number =
-            previousLocation.longitude + (deltaLongitude * difference) / localDistance;
-          const latitude: number =
-            previousLocation.latitude + (deltaLatitude * difference) / localDistance;
-          const altitude: number = Math.round(
-            previousLocation.altitude + (deltaAltitude * difference) / localDistance,
-          );
-          const currentSurface = Object.values(ETrackElevationChartSurface)[
-            Math.round(step / 10) % (Object.keys(ETrackElevationChartSurface).length - 2)
-          ];
-          const slope: number = parseFloat(
-            (
-              ((altitude - this._chartValues[this._chartValues.length - 1].altitude) * 100) /
-              (trackLength / steps)
-            ).toPrecision(1),
-          );
-
-          const intermediateLocation: ILocation = new CLocation(longitude, latitude, altitude);
-
-          this._chartValues.push(intermediateLocation);
-
-          locations.push(intermediateLocation);
-          surfaceValues = this._setSurfaceValue(currentSurface, altitude, locations, surfaceValues);
-          locations = [intermediateLocation];
-          if (!usedSurfaces.includes(currentSurface)) {
-            usedSurfaces.push(currentSurface);
-          }
-          slopeValues.push([altitude, slope]);
-
-          labels.push(parseFloat(((step * trackLength) / (steps * 1000)).toFixed(1)));
-
-          step++;
-        }
-      }
-
-      this.surfaces = [];
-      for (const usedSurface of usedSurfaces) {
-        this.surfaces.push({
-          id: usedSurface,
-          backgroundColor: TRACK_ELEVATION_CHART_SURFACE[usedSurface].backgroundColor,
-        });
-      }
-
-      setTimeout(() => {
-        this._createChart(labels, trackLength, maxAlt, surfaceValues, slopeValues);
-      }, 100);
-    }
-  }
-
-  /**
-   * Set the surface value on a specific surface
-   *
-   * @param surface the surface type
-   * @param value the value
-   * @param values the current values
-   * @returns
-   */
-  private _setSurfaceValue(
-    surface: string,
-    value: number,
-    locations: Array<ILocation>,
-    values: Array<{
-      surface: string;
-      values: Array<number>;
-      locations: Array<ILocation>;
-    }>,
-  ): Array<{
-    surface: string;
-    values: Array<number>;
-    locations: Array<ILocation>;
-  }> {
-    const oldSurface: string = values?.[values.length - 1]?.surface;
-
-    if (oldSurface === surface) {
-      // Merge the old surface segment with the new one
-      values[values.length - 1].values.push(value);
-      if (values[values.length - 1].locations.length > 0) {
-        values[values.length - 1].locations.splice(-1, 1);
-      }
-      values[values.length - 1].locations.push(...locations);
-    } else {
-      //Creare a new surface segment
-      const nullElements: Array<any> = [];
-      if (values?.[values.length - 1]?.values) {
-        nullElements.length = values[values.length - 1].values.length;
-        values[values.length - 1].values.push(value);
-      }
-      values.push({
-        surface,
-        values: [...nullElements, value],
-        locations,
-      });
-    }
-
-    return values;
-  }
-
-  /**
-   * Return a chart.js dataset for a surface
-   *
-   * @param values the chart values
-   * @param surface the surface type
-   * @returns
-   */
-  private _getSlopeChartSurfaceDataset(
-    values: Array<number>,
-    surface: ETrackElevationChartSurface,
-  ): ChartDataset<'line', any> {
-    return {
-      fill: true,
-      cubicInterpolationMode: 'monotone',
-      tension: 0.3,
-      backgroundColor: 'rgb(' + TRACK_ELEVATION_CHART_SURFACE[surface].backgroundColor + ')',
-      borderColor: 'rgba(255, 199, 132, 0)',
-      pointRadius: 0,
-      data: values,
-      spanGaps: false,
-    };
-  }
-
-  /**
-   * Return an RGB color for the given slope percentage value
-   *
-   * @param value the slope percentage value
-   * @returns
-   */
-  private _getSlopeGradientColor(value: number): string {
-    let min: [number, number, number];
-    let max: [number, number, number];
-    let proportion: number = 0;
-    const step: number = 15 / 4;
-
-    value = Math.abs(value);
-
-    if (value <= 0) {
-      min = TRACK_ELEVATION_CHART_SLOPE_EASY;
-      max = TRACK_ELEVATION_CHART_SLOPE_EASY;
-    } else if (value < step) {
-      min = TRACK_ELEVATION_CHART_SLOPE_EASY;
-      max = TRACK_ELEVATION_CHART_SLOPE_MEDIUM_EASY;
-      proportion = value / step;
-    } else if (value < 2 * step) {
-      min = TRACK_ELEVATION_CHART_SLOPE_MEDIUM_EASY;
-      max = TRACK_ELEVATION_CHART_SLOPE_MEDIUM;
-      proportion = (value - step) / step;
-    } else if (value < 3 * step) {
-      min = TRACK_ELEVATION_CHART_SLOPE_MEDIUM;
-      max = TRACK_ELEVATION_CHART_SLOPE_MEDIUM_HARD;
-      proportion = (value - 2 * step) / step;
-    } else if (value < 4 * step) {
-      min = TRACK_ELEVATION_CHART_SLOPE_MEDIUM_HARD;
-      max = TRACK_ELEVATION_CHART_SLOPE_HARD;
-      proportion = (value - 3 * step) / step;
-    } else {
-      min = TRACK_ELEVATION_CHART_SLOPE_HARD;
-      max = TRACK_ELEVATION_CHART_SLOPE_HARD;
-      proportion = 1;
-    }
-
-    const result: [string, string, string] = ['0', '0', '0'];
-
-    result[0] = Math.abs(Math.round(min[0] + (max[0] - min[0]) * proportion)).toString(16);
-    result[1] = Math.abs(Math.round(min[1] + (max[1] - min[1]) * proportion)).toString(16);
-    result[2] = Math.abs(Math.round(min[2] + (max[2] - min[2]) * proportion)).toString(16);
-
-    return (
-      '#' +
-      (result[0].length < 2 ? '0' : '') +
-      result[0] +
-      (result[1].length < 2 ? '0' : '') +
-      result[1] +
-      (result[2].length < 2 ? '0' : '') +
-      result[2]
-    );
-  }
-
-  /**
-   * Return a chart.js dataset for the slope values
-   *
-   * @param slopeValues the chart slope values as Array<[chartValue, slopePercentage]>
-   * @returns
-   */
-  private _getSlopeChartSlopeDataset(
-    slopeValues: Array<[number, number]>,
-  ): Array<ChartDataset<'line', any>> {
-    const values: Array<number> = slopeValues.map(value => value[0]);
-    const slopes: Array<number> = slopeValues.map(value => value[1]);
-
-    return [
-      {
-        fill: false,
-        cubicInterpolationMode: 'monotone',
-        tension: 0.3,
-        backgroundColor: 'rgba(0, 0, 0, 0)',
-        borderColor: context => {
-          const chart = context.chart;
-          const {ctx, chartArea} = chart;
-
-          if (!chartArea) {
-            // This case happens on initial chart load
-            return null;
-          }
-
-          const gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-
-          for (const i in slopes) {
-            gradient.addColorStop(
-              parseInt(i, 10) / slopes.length,
-              this._getSlopeGradientColor(slopes[i]),
-            );
-          }
-
-          return gradient;
-        },
-        borderWidth: 3,
-        pointRadius: 0,
-        pointHoverBackgroundColor: '#000000',
-        pointHoverBorderColor: '#FFFFFF',
-        pointHoverRadius: 6,
-        pointHoverBorderWidth: 2,
-        data: values,
-        spanGaps: false,
-      },
-      {
-        fill: false,
-        cubicInterpolationMode: 'monotone',
-        tension: 0.3,
-        borderColor: 'rgba(255, 255, 255, 1)',
-        borderWidth: 8,
-        pointRadius: 0,
-        data: values,
-        spanGaps: false,
-      },
-    ];
   }
 
   /**
@@ -641,6 +321,334 @@ export class TrackElevationChartComponent implements AfterViewInit {
         ],
       });
     }
+  }
+
+  /**
+   * Return a chart.js dataset for the slope values
+   *
+   * @param slopeValues the chart slope values as Array<[chartValue, slopePercentage]>
+   * @returns
+   */
+  private _getSlopeChartSlopeDataset(
+    slopeValues: Array<[number, number]>,
+  ): Array<ChartDataset<'line', any>> {
+    const values: Array<number> = slopeValues.map(value => value[0]);
+    const slopes: Array<number> = slopeValues.map(value => value[1]);
+
+    return [
+      {
+        fill: false,
+        cubicInterpolationMode: 'monotone',
+        tension: 0.3,
+        backgroundColor: 'rgba(0, 0, 0, 0)',
+        borderColor: context => {
+          const chart = context.chart;
+          const {ctx, chartArea} = chart;
+
+          if (!chartArea) {
+            // This case happens on initial chart load
+            return null;
+          }
+
+          const gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+
+          for (const i in slopes) {
+            gradient.addColorStop(
+              parseInt(i, 10) / slopes.length,
+              this._getSlopeGradientColor(slopes[i]),
+            );
+          }
+
+          return gradient;
+        },
+        borderWidth: 3,
+        pointRadius: 0,
+        pointHoverBackgroundColor: '#000000',
+        pointHoverBorderColor: '#FFFFFF',
+        pointHoverRadius: 6,
+        pointHoverBorderWidth: 2,
+        data: values,
+        spanGaps: false,
+      },
+      {
+        fill: false,
+        cubicInterpolationMode: 'monotone',
+        tension: 0.3,
+        borderColor: 'rgba(255, 255, 255, 1)',
+        borderWidth: 8,
+        pointRadius: 0,
+        data: values,
+        spanGaps: false,
+      },
+    ];
+  }
+
+  /**
+   * Return a chart.js dataset for a surface
+   *
+   * @param values the chart values
+   * @param surface the surface type
+   * @returns
+   */
+  private _getSlopeChartSurfaceDataset(
+    values: Array<number>,
+    surface: ETrackElevationChartSurface,
+  ): ChartDataset<'line', any> {
+    return {
+      fill: true,
+      cubicInterpolationMode: 'monotone',
+      tension: 0.3,
+      backgroundColor: 'rgb(' + TRACK_ELEVATION_CHART_SURFACE[surface].backgroundColor + ')',
+      borderColor: 'rgba(255, 199, 132, 0)',
+      pointRadius: 0,
+      data: values,
+      spanGaps: false,
+    };
+  }
+
+  /**
+   * Return an RGB color for the given slope percentage value
+   *
+   * @param value the slope percentage value
+   * @returns
+   */
+  private _getSlopeGradientColor(value: number): string {
+    let min: [number, number, number];
+    let max: [number, number, number];
+    let proportion: number = 0;
+    const step: number = 15 / 4;
+
+    value = Math.abs(value);
+
+    if (value <= 0) {
+      min = TRACK_ELEVATION_CHART_SLOPE_EASY;
+      max = TRACK_ELEVATION_CHART_SLOPE_EASY;
+    } else if (value < step) {
+      min = TRACK_ELEVATION_CHART_SLOPE_EASY;
+      max = TRACK_ELEVATION_CHART_SLOPE_MEDIUM_EASY;
+      proportion = value / step;
+    } else if (value < 2 * step) {
+      min = TRACK_ELEVATION_CHART_SLOPE_MEDIUM_EASY;
+      max = TRACK_ELEVATION_CHART_SLOPE_MEDIUM;
+      proportion = (value - step) / step;
+    } else if (value < 3 * step) {
+      min = TRACK_ELEVATION_CHART_SLOPE_MEDIUM;
+      max = TRACK_ELEVATION_CHART_SLOPE_MEDIUM_HARD;
+      proportion = (value - 2 * step) / step;
+    } else if (value < 4 * step) {
+      min = TRACK_ELEVATION_CHART_SLOPE_MEDIUM_HARD;
+      max = TRACK_ELEVATION_CHART_SLOPE_HARD;
+      proportion = (value - 3 * step) / step;
+    } else {
+      min = TRACK_ELEVATION_CHART_SLOPE_HARD;
+      max = TRACK_ELEVATION_CHART_SLOPE_HARD;
+      proportion = 1;
+    }
+
+    const result: [string, string, string] = ['0', '0', '0'];
+
+    result[0] = Math.abs(Math.round(min[0] + (max[0] - min[0]) * proportion)).toString(16);
+    result[1] = Math.abs(Math.round(min[1] + (max[1] - min[1]) * proportion)).toString(16);
+    result[2] = Math.abs(Math.round(min[2] + (max[2] - min[2]) * proportion)).toString(16);
+
+    return (
+      '#' +
+      (result[0].length < 2 ? '0' : '') +
+      result[0] +
+      (result[1].length < 2 ? '0' : '') +
+      result[1] +
+      (result[2].length < 2 ? '0' : '') +
+      result[2]
+    );
+  }
+
+  /**
+   * Calculate all the chart values and trigger the chart representation
+   */
+  private _setChart() {
+    if (!!this._chartCanvas && !!this._feature) {
+      let surfaceValues: Array<{
+        surface: string;
+        values: Array<number>;
+        locations: Array<ILocation>;
+      }> = [];
+      const slopeValues: Array<[number, number]> = [];
+      const labels: Array<number> = [];
+      const steps: number = 100;
+      let trackLength: number = 0;
+      let currentDistance: number = 0;
+      let previousLocation: ILocation;
+      let currentLocation: ILocation;
+      let maxAlt: number;
+      let minAlt: number;
+      const usedSurfaces: Array<ETrackElevationChartSurface> = [];
+
+      this._chartValues = [];
+
+      labels.push(0);
+      currentLocation = new CLocation(
+        this._feature.geometry.coordinates[0][0],
+        this._feature.geometry.coordinates[0][1],
+        this._feature.geometry.coordinates[0][2],
+      );
+      this._chartValues.push(currentLocation);
+      maxAlt = currentLocation.altitude;
+      minAlt = currentLocation.altitude;
+
+      const surface = Object.values(ETrackElevationChartSurface)[0];
+      surfaceValues = this._setSurfaceValue(
+        surface,
+        this._feature.geometry.coordinates[0][2],
+        [currentLocation],
+        surfaceValues,
+      );
+      if (!usedSurfaces.includes(surface)) {
+        usedSurfaces.push(surface);
+      }
+      slopeValues.push([this._feature.geometry.coordinates[0][2], 0]);
+
+      // Calculate track length and max/min altitude
+      for (let i = 1; i < this._feature.geometry.coordinates.length; i++) {
+        previousLocation = currentLocation;
+        currentLocation = new CLocation(
+          this._feature.geometry.coordinates[i][0],
+          this._feature.geometry.coordinates[i][1],
+          this._feature.geometry.coordinates[i][2],
+        );
+        trackLength += this._mapService.distanceBetweenPoints(previousLocation, currentLocation);
+
+        if (!maxAlt || maxAlt < currentLocation.altitude) {
+          maxAlt = currentLocation.altitude;
+        }
+        if (!minAlt || minAlt > currentLocation.altitude) {
+          minAlt = currentLocation.altitude;
+        }
+      }
+
+      let step: number = 1;
+      let locations: Array<ILocation> = [];
+      currentLocation = new CLocation(
+        this._feature.geometry.coordinates[0][0],
+        this._feature.geometry.coordinates[0][1],
+        this._feature.geometry.coordinates[0][2],
+      );
+
+      // Create the chart datasets
+      for (let i = 1; i < this._feature.geometry.coordinates.length && step <= steps; i++) {
+        locations.push(currentLocation);
+        previousLocation = currentLocation;
+        currentLocation = new CLocation(
+          this._feature.geometry.coordinates[i][0],
+          this._feature.geometry.coordinates[i][1],
+          this._feature.geometry.coordinates[i][2],
+        );
+        const localDistance: number = this._mapService.distanceBetweenPoints(
+          previousLocation,
+          currentLocation,
+        );
+        currentDistance += localDistance;
+
+        while (currentDistance >= (trackLength / steps) * step) {
+          const difference: number =
+            localDistance - (currentDistance - (trackLength / steps) * step);
+          const deltaLongitude: number = currentLocation.longitude - previousLocation.longitude;
+          const deltaLatitude: number = currentLocation.latitude - previousLocation.latitude;
+          const deltaAltitude: number = currentLocation.altitude - previousLocation.altitude;
+          const longitude: number =
+            previousLocation.longitude + (deltaLongitude * difference) / localDistance;
+          const latitude: number =
+            previousLocation.latitude + (deltaLatitude * difference) / localDistance;
+          const altitude: number = Math.round(
+            previousLocation.altitude + (deltaAltitude * difference) / localDistance,
+          );
+          const currentSurface = Object.values(ETrackElevationChartSurface)[
+            Math.round(step / 10) % (Object.keys(ETrackElevationChartSurface).length - 2)
+          ];
+          const slope: number = parseFloat(
+            (
+              ((altitude - this._chartValues[this._chartValues.length - 1].altitude) * 100) /
+              (trackLength / steps)
+            ).toPrecision(1),
+          );
+
+          const intermediateLocation: ILocation = new CLocation(longitude, latitude, altitude);
+
+          this._chartValues.push(intermediateLocation);
+
+          locations.push(intermediateLocation);
+          surfaceValues = this._setSurfaceValue(currentSurface, altitude, locations, surfaceValues);
+          locations = [intermediateLocation];
+          if (!usedSurfaces.includes(currentSurface)) {
+            usedSurfaces.push(currentSurface);
+          }
+          slopeValues.push([altitude, slope]);
+
+          labels.push(parseFloat(((step * trackLength) / (steps * 1000)).toFixed(1)));
+
+          step++;
+        }
+      }
+
+      this.surfaces = [];
+      for (const usedSurface of usedSurfaces) {
+        this.surfaces.push({
+          id: usedSurface,
+          backgroundColor: TRACK_ELEVATION_CHART_SURFACE[usedSurface].backgroundColor,
+        });
+      }
+
+      setTimeout(() => {
+        this._createChart(labels, trackLength, maxAlt, surfaceValues, slopeValues);
+      }, 100);
+    }
+  }
+
+  /**
+   * Set the surface value on a specific surface
+   *
+   * @param surface the surface type
+   * @param value the value
+   * @param values the current values
+   * @returns
+   */
+  private _setSurfaceValue(
+    surface: string,
+    value: number,
+    locations: Array<ILocation>,
+    values: Array<{
+      surface: string;
+      values: Array<number>;
+      locations: Array<ILocation>;
+    }>,
+  ): Array<{
+    surface: string;
+    values: Array<number>;
+    locations: Array<ILocation>;
+  }> {
+    const oldSurface: string = values?.[values.length - 1]?.surface;
+
+    if (oldSurface === surface) {
+      // Merge the old surface segment with the new one
+      values[values.length - 1].values.push(value);
+      if (values[values.length - 1].locations.length > 0) {
+        values[values.length - 1].locations.splice(-1, 1);
+      }
+      values[values.length - 1].locations.push(...locations);
+    } else {
+      //Creare a new surface segment
+      const nullElements: Array<any> = [];
+      if (values?.[values.length - 1]?.values) {
+        nullElements.length = values[values.length - 1].values.length;
+        values[values.length - 1].values.push(value);
+      }
+      values.push({
+        surface,
+        values: [...nullElements, value],
+        locations,
+      });
+    }
+
+    return values;
   }
 
   private _smooth(values, alpha) {

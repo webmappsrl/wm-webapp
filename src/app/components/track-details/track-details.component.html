@@ -118,9 +118,13 @@
         <div class="webmapp-title">Collegamenti esterni</div>
         <webmapp-related-urls [relatedUrls]="relatedUrl"> </webmapp-related-urls>
       </ng-container>
-      <div class="webmapp-title">Downloads</div>
-      <webmapp-track-download-urls [feature]="track" id="webmapp-track-details-download-urls">
-      </webmapp-track-download-urls>
+      <ng-container *ngIf="confOPTIONS$|async as confOPTIONS">
+        <ng-container *ngIf="confOPTIONS.download_track_enable === true">
+          <div class="webmapp-title">Downloads</div>
+          <webmapp-track-download-urls [feature]="track" id="webmapp-track-details-download-urls">
+          </webmapp-track-download-urls>
+        </ng-container>
+      </ng-container>
       <ion-button *ngIf="enableEditingInline$|async" (click)="openGeohub()">
         edit geohub</ion-button
       >

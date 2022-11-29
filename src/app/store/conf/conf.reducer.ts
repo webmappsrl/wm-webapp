@@ -22,6 +22,7 @@ const initialConfState: ICONF = {
     passwordRecoveryUrl: '/wp-login.php?action=lostpassword',
     hideGlobalMap: false,
     addArrowsOverTracks: false,
+    download_track_enable: true,
     showTrackRefLabel: false,
     useCaiScaleStyle: false,
     forceDefaultFeatureColor: false,

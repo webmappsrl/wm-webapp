@@ -1,4 +1,4 @@
-<div id="webmapp-track-elevation-chart-container">
+<div id="webmapp-track-elevation-chart-container" *ngIf="enableChart$|async">
   <div class="webmapp-track-elevation-chart-canvas-container">
     <canvas #chartCanvas class="webmapp-track-elevation-chart-canvas"></canvas>
   </div>

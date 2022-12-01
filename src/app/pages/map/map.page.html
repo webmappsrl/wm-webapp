@@ -58,35 +58,34 @@
   ></webmapp-poi-popup>
   <wm-map
     #wmap
-    wmMapLayer
-    wmMapTrack
-    wmMapPois
-    wmMapTrackRelatedPois
-    wmMapCustomTracks
-    [WmMapPoisUnselectPoi]="resetSelectedPoi$|async"
+    [wmMapConf]="confMap$|async"
+    [wmMapMap]="wmap.map$|async"
+    [wmMapPadding]="mapPadding$|async"
+    [onClick]="wmap.clickEVT$"
     [wmMapOverlay]="(enableOverLay$|async)"
     [wmMapOverlayUrl]="'https://geohub.webmapp.it/api/taxonomy/where/geojson/13'"
-    [jidoUpdateTime]="confJIDOUPDATETIME$|async"
+    wmMapCustomTracks
     [wmMapCustomTrackDrawTrack]="drawTrackEnable$|async"
     [wmMapCustomTrackDrawTrackHost]="graphhopperHost$|async"
-    [dataLayerUrls]="dataLayerUrls$|async"
-    [track]="track$|async"
-    [layer]="currentLayer$|async"
-    [disableLayers]="(currentFilters$|async).length > 0"
-    [conf]="confMap$|async"
-    [map]="wmap.map$|async"
-    [poi]="currentPoiIDToMap$|async"
-    [pois]="pois$|async"
-    [padding]="mapPadding$|async"
-    [filters]="currentFilters$|async"
     [reloadCustomTracks]="reloadCustomTracks$|async"
-    [onClick]="wmap.clickEVT$"
+    (currentCustomTrack)="saveCurrentCustomTrack($event)"
+    wmMapLayer
+    [jidoUpdateTime]="confJIDOUPDATETIME$|async"
+    [wmMapLayerDataLayerUrls]="dataLayerUrls$|async"
+    [wmMapLayerLayer]="currentLayer$|async"
+    [wmMapLayerDisableLayers]="(currentFilters$|async).length > 0"
+    wmMapPois
+    [wmMapPoisPoi]="currentPoiIDToMap$|async"
+    [wmMapPoisPois]="pois$|async"
+    [wmMapPoisFilters]="currentFilters$|async"
+    [WmMapPoisUnselectPoi]="resetSelectedPoi$|async"
+    (currentPoiEvt)="setPoi($event)"
+    wmMapTrack
+    [track]="track$|async"
     [trackElevationChartElements]="trackElevationChartHoverElements$|async"
     (trackSelectedFromLayerEVT)="toggleDetails($event)"
+    wmMapTrackRelatedPois
     (related-poi-click)="setCurrentRelatedPoi($event)"
-    (poi-click)="setCurrentPoi($event)"
-    (currentCustomTrack)="saveCurrentCustomTrack($event)"
-    (currentPoiEvt)="setPoi($event)"
   >
   </wm-map>
 </ng-container>

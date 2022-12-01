@@ -217,6 +217,8 @@ export class MapPage {
   }
 
   setPoi(poi: any): void {
+    this.currentRelatedPoiID$.next(-1);
+
     this.currentPoi$.next(poi);
   }
 

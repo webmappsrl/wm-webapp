@@ -93,10 +93,11 @@
 </ng-container>
 
 <ion-modal
-#printModal
+  #printModal
   class="print-modal"
   trigger="open-print-modal"
   id="print-page"
+  (willDismiss)="mapPrintDetails$.next(false)"
 >
   <ng-template>
     <ion-header>
@@ -106,12 +107,16 @@
         </ion-buttons>
         <ion-title>{{'anteprima di stampa'|WebmappTranslate}}</ion-title>
         <ion-buttons slot="end">
+          <ion-item>
+            <ion-label>{{'dettagli'|WebmappTranslate}}</ion-label>
+            <ion-toggle slot="end" (click)="mapPrintDetails$.next(!mapPrintDetails$.value)"></ion-toggle>
+          </ion-item>
           <ion-button (click)="printPage()" [strong]="true">{{'stampa'|WebmappTranslate}}</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <div class="print-container">
+      <div class="print-container" *ngIf="(mapPrintDetails$|async) === false">
         <wm-map
           #wmapprint
           [wmMapConf]="confMap$|async"
@@ -154,7 +159,19 @@
           </ng-container>
         </ion-card>
       </div>
+      <div class="print-details-wrapper" *ngIf="(mapPrintDetails$|async) === true">
+        <div class="print-container-details" *ngIf="track$|async as track">
+          <div *ngIf="track.properties as prop">
+              <webmapp-track-description
+              [description]="prop.description| WebmappTranslate"
+            ></webmapp-track-description>
+            <webmapp-track-poi
+            [track]="track"
+            ></webmapp-track-poi>
 
+          </div>
+        </div>
+      </div>
     </ion-content>
   </ng-template>
 </ion-modal>

@@ -77,6 +77,7 @@ export class MapPage {
   leftPadding$: Observable<number>;
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   mapPrintPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([0, 0, 0, 0]);
+  mapPrintDetails$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<any> = this._store.select(pois);
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
@@ -256,14 +257,14 @@ export class MapPage {
     });
   }
   printPage() {
-    window.print();
-    let element = document.getElementById('print-details');
+    let element = document.getElementById('print-page');
+    element = null;
     if (element) {
       let printer = window.open('', 'PRINT', 'height=600,width=1800');
       printer.document.write('<html><head>');
       printer.document.write('<title>' + document.title + '</title>');
       printer.document.write('</head><body>');
-
+      printer.document.write(``);
       printer.document.write('<div>' + element.innerHTML + '</div>');
       printer.document.write('</body></html>');
       printer.document.close();

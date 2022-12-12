@@ -36,6 +36,7 @@ import {WMCommonModule} from '../common/wm-common.module';
     TrackElevationChartComponent,
     TrackTechnicalDataComponent,
     TrackDownloadUrlsComponent,
+    TrackDescriptionComponent,
   ],
 })
 export class TrackDetailsModule {}

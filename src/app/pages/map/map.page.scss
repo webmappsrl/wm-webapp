@@ -61,10 +61,10 @@ webmapp-map-page {
 }
 
 @media print {
-
+  html, body   { -webkit-print-color-adjust: exact; }
   @page {
     size: portrait; /* auto is the initial value */
-    margin: 0; /* this affects the margin in the printer settings */
+    margin: 0mm; /* this affects the margin in the printer settings */
   }
   .print-modal,
   .print-modal * {
@@ -87,11 +87,12 @@ webmapp-map-page {
     }
   }
   .print-container,
-  .print-modal, wm-map  {
+  .print-modal,
+  wm-map {
     width: 100%;
     height: 100%;
-    --width:100%;
-    --height:100%;
+    --width: 100%;
+    --height: 100%;
   }
 }
 
@@ -101,8 +102,8 @@ webmapp-map-page {
     margin: 0mm; /* this affects the margin in the printer settings */
   }
 
-  --width:100%;
-  --height:100%;
+  --width: 100%;
+  --height: 100%;
   .top,
   .ol-overlaycontainer-stopevent,
   #webmapp-map-attribution-container,
@@ -143,6 +144,16 @@ webmapp-map-page {
         display: none;
       }
     }
+    .print-details-wrapper {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      max-width: 100%;
+      position: relative;
+      > p {
+        line-height: 0;
+      }
+    }
   }
   wm-map {
     position: absolute;
@@ -155,7 +166,8 @@ webmapp-map-page {
     min-height: 297mm;
     width: 100%;
   }
-  .print-container {
+  .print-container,
+  .print-details-wrapper {
     width: 794px;
     height: 100%;
     position: absolute;
@@ -164,8 +176,38 @@ webmapp-map-page {
     right: 0;
     background-color: white;
   }
-  ion-content{
-    --background: gray!important;
+  .print-details-wrapper {
+    height: auto;
+    page-break-after: always;
+  }
+  ion-content {
+    --background: gray !important;
+  }
+  .webmapp-track-description-expand-container,
+  .webmapp-poi-popup-btn {
+    display: none;
+  }
+  #webmapp-track-description-html {
+    padding: 0 !important;
+    > p {
+      font-size: 12px;
+    }
+  }
+   #webmapp-track-description-container{
+max-height: 100%!important;
+ }  
+  webmapp-track-poi .webmapp-track-poi-list .webmapp-track-poi-item {
+    height: 100px;
+    font-size: 12px;
+  }
+  .print-container-details {
+    margin: 5px;
+  }
 
+  .break {
+    display: block;
+    page-break-after: always;
+    page-break-before: always;
+    page-break-inside: avoid;
   }
 }

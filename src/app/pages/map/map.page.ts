@@ -16,7 +16,6 @@ import {
   startWith,
   switchMap,
   tap,
-  withLatestFrom,
 } from 'rxjs/operators';
 import {
   confGeohubId,
@@ -33,7 +32,6 @@ import {Store} from '@ngrx/store';
 import {environment} from 'src/environments/environment';
 import {loadPois} from 'src/app/store/pois/pois.actions';
 import {pois} from 'src/app/store/pois/pois.selector';
-import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -78,6 +76,7 @@ export class MapPage {
   graphhopperHost$: Observable<string> = of(environment.graphhopperHost);
   leftPadding$: Observable<number>;
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
+  mapPrintPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([0, 0, 0, 0]);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<any> = this._store.select(pois);
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
@@ -86,7 +85,6 @@ export class MapPage {
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
-
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
@@ -256,5 +254,21 @@ export class MapPage {
       queryParams: {track: trackid ? trackid : null},
       queryParamsHandling: 'merge',
     });
+  }
+  printPage() {
+    window.print();
+    let element = document.getElementById('print-details');
+    if (element) {
+      let printer = window.open('', 'PRINT', 'height=600,width=1800');
+      printer.document.write('<html><head>');
+      printer.document.write('<title>' + document.title + '</title>');
+      printer.document.write('</head><body>');
+
+      printer.document.write('<div>' + element.innerHTML + '</div>');
+      printer.document.write('</body></html>');
+      printer.document.close();
+      printer.focus();
+      printer.print();
+    }
   }
 }

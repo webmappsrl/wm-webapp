@@ -31,6 +31,7 @@ import {WMCommonModule} from '../common/wm-common.module';
   ],
   imports: [CommonModule, WMCommonModule, FormsModule, IonicModule, PipeModule, SwiperModule],
   exports: [
+    TrackPoiComponent,
     TrackDetailsComponent,
     TrackElevationChartComponent,
     TrackTechnicalDataComponent,

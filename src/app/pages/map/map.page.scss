@@ -58,68 +58,114 @@ webmapp-map-page {
       left: 400px;
     }
   }
+}
 
-  .mobile-wrapper {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-content: stretch;
-    align-items: stretch;
-    z-index: 1;
+@media print {
 
-    wm-map {
-      order: 0;
-      flex: 0 1 60%;
-      align-self: auto;
+  @page {
+    size: portrait; /* auto is the initial value */
+    margin: 0; /* this affects the margin in the printer settings */
+  }
+  .print-modal,
+  .print-modal * {
+    visibility: visible !important;
+  }
+
+  .break {
+    display: block;
+    page-break-after: always;
+    page-break-before: always;
+    page-break-inside: avoid;
+  }
+  wm-map .map-container .top {
+    display: none;
+  }
+
+  .print-modal {
+    ion-header {
+      display: none;
     }
-    .mobile-details {
-      webmapp-track-details {
-        #webmapp-track-details-content {
-          webmapp-gallery {
-            webmapp-image-modal {
-              width: 90% !important;
-              top: -20%;
-            }
-          }
-        }
-      }
-      align-self: auto;
-      position: absolute;
-      height: 40%;
-      width: 100%;
-      bottom: 0;
+  }
+  .print-container,
+  .print-modal, wm-map  {
+    width: 100%;
+    height: 100%;
+    --width:100%;
+    --height:100%;
+  }
+}
 
+.print-modal {
+  @page {
+    size: A4; /* auto is the initial value */
+    margin: 0mm; /* this affects the margin in the printer settings */
+  }
+
+  --width:100%;
+  --height:100%;
+  .top,
+  .ol-overlaycontainer-stopevent,
+  #webmapp-map-attribution-container,
+  #webmapp-map-scale-line-container {
+    display: none !important;
+  }
+  .print-details {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    margin: 2%;
+
+    .webmapp-track-technical-data-container {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       flex-wrap: wrap;
       justify-content: flex-start;
       align-content: stretch;
       align-items: stretch;
 
-      overflow: auto;
-      -ms-overflow-style: none; /* IE and Edge */
-      scrollbar-width: none; /* Firefox */
-      > * {
+      .webmapp-track-technical-data-item {
+        -webkit-order: 0;
+        -ms-flex-order: 0;
         order: 0;
+        -webkit-flex: 0 1 auto;
+        -ms-flex: 0 1 auto;
         flex: 0 1 auto;
+        -webkit-align-self: auto;
+        -ms-flex-item-align: auto;
         align-self: auto;
-      }
-      webmapp-home {
-        height: 100%;
-      }
-      webmapp-poi-popup {
-        width: 100%;
-        height: fit-content;
-        margin: auto;
-        top: 0;
-        position: initial;
-        .webmapp-poi-popup-close {
-          position: fixed;
-          right: 0;
+        > * {
+          margin: 2px;
         }
       }
+      hr {
+        display: none;
+      }
     }
+  }
+  wm-map {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: block;
+    overflow: hidden;
+    min-height: 297mm;
+    width: 100%;
+  }
+  .print-container {
+    width: 794px;
+    height: 100%;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    background-color: white;
+  }
+  ion-content{
+    --background: gray!important;
+
   }
 }

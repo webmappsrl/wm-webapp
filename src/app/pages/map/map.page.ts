@@ -21,6 +21,7 @@ import {
   confGeohubId,
   confJIDOUPDATETIME,
   confMAP,
+  confOPTIONS,
   confShowDrawTrack,
 } from 'src/app/store/conf/conf.selector';
 
@@ -58,6 +59,7 @@ export class MapPage {
       }
     }),
   );
+  confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentFilters$ = this._store.select(UICurrentFilters);
   currentLayer$ = this._store.select(UICurrentLAyer);
@@ -76,8 +78,8 @@ export class MapPage {
   graphhopperHost$: Observable<string> = of(environment.graphhopperHost);
   leftPadding$: Observable<number>;
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
-  mapPrintPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([0, 0, 0, 0]);
   mapPrintDetails$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  mapPrintPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([0, 0, 0, 0]);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<any> = this._store.select(pois);
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
@@ -86,6 +88,7 @@ export class MapPage {
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
+
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
@@ -183,6 +186,24 @@ export class MapPage {
     this.setCurrentRelatedPoi(poiIDs.slice(prevIndex)[0]);
   }
 
+  printPage() {
+    window.print();
+    let element = document.getElementById('print-page');
+    element = null;
+    if (element) {
+      let printer = window.open('', 'PRINT', 'height=600,width=1800');
+      printer.document.write('<html><head>');
+      printer.document.write('<title>' + document.title + '</title>');
+      printer.document.write('</head><body>');
+      printer.document.write(``);
+      printer.document.write('<div>' + element.innerHTML + '</div>');
+      printer.document.write('</body></html>');
+      printer.document.close();
+      printer.focus();
+      printer.print();
+    }
+  }
+
   reloadCustomTrack(): void {
     this.reloadCustomTracks$.next(!this.reloadCustomTracks$.value ?? false);
   }
@@ -255,21 +276,5 @@ export class MapPage {
       queryParams: {track: trackid ? trackid : null},
       queryParamsHandling: 'merge',
     });
-  }
-  printPage() {
-    let element = document.getElementById('print-page');
-    element = null;
-    if (element) {
-      let printer = window.open('', 'PRINT', 'height=600,width=1800');
-      printer.document.write('<html><head>');
-      printer.document.write('<title>' + document.title + '</title>');
-      printer.document.write('</head><body>');
-      printer.document.write(``);
-      printer.document.write('<div>' + element.innerHTML + '</div>');
-      printer.document.write('</body></html>');
-      printer.document.close();
-      printer.focus();
-      printer.print();
-    }
   }
 }

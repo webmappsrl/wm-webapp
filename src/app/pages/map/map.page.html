@@ -19,7 +19,9 @@
       (dismiss)="toggleDetails()"
       class="webmapp-track-details"
     >
-      <ion-button id="open-print-modal" expand="block">stampa</ion-button>
+    <ng-container *ngIf="(confOPTIONS$|async) as opt">
+      <ion-button id="open-print-modal" expand="block"  *ngIf="opt.print_track_enable!= null && opt.print_track_enable=== true">stampa</ion-button>
+    </ng-container>
     </webmapp-track-details>
 
     <webmapp-home

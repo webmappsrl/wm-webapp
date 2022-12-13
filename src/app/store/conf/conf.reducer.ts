@@ -23,6 +23,7 @@ const initialConfState: ICONF = {
     hideGlobalMap: false,
     addArrowsOverTracks: false,
     download_track_enable: true,
+    print_track_enable: false,
     showTrackRefLabel: false,
     useCaiScaleStyle: false,
     forceDefaultFeatureColor: false,

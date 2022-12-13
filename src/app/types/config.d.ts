@@ -119,6 +119,7 @@ interface IOPTIONS {
   poiMinRadius: number;
   poiMinZoom: number;
   poiSelectedRadius: number;
+  print_track_enable: boolean;
   privacyUrl: string;
   resetFiltersAtStartup: boolean;
   showAppDownloadButtons: IAPPDOWNLOADBUTTONS;

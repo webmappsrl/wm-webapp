@@ -84,4 +84,16 @@
       );
     }
   }
+  @media print {
+    .webmapp-track-description-expand-container{
+      display: none;
+    }
+    #webmapp-track-description-html{
+      padding: 0!important;
+    }
+ #webmapp-track-description-container{
+  position: absolute;
+  height:100%
+ }   
+  }
 }

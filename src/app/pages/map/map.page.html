@@ -18,7 +18,11 @@
       (poi-click)="setCurrentPoi($event)"
       (dismiss)="toggleDetails()"
       class="webmapp-track-details"
-    ></webmapp-track-details>
+    >
+    <ng-container *ngIf="(confOPTIONS$|async) as opt">
+      <ion-button id="open-print-modal" expand="block"  *ngIf="opt.print_track_enable!= null && opt.print_track_enable=== true">stampa</ion-button>
+    </ng-container>
+    </webmapp-track-details>
 
     <webmapp-home
       *ngIf="(drawTrackEnable$|async)===false;else customTrack"
@@ -89,3 +93,87 @@
   >
   </wm-map>
 </ng-container>
+
+<ion-modal
+  #printModal
+  class="print-modal"
+  trigger="open-print-modal"
+  id="print-page"
+  (willDismiss)="mapPrintDetails$.next(false)"
+>
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="printModal.dismiss()">{{'esci'|WebmappTranslate}}</ion-button>
+        </ion-buttons>
+        <ion-title>{{'anteprima di stampa'|WebmappTranslate}}</ion-title>
+        <ion-buttons slot="end">
+          <ion-item>
+            <ion-label>{{'dettagli'|WebmappTranslate}}</ion-label>
+            <ion-toggle slot="end" (click)="mapPrintDetails$.next(!mapPrintDetails$.value)"></ion-toggle>
+          </ion-item>
+          <ion-button (click)="printPage()" [strong]="true">{{'stampa'|WebmappTranslate}}</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div class="print-container" *ngIf="(mapPrintDetails$|async) === false">
+        <wm-map
+          #wmapprint
+          [wmMapConf]="confMap$|async"
+          wmMapTarget="ol-stamp"
+          [wmMapMap]="wmapprint.map$|async"
+          [wmMapPadding]="mapPrintPadding$|async"
+          [onClick]="wmapprint.clickEVT$"
+          [wmMapOverlay]="(enableOverLay$|async)"
+          [wmMapOverlayUrl]="'https://geohub.webmapp.it/api/taxonomy/where/geojson/13'"
+          (currentCustomTrack)="saveCurrentCustomTrack($event)"
+          wmMapTrack
+          [track]="track$|async"
+          [trackElevationChartElements]="trackElevationChartHoverElements$|async"
+          (trackSelectedFromLayerEVT)="toggleDetails($event)"
+          wmMapTrackRelatedPois
+          (related-poi-click)="setCurrentRelatedPoi($event)"
+        >
+        </wm-map>
+        <ion-card class="print-details" *ngIf="(track$|async) as track">
+          <ng-container *ngIf="track.properties as prop">
+            <ion-card-header>
+              <ion-card-title>{{prop.name|WebmappTranslate}}</ion-card-title>
+              <ion-card-subtitle>
+                <ng-container *ngIf="prop.from as from"
+                  >{{'Punto di partenza'|WebmappTranslate}}: {{from}}</ng-container
+                >
+                <ng-container *ngIf="prop.to as to"
+                  >{{'Punto di arrivo'|WebmappTranslate}}: {{prop.to}}</ng-container
+                >
+              </ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+              <webmapp-track-technical-data
+                [feature]="track"
+                id="webmapp-track-details-technical-data"
+              >
+              </webmapp-track-technical-data>
+
+            </ion-card-content>
+          </ng-container>
+        </ion-card>
+      </div>
+      <div class="print-details-wrapper" *ngIf="(mapPrintDetails$|async) === true">
+        <div class="print-container-details" *ngIf="track$|async as track">
+          <div *ngIf="track.properties as prop">
+              <webmapp-track-description
+              [description]="prop.description| WebmappTranslate"
+            ></webmapp-track-description>
+            <webmapp-track-poi
+            [track]="track"
+            ></webmapp-track-poi>
+
+          </div>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

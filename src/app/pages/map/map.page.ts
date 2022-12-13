@@ -16,12 +16,12 @@ import {
   startWith,
   switchMap,
   tap,
-  withLatestFrom,
 } from 'rxjs/operators';
 import {
   confGeohubId,
   confJIDOUPDATETIME,
   confMAP,
+  confOPTIONS,
   confShowDrawTrack,
 } from 'src/app/store/conf/conf.selector';
 
@@ -33,7 +33,6 @@ import {Store} from '@ngrx/store';
 import {environment} from 'src/environments/environment';
 import {loadPois} from 'src/app/store/pois/pois.actions';
 import {pois} from 'src/app/store/pois/pois.selector';
-import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -60,6 +59,7 @@ export class MapPage {
       }
     }),
   );
+  confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentFilters$ = this._store.select(UICurrentFilters);
   currentLayer$ = this._store.select(UICurrentLAyer);
@@ -78,6 +78,8 @@ export class MapPage {
   graphhopperHost$: Observable<string> = of(environment.graphhopperHost);
   leftPadding$: Observable<number>;
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
+  mapPrintDetails$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  mapPrintPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([0, 0, 0, 0]);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<any> = this._store.select(pois);
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
@@ -182,6 +184,24 @@ export class MapPage {
     const indexOfCurrentID = poiIDs.indexOf(currentRelatedPoiID);
     const prevIndex = (indexOfCurrentID - 1) % poiIDs.length;
     this.setCurrentRelatedPoi(poiIDs.slice(prevIndex)[0]);
+  }
+
+  printPage() {
+    window.print();
+    let element = document.getElementById('print-page');
+    element = null;
+    if (element) {
+      let printer = window.open('', 'PRINT', 'height=600,width=1800');
+      printer.document.write('<html><head>');
+      printer.document.write('<title>' + document.title + '</title>');
+      printer.document.write('</head><body>');
+      printer.document.write(``);
+      printer.document.write('<div>' + element.innerHTML + '</div>');
+      printer.document.write('</body></html>');
+      printer.document.close();
+      printer.focus();
+      printer.print();
+    }
   }
 
   reloadCustomTrack(): void {

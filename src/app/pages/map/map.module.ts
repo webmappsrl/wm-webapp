@@ -10,6 +10,8 @@ import {PipeModule} from 'src/app/pipes/pipe.module';
 import {PoiPopupModule} from 'src/app/components/poi-popup/poi-popup.module';
 import {SharedModule} from 'src/app/shared/shared.module';
 import {TrackDetailsModule} from 'src/app/components/track-details/track-details.module';
+import {PrintComponent} from './print/print.component';
+import {NgxPrintJgModule} from 'ngx-print-jg';
 
 @NgModule({
   imports: [
@@ -23,7 +25,8 @@ import {TrackDetailsModule} from 'src/app/components/track-details/track-details
     PoiPopupModule,
     SharedModule,
     DrawTrackModule,
+    NgxPrintJgModule,
   ],
-  declarations: [MapPage],
+  declarations: [MapPage, PrintComponent],
 })
 export class MapPageModule {}

@@ -248,7 +248,10 @@ export class MapPage {
     }
   }
 
-  toggleDetails(trackid: number = -1): void {
+  toggleDetails(trackid?): void {
+    if (trackid == null) {
+      trackid = -1;
+    }
     this.updateUrl(trackid);
   }
 

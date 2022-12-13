@@ -126,7 +126,9 @@ export class TrackElevationChartComponent implements AfterViewInit {
           ),
         );
       }
-
+      if (this._chart != null) {
+        this._chart.destroy();
+      }
       this._chart = new Chart(this._chartCanvas, {
         type: 'line',
         data: {

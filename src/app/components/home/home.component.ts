@@ -126,6 +126,7 @@ export class HomeComponent {
   }
 
   searchCard(id: string | number): void {
+    console.log('search');
     this._router.navigate([], {
       relativeTo: this._route,
       queryParams: {track: id ? id : null},

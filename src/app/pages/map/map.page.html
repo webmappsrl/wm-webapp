@@ -19,9 +19,14 @@
       (dismiss)="toggleDetails()"
       class="webmapp-track-details"
     >
-    <ng-container *ngIf="(confOPTIONS$|async) as opt">
-      <ion-button id="open-print-modal" expand="block"  *ngIf="opt.print_track_enable!= null && opt.print_track_enable=== true">stampa</ion-button>
-    </ng-container>
+      <ng-container *ngIf="(confOPTIONS$|async) as opt">
+        <ion-button
+          id="open-print-modal"
+          expand="block"
+          *ngIf="opt.print_track_enable!= null && opt.print_track_enable=== true"
+          >stampa</ion-button
+        >
+      </ng-container>
     </webmapp-track-details>
 
     <webmapp-home
@@ -89,7 +94,7 @@
     [trackElevationChartElements]="trackElevationChartHoverElements$|async"
     (trackSelectedFromLayerEVT)="toggleDetails($event)"
     wmMapTrackRelatedPois
-    (related-poi-click)="setCurrentRelatedPoi($event)"
+    (related-poi)="setCurrentRelatedPoi($event)"
   >
   </wm-map>
 </ng-container>
@@ -111,9 +116,14 @@
         <ion-buttons slot="end">
           <ion-item>
             <ion-label>{{'dettagli'|WebmappTranslate}}</ion-label>
-            <ion-toggle slot="end" (click)="mapPrintDetails$.next(!mapPrintDetails$.value)"></ion-toggle>
+            <ion-toggle
+              slot="end"
+              (click)="mapPrintDetails$.next(!mapPrintDetails$.value)"
+            ></ion-toggle>
           </ion-item>
-          <ion-button (click)="printPage()" [strong]="true">{{'stampa'|WebmappTranslate}}</ion-button>
+          <ion-button (click)="printPage()" [strong]="true"
+            >{{'stampa'|WebmappTranslate}}</ion-button
+          >
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -156,7 +166,6 @@
                 id="webmapp-track-details-technical-data"
               >
               </webmapp-track-technical-data>
-
             </ion-card-content>
           </ng-container>
         </ion-card>
@@ -164,13 +173,10 @@
       <div class="print-details-wrapper" *ngIf="(mapPrintDetails$|async) === true">
         <div class="print-container-details" *ngIf="track$|async as track">
           <div *ngIf="track.properties as prop">
-              <webmapp-track-description
+            <webmapp-track-description
               [description]="prop.description| WebmappTranslate"
             ></webmapp-track-description>
-            <webmapp-track-poi
-            [track]="track"
-            ></webmapp-track-poi>
-
+            <webmapp-track-poi [track]="track"></webmapp-track-poi>
           </div>
         </div>
       </div>

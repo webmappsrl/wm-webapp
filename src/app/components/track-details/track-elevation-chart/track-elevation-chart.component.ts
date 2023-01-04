@@ -45,7 +45,6 @@ export class TrackElevationChartComponent implements AfterViewInit {
 
   @Input('feature')
   set feature(value: CGeojsonLineStringFeature) {
-    console.log(value.geometry.coordinates[0]);
     const condition = (value.geometry.coordinates[0] as any[]).length > 3;
     this.enableChart$.next(condition);
     this._cdr.detectChanges();

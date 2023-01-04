@@ -52,7 +52,6 @@ export class MapPage {
 
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
   confJIDOUPDATETIME$: Observable<any> = this._store.select(confJIDOUPDATETIME);
-
   confMap$: Observable<any> = this._store.select(confMAP).pipe(
     tap(c => {
       if (c != null && c.pois != null && c.pois.apppoisApiLayer == true) {
@@ -233,9 +232,7 @@ export class MapPage {
     this._cdr.detectChanges();
   }
 
-  setCustomTrackEnabled(): void {
-    console.log('ffff');
-  }
+  setCustomTrackEnabled(): void {}
 
   setPoi(poi: any): void {
     this.currentRelatedPoiID$.next(-1);

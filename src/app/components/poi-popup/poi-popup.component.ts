@@ -25,7 +25,6 @@ import {IGeojsonProperties} from 'src/app/types/model';
 })
 export class PoiPopupComponent {
   @Input('poi') set setPoi(poi: any) {
-    console.log(poi)
     if (poi != null && poi.properties != null) {
       const prop: {[key: string]: any} = {};
       try {
@@ -174,7 +173,6 @@ export class PoiPopupComponent {
   }
 
   toggleImage(val = null): void {
-    console.log('click');
     this.toggleImage$.next(val);
   }
 }

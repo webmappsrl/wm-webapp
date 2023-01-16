@@ -83,6 +83,7 @@
     [wmMapLayerDataLayerUrls]="dataLayerUrls$|async"
     [wmMapLayerLayer]="currentLayer$|async"
     [wmMapLayerDisableLayers]="(currentFilters$|async).length > 0"
+    (colorSelectedFromLayerEVT)="trackColor$.next($event)"
     wmMapPois
     [wmMapPoisPoi]="currentPoiIDToMap$|async"
     [wmMapPoisPois]="pois$|async"
@@ -91,6 +92,7 @@
     (currentPoiEvt)="setPoi($event)"
     wmMapTrack
     [track]="track$|async"
+    [wmMapTrackColor]="trackColor$|async"
     [trackElevationChartElements]="trackElevationChartHoverElements$|async"
     (trackSelectedFromLayerEVT)="toggleDetails($event)"
     wmMapTrackRelatedPois

@@ -49,6 +49,7 @@ const maxWidth = 600;
 export class MapPage {
   readonly track$: Observable<CGeojsonLineStringFeature | null>;
   readonly trackid$: Observable<number>;
+  readonly trackColor$: BehaviorSubject<string> = new BehaviorSubject<string>('#caaf15');
 
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
   confJIDOUPDATETIME$: Observable<any> = this._store.select(confJIDOUPDATETIME);

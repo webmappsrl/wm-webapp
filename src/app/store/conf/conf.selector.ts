@@ -53,39 +53,58 @@ export const confTHEMEVariables = createSelector(confTHEME, (theme: ITHEME) =>
 );
 export const confShowDrawTrack = createSelector(confWEBAPP, state => state.draw_track_show);
 export const confShowEditingInline = createSelector(confWEBAPP, state => state.editing_inline_show);
-export const confHOME = createSelector(confFeature, elasticAll, (state, all) => {
-  if (state.HOME != null && state.MAP != null && state.MAP.layers != null && all.length > 0) {
+
+export const confPreHOME = createSelector(confFeature, state => {
+  if (state.HOME != null && state.MAP != null && state.MAP.layers != null) {
     const home: IHOME[] = [];
     state.HOME.forEach(el => {
       if (el.box_type === 'layer') {
-        const l: ILAYER = getLayer(el.layer as number, state.MAP.layers, all);
-        // if defined apply conf layer title
-        const layer = {...l, ...{title: el.title ?? l.title}} as ILAYER;
-        home.push({...el, layer});
+        const layers = getLayers([el.layer as number], state.MAP.layers, []);
+        home.push({...el, ...{layer: layers[0]}});
       } else {
         home.push(el);
       }
     });
-    return [...home];
+
+    return home;
   }
 
   return state.HOME;
 });
 
-const getLayer = (layersID: number, layers: ILAYER[], tracks: IHIT[]) => {
-  const layer = layers.filter(l => +l.id === +layersID)[0] || undefined;
-  const tracksObj: {[layerID: number]: IHIT[]} = {};
-
-  (tracks || []).forEach(track => {
-    track.layers.forEach(l => {
-      if (+layersID === +l) {
-        if (tracksObj[l] == null) {
-          tracksObj[l] = [track];
-        } else if (tracksObj[l].length < MAX_TRACKS) {
-          tracksObj[l] = [...tracksObj[l], track];
-        }
+export const confHOME = createSelector(confFeature, state => {
+  if (state.HOME != null && state.MAP != null && state.MAP.layers != null) {
+    const home: IHOME[] = [];
+    state.HOME.forEach(el => {
+      if (el.box_type === 'layer') {
+        const layers = getLayers([el.layer as number], state.MAP.layers, []);
+        home.push({...el, ...{layer: layers[0]}});
+      } else {
+        home.push(el);
       }
     });
-  });
-  return {...layer, ...{tracks: tracksObj}};
+
+    return home;
+  }
+
+  return state.HOME;
+});
+
+const getLayers = (layersID: number[], layers: ILAYER[], tracks: IHIT[]): ILAYER[] => {
+  return layers
+    .filter(l => layersID.indexOf(+l.id) > -1)
+    .map(el => {
+      if (tracks != null) {
+        const tracksObj: {[layerID: number]: IHIT[]} = {};
+        tracks.forEach(track => {
+          track.layers.forEach(l => {
+            if (layersID.indexOf(l) > -1) {
+              tracksObj[l] = tracksObj[l] != null ? [...tracksObj[l], track] : [track];
+            }
+          });
+        });
+        return {...el, ...{tracks: tracksObj}};
+      }
+      return el;
+    });
 };

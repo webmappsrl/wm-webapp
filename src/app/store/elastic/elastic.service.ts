@@ -2,7 +2,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 
 /* eslint-disable quote-props */
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {environment} from 'src/environments/environment';
 // const baseUrl = 'https://elastic-passtrough.herokuapp.com/search';
 const baseUrl = 'https://elastic-json.webmapp.it/search';
@@ -30,7 +30,26 @@ export class ElasticService {
     return this._http.request('get', this._baseUrl);
   }
 
+  public getLayerTracks(layer: number, inputTyped: string): Observable<IELASTIC> {
+    let query = this._baseUrl;
+    if (layer == null && inputTyped == '') {
+      return of([]);
+    }
+    if (inputTyped != null) {
+      query = `${query}&query=${inputTyped}`;
+    }
+
+    if (layer != null) {
+      query = `${query}&layer=${layer}`;
+    }
+
+    return this._http.request('get', query);
+  }
+
   public getSearch(inputTyped: string): Observable<IELASTIC> {
+    if (inputTyped == null || inputTyped === '') {
+      return of([]);
+    }
     return this._http.request(
       'get',
       inputTyped ? `${this._baseUrl}&query=${inputTyped}` : this._baseUrl,

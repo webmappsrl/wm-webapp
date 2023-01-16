@@ -16,9 +16,11 @@ import {IUIRootState} from 'src/app/store/UI/UI.reducer';
 import {InnerHtmlComponent} from '../project/project.page.component';
 import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
-import {elasticSearch} from 'src/app/store/elastic/elastic.selector';
+import {elasticLayerTracks, elasticSearch} from 'src/app/store/elastic/elastic.selector';
 import {pois} from 'src/app/store/pois/pois.selector';
 import {fromHEXToColor} from 'src/app/shared/map-core/utils/styles';
+import {layerTracksElastic, searchElastic} from 'src/app/store/elastic/elastic.actions';
+import {UICurrentLAyer} from 'src/app/store/UI/UI.selector';
 
 @Component({
   selector: 'webmapp-home',
@@ -45,12 +47,12 @@ export class HomeComponent {
       return p;
     }),
   );
-  currentLayer$: BehaviorSubject<ILAYER | null> = new BehaviorSubject<ILAYER | null>(null);
+  currentLayer$ = this._storeUi.select(UICurrentLAyer);
   currentSearch$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   currentTab$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
   elasticSearch$: Observable<IHIT[]> = this._storeSearch.select(elasticSearch);
   isTyping$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  layerCards$: BehaviorSubject<IHIT[] | null> = new BehaviorSubject<IHIT[] | null>(null);
+  layerCards$: Observable<IHIT[]> = this._storeConf.select(elasticLayerTracks);
   poiCards$: Observable<any[]>;
   selectedFilters$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   showSearch = true;
@@ -144,15 +146,16 @@ export class HomeComponent {
   }
 
   setLayer(layer: ILAYER | null | any): void {
-    if (layer != null) {
-      const cards = layer.tracks[layer.id] ?? [];
-      this.layerCards$.next(cards);
-      this._cdr.markForCheck();
-    } else {
-      this.layerCards$.next(null);
-    }
     this._storeUi.dispatch(setCurrentLayer({currentLayer: layer}));
-    this.currentLayer$.next(layer);
+    if (typeof layer === 'number') {
+      this._storeSearch.dispatch(layerTracksElastic({layer, inputTyped: ''}));
+    }
+    if (layer != null && layer.id != null) {
+      this._storeSearch.dispatch(layerTracksElastic({layer: layer.id, inputTyped: ''}));
+    }
+    if (layer == null) {
+      this._storeSearch.dispatch(searchElastic({inputTyped: ''}));
+    }
   }
 
   setPoi(currentPoi: any): void {

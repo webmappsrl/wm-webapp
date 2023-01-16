@@ -5,6 +5,7 @@
     [initSearch]="title"
     (isTypings)="isTyping$.next($event)"
     (words)="currentSearch$.next($event)"
+    [currentLayer]="currentLayer$|async"
   >
     <webmapp-filter
       *ngIf="poiCards$|async"
@@ -24,7 +25,7 @@
 
   <ion-content style="--offset-top:56px; --offset-bottom:56px;" class="wm-home-cardcontainer">
     <ng-container
-      *ngIf="(isTyping$|async)||(layerCards$|async)!=null||(selectedFilters$|async).length>0; else layers"
+      *ngIf="(isTyping$|async)||(currentLayer$|async)!=null||(selectedFilters$|async).length>0; else layers"
     >
       <ion-segment [value]="currentTab$|async" (ionChange)="segmentChanged($event)">
         <ng-container *ngIf="cards$|async as cards">

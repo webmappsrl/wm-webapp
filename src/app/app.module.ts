@@ -2,7 +2,11 @@ import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {IonicModule, IonicRouteStrategy} from '@ionic/angular';
 import {LOCALE_ID, NgModule} from '@angular/core';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
-import {elasticAllReducer, elasticSearchReducer} from './store/elastic/elastic.reducer';
+import {
+  elasticAllReducer,
+  elasticLayerTracksReducer,
+  elasticSearchReducer,
+} from './store/elastic/elastic.reducer';
 
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
@@ -49,6 +53,7 @@ registerLocaleData(localeIt);
         all: elasticAllReducer,
         UI: UIReducer,
         pois: poisReducer,
+        tracks: elasticLayerTracksReducer,
       },
       {},
     ),

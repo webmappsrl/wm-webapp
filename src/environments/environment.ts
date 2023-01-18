@@ -4,9 +4,10 @@
 
 export const environment = {
   production: false,
-  geohubId: 26,
+  geohubId: 17,
   api: 'https://geohub.webmapp.it',
-  graphhopperHost: 'https://graphhopper.sviluppo.lunet.it/',
+  graphhopperHost: 'https://graphhopper.webmapp.it/',
+  //graphhopperHost: 'https://graphhopper.sviluppo.lunet.it/',
   // api: 'http://127.0.0.1:8000',
 };
 

@@ -55,7 +55,7 @@ type ITITLEBOX = IBOX & {
 };
 type ILAYERBOX = IBOX & {
   box_type: 'layer';
-  layer: number | ILAYER;
+  layer: ILAYER;
 };
 type IHOMEBASEITEM = {
   title: iLocalString | string;
@@ -170,6 +170,7 @@ interface ILAYER {
   behaviour: {[name: string]: string};
   data_use_bbox: boolean;
   data_use_only_my_data: boolean;
+  feature_image: string;
   description: string;
   icon?: any;
   id: string;

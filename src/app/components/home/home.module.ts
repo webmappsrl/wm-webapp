@@ -1,3 +1,4 @@
+import {BoxModule} from 'src/app/shared/wm-core/box/box.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {CardComponent} from './card/card.component';
@@ -28,6 +29,7 @@ import {WMCommonModule} from '../common/wm-common.module';
     ReactiveFormsModule,
     PipeModule,
     WMCommonModule,
+    BoxModule,
   ],
   exports: [HomeComponent],
 })

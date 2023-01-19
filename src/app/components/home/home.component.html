@@ -64,8 +64,8 @@
         <webmapp-title *ngIf="box.box_type === 'title'">
           {{box.title}}
         </webmapp-title>
-        <webmapp-box *ngIf="box.box_type === 'slug'" [data]="box" (clickEVT)="openSlug(box.slug)">
-        </webmapp-box>
+        <wm-slug-box *ngIf="box.box_type === 'slug'" [data]="box" (clickEVT)="openSlug(box.slug)">
+        </wm-slug-box>
         <webmapp-box
           *ngIf="box.box_type === 'external_url'"
           [data]="box"
@@ -78,12 +78,13 @@
           (trackIdEVT)="searchCard($event)"
         >
         </webmapp-tracks-box>
-        <webmapp-layer-box
+        <wm-layer-box
           *ngIf="box.box_type === 'layer'"
-          [data]="box.layer"
+          [data]="box"
+          [buttons]="false"
           (clickEVT)="setLayer(box.layer)"
         >
-        </webmapp-layer-box>
+        </wm-layer-box>
       </ng-container>
     </ng-template>
   </ion-content>

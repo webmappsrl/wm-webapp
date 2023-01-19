@@ -59,7 +59,7 @@ export const confPreHOME = createSelector(confFeature, state => {
     const home: IHOME[] = [];
     state.HOME.forEach(el => {
       if (el.box_type === 'layer') {
-        const layers = getLayers([el.layer as number], state.MAP.layers, []);
+        const layers = getLayers([el.layer as unknown as number], state.MAP.layers, []);
         home.push({...el, ...{layer: layers[0]}});
       } else {
         home.push(el);
@@ -77,7 +77,7 @@ export const confHOME = createSelector(confFeature, state => {
     const home: IHOME[] = [];
     state.HOME.forEach(el => {
       if (el.box_type === 'layer') {
-        const layers = getLayers([el.layer as number], state.MAP.layers, []);
+        const layers = getLayers([el.layer as unknown as number], state.MAP.layers, []);
         home.push({...el, ...{layer: layers[0]}});
       } else {
         home.push(el);

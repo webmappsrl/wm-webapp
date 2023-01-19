@@ -45,12 +45,12 @@
       </ion-segment>
       <ng-container *ngIf="currentTab$|async as currentTab">
         <ng-container *ngIf="currentTab === 'tracks'|| currentTab == null">
-          <webmapp-search-box
+          <wm-search-box
             *ngFor="let card of cards$|async"
             [data]="card"
             (clickEVT)="searchCard(card.id)"
           >
-          </webmapp-search-box>
+          </wm-search-box>
         </ng-container>
         <div *ngIf="currentTab === 'pois'">
           <webmapp-poi-box *ngFor="let c of poiCards$|async" [data]="c" (clickEVT)="setPoi(c)">
@@ -81,7 +81,6 @@
         <wm-layer-box
           *ngIf="box.box_type === 'layer'"
           [data]="box"
-          [buttons]="false"
           (clickEVT)="setLayer(box.layer)"
         >
         </wm-layer-box>

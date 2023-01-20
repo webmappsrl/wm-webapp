@@ -1,7 +1,6 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 
 import {confFeatureKey} from './conf.reducer';
-import {elasticAll} from '../elastic/elastic.selector';
 import {getCSSVariables} from '../../functions/theme';
 
 const confFeature = createFeatureSelector<ICONF>(confFeatureKey);

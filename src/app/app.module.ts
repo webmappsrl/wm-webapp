@@ -2,18 +2,12 @@ import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {IonicModule, IonicRouteStrategy} from '@ionic/angular';
 import {LOCALE_ID, NgModule} from '@angular/core';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
-import {
-  elasticAllReducer,
-  elasticLayerTracksReducer,
-  elasticSearchReducer,
-} from './store/elastic/elastic.reducer';
 
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {BrowserModule} from '@angular/platform-browser';
 import {ConfEffects} from './store/conf/conf.effects';
 import {EffectsModule} from '@ngrx/effects';
-import {ElasticEffects} from './store/elastic/elastic.effects';
 import {MetaComponent} from './meta.component';
 import {PoisEffects} from './store/pois/pois.effects';
 import {RouteReuseStrategy} from '@angular/router';
@@ -26,6 +20,7 @@ import {environment} from 'src/environments/environment';
 import localeIt from '@angular/common/locales/it';
 import {poisReducer} from './store/pois/pois.reducer';
 import {registerLocaleData} from '@angular/common';
+import {WmCoreModule} from './shared/wm-core/wm-core.module';
 
 registerLocaleData(localeIt);
 
@@ -35,6 +30,7 @@ registerLocaleData(localeIt);
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
+    WmCoreModule,
     HttpClientModule,
     AppRoutingModule,
     TranslateModule.forRoot({
@@ -49,15 +45,12 @@ registerLocaleData(localeIt);
     StoreModule.forRoot(
       {
         conf: confReducer,
-        search: elasticSearchReducer,
-        all: elasticAllReducer,
         UI: UIReducer,
         pois: poisReducer,
-        tracks: elasticLayerTracksReducer,
       },
       {},
     ),
-    EffectsModule.forRoot([ConfEffects, ElasticEffects, PoisEffects]),
+    EffectsModule.forRoot([ConfEffects, PoisEffects]),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states
       logOnly: environment.production, // Restrict extension to log-only mode

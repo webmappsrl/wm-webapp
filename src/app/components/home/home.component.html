@@ -46,7 +46,7 @@
       <ng-container *ngIf="currentTab$|async as currentTab">
         <ng-container *ngIf="currentTab === 'tracks'|| currentTab == null">
           <wm-search-box
-            *ngFor="let card of cards$|async"
+            *ngFor="let card of elasticSearch$|async"
             [data]="card"
             (clickEVT)="searchCard(card.id)"
           >

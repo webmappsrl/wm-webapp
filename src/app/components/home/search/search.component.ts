@@ -7,11 +7,11 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {debounceTime, filter} from 'rxjs/operators';
+import {debounceTime} from 'rxjs/operators';
 
-import {IElasticSearchRootState} from 'src/app/store/elastic/elastic.reducer';
 import {Store} from '@ngrx/store';
-import {searchElastic, layerTracksElastic} from 'src/app/store/elastic/elastic.actions';
+import {IElasticSearchRootState} from 'src/app/shared/wm-core/api/api.reducer';
+import {query} from 'src/app/shared/wm-core/api/api.actions';
 @Component({
   selector: 'webmapp-search',
   templateUrl: './search.component.html',
@@ -45,9 +45,9 @@ export class SearchComponent {
     this.searchForm.valueChanges.pipe(debounceTime(500)).subscribe(words => {
       if (words && words.search != null && words.search !== '') {
         if (this._currentLayer != null) {
-          store.dispatch(layerTracksElastic({layer: this._currentLayer, inputTyped: words}));
+          store.dispatch(query({layer: this._currentLayer, inputTyped: words.search}));
         } else {
-          store.dispatch(searchElastic(words));
+          store.dispatch(query({inputTyped: words.search}));
         }
         this.isTypingsEVT.emit(true);
         this.wordsEVT.emit(words.search);

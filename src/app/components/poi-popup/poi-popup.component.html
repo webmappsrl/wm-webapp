@@ -111,6 +111,12 @@
       <i class="wm-icn icn-fill-globe"></i>
       <webmapp-related-urls [relatedUrls]="poiProperties.related_url"></webmapp-related-urls>
     </div>
+    <div *ngIf="poiProperties.osm_url as osm" target="_blank">
+      <ion-icon class="wm-icn icn-link" slot="start"> </ion-icon>
+      <a class="webmapp-track-download-urls-item-label" [href]="osm">
+        {{ "Vedi su OpenStreetMap" | WebmappTranslate }}
+      </a>
+    </div>
   </div>
 
   <div

@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { CGeojsonLineStringFeature } from 'src/app/classes/features/cgeojson-line-string-feature';
+import {Component, Input, OnInit} from '@angular/core';
+import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 
 @Component({
   selector: 'webmapp-track-download-urls',
@@ -12,9 +12,10 @@ export class TrackDownloadUrlsComponent implements OnInit {
     this._initializeDownloadUrls();
   }
 
-  public gpx: string;
-  public kml: string;
-  public geojson: string;
+  gpx: string;
+  kml: string;
+  geojson: string;
+  osm: string;
 
   private _feature: CGeojsonLineStringFeature;
 
@@ -26,5 +27,6 @@ export class TrackDownloadUrlsComponent implements OnInit {
     this.gpx = this._feature?.properties?.gpx_url;
     this.kml = this._feature?.properties?.kml_url;
     this.geojson = this._feature?.properties?.geojson_url;
+    this.osm = this._feature?.properties?.osm_url;
   }
 }

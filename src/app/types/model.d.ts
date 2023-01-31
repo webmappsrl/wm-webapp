@@ -47,6 +47,7 @@ export interface IGeojsonProperties {
   excerpt?: ILocaleString;
   feature_image?: IWmImage;
   geojson_url?: string;
+  osm_url?: string;
   gpx_url?: string;
   // allow to work with custom properties when needed
   id: number;

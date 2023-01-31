@@ -90,9 +90,7 @@
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.ele">
       <i class="wm-icn icn-outline-plus"></i>
       <p>
-        <a>
-          {{poiProperties.ele}}
-        </a>
+        <a> {{poiProperties.ele}} {{'metri'|WebmappTranslate}} </a>
       </p>
     </div>
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.contact_phone" target="_blank">

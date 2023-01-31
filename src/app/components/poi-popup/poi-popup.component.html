@@ -1,11 +1,10 @@
 <ng-container *ngIf="poiProperties!= null">
   <ng-container>
     <webmapp-image-modal
-    *ngIf="toggleImage$|async as image"
-    (closeEVT)="toggleImage()"
-    [image]="image"
+      *ngIf="toggleImage$|async as image"
+      (closeEVT)="toggleImage()"
+      [image]="image"
     ></webmapp-image-modal>
-    
   </ng-container>
   <div class="row">
     <button class="webmapp-poi-popup-close" (click)="closeEVT.emit()">
@@ -87,6 +86,14 @@
       >
         {{poiProperties.address}}
       </a>
+    </div>
+    <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.ele">
+      <i class="wm-icn icn-outline-plus"></i>
+      <p>
+        <a>
+          {{poiProperties.ele}}
+        </a>
+      </p>
     </div>
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.contact_phone" target="_blank">
       <i class="wm-icn icn-fill-phone"></i>

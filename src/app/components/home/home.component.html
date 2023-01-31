@@ -28,7 +28,7 @@
       *ngIf="(isTyping$|async)||(currentLayer$|async)!=null||(selectedFilters$|async).length>0; else layers"
     >
       <ion-segment [value]="currentTab$|async" (ionChange)="segmentChanged($event)">
-        <ng-container *ngIf="cards$|async as cards">
+        <ng-container *ngIf="elasticSearch$|async as cards">
           <ion-segment-button value="tracks" *ngIf="cards != null && cards.length> 0">
             <ion-label>
               tracks <ion-badge>{{cards.length}} </ion-badge></ion-label

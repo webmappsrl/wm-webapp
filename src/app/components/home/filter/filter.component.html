@@ -40,7 +40,7 @@
           <ng-template #imgT>
             <img [src]="item.identifier|getFilterIcn:(currentFilters$|async)" />
           </ng-template>
-          <ion-label>{{item.name|WebmappTranslate}}</ion-label>
+          <ion-label>{{item.name|wmtrans}}</ion-label>
           <ion-icon
             [name]="(currentFilters$|async).indexOf(item.identifier) >= 0? 'eye': 'eye-off'"
           ></ion-icon>

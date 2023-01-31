@@ -14,7 +14,7 @@
   <div
     class="row category"
     *ngIf="poiProperties.taxonomy && poiProperties.taxonomy.poi_type as poiType"
-    [innerHTML]="poiType.name|WebmappTranslate"
+    [innerHTML]="poiType.name|wmtrans"
   ></div>
   <div class="row">
     <div class="title">
@@ -25,7 +25,7 @@
       >
         <i class="icn-outline-arrow-left"></i>
       </button>
-      <p class="webmapp-poi-popup-title">{{poiProperties.name|WebmappTranslate}}</p>
+      <p class="webmapp-poi-popup-title">{{poiProperties.name|wmtrans}}</p>
 
       <button
         class="webmapp-poi-popup-right circle"
@@ -90,7 +90,7 @@
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.ele">
       <i class="wm-icn icn-outline-plus"></i>
       <p>
-        <a> {{poiProperties.ele}} {{'metri'|WebmappTranslate}} </a>
+        <a> {{poiProperties.ele}} {{'metri'|wmtrans}} </a>
       </p>
     </div>
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.contact_phone" target="_blank">
@@ -114,15 +114,12 @@
     <div *ngIf="poiProperties.osm_url as osm" target="_blank">
       <ion-icon class="wm-icn icn-link" slot="start"> </ion-icon>
       <a class="webmapp-track-download-urls-item-label" [href]="osm">
-        {{ "Vedi su OpenStreetMap" | WebmappTranslate }}
+        {{ "Vedi su OpenStreetMap" | wmtrans }}
       </a>
     </div>
   </div>
 
-  <div
-    class="webmapp-poi-popup-text"
-    [innerHTML]="poiProperties.description|WebmappTranslate"
-  ></div>
+  <div class="webmapp-poi-popup-text" [innerHTML]="poiProperties.description|wmtrans"></div>
 
   <ng-container *ngIf="poiProperties?.audio">
     <div class="webmapp-title">Descrizione Audio</div>

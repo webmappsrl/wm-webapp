@@ -36,13 +36,11 @@
       (searchId)="selectTrack($event)"
     >
       <ion-button expand="full" *ngIf="enableDrawTrack$|async" (click)="toggleDrawTrackEnabled()">
-        {{'i miei percorsi'|WebmappTranslate}}
+        {{'i miei percorsi'|wmtrans}}
       </ion-button>
     </webmapp-home>
     <ng-template #customTrack>
-      <ion-button expand="full" (click)="toggleDrawTrackEnabled()">
-        {{'esci'|WebmappTranslate}}
-      </ion-button>
+      <ion-button expand="full" (click)="toggleDrawTrackEnabled()"> {{'esci'|wmtrans}} </ion-button>
       <wm-draw-track
         *ngIf="(wmap.map$|async) as map"
         [map]="map"
@@ -112,20 +110,18 @@
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button (click)="printModal.dismiss()">{{'esci'|WebmappTranslate}}</ion-button>
+          <ion-button (click)="printModal.dismiss()">{{'esci'|wmtrans}}</ion-button>
         </ion-buttons>
-        <ion-title>{{'anteprima di stampa'|WebmappTranslate}}</ion-title>
+        <ion-title>{{'anteprima di stampa'|wmtrans}}</ion-title>
         <ion-buttons slot="end">
           <ion-item>
-            <ion-label>{{'dettagli'|WebmappTranslate}}</ion-label>
+            <ion-label>{{'dettagli'|wmtrans}}</ion-label>
             <ion-toggle
               slot="end"
               (click)="mapPrintDetails$.next(!mapPrintDetails$.value)"
             ></ion-toggle>
           </ion-item>
-          <ion-button (click)="printPage()" [strong]="true"
-            >{{'stampa'|WebmappTranslate}}</ion-button
-          >
+          <ion-button (click)="printPage()" [strong]="true">{{'stampa'|wmtrans}}</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -152,13 +148,13 @@
         <ion-card class="print-details" *ngIf="(track$|async) as track">
           <ng-container *ngIf="track.properties as prop">
             <ion-card-header>
-              <ion-card-title>{{prop.name|WebmappTranslate}}</ion-card-title>
+              <ion-card-title>{{prop.name|wmtrans}}</ion-card-title>
               <ion-card-subtitle>
                 <ng-container *ngIf="prop.from as from"
-                  >{{'Punto di partenza'|WebmappTranslate}}: {{from}}</ng-container
+                  >{{'Punto di partenza'|wmtrans}}: {{from}}</ng-container
                 >
                 <ng-container *ngIf="prop.to as to"
-                  >{{'Punto di arrivo'|WebmappTranslate}}: {{prop.to}}</ng-container
+                  >{{'Punto di arrivo'|wmtrans}}: {{prop.to}}</ng-container
                 >
               </ion-card-subtitle>
             </ion-card-header>
@@ -176,7 +172,7 @@
         <div class="print-container-details" *ngIf="track$|async as track">
           <div *ngIf="track.properties as prop">
             <webmapp-track-description
-              [description]="prop.description| WebmappTranslate"
+              [description]="prop.description| wmtrans"
             ></webmapp-track-description>
             <webmapp-track-poi [track]="track"></webmapp-track-poi>
           </div>

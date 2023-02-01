@@ -62,5 +62,4 @@ export const webEN = {
   'cycling': 'In bicicletta',
   'poi_type': 'punti di interesse',
   'where': 'luoghi',
-  'sentieri-numerati': 'asd',
 };

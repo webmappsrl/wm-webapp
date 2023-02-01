@@ -24,7 +24,7 @@
           id="open-print-modal"
           expand="block"
           *ngIf="opt.print_track_enable!= null && opt.print_track_enable=== true"
-          >stampa</ion-button
+          >{{'stampa'|wmtrans}}</ion-button
         >
       </ng-container>
     </webmapp-track-details>
@@ -38,6 +38,10 @@
       <ion-button expand="full" *ngIf="enableDrawTrack$|async" (click)="toggleDrawTrackEnabled()">
         {{'i miei percorsi'|wmtrans}}
       </ion-button>
+      <wm-lang-selector
+        [langs]="(langs$|async)?.available"
+        [defaultLang]="(langs$|async)?.default"
+      ></wm-lang-selector>
     </webmapp-home>
     <ng-template #customTrack>
       <ion-button expand="full" (click)="toggleDrawTrackEnabled()"> {{'esci'|wmtrans}} </ion-button>

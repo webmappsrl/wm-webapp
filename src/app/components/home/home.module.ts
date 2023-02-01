@@ -10,7 +10,6 @@ import {IonicModule} from '@ionic/angular';
 import {NgModule} from '@angular/core';
 import {PipeModule} from 'src/app/pipes/pipe.module';
 import {SearchComponent} from './search/search.component';
-import {TranslateModule} from '@ngx-translate/core';
 import {WMCommonModule} from '../common/wm-common.module';
 
 @NgModule({
@@ -25,7 +24,6 @@ import {WMCommonModule} from '../common/wm-common.module';
     CommonModule,
     IonicModule,
     FormsModule,
-    TranslateModule,
     ReactiveFormsModule,
     PipeModule,
     WMCommonModule,

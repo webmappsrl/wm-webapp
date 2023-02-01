@@ -18,7 +18,7 @@
     <ng-container *ngIf="(isTyping$|async)===false && currentLayer!=null">
       <div class="reset-layer" (click)="setLayer(null)">
         <ion-icon name="caret-back-outline"></ion-icon>
-        <div>{{currentLayer.title}}</div>
+        <div>{{currentLayer.title|wmtrans}}</div>
       </div>
     </ng-container>
   </ng-container>
@@ -31,7 +31,7 @@
         <ng-container *ngIf="elasticSearch$|async as cards">
           <ion-segment-button value="tracks" *ngIf="cards != null && cards.length> 0">
             <ion-label>
-              tracks <ion-badge>{{cards.length}} </ion-badge></ion-label
+              {{'tracce'|wmtrans}} <ion-badge>{{cards.length}} </ion-badge></ion-label
             >
           </ion-segment-button>
         </ng-container>
@@ -62,7 +62,7 @@
     <ng-template #layers>
       <ng-container *ngFor="let box of confHOME$|async">
         <webmapp-title *ngIf="box.box_type === 'title'">
-          {{box.title}}
+          {{box.title|wmtrans}}
         </webmapp-title>
         <wm-slug-box *ngIf="box.box_type === 'slug'" [data]="box" (clickEVT)="openSlug(box.slug)">
         </wm-slug-box>

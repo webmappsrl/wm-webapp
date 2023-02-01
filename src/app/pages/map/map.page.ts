@@ -1,12 +1,11 @@
-import {ActivatedRoute, Router} from '@angular/router';
-import {BehaviorSubject, Observable, combineLatest, from, merge, of} from 'rxjs';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ViewEncapsulation,
 } from '@angular/core';
-import {UICurrentFilters, UICurrentLAyer, UICurrentPoiId} from 'src/app/store/UI/UI.selector';
+import {ActivatedRoute, Router} from '@angular/router';
+import {BehaviorSubject, combineLatest, from, merge, Observable, of} from 'rxjs';
 import {
   catchError,
   distinctUntilChanged,
@@ -20,19 +19,21 @@ import {
 import {
   confGeohubId,
   confJIDOUPDATETIME,
+  confLANGUAGES,
   confMAP,
   confOPTIONS,
   confShowDrawTrack,
 } from 'src/app/store/conf/conf.selector';
+import {UICurrentFilters, UICurrentLAyer, UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 
+import {Store} from '@ngrx/store';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {GeohubService} from 'src/app/services/geohub.service';
 import {IDATALAYER} from 'src/app/shared/map-core/types/layer';
-import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
-import {Store} from '@ngrx/store';
-import {environment} from 'src/environments/environment';
 import {loadPois} from 'src/app/store/pois/pois.actions';
 import {pois} from 'src/app/store/pois/pois.selector';
+import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
+import {environment} from 'src/environments/environment';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -48,8 +49,8 @@ const maxWidth = 600;
 })
 export class MapPage {
   readonly track$: Observable<CGeojsonLineStringFeature | null>;
-  readonly trackid$: Observable<number>;
   readonly trackColor$: BehaviorSubject<string> = new BehaviorSubject<string>('#caaf15');
+  readonly trackid$: Observable<number>;
 
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
   confJIDOUPDATETIME$: Observable<any> = this._store.select(confJIDOUPDATETIME);
@@ -77,6 +78,7 @@ export class MapPage {
   enableOverLay$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   geohubId$ = this._store.select(confGeohubId);
   graphhopperHost$: Observable<string> = of(environment.graphhopperHost);
+  langs$ = this._store.select(confLANGUAGES);
   leftPadding$: Observable<number>;
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   mapPrintDetails$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);

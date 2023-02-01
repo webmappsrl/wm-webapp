@@ -122,7 +122,7 @@
   <div class="webmapp-poi-popup-text" [innerHTML]="poiProperties.description|wmtrans"></div>
 
   <ng-container *ngIf="poiProperties?.audio">
-    <div class="webmapp-title">Descrizione Audio</div>
+    <div class="webmapp-title">{{'Descrizione Audio'|wmtrans}}</div>
     <webmapp-track-audio [audio]="poiProperties?.audio"></webmapp-track-audio>
   </ng-container>
   <ion-button class="edit" *ngIf="enableEditingInline$|async" (click)="openGeohub()">

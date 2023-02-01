@@ -1,3 +1,4 @@
+import {WmCoreModule} from './../../shared/wm-core/wm-core.module';
 import {CommonModule} from '@angular/common';
 import {DrawTrackModule} from 'src/app/components/draw-track/draw-track.module';
 import {FormsModule} from '@angular/forms';
@@ -25,6 +26,7 @@ import {NgxPrintJgModule} from 'ngx-print-jg';
     SharedModule,
     DrawTrackModule,
     NgxPrintJgModule,
+    WmCoreModule,
   ],
   declarations: [MapPage],
 })

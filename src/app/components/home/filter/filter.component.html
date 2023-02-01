@@ -1,6 +1,6 @@
 <ion-button id="open-modal">
   <ion-icon name="funnel"></ion-icon>
-  Filtri
+  {{'Filtri'|wmtrans}}
 </ion-button>
 <ion-modal trigger="open-modal">
   <ng-template>
@@ -24,7 +24,7 @@
           *ngFor="let tab of tabs$|async"
           (click)="segmentChanged(tab)"
         >
-          <ion-label>{{tab|translate}}</ion-label>
+          <ion-label>{{tab|wmtrans}}</ion-label>
         </ion-segment-button>
       </ion-segment>
       <div class="chip-list">
@@ -40,7 +40,7 @@
           <ng-template #imgT>
             <img [src]="item.identifier|getFilterIcn:(currentFilters$|async)" />
           </ng-template>
-          <ion-label>{{item.name|WebmappTranslate}}</ion-label>
+          <ion-label>{{item.name|wmtrans}}</ion-label>
           <ion-icon
             [name]="(currentFilters$|async).indexOf(item.identifier) >= 0? 'eye': 'eye-off'"
           ></ion-icon>

@@ -1,5 +1,5 @@
 <div class="wm-box" (click)="clickEVT.emit()">
   <div class="color" [ngStyle]="{'background-color':data?.style?.color?data.style.color:''}"></div>
   <img class="wm-result-img" [src]="data.feature_image?data.feature_image:defaultPhotoPath" />
-  <div class="wm-box-title">{{data.title}}</div>
+  <div class="wm-box-title">{{data.title|wmtrans}}</div>
 </div>

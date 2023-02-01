@@ -10,12 +10,9 @@
     />
     <div class="webmapp-track-poi-text">
       <div class="webmapp-track-poi-title">
-        {{ item.name | WebmappTranslate|lowercase }}
+        {{ item.name | wmtrans|lowercase }}
       </div>
-      <div
-        class="webmapp-track-poi-description"
-        [innerHTML]="item.description | WebmappTranslate"
-      ></div>
+      <div class="webmapp-track-poi-description" [innerHTML]="item.description | wmtrans"></div>
       <div class="webmapp-track-poi-btns">
         <div class="webmapp-poi-popup-btn" *ngIf="item.address">
           <i class="wm-icn icn-fill-pin"></i>

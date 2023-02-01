@@ -11,6 +11,8 @@ import {UtilsService} from 'src/app/services/utils.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class TrackTechnicalDataComponent implements OnInit {
+  private _feature: CGeojsonLineStringFeature;
+
   @Input('feature') set feature(value: CGeojsonLineStringFeature) {
     this._feature = value;
     this.technicalData = this._initializeTechnicalData();
@@ -21,8 +23,6 @@ export class TrackTechnicalDataComponent implements OnInit {
     label: string | ILocaleString;
     value: string | ILocaleString;
   }>;
-
-  private _feature: CGeojsonLineStringFeature;
 
   constructor(private _utilsService: UtilsService) {}
 
@@ -38,13 +38,13 @@ export class TrackTechnicalDataComponent implements OnInit {
       label: string | ILocaleString;
       value: string;
     }> = [];
-    const technicalDataLabelPrefix: string = 'trackDetails.technicalData.';
+    const technicalDataLabelPrefix: string = '';
 
     // difficulty
     if (this?._feature?.properties?.difficulty) {
       technicalData.push({
         icon: 'icn-outline-difficulty',
-        label: technicalDataLabelPrefix + 'difficulty',
+        label: 'difficulty',
         value: this._feature.properties.difficulty as any,
       });
     }

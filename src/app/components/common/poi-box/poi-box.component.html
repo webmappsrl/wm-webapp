@@ -3,13 +3,13 @@
   <div class="wm-box-taxonomies" *ngIf="data.taxonomyActivities">
     <div class="wm-box-taxonomy" *ngFor="let item of data.taxonomyActivities">
       <i [class]="item|getIcn"></i>
-      <div>{{item|lowercase|WebmappTranslate}}</div>
+      <div>{{item|lowercase|wmtrans}}</div>
     </div>
   </div>
   <div class="wm-box-where" *ngIf="data.taxonomyWheres!= null && data.taxonomyWheres.length>0">
     {{data.taxonomyWheres[data.taxonomyWheres.length-1]}}
   </div>
-  <div class="wm-box-name">{{data.name|WebmappTranslate}}</div>
+  <div class="wm-box-name">{{data.name|wmtrans}}</div>
   <div class="wm-box-tags">
     <div class="wm-box-tag" *ngIf="data.distance">
       <i class="icn-outline-distance"></i>

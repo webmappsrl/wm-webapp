@@ -16,8 +16,8 @@ import {UICurrentLAyer} from 'src/app/store/UI/UI.selector';
 import {query} from 'src/app/shared/wm-core/api/api.actions';
 import {queryApi} from 'src/app/shared/wm-core/api/api.selector';
 import {IElasticSearchRootState} from 'src/app/shared/wm-core/api/api.reducer';
-import {IPOITYPEFILTERBOX} from 'src/app/shared/wm-core/types/config';
 import {FilterComponent} from './filter/filter.component';
+import {IHOME, ILAYER} from 'src/app/types/config';
 
 @Component({
   selector: 'webmapp-home',

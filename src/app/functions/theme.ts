@@ -1,4 +1,5 @@
 import * as _color from 'color';
+import {ITHEME} from '../types/config';
 /**
  * Return a contrast color based on the color param
  *

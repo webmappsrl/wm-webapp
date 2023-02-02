@@ -34,6 +34,7 @@ import {loadPois} from 'src/app/store/pois/pois.actions';
 import {pois} from 'src/app/store/pois/pois.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {environment} from 'src/environments/environment';
+import {IOPTIONS} from 'src/app/types/config';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;

@@ -7,6 +7,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import {IBASEBOX} from 'src/app/types/config';
 
 import {BaseBoxComponent} from '../abstract/box';
 

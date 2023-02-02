@@ -1,13 +1,11 @@
 import {createAction, props} from '@ngrx/store';
+import {ILAYER} from 'src/app/types/config';
 
 export const setCurrentLayer = createAction(
   '[UI] Set current layer',
   props<{currentLayer: ILAYER}>(),
 );
-export const setCurrentPoi = createAction(
-  '[UI] Set current poi',
-  props<{currentPoi: any}>(),
-);
+export const setCurrentPoi = createAction('[UI] Set current poi', props<{currentPoi: any}>());
 export const setCurrentFilters = createAction(
   '[UI] Set current Filters',
   props<{currentFilters: any[]}>(),

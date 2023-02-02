@@ -1,4 +1,5 @@
 import {createReducer, on} from '@ngrx/store';
+import {ICONF} from 'src/app/types/config';
 
 import {loadConfSuccess} from './conf.actions';
 

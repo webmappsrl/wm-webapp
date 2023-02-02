@@ -2,6 +2,7 @@ import {createFeatureSelector, createSelector} from '@ngrx/store';
 
 import {confFeatureKey} from './conf.reducer';
 import {getCSSVariables} from '../../functions/theme';
+import {ICONF, IHOME, ILAYER, ITHEME} from 'src/app/types/config';
 
 const confFeature = createFeatureSelector<ICONF>(confFeatureKey);
 export const MAX_TRACKS = 200;

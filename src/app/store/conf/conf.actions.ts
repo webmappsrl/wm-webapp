@@ -1,4 +1,5 @@
 import {createAction, props} from '@ngrx/store';
+import {ICONF} from 'src/app/types/config';
 
 export const loadConf = createAction('[conf] Load configuration');
 export const loadConfSuccess = createAction(

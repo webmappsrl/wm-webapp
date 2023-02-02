@@ -1,4 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
+import {IHOMEITEM, IHOMEITEMTRACK} from 'src/app/types/config';
 
 @Pipe({
   name: 'convertToItemTracks',

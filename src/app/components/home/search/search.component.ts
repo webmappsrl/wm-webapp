@@ -12,7 +12,6 @@ import {debounceTime} from 'rxjs/operators';
 import {Store} from '@ngrx/store';
 import {IElasticSearchRootState} from 'src/app/shared/wm-core/api/api.reducer';
 import {query} from 'src/app/shared/wm-core/api/api.actions';
-import {ILAYER} from 'src/app/types/config';
 @Component({
   selector: 'webmapp-search',
   templateUrl: './search.component.html',

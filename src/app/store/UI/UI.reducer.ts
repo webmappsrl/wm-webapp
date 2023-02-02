@@ -1,5 +1,4 @@
 import {createReducer, on} from '@ngrx/store';
-import {ILAYER} from 'src/app/types/config';
 import {enabledDrawTrack, setCurrentFilters, setCurrentLayer, setCurrentPoi} from './UI.actions';
 
 export const featureKey = 'UI';

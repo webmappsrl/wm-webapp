@@ -75,6 +75,9 @@ export interface PoiTypeTaxonomy {
   description: ILocaleString;
   id: number;
   name: ILocaleString;
+  identifier: string;
+  icon: string;
+  color: string;
 }
 
 /**

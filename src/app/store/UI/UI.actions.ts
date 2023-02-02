@@ -1,5 +1,4 @@
 import {createAction, props} from '@ngrx/store';
-import {ILAYER} from 'src/app/types/config';
 
 export const setCurrentLayer = createAction(
   '[UI] Set current layer',

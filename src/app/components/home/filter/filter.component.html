@@ -2,6 +2,9 @@
   <ion-icon name="funnel"></ion-icon>
   {{'Filtri'|wmtrans}}
 </ion-button>
+<ion-button (click)="reset()" [disabled]="(currentFilters$|async).length === 0">
+  {{'Reset'|wmtrans}}
+</ion-button>
 <ion-modal trigger="open-modal">
   <ng-template>
     <ion-header>

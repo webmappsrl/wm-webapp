@@ -8,6 +8,7 @@
     [currentLayer]="currentLayer$|async"
   >
     <webmapp-filter
+      #filterCmp
       *ngIf="poiCards$|async"
       [filters]="confPOISFilter$|async"
       (selectedFilters)="setCurrentFilters($event)"
@@ -64,6 +65,12 @@
         <webmapp-title *ngIf="box.box_type === 'title'">
           {{box.title|wmtrans}}
         </webmapp-title>
+        <wm-poi-type-filter-box
+          *ngIf="box.box_type === 'poi_type_filter'"
+          [data]="box"
+          (clickEVT)="toggleFilter(box.identifier)"
+        >
+        </wm-poi-type-filter-box>
         <wm-slug-box *ngIf="box.box_type === 'slug'" [data]="box" (clickEVT)="openSlug(box.slug)">
         </wm-slug-box>
         <webmapp-box
@@ -72,6 +79,7 @@
           (clickEVT)="openExternalUrl(box.url)"
         >
         </webmapp-box>
+
         <webmapp-tracks-box
           *ngIf="box.box_type === 'base'"
           [data]="box"

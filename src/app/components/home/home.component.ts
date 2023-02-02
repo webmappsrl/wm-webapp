@@ -1,6 +1,6 @@
 import {ActivatedRoute, Router} from '@angular/router';
 import {BehaviorSubject, Observable, merge, of, zip} from 'rxjs';
-import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ViewChild, ViewEncapsulation} from '@angular/core';
 import {confHOME, confPOISFilter} from 'src/app/store/conf/conf.selector';
 import {filter, map, switchMap, tap} from 'rxjs/operators';
 import {setCurrentFilters, setCurrentLayer, setCurrentPoi} from 'src/app/store/UI/UI.actions';
@@ -16,6 +16,8 @@ import {UICurrentLAyer} from 'src/app/store/UI/UI.selector';
 import {query} from 'src/app/shared/wm-core/api/api.actions';
 import {queryApi} from 'src/app/shared/wm-core/api/api.selector';
 import {IElasticSearchRootState} from 'src/app/shared/wm-core/api/api.reducer';
+import {IPOITYPEFILTERBOX} from 'src/app/shared/wm-core/types/config';
+import {FilterComponent} from './filter/filter.component';
 
 @Component({
   selector: 'webmapp-home',
@@ -25,6 +27,8 @@ import {IElasticSearchRootState} from 'src/app/shared/wm-core/api/api.reducer';
   encapsulation: ViewEncapsulation.None,
 })
 export class HomeComponent {
+  @ViewChild('filterCmp') filterCmp: FilterComponent;
+
   cards$: Observable<IHIT[]> = of([]);
   confHOME$: Observable<IHOME[]> = this._storeConf.select(confHOME);
   confPOISFilter$: Observable<any> = this._storeConf.select(confPOISFilter).pipe(
@@ -146,5 +150,9 @@ export class HomeComponent {
 
   setPoi(currentPoi: any): void {
     this._storeUi.dispatch(setCurrentPoi({currentPoi}));
+  }
+
+  toggleFilter(identifier: string): void {
+    this.filterCmp.addFilter(identifier);
   }
 }

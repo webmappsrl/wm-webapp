@@ -1,5 +1,4 @@
 <ng-content></ng-content>
-
 <ng-container *ngIf="track != null">
   <ng-container *ngIf="track.properties as properties">
     <ion-header>
@@ -34,11 +33,11 @@
         class="webmapp-track-details-from-to"
       >
         <div *ngIf="track.properties.from as from" class="webmapp-track-details-from-to-box">
-          <div>Punto di partenza</div>
+          <div>{{"Punto di partenza"|wmtrans}</div>
           <div>{{from}}</div>
         </div>
         <div *ngIf="track.properties.to as to" class="webmapp-track-details-from-to-box">
-          <div>Punto di arrivo</div>
+          <div>{{"Punto di arrivo"|wmtrans}}</div>
           <div>{{to}}</div>
         </div>
       </div>
@@ -74,7 +73,7 @@
         </div>
       </ng-container>
       <ng-container *ngIf="false">
-        <div class="webmapp-title">Come arrivare</div>
+        <div class="webmapp-title">{{'Come arrivare'}}</div>
         <div class="webmapp-how-to-get">
           <div class="webmapp-hot-to-get-box">
             <i class="icn-outline-bike"></i>

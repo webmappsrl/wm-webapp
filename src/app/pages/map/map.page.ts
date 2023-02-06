@@ -34,6 +34,7 @@ import {loadPois} from 'src/app/store/pois/pois.actions';
 import {pois} from 'src/app/store/pois/pois.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {environment} from 'src/environments/environment';
+import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -46,6 +47,7 @@ const maxWidth = 600;
   styleUrls: ['./map.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  providers: [LangService],
 })
 export class MapPage {
   readonly track$: Observable<CGeojsonLineStringFeature | null>;
@@ -78,7 +80,13 @@ export class MapPage {
   enableOverLay$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   geohubId$ = this._store.select(confGeohubId);
   graphhopperHost$: Observable<string> = of(environment.graphhopperHost);
-  langs$ = this._store.select(confLANGUAGES);
+  langs$ = this._store.select(confLANGUAGES).pipe(
+    tap(l => {
+      if (l && l.default) {
+        this._langService.initLang(l.default);
+      }
+    }),
+  );
   leftPadding$: Observable<number>;
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   mapPrintDetails$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -98,6 +106,7 @@ export class MapPage {
     private _geohubService: GeohubService,
     private _cdr: ChangeDetectorRef,
     private _store: Store,
+    private _langService: LangService,
   ) {
     if (window.innerWidth < maxWidth) {
       this.mapPadding$.next([initPadding[0], initPadding[1], initPadding[2], menuCloseLeft]);

@@ -18,8 +18,6 @@ import {IGeojsonProperties} from 'src/app/types/model';
   encapsulation: ViewEncapsulation.None,
 })
 export class TrackPoiComponent {
-  @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
-
   @Input('track') set feature(track: CGeojsonLineStringFeature) {
     this.poi = [];
     this.poiClick.emit(-1);
@@ -41,17 +39,20 @@ export class TrackPoiComponent {
       });
     }
   }
+
   @Input('poi') set setPoi(id: number) {
     const newCurrentPoi = this.poi.find(p => p.id === id);
     this.currentPoi = newCurrentPoi;
   }
 
+  @Output('poi-click') poiClick: EventEmitter<any> = new EventEmitter<any>();
+
+  currentPoi: IGeojsonProperties = null;
   defaultPhotoPath = '/assets/icon/no-photo.svg';
   poi: IGeojsonProperties[] = [];
-  currentPoi: IGeojsonProperties = null;
 
   selectPoi(poi: IGeojsonProperties) {
     this.currentPoi = poi;
-    this.poiClick.emit(poi.id);
+    this.poiClick.emit(poi);
   }
 }

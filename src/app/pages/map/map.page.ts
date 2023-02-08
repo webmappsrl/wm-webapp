@@ -2,20 +2,12 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {BehaviorSubject, combineLatest, from, merge, Observable, of} from 'rxjs';
-import {
-  catchError,
-  distinctUntilChanged,
-  filter,
-  map,
-  shareReplay,
-  startWith,
-  switchMap,
-  tap,
-} from 'rxjs/operators';
+import {BehaviorSubject, from, merge, Observable, of} from 'rxjs';
+import {distinctUntilChanged, filter, map, share, startWith, switchMap, tap} from 'rxjs/operators';
 import {
   confGeohubId,
   confJIDOUPDATETIME,
@@ -25,7 +17,7 @@ import {
   confShowDrawTrack,
 } from 'src/app/store/conf/conf.selector';
 import {UICurrentFilters, UICurrentLAyer, UICurrentPoiId} from 'src/app/store/UI/UI.selector';
-
+import {wmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/directives/track.related-pois.directive';
 import {Store} from '@ngrx/store';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {GeohubService} from 'src/app/services/geohub.service';
@@ -35,6 +27,7 @@ import {pois} from 'src/app/store/pois/pois.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {environment} from 'src/environments/environment';
 import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
+import {IGeojsonFeature} from 'src/app/shared/wm-core/types/model';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -54,6 +47,9 @@ export class MapPage {
   readonly trackColor$: BehaviorSubject<string> = new BehaviorSubject<string>('#caaf15');
   readonly trackid$: Observable<number>;
 
+  @ViewChild(wmMapTrackRelatedPoisDirective)
+  wmMapTrackRelatedPoisDirective: wmMapTrackRelatedPoisDirective;
+
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
   confJIDOUPDATETIME$: Observable<any> = this._store.select(confJIDOUPDATETIME);
   confMap$: Observable<any> = this._store.select(confMAP).pipe(
@@ -67,12 +63,14 @@ export class MapPage {
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentFilters$ = this._store.select(UICurrentFilters);
   currentLayer$ = this._store.select(UICurrentLAyer);
-  currentPoi$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  currentPoi$: BehaviorSubject<IGeojsonFeature> = new BehaviorSubject<IGeojsonFeature | null>(null);
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiIDFromHome$ = this._store.select(UICurrentPoiId);
   currentPoiIDToMap$: Observable<number | null>;
-  currentRelatedPoi$: Observable<any>;
-  currentRelatedPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
+  currentPoiNextID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
+  currentPoiPrevID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
+  currentRelatedPoi$: BehaviorSubject<IGeojsonFeature> =
+    new BehaviorSubject<IGeojsonFeature | null>(null);
   dataLayerUrls$: Observable<IDATALAYER>;
   disableLayers$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   drawTrackEnable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -91,6 +89,25 @@ export class MapPage {
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   mapPrintDetails$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   mapPrintPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([0, 0, 0, 0]);
+  mergedPoi$: Observable<any> = merge(
+    this.currentPoi$.pipe(
+      distinctUntilChanged(),
+      map(p => {
+        if (p == null) return null;
+        if (this.wmMapTrackRelatedPoisDirective) {
+          this.wmMapTrackRelatedPoisDirective.setPoi = -1;
+        }
+        return p;
+      }),
+    ),
+    this.currentRelatedPoi$.pipe(
+      distinctUntilChanged(),
+      map(p => {
+        if (p == null) return null;
+        return p;
+      }),
+    ),
+  );
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<any> = this._store.select(pois);
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
@@ -130,6 +147,9 @@ export class MapPage {
       startWith(-1),
     );
     this.track$ = this.trackid$.pipe(
+      distinctUntilChanged((prev, curr) => {
+        return prev === curr;
+      }),
       switchMap(trackid =>
         trackid > -1 ? from(this._geohubService.getEcTrack(trackid)) : of(null),
       ),
@@ -141,61 +161,21 @@ export class MapPage {
           this.poiIDs$.next([]);
         }
       }),
+      share(),
     );
 
     this.caretOutLine$ = this.showMenu$.pipe(
       map(showMenu => (showMenu ? 'caret-back-outline' : 'caret-forward-outline')),
     );
     this.leftPadding$ = this.showMenu$.pipe(map(showMenu => (showMenu ? menuOpenLeft : 0)));
-    const relatedPois$ = this.track$.pipe(
-      map(track => (track != null && track.properties != null ? track.properties : null)),
-      filter(p => p != null),
-      map(properties =>
-        properties != null && properties.related_pois != null ? properties.related_pois : [],
-      ),
-      catchError(e => of([])),
-      shareReplay(1),
-    );
-    this.currentRelatedPoi$ = combineLatest([this.currentRelatedPoiID$, relatedPois$]).pipe(
-      map(([id, pois]) => {
-        if (id != -1) {
-          const relatedPois = pois.filter(poi => {
-            const poiProperties = poi.properties;
-            return +poiProperties.id === +id;
-          });
-          const relatedPoi = relatedPois[0] ?? null;
-          return relatedPoi;
-        }
-        return null;
-      }),
-      catchError(e => of(null)),
-      shareReplay(),
-    );
-
-    this.currentPoiIDToMap$ = merge(
-      this.currentRelatedPoiID$,
-      this.currentPoiID$,
-      this.currentPoiIDFromHome$,
-    ).pipe(
-      map(val => val ?? -1),
-      distinctUntilChanged((prev, curr) => +prev === +curr),
-    );
   }
 
   next(): void {
-    const currentRelatedPoiID = this.currentRelatedPoiID$.value;
-    const poiIDs = this.poiIDs$.value;
-    const indexOfCurrentID = poiIDs.indexOf(currentRelatedPoiID);
-    const nextIndex = (indexOfCurrentID + 1) % poiIDs.length;
-    this.setCurrentRelatedPoi(poiIDs[nextIndex]);
+    this.wmMapTrackRelatedPoisDirective.poiNext();
   }
 
   prev(): void {
-    const currentRelatedPoiID = this.currentRelatedPoiID$.value;
-    const poiIDs = this.poiIDs$.value;
-    const indexOfCurrentID = poiIDs.indexOf(currentRelatedPoiID);
-    const prevIndex = (indexOfCurrentID - 1) % poiIDs.length;
-    this.setCurrentRelatedPoi(poiIDs.slice(prevIndex)[0]);
+    this.wmMapTrackRelatedPoisDirective.poiPrev();
   }
 
   printPage() {
@@ -236,19 +216,16 @@ export class MapPage {
     this._cdr.detectChanges();
   }
 
-  setCurrentRelatedPoi(id): void {
-    this.currentPoiID$.next(-1);
-    if (id !== this.currentRelatedPoiID$.value) {
-      this.currentRelatedPoiID$.next(id);
+  setCurrentRelatedPoi(poi: IGeojsonFeature | null | number): void {
+    if (poi != null && poi != -1) {
+      this.currentRelatedPoi$.next(poi as IGeojsonFeature);
+      this.wmMapTrackRelatedPoisDirective.setPoi = (poi as any).id as number;
     }
-    this._cdr.detectChanges();
   }
 
   setCustomTrackEnabled(): void {}
 
   setPoi(poi: any): void {
-    this.currentRelatedPoiID$.next(-1);
-
     this.currentPoi$.next(poi);
   }
 
@@ -277,9 +254,9 @@ export class MapPage {
   }
 
   unselectPOI(): void {
-    this.currentPoiID$.next(-1);
-    this.currentRelatedPoiID$.next(-1);
     this.currentPoi$.next(null);
+    this.currentRelatedPoi$.next(null);
+    this.wmMapTrackRelatedPoisDirective.setPoi = -1;
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
   }
 

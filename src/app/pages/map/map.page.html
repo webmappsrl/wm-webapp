@@ -15,7 +15,7 @@
       [hidden]="trackid <= 0"
       [poi]="currentPoiIDToMap$|async"
       (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
-      (poi-click)="setCurrentPoi($event)"
+      (poi-click)="setCurrentRelatedPoi($event)"
       (dismiss)="toggleDetails()"
       class="webmapp-track-details"
     >
@@ -54,25 +54,18 @@
     </ng-template>
   </div>
   <webmapp-poi-popup
-    *ngIf="currentPoi$|async as currentPoi"
-    [poi]="currentPoi"
+    *ngIf="mergedPoi$|async as poi"
+    [poi]="poi"
     (closeEVT)="unselectPOI()"
     (nextEVT)="next()"
     (prevEVT)="prev()"
   ></webmapp-poi-popup>
-  <webmapp-poi-popup
-    *ngIf="currentRelatedPoi$|async as currentPoi"
-    [poi]="currentPoi"
-    (closeEVT)="unselectPOI()"
-    (nextEVT)="next()"
-    (prevEVT)="prev()"
-  ></webmapp-poi-popup>
+
   <wm-map
     #wmap
     [wmMapConf]="confMap$|async"
     [wmMapMap]="wmap.map$|async"
     [wmMapPadding]="mapPadding$|async"
-    [onClick]="wmap.clickEVT$"
     [wmMapOverlay]="(enableOverLay$|async)"
     [wmMapOverlayUrl]="'https://geohub.webmapp.it/api/taxonomy/where/geojson/13'"
     wmMapCustomTracks
@@ -99,6 +92,7 @@
     (trackSelectedFromLayerEVT)="toggleDetails($event)"
     wmMapTrackRelatedPois
     (related-poi)="setCurrentRelatedPoi($event)"
+    (related-poi-next)="currentPoiNextID$.next(+$event)"
   >
   </wm-map>
 </ng-container>
@@ -137,7 +131,6 @@
           wmMapTarget="ol-stamp"
           [wmMapMap]="wmapprint.map$|async"
           [wmMapPadding]="mapPrintPadding$|async"
-          [onClick]="wmapprint.clickEVT$"
           [wmMapOverlay]="(enableOverLay$|async)"
           [wmMapOverlayUrl]="'https://geohub.webmapp.it/api/taxonomy/where/geojson/13'"
           (currentCustomTrack)="saveCurrentCustomTrack($event)"
@@ -176,7 +169,7 @@
         <div class="print-container-details" *ngIf="track$|async as track">
           <div *ngIf="track.properties as prop">
             <webmapp-track-description
-              [description]="prop.description| wmtrans"
+              [description]="prop.description|wmtrans"
             ></webmapp-track-description>
             <webmapp-track-poi [track]="track"></webmapp-track-poi>
           </div>

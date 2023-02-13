@@ -42,11 +42,11 @@
         </div>
       </div>
 
-      <span class="webmapp-title">Dettagli tecnici</span>
+      <span class="webmapp-title">{{'Dettagli tecnici'|wmtrans}}</span>
       <webmapp-track-technical-data [feature]="track" id="webmapp-track-details-technical-data">
       </webmapp-track-technical-data>
       <ng-container *ngIf="properties.taxonomy  as taxonomy">
-        <div class="webmapp-title">Percorribilità</div>
+        <div class="webmapp-title">{{'Percorribilità'|wmtrans}}</div>
         <div class="webmapp-walkability" *ngIf="taxonomy.activity as activity">
           <ng-container *ngFor="let item of activity">
             <div class="webmapp-walkability-box" *ngIf="item.identifier ==='hiking'">
@@ -97,7 +97,7 @@
           </div>
         </div>
       </ng-container>
-      <div class="webmapp-title">Punti di interesse</div>
+      <div class="webmapp-title">{{'Punti di interesse'|wmtrans}}</div>
       <webmapp-track-poi
         [track]="track"
         [poi]="poiId"
@@ -114,7 +114,7 @@
       <webmapp-gallery *ngIf="properties?.image_gallery as imageGallery" [gallery]="imageGallery">
       </webmapp-gallery>
       <ng-container *ngIf="properties.related_url as relatedUrl">
-        <div class="webmapp-title">Collegamenti esterni</div>
+        <div class="webmapp-title">{{'Collegamenti esterni'|wmtrans}}</div>
         <webmapp-related-urls [relatedUrls]="relatedUrl"> </webmapp-related-urls>
       </ng-container>
       <ng-container *ngIf="confOPTIONS$|async as confOPTIONS">

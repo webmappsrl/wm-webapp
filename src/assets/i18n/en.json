@@ -60,8 +60,12 @@
   "walking": "Passeggiata",
   "running": "Corsa",
   "cycling": "In bicicletta",
-  "poi_type": "punti di interesse",
-  "where": "luoghi",
   "Punto di partenza": "Start point",
-  "Punto di arrivo": "End point"
+  "Punto di arrivo": "End point",
+  "Dettagli tecnici": "Technical Details",
+  "Percorribilità": "Viability",
+  "Punti di interesse": "Points of interest",
+  "Collegamenti esterni": "external links",
+  "Filtri": "Filters",
+  "where": "PLACES"
 }

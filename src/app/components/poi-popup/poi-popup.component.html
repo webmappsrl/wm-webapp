@@ -8,7 +8,7 @@
   </ng-container>
   <div class="row">
     <button class="webmapp-poi-popup-close" (click)="closeEVT.emit()">
-      <i class="icn-outline-close"></i>
+      <i class="icon-outline-close"></i>
     </button>
   </div>
   <div
@@ -23,7 +23,7 @@
         *ngIf="poiProperties.related"
         (click)="prevEVT.emit()"
       >
-        <i class="icn-outline-arrow-left"></i>
+        <i class="icon-outline-arrow-left"></i>
       </button>
       <p class="webmapp-poi-popup-title">{{poiProperties.name|wmtrans}}</p>
 
@@ -32,7 +32,7 @@
         (click)="nextEVT.emit()"
         *ngIf="poiProperties.related"
       >
-        <i class="icn-outline-arrow-right"></i>
+        <i class="icon-outline-arrow-right"></i>
       </button>
     </div>
   </div>
@@ -79,7 +79,7 @@
   </div>
   <div class="webmapp-poi-popup-btns">
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.address">
-      <i class="wm-icn icn-fill-pin"></i>
+      <i class="wm-icn icon-fill-pin"></i>
       <a
         href="https://www.google.com/maps?daddr={{poiProperties.address_link}}&navigate=yes"
         target="_blank"
@@ -88,13 +88,13 @@
       </a>
     </div>
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.ele">
-      <i class="wm-icn icn-outline-plus"></i>
+      <i class="wm-icn icon-outline-plus"></i>
       <p>
         <a> {{poiProperties.ele}} {{'metri'|wmtrans}} </a>
       </p>
     </div>
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.contact_phone" target="_blank">
-      <i class="wm-icn icn-fill-phone"></i>
+      <i class="wm-icn icon-fill-phone"></i>
       <p>
         <a href="tel:{{poiProperties.contact_email}}">
           {{poiProperties.contact_phone}}
@@ -102,17 +102,17 @@
       </p>
     </div>
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.contact_email" target="_blank">
-      <i class="wm-icn icn-fill-mail"></i>
+      <i class="wm-icn icon-fill-mail"></i>
       <a [href]="poiProperties.contact_email">
         {{poiProperties.contact_email}}
       </a>
     </div>
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.related_url != null">
-      <i class="wm-icn icn-fill-globe"></i>
+      <i class="wm-icn icon-fill-globe"></i>
       <webmapp-related-urls [relatedUrls]="poiProperties.related_url"></webmapp-related-urls>
     </div>
     <div *ngIf="poiProperties.osm_url as osm" target="_blank">
-      <ion-icon class="wm-icn icn-link" slot="start"> </ion-icon>
+      <ion-icon class="wm-icn icon-link" slot="start"> </ion-icon>
       <a class="webmapp-track-download-urls-item-label" [href]="osm">
         {{ "Vedi su OpenStreetMap" | wmtrans }}
       </a>

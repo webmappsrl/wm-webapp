@@ -43,7 +43,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // difficulty
     if (this?._feature?.properties?.difficulty) {
       technicalData.push({
-        icon: 'icn-outline-difficulty',
+        icon: 'icon-outline-difficulty',
         label: 'difficulty',
         value: this._feature.properties.difficulty as any,
       });
@@ -51,7 +51,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Distance
     if (this?._feature?.properties?.distance) {
       technicalData.push({
-        icon: 'icn-outline-distance',
+        icon: 'icon-outline-distance',
         label: technicalDataLabelPrefix + 'distance',
         value: this._utilsService.formatDistance(this._feature.properties.distance),
       });
@@ -60,7 +60,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Duration forward
     if (this?._feature?.properties?.duration_forward) {
       technicalData.push({
-        icon: 'icn-outline-duration',
+        icon: 'icon-outline-duration',
         label: technicalDataLabelPrefix + 'duration_forward',
         value: this._utilsService.formatDuration(this._feature.properties.duration_forward),
       });
@@ -71,7 +71,7 @@ export class TrackTechnicalDataComponent implements OnInit {
       this?._feature?.properties?.roundtrip === false
     ) {
       technicalData.push({
-        icon: 'icn-outline-duration',
+        icon: 'icon-outline-duration',
         label: technicalDataLabelPrefix + 'duration_backward',
         value: this._utilsService.formatDuration(this._feature.properties.duration_backward),
       });
@@ -80,7 +80,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Ascent
     if (this?._feature?.properties?.ascent) {
       technicalData.push({
-        icon: 'icn-outline-dislivello-positivo',
+        icon: 'icon-outline-dislivello-positivo',
         label: technicalDataLabelPrefix + 'ascent',
         value: this._utilsService.formatAscent(this._feature.properties.ascent),
       });
@@ -88,7 +88,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Descent
     if (this?._feature?.properties?.descent && this?._feature?.properties?.roundtrip === false) {
       technicalData.push({
-        icon: 'icn-outline-dislivello-negativo',
+        icon: 'icon-outline-dislivello-negativo',
         label: technicalDataLabelPrefix + 'descent',
         value: this._utilsService.formatDescent(this._feature.properties.descent),
       });
@@ -96,7 +96,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Ele from
     if (this?._feature?.properties?.ele_from) {
       technicalData.push({
-        icon: 'icn-fill-starting-point',
+        icon: 'icon-fill-starting-point',
         label: technicalDataLabelPrefix + 'ele_from',
         value: this._utilsService.formatElevation(this._feature.properties.ele_from),
       });
@@ -104,7 +104,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Ele to
     if (this?._feature?.properties?.ele_to && this?._feature?.properties?.roundtrip === false) {
       technicalData.push({
-        icon: 'icn-fill-flag',
+        icon: 'icon-fill-flag',
         label: technicalDataLabelPrefix + 'ele_to',
         value: this._utilsService.formatElevation(this._feature.properties.ele_to),
       });
@@ -112,7 +112,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Ele min
     if (this?._feature?.properties?.ele_min) {
       technicalData.push({
-        icon: 'icn-outline-minus',
+        icon: 'icon-outline-minus',
         label: technicalDataLabelPrefix + 'ele_min',
         value: this._utilsService.formatElevation(this._feature.properties.ele_min),
       });
@@ -120,7 +120,7 @@ export class TrackTechnicalDataComponent implements OnInit {
     // Ele max
     if (this?._feature?.properties?.ele_max) {
       technicalData.push({
-        icon: 'icn-outline-plus',
+        icon: 'icon-outline-plus',
         label: technicalDataLabelPrefix + 'ele_max',
         value: this._utilsService.formatElevation(this._feature.properties.ele_max),
       });

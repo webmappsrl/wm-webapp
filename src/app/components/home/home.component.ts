@@ -1,6 +1,13 @@
 import {ActivatedRoute, Router} from '@angular/router';
 import {BehaviorSubject, Observable, merge, of, zip} from 'rxjs';
-import {ChangeDetectionStrategy, Component, ViewChild, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Output,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 import {confHOME, confPOISFilter} from 'src/app/store/conf/conf.selector';
 import {filter, map, switchMap, tap} from 'rxjs/operators';
 import {setCurrentFilters, setCurrentLayer, setCurrentPoi} from 'src/app/store/UI/UI.actions';

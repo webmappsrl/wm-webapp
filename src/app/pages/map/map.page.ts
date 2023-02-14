@@ -168,6 +168,10 @@ export class MapPage {
       map(showMenu => (showMenu ? 'caret-back-outline' : 'caret-forward-outline')),
     );
     this.leftPadding$ = this.showMenu$.pipe(map(showMenu => (showMenu ? menuOpenLeft : 0)));
+    this.currentPoiIDToMap$ = merge(this.currentPoiID$, this.currentPoiIDFromHome$).pipe(
+      map(val => val ?? -1),
+      distinctUntilChanged((prev, curr) => +prev === +curr),
+    );
   }
 
   next(): void {

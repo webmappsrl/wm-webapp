@@ -54,8 +54,8 @@
           </wm-search-box>
         </ng-container>
         <div *ngIf="currentTab === 'pois'">
-          <webmapp-poi-box *ngFor="let c of poiCards$|async" [data]="c" (clickEVT)="setPoi(c)">
-          </webmapp-poi-box>
+          <wm-poi-box *ngFor="let c of poiCards$|async" [data]="c" (clickEVT)="setPoi(c)">
+          </wm-poi-box>
         </div>
       </ng-container>
     </ng-container>

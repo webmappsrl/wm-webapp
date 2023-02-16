@@ -32,7 +32,8 @@
         <ng-container *ngIf="elasticSearch$|async as cards">
           <ion-segment-button value="tracks" *ngIf="cards != null && cards.length> 0">
             <ion-label>
-              {{'tracce'|wmtrans}} <ion-badge>{{cards.length}} </ion-badge></ion-label
+              {{'tracce'|wmtrans}}
+              <ion-badge>{{cards.length === 200? '>': ''}}{{cards.length}} </ion-badge></ion-label
             >
           </ion-segment-button>
         </ng-container>

@@ -8,17 +8,45 @@
   font-style: normal;
   font-display: block;
 }
+
 .ol-popup {
-  max-width: 300px;
-  min-width: 100px;
-  min-height: 1em;
+  max-height: 400px !important;
+  min-width: 300px !important;
 }
-/* Image on popup */
-.ol-popup img {
-  float: left;
-  margin: 0 0.5em 0 0;
-  max-width: 100px;
-  max-height: 100px;
+.closeBox {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+}
+.ol-popup .img-cnt {
+  position: relative !important;
+  height: 200px !important;
+}
+.ol-popup .img-cnt img {
+  margin: 0 !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  -ms-transform: translate(-50%, -50%) !important;
+  transform: translate(-50%, -50%) !important;
+  height: inherit !important;
+  width: 100% !important;
+}
+
+.ol-popup-content {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.ol-popup.hasclosebox .ol-popup-content {
+  margin: 0 !important;
+}
+.ol-popup .ol-popup-content {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.ol-popup .ol-popup-content div ion-card {
+  margin: 0;
 }
 [class^='icon-'],
 [class*=' icon-'] {

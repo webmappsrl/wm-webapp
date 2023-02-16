@@ -16,7 +16,7 @@
   </webmapp-search>
 
   <ng-container *ngIf="(currentLayer$|async) as currentLayer">
-    <ng-container *ngIf="(isTyping$|async)===false && currentLayer!=null">
+    <ng-container *ngIf="currentLayer!=null">
       <div class="reset-layer" (click)="setLayer(null)">
         <ion-icon name="caret-back-outline"></ion-icon>
         <div>{{currentLayer.title|wmtrans}}</div>
@@ -30,14 +30,17 @@
     >
       <ion-segment [value]="currentTab$|async" (ionChange)="segmentChanged($event)">
         <ng-container *ngIf="elasticSearch$|async as cards">
-          <ion-segment-button value="tracks" *ngIf="cards != null && cards.length> 0">
+          <ion-segment-button
+            value="tracks"
+            *ngIf="(selectedFilters$|async).length==0 && (currentSearch$|async)!='' && cards != null && cards.length> 0"
+          >
             <ion-label>
               {{'tracce'|wmtrans}}
               <ion-badge>{{cards.length === 200? '>': ''}}{{cards.length}} </ion-badge></ion-label
             >
           </ion-segment-button>
         </ng-container>
-        <ng-container *ngIf="poiCards$|async as poiCards">
+        <ng-container *ngIf="(currentLayer$|async)==null && poiCards$|async as poiCards">
           <ion-segment-button value="pois" *ngIf="poiCards != null && poiCards.length> 0">
             <ion-label>
               POI <ion-badge>{{poiCards.length}}</ion-badge></ion-label

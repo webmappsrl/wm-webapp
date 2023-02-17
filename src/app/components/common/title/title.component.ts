@@ -12,6 +12,7 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
     line-height: 25px;
     letter-spacing: 0em;
     text-align: left;
+    display:block;
   }
   `,
   ],

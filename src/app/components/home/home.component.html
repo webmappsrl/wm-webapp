@@ -2,8 +2,10 @@
   <ng-content></ng-content>
   <webmapp-search
     *ngIf="showSearch"
-    [initSearch]="title"
-    (isTypings)="isTyping$.next($event)"
+    #searchCmp
+    [initSearch]="''"
+    (isTypings)="isTyping$.next($event);checkTab($event)"
+    (isBlankEVT)="this.currentTab$.next('')"
     (words)="currentSearch$.next($event)"
     [currentLayer]="currentLayer$|async"
   >
@@ -14,14 +16,29 @@
       (selectedFilters)="setCurrentFilters($event)"
     ></webmapp-filter>
   </webmapp-search>
-
-  <ng-container *ngIf="(currentLayer$|async) as currentLayer">
-    <ng-container *ngIf="currentLayer!=null">
-      <div class="reset-layer" (click)="setLayer(null)">
-        <ion-icon name="caret-back-outline"></ion-icon>
-        <div>{{currentLayer.title|wmtrans}}</div>
-      </div>
-    </ng-container>
+  <ng-container *ngIf="currentTab$|async as currentTab">
+    <ion-breadcrumbs>
+      <ion-breadcrumb
+        (click)="goToHome()"
+        *ngIf="currentTab != ''"
+        >{{'Home'|wmtrans}}</ion-breadcrumb
+      >
+      <ng-container *ngIf="(currentLayer$|async) as currentLayer">
+        <ion-breadcrumb (click)="setLayer(null)" *ngIf="currentTab === 'tracks'">
+          {{currentLayer.title|wmtrans}}</ion-breadcrumb
+        >
+      </ng-container>
+      <ng-container *ngIf="(poiCards$|async) as poiCards">
+        <ion-breadcrumb *ngIf="currentTab === 'pois'">
+          <ng-container *ngIf="(selectedFilters$|async) as filters;">
+            <ng-container *ngIf="filters.length ===1">
+              {{(currentSelectedFilter$|async).name|wmtrans}}
+            </ng-container>
+            <ng-container *ngIf="filters.length >1">POIS</ng-container>
+          </ng-container>
+        </ion-breadcrumb>
+      </ng-container>
+    </ion-breadcrumbs>
   </ng-container>
 
   <ion-content style="--offset-top:56px; --offset-bottom:56px;" class="wm-home-cardcontainer">

@@ -22,19 +22,13 @@ import {IonModal} from '@ionic/angular';
 })
 export class FilterComponent implements OnChanges {
   @Input() filters: {[filter: string]: any[]};
-  @ViewChild(IonModal) modal: IonModal;
   @Output() selectedFilters: EventEmitter<string[]> = new EventEmitter<string[]>();
+  @ViewChild(IonModal) modal: IonModal;
 
   currentFilters$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   currentTab$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   tabs$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.filters.currentValue != null) {
-      const keys = Object.keys(this.filters);
-      this.tabs$.next(keys);
-      this.currentTab$.next(keys[0]);
-    }
-  }
+
   addFilter(filter: string): void {
     let currentFilters = this.currentFilters$.value;
     const indexOfFilter = currentFilters.indexOf(filter);
@@ -54,6 +48,14 @@ export class FilterComponent implements OnChanges {
     this.modal.dismiss(this.currentFilters$.value, 'confirm');
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.filters.currentValue != null) {
+      const keys = Object.keys(this.filters);
+      this.tabs$.next(keys);
+      this.currentTab$.next(keys[0]);
+    }
+  }
+
   reset(): void {
     this.currentFilters$.next([]);
     this.selectedFilters.emit(this.currentFilters$.value);
@@ -61,5 +63,10 @@ export class FilterComponent implements OnChanges {
 
   segmentChanged(event: any): void {
     this.currentTab$.next(event);
+  }
+
+  setFilter(filter: string): void {
+    this.selectedFilters.emit([filter]);
+    this.currentFilters$.next([filter]);
   }
 }

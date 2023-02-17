@@ -7,7 +7,16 @@ import {
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {BehaviorSubject, from, merge, Observable, of} from 'rxjs';
-import {distinctUntilChanged, filter, map, share, startWith, switchMap, tap} from 'rxjs/operators';
+import {
+  distinctUntilChanged,
+  filter,
+  map,
+  share,
+  shareReplay,
+  startWith,
+  switchMap,
+  tap,
+} from 'rxjs/operators';
 import {
   confGeohubId,
   confJIDOUPDATETIME,
@@ -61,7 +70,7 @@ export class MapPage {
   );
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
-  currentFilters$ = this._store.select(UICurrentFilters);
+  currentFilters$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   currentLayer$ = this._store.select(UICurrentLAyer);
   currentPoi$: BehaviorSubject<IGeojsonFeature> = new BehaviorSubject<IGeojsonFeature | null>(null);
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);

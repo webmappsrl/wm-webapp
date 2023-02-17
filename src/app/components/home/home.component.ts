@@ -9,8 +9,8 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {confHOME, confPOISFilter} from 'src/app/store/conf/conf.selector';
-import {filter, map, switchMap, tap} from 'rxjs/operators';
-import {setCurrentFilters, setCurrentLayer, setCurrentPoi} from 'src/app/store/UI/UI.actions';
+import {filter, map, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {setCurrentLayer, setCurrentPoi} from 'src/app/store/UI/UI.actions';
 
 import {IConfRootState} from 'src/app/store/conf/conf.reducer';
 import {IUIRootState} from 'src/app/store/UI/UI.reducer';
@@ -24,6 +24,7 @@ import {query} from 'src/app/shared/wm-core/api/api.actions';
 import {queryApi} from 'src/app/shared/wm-core/api/api.selector';
 import {IElasticSearchRootState} from 'src/app/shared/wm-core/api/api.reducer';
 import {FilterComponent} from './filter/filter.component';
+import {SearchComponent} from './search/search.component';
 
 @Component({
   selector: 'webmapp-home',
@@ -34,10 +35,13 @@ import {FilterComponent} from './filter/filter.component';
 })
 export class HomeComponent {
   @ViewChild('filterCmp') filterCmp: FilterComponent;
+  @ViewChild('searchCmp') searchCmp: SearchComponent;
+  @Output() selectedFiltersEVT: EventEmitter<string[]> = new EventEmitter<string[]>();
 
   cards$: Observable<IHIT[]> = of([]);
   confHOME$: Observable<IHOME[]> = this._storeConf.select(confHOME);
   confPOISFilter$: Observable<any> = this._storeConf.select(confPOISFilter).pipe(
+    filter(p => p != null),
     map(p => {
       if (p.poi_type != null) {
         let poi_type = p.poi_type.map(p => {
@@ -47,21 +51,37 @@ export class HomeComponent {
           }
           return p;
         });
-        return {where: p.where, poi_type};
+        let res = {};
+        if (p.where) {
+          res = {where: p.where};
+        }
+        if (poi_type) {
+          res = {...res, ...{poi_type}};
+        }
+        return res;
       }
       return p;
     }),
   );
-  currentLayer$ = this._storeUi.select(UICurrentLAyer);
+  currentLayer$ = this._storeUi
+    .select(UICurrentLAyer)
+    .pipe(tap(f => this._hasLayer.next(f != null)));
   currentSearch$: BehaviorSubject<string> = new BehaviorSubject<string>('');
-  currentTab$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
-  elasticSearch$: Observable<IHIT[]> = this._storeSearch.select(queryApi);
+  currentTab$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  elasticSearch$: Observable<IHIT[]> = this._storeSearch
+    .select(queryApi)
+    .pipe(tap(f => this._hasTracks.next(f != null && f.length > 0)));
   isTyping$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   poiCards$: Observable<any[]>;
   selectedFilters$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  currentSelectedIndentiFierFilter$: BehaviorSubject<string | null> = new BehaviorSubject<
+    string | null
+  >(null);
+  currentSelectedFilter$: Observable<any>;
   showSearch = true;
-  title = '';
-
+  private _hasPois: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _hasTracks: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _hasLayer: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   constructor(
     private _storeSearch: Store<IElasticSearchRootState>,
     private _storeConf: Store<IConfRootState>,
@@ -97,15 +117,29 @@ export class HomeComponent {
           return nameCondition && whereCondition && poiTypeCondition && isSearch;
         }) as any[];
       }),
-      tap(pois => {
-        if (pois.length === 0) {
-          this.currentTab$.next('tracks');
-        }
-      }),
     );
     this.poiCards$ = merge(this.currentSearch$, this.selectedFilters$).pipe(
       switchMap(_ => selectedPois),
+      tap(f => this._hasPois.next(f != null && f.length > 0)),
     );
+
+    this.currentSelectedFilter$ = this.currentSelectedIndentiFierFilter$.asObservable().pipe(
+      withLatestFrom(this.confPOISFilter$),
+      map(([identifier, filters]) => {
+        const filterKeys = Object.keys(filters);
+        for (let i = 0; i < filterKeys.length; i++) {
+          const filterKey = filterKeys[i];
+          for (let j = 0; j < filters[filterKey].length; j++) {
+            const filter = filters[filterKey][j];
+            if (filter.identifier === identifier) {
+              return filter;
+            }
+          }
+        }
+        return null;
+      }),
+    );
+    this.currentSelectedFilter$.subscribe(a => console.log(a));
   }
 
   openExternalUrl(url: string): void {
@@ -142,9 +176,20 @@ export class HomeComponent {
   }
 
   setCurrentFilters(filters: string[]): void {
-    this._storeUi.dispatch(setCurrentFilters({currentFilters: filters}));
     this.selectedFilters$.next(filters);
-    this.currentTab$.next('pois');
+    this.selectedFiltersEVT.emit(filters);
+    if (filters.length === 1) {
+      this.currentSelectedIndentiFierFilter$.next(filters[0]);
+    } else {
+      this.currentSelectedIndentiFierFilter$.next(null);
+    }
+    console.log('setto filters: ', filters);
+    if (filters.length > 0) {
+      this.currentTab$.next('pois');
+    }
+    if (filters.length === 0) {
+      this.currentTab$.next('');
+    }
   }
 
   setLayer(layer: ILAYER | null | any): void {
@@ -152,13 +197,32 @@ export class HomeComponent {
     if (layer != null && layer.id != null) {
       this._storeSearch.dispatch(query({layer: layer.id}));
     }
+    this.currentTab$.next('tracks');
   }
-
+  checkTab(check: boolean): void {
+    setTimeout(() => {
+      if (this._hasTracks.value && this._hasLayer.value) {
+        this.currentTab$.next('tracks');
+      } else if (this._hasPois.value) {
+        this.currentTab$.next('pois');
+      } else {
+        this.currentTab$.next('');
+      }
+    }, 400);
+  }
+  goToHome(): void {
+    this.setLayer(null);
+    this.setCurrentFilters([]);
+    this.currentTab$.next('');
+    this.searchCmp.reset();
+  }
   setPoi(currentPoi: any): void {
     this._storeUi.dispatch(setCurrentPoi({currentPoi}));
   }
 
   toggleFilter(identifier: string): void {
-    this.filterCmp.addFilter(identifier);
+    this.filterCmp.setFilter(identifier);
+    this.currentSelectedIndentiFierFilter$.next(identifier);
+    this.setCurrentFilters([identifier]);
   }
 }

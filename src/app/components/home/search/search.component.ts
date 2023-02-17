@@ -34,6 +34,7 @@ export class SearchComponent {
 
   @Output('isTypings') isTypingsEVT: EventEmitter<boolean> = new EventEmitter<boolean>(false);
   @Output('words') wordsEVT: EventEmitter<string> = new EventEmitter<string>(false);
+  @Output() isBlankEVT: EventEmitter<void> = new EventEmitter<void>();
 
   public searchForm: FormGroup;
 
@@ -53,6 +54,9 @@ export class SearchComponent {
         this.wordsEVT.emit(words.search);
       } else {
         this.isTypingsEVT.emit(false);
+      }
+      if (words?.search === '') {
+        this.isBlankEVT.emit();
       }
     });
   }

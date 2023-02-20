@@ -11,7 +11,7 @@ webmapp-search {
     display: flex;
     position: relative;
     align-items: center;
-    font-family: var(--ion-font-family, inherit);
+    font-family: var(--wm-font-family-content, inherit);
     box-sizing: border-box;
     background: inherit;
     padding-inline-start: 7px;
@@ -65,13 +65,13 @@ webmapp-search {
     .close {
       cursor: pointer;
       color: var(--wm-color-primary);
-      font-family: var(--ion-font-family, inherit);
+      font-family: var(--wm-font-family-content, inherit);
       background: inherit;
     }
   }
   webmapp-filter {
     margin: 10px;
     margin-top: -10px;
-    font-family: var(--ion-font-family, inherit);
+    font-family: var(--wm-font-family-content, inherit);
   }
 }

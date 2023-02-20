@@ -1,3 +1,15 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:500,700');
+@import url('https://fonts.googleapis.com/css?family=Roboto:500,700');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab:500,700');
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans:500,700');
+@import url('https://fonts.googleapis.com/css?family=Noto+Serif:500,700');
+@import url('https://fonts.googleapis.com/css?family=Helvetica:500,700');
+@import url('https://fonts.googleapis.com/css?family=Inter:500,700');
+@import url('https://fonts.googleapis.com/css?family=Merriweather:500,700');
+@import url('https://fonts.googleapis.com/css?family=Lato:500,700');
+@import url('https://fonts.googleapis.com/css?family=Manrope:500,700');
+@import url('https://fonts.googleapis.com/css?family=Sora:500,700');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:500,700');
 @font-face {
   font-family: 'wm';
   src: url('fonts/wm.eot?9d6ynt');
@@ -8,7 +20,10 @@
   font-style: normal;
   font-display: block;
 }
-
+ion-label,
+ion-title {
+  font-family: var(--wm-font-family-content, inherit);
+}
 .ol-popup {
   max-height: 400px !important;
   min-width: 300px !important;

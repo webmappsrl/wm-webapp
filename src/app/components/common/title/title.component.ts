@@ -13,6 +13,7 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
     letter-spacing: 0em;
     text-align: left;
     display:block;
+    font-family: var(--wm-font-family-content, inherit);
   }
   `,
   ],

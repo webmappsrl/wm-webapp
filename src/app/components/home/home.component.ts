@@ -139,7 +139,6 @@ export class HomeComponent {
         return null;
       }),
     );
-    this.currentSelectedFilter$.subscribe(a => console.log(a));
   }
 
   openExternalUrl(url: string): void {
@@ -183,7 +182,6 @@ export class HomeComponent {
     } else {
       this.currentSelectedIndentiFierFilter$.next(null);
     }
-    console.log('setto filters: ', filters);
     if (filters.length > 0) {
       this.currentTab$.next('pois');
     }

@@ -2,6 +2,7 @@ webmapp-filter {
   ion-button,
   ion-segment {
     --background: var(--wm-color-primary);
+    font-family: var(--wm-font-family-content, inherit);
   }
 }
 ion-segment {

@@ -1,5 +1,7 @@
 webmapp-poi-box {
+  font-family: var(--wm-font-family-content, inherit) !important;
   .wm-box {
+    font-family: var(--wm-font-family-content, inherit) !important;
     position: relative;
     margin: 10px;
     border-radius: 15px;
@@ -69,7 +71,7 @@ webmapp-poi-box {
       text-overflow: ellipsis;
     }
     .wm-box-name {
-      font-family: var(--wm-font-family-header);
+      font-family: var(--wm-font-family-content, inherit) !important;
       font-style: normal;
       font-weight: 700;
       color: #323031;
@@ -82,7 +84,7 @@ webmapp-poi-box {
     .wm-box-where {
       margin-top: 2%;
       text-transform: uppercase;
-      font-family: var(--wm-font-family-header);
+      font-family: var(--wm-font-family-content, inherit);
       color: var(--wm-color-primary);
 
       font-style: normal;

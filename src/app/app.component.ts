@@ -25,6 +25,7 @@ export class AppComponent {
 
   private _setGlobalCSS(css: {[name: string]: string | number}) {
     const rootDocument = this._document.querySelector(':root');
+    console.log(css);
     Object.keys(css).forEach(element => {
       (rootDocument as any).style.setProperty(element, `${css[element]}`);
     });

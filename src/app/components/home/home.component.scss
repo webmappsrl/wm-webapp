@@ -6,6 +6,9 @@ webmapp-home {
     ion-content {
       --padding-bottom: 100px;
     }
+    ion-breadcrumbs {
+      cursor: pointer;
+    }
   }
 
   .reset-layer {
@@ -53,9 +56,9 @@ webmapp-home {
 .wm-modal {
   .modal-wrapper {
     --height: 90%;
+    --width: 90%;
     position: absolute;
     top: 5%;
-    --width: 90%;
     border-radius: 25px !important;
     display: block;
   }

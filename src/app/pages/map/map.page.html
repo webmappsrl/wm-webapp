@@ -64,7 +64,6 @@
   <wm-map
     #wmap
     [wmMapConf]="confMap$|async"
-    [wmMapMap]="wmap.map$|async"
     [wmMapPadding]="mapPadding$|async"
     [wmMapOverlay]="(enableOverLay$|async)"
     [wmMapOverlayUrl]="'https://geohub.webmapp.it/api/taxonomy/where/geojson/13'"
@@ -129,7 +128,6 @@
           #wmapprint
           [wmMapConf]="confMap$|async"
           wmMapTarget="ol-stamp"
-          [wmMapMap]="wmapprint.map$|async"
           [wmMapPadding]="mapPrintPadding$|async"
           [wmMapOverlay]="(enableOverLay$|async)"
           [wmMapOverlayUrl]="'https://geohub.webmapp.it/api/taxonomy/where/geojson/13'"

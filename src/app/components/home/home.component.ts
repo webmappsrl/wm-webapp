@@ -34,9 +34,13 @@ import {SearchComponent} from './search/search.component';
   encapsulation: ViewEncapsulation.None,
 })
 export class HomeComponent {
+  private _hasLayer: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _hasPois: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _hasTracks: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+  @Output() selectedFiltersEVT: EventEmitter<string[]> = new EventEmitter<string[]>();
   @ViewChild('filterCmp') filterCmp: FilterComponent;
   @ViewChild('searchCmp') searchCmp: SearchComponent;
-  @Output() selectedFiltersEVT: EventEmitter<string[]> = new EventEmitter<string[]>();
 
   cards$: Observable<IHIT[]> = of([]);
   confHOME$: Observable<IHOME[]> = this._storeConf.select(confHOME);
@@ -67,6 +71,10 @@ export class HomeComponent {
     .select(UICurrentLAyer)
     .pipe(tap(f => this._hasLayer.next(f != null)));
   currentSearch$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  currentSelectedFilter$: Observable<any>;
+  currentSelectedIndentiFierFilter$: BehaviorSubject<string | null> = new BehaviorSubject<
+    string | null
+  >(null);
   currentTab$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   elasticSearch$: Observable<IHIT[]> = this._storeSearch
     .select(queryApi)
@@ -74,14 +82,8 @@ export class HomeComponent {
   isTyping$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   poiCards$: Observable<any[]>;
   selectedFilters$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
-  currentSelectedIndentiFierFilter$: BehaviorSubject<string | null> = new BehaviorSubject<
-    string | null
-  >(null);
-  currentSelectedFilter$: Observable<any>;
   showSearch = true;
-  private _hasPois: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private _hasTracks: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private _hasLayer: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
   constructor(
     private _storeSearch: Store<IElasticSearchRootState>,
     private _storeConf: Store<IConfRootState>,
@@ -141,6 +143,25 @@ export class HomeComponent {
     );
   }
 
+  checkTab(check: boolean): void {
+    setTimeout(() => {
+      if (this._hasTracks.value && this._hasLayer.value) {
+        this.currentTab$.next('tracks');
+      } else if (this._hasPois.value) {
+        this.currentTab$.next('pois');
+      } else {
+        this.currentTab$.next('');
+      }
+    }, 400);
+  }
+
+  goToHome(): void {
+    this.setLayer(null);
+    this.setCurrentFilters([]);
+    this.currentTab$.next('');
+    this.searchCmp.reset();
+  }
+
   openExternalUrl(url: string): void {
     window.open(url);
   }
@@ -197,23 +218,7 @@ export class HomeComponent {
     }
     this.currentTab$.next('tracks');
   }
-  checkTab(check: boolean): void {
-    setTimeout(() => {
-      if (this._hasTracks.value && this._hasLayer.value) {
-        this.currentTab$.next('tracks');
-      } else if (this._hasPois.value) {
-        this.currentTab$.next('pois');
-      } else {
-        this.currentTab$.next('');
-      }
-    }, 400);
-  }
-  goToHome(): void {
-    this.setLayer(null);
-    this.setCurrentFilters([]);
-    this.currentTab$.next('');
-    this.searchCmp.reset();
-  }
+
   setPoi(currentPoi: any): void {
     this._storeUi.dispatch(setCurrentPoi({currentPoi}));
   }

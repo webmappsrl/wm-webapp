@@ -74,7 +74,7 @@
           >
           </wm-search-box>
         </ng-container>
-        <div *ngIf="currentTab === 'pois'">
+        <div class="pois" *ngIf="currentTab === 'pois'">
           <wm-poi-box *ngFor="let c of poiCards$|async" [data]="c" (clickEVT)="setPoi(c)">
           </wm-poi-box>
         </div>

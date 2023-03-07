@@ -220,7 +220,7 @@ export class HomeComponent {
   }
 
   setPoi(currentPoi: any): void {
-    this._storeUi.dispatch(setCurrentPoi({currentPoi}));
+    this._storeUi.dispatch(setCurrentPoi({currentPoi: currentPoi}));
   }
 
   toggleFilter(identifier: string): void {

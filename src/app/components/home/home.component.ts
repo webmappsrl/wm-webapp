@@ -1,6 +1,8 @@
 import {ActivatedRoute, Router} from '@angular/router';
 import {BehaviorSubject, Observable, merge, of, zip} from 'rxjs';
 import {
+  AfterContentInit,
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
@@ -9,7 +11,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {confHOME, confPOISFilter} from 'src/app/store/conf/conf.selector';
-import {filter, map, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {filter, map, switchMap, tap, debounceTime, withLatestFrom} from 'rxjs/operators';
 import {setCurrentLayer, setCurrentPoi} from 'src/app/store/UI/UI.actions';
 
 import {IConfRootState} from 'src/app/store/conf/conf.reducer';
@@ -33,7 +35,7 @@ import {SearchComponent} from './search/search.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class HomeComponent {
+export class HomeComponent implements AfterContentInit {
   private _hasLayer: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _hasPois: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _hasTracks: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -160,13 +162,40 @@ export class HomeComponent {
     this.setCurrentFilters([]);
     this.currentTab$.next('');
     this.searchCmp.reset();
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams: {layer: null, filter: null},
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  ngAfterContentInit(): void {
+    this.confHOME$
+      .pipe(
+        filter(h => h != null),
+        withLatestFrom(this._route.queryParams),
+        debounceTime(1800),
+      )
+      .subscribe(([home, params]) => {
+        if (params.layer != null && home[params.layer] != null) {
+          const layerBox: ILAYERBOX = home[+params.layer] as ILAYERBOX;
+          this.setLayer(layerBox.layer);
+        } else if (params.filter != null && home[params.filter] != null) {
+          const filterBox: IPOITYPEFILTERBOX = home[+params.filter] as IPOITYPEFILTERBOX;
+          this.toggleFilter(filterBox.identifier);
+        }
+        if (params.slug != null && home[params.slug] != null) {
+          const slugBox: ISLUGBOX = home[+params.slug] as ISLUGBOX;
+          this.openSlug(slugBox.slug);
+        }
+      });
   }
 
   openExternalUrl(url: string): void {
     window.open(url);
   }
 
-  openSlug(slug: string): void {
+  openSlug(slug: string, idx?: number): void {
     if (slug === 'project') {
       this._modalCtrl
         .create({
@@ -177,6 +206,13 @@ export class HomeComponent {
         })
         .then(modal => {
           modal.present();
+          if (idx) {
+            this._router.navigate([], {
+              relativeTo: this._route,
+              queryParams: {slug: idx},
+              queryParamsHandling: 'merge',
+            });
+          }
         });
     } else {
       this._navCtrl.navigateForward(slug);
@@ -211,21 +247,35 @@ export class HomeComponent {
     }
   }
 
-  setLayer(layer: ILAYER | null | any): void {
+  setLayer(layer: ILAYER | null | any, idx?: number): void {
     this._storeUi.dispatch(setCurrentLayer({currentLayer: layer}));
     if (layer != null && layer.id != null) {
       this._storeSearch.dispatch(query({layer: layer.id}));
     }
     this.currentTab$.next('tracks');
+    if (idx) {
+      this._router.navigate([], {
+        relativeTo: this._route,
+        queryParams: {layer: idx},
+        queryParamsHandling: 'merge',
+      });
+    }
   }
 
   setPoi(currentPoi: any): void {
     this._storeUi.dispatch(setCurrentPoi({currentPoi: currentPoi}));
   }
 
-  toggleFilter(identifier: string): void {
-    this.filterCmp.setFilter(identifier);
+  toggleFilter(identifier: string, idx?: number): void {
+    this.filterCmp && this.filterCmp.setFilter(identifier);
     this.currentSelectedIndentiFierFilter$.next(identifier);
     this.setCurrentFilters([identifier]);
+    if (idx) {
+      this._router.navigate([], {
+        relativeTo: this._route,
+        queryParams: {filter: idx},
+        queryParamsHandling: 'merge',
+      });
+    }
   }
 }

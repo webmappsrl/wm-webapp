@@ -82,17 +82,17 @@
     </ng-container>
 
     <ng-template #layers>
-      <ng-container *ngFor="let box of confHOME$|async">
+      <ng-container *ngFor="let box of confHOME$|async;let idx = index">
         <webmapp-title *ngIf="box.box_type === 'title'">
           {{box.title|wmtrans}}
         </webmapp-title>
         <wm-poi-type-filter-box
           *ngIf="box.box_type === 'poi_type_filter'"
           [data]="box"
-          (clickEVT)="toggleFilter(box.identifier)"
+          (clickEVT)="toggleFilter(box.identifier, idx)"
         >
         </wm-poi-type-filter-box>
-        <wm-slug-box *ngIf="box.box_type === 'slug'" [data]="box" (clickEVT)="openSlug(box.slug)">
+        <wm-slug-box *ngIf="box.box_type === 'slug'" [data]="box" (clickEVT)="openSlug(box.slug,idx)">
         </wm-slug-box>
         <webmapp-box
           *ngIf="box.box_type === 'external_url'"
@@ -110,7 +110,7 @@
         <wm-layer-box
           *ngIf="box.box_type === 'layer'"
           [data]="box"
-          (clickEVT)="setLayer(box.layer)"
+          (clickEVT)="setLayer(box.layer,idx)"
         >
         </wm-layer-box>
       </ng-container>

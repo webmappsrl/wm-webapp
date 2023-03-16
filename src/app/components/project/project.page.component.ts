@@ -1,3 +1,4 @@
+import {Router, ActivatedRoute} from '@angular/router';
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 
 import {DomSanitizer} from '@angular/platform-browser';
@@ -18,10 +19,17 @@ export class InnerHtmlComponent {
   constructor(
     private _store: Store,
     private _modalCtrl: ModalController,
+    private _route: ActivatedRoute,
+    private _router: Router,
     public sanitizer: DomSanitizer,
   ) {}
 
   dismiss() {
     this._modalCtrl.dismiss();
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams: {slug: null},
+      queryParamsHandling: 'merge',
+    });
   }
 }

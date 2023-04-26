@@ -9,6 +9,7 @@ interface IHIT {
   layers: number[];
   name: string;
   ref: string;
+  size?:any;
   taxonomyActivities: string[];
   taxonomyWheres: string[];
 }

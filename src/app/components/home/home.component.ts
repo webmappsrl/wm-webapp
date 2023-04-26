@@ -20,7 +20,7 @@ import {InnerHtmlComponent} from '../project/project.page.component';
 import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {pois} from 'src/app/store/pois/pois.selector';
-import {fromHEXToColor} from 'src/app/shared/map-core/utils/styles';
+import {fromHEXToColor} from 'src/app/shared/map-core/src/utils/styles';
 import {UICurrentLAyer} from 'src/app/store/UI/UI.selector';
 import {query} from 'src/app/shared/wm-core/api/api.actions';
 import {queryApi} from 'src/app/shared/wm-core/api/api.selector';

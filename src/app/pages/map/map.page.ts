@@ -26,11 +26,11 @@ import {
   confShowDrawTrack,
 } from 'src/app/store/conf/conf.selector';
 import {UICurrentFilters, UICurrentLAyer, UICurrentPoiId} from 'src/app/store/UI/UI.selector';
-import {wmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/directives/track.related-pois.directive';
+import {wmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/directives/track.related-pois.directive';
 import {Store} from '@ngrx/store';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {GeohubService} from 'src/app/services/geohub.service';
-import {IDATALAYER} from 'src/app/shared/map-core/types/layer';
+import {IDATALAYER} from 'src/app/shared/map-core/src/types/layer';
 import {loadPois} from 'src/app/store/pois/pois.actions';
 import {pois} from 'src/app/store/pois/pois.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';

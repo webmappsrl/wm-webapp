@@ -12,10 +12,10 @@ import {
   filter,
   map,
   share,
-  shareReplay,
   startWith,
   switchMap,
   tap,
+  withLatestFrom,
 } from 'rxjs/operators';
 import {
   confGeohubId,
@@ -23,9 +23,10 @@ import {
   confLANGUAGES,
   confMAP,
   confOPTIONS,
+  confHOME,
   confShowDrawTrack,
 } from 'src/app/store/conf/conf.selector';
-import {UICurrentFilters, UICurrentLAyer, UICurrentPoiId} from 'src/app/store/UI/UI.selector';
+import {UICurrentLAyer, UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {wmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/directives/track.related-pois.directive';
 import {Store} from '@ngrx/store';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
@@ -37,7 +38,7 @@ import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-c
 import {environment} from 'src/environments/environment';
 import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
 import {IGeojsonFeature} from 'src/app/shared/wm-core/types/model';
-
+import {HomeComponent} from 'src/app/components/home/home.component';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -56,10 +57,14 @@ export class MapPage {
   readonly trackColor$: BehaviorSubject<string> = new BehaviorSubject<string>('#caaf15');
   readonly trackid$: Observable<number>;
 
+  @ViewChild(HomeComponent) homeCmp: HomeComponent;
   @ViewChild(wmMapTrackRelatedPoisDirective)
   wmMapTrackRelatedPoisDirective: wmMapTrackRelatedPoisDirective;
-
+  wmMapFeatureCollectionUrl$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(
+    null,
+  );
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
+  confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
   confJIDOUPDATETIME$: Observable<any> = this._store.select(confJIDOUPDATETIME);
   confMap$: Observable<any> = this._store.select(confMAP).pipe(
     tap(c => {
@@ -72,6 +77,7 @@ export class MapPage {
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentFilters$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   currentLayer$ = this._store.select(UICurrentLAyer);
+  currentLayerID$: BehaviorSubject<number> = new BehaviorSubject<number | null>(null);
   currentPoi$: BehaviorSubject<IGeojsonFeature> = new BehaviorSubject<IGeojsonFeature | null>(null);
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiIDFromHome$ = this._store.select(UICurrentPoiId);
@@ -125,6 +131,9 @@ export class MapPage {
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
+  translationCallback: (any) => string = value => {
+    return this._langService.instant(value);
+  };
 
   constructor(
     private _route: ActivatedRoute,
@@ -181,6 +190,21 @@ export class MapPage {
       map(val => val ?? -1),
       distinctUntilChanged((prev, curr) => +prev === +curr),
     );
+
+    this.currentLayerID$
+      .pipe(
+        filter(id => id != null),
+        withLatestFrom(this.confHOME$),
+        map(([id, home]) => {
+          return home
+            .filter(h => h.box_type === 'layer')
+            .map((l: ILAYERBOX) => l.layer)
+            .find(l => +l.id === +id);
+        }),
+      )
+      .subscribe(layer => {
+        this.homeCmp.setLayer(layer);
+      });
   }
 
   next(): void {
@@ -220,6 +244,10 @@ export class MapPage {
 
   selectTrack(trackid: any = -1): void {
     this.updateUrl(trackid);
+  }
+
+  selectedLayer(id: any): void {
+    this.currentLayerID$.next(id);
   }
 
   setCurrentPoi(id): void {
@@ -279,5 +307,9 @@ export class MapPage {
       queryParams: {track: trackid ? trackid : null},
       queryParamsHandling: 'merge',
     });
+  }
+
+  setWmMapFeatureCollectionUrl(url: any): void {
+    this.wmMapFeatureCollectionUrl$.next(url);
   }
 }

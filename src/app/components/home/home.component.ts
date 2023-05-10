@@ -248,6 +248,7 @@ export class HomeComponent implements AfterContentInit {
   }
 
   setLayer(layer: ILAYER | null | any, idx?: number): void {
+    console.log(layer);
     this._storeUi.dispatch(setCurrentLayer({currentLayer: layer}));
     if (layer != null && layer.id != null) {
       this._storeSearch.dispatch(query({layer: layer.id}));

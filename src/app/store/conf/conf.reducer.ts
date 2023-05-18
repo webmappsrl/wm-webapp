@@ -2,6 +2,7 @@ import {ILocaleString} from './../../types/model.d';
 import {createReducer, on} from '@ngrx/store';
 
 import {loadConfSuccess} from './conf.actions';
+import {mockFilters} from './mock';
 export const confFeatureKey = 'conf';
 export interface IConfRootState {
   [confFeatureKey]: ICONF;
@@ -260,11 +261,52 @@ const mockControls: ICONTROLS = {
       <path d="M25.3182 12.0976L26.5 14.439C25.9091 15.2195 24.7273 17.0146 24.7273 17.9512C24.7273 18.8878 25.5152 19.9024 25.9091 20.2927L25.3182 26.1463L24.1364 29.6585C23.7424 29.0732 22.6 28.0195 21.1818 28.4878C19.7636 28.9561 19.4091 30.2439 19.4091 30.8293L18.2273 32L15.8636 29.6585L15.2727 27.3171L15.8636 24.3902L17.0455 22.0488L15.8636 20.2927V17.9512L15.2727 15.0244L13.5 12.0976H15.2727L17.0455 11.5122L18.8182 10.9268L20.5909 9.17073L22.9545 8L24.1364 9.17073V10.9268L25.3182 12.0976Z" stroke="gray" stroke-width="1.5" stroke-linejoin="round"/>
       </svg>
       `,
-      url: 'https://geohub.webmapp.it/api/export/taxonomy/sardegna-sentieri/aree_geo.geojson',
+      url: 'https://geohub.webmapp.it/api/export/taxonomy/sardegna-sentieri/aree-geo.geojson',
+      type: 'button',
+    },
+    {
+      label: {it: 'Aree Forestali'},
+      icon: `<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="40" height="40" rx="4" fill="white"/>
+      <path d="M25.3182 12.0976L26.5 14.439C25.9091 15.2195 24.7273 17.0146 24.7273 17.9512C24.7273 18.8878 25.5152 19.9024 25.9091 20.2927L25.3182 26.1463L24.1364 29.6585C23.7424 29.0732 22.6 28.0195 21.1818 28.4878C19.7636 28.9561 19.4091 30.2439 19.4091 30.8293L18.2273 32L15.8636 29.6585L15.2727 27.3171L15.8636 24.3902L17.0455 22.0488L15.8636 20.2927V17.9512L15.2727 15.0244L13.5 12.0976H15.2727L17.0455 11.5122L18.8182 10.9268L20.5909 9.17073L22.9545 8L24.1364 9.17073V10.9268L25.3182 12.0976Z" stroke="gray" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      `,
+      url: 'https://geohub.webmapp.it/api/export/taxonomy/sardegna-sentieri/aree-forestali.geojson',
+      type: 'button',
+    },
+    {
+      label: {it: 'Aree Caccia interdetta'},
+      icon: `<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="40" height="40" rx="4" fill="white"/>
+      <path d="M25.3182 12.0976L26.5 14.439C25.9091 15.2195 24.7273 17.0146 24.7273 17.9512C24.7273 18.8878 25.5152 19.9024 25.9091 20.2927L25.3182 26.1463L24.1364 29.6585C23.7424 29.0732 22.6 28.0195 21.1818 28.4878C19.7636 28.9561 19.4091 30.2439 19.4091 30.8293L18.2273 32L15.8636 29.6585L15.2727 27.3171L15.8636 24.3902L17.0455 22.0488L15.8636 20.2927V17.9512L15.2727 15.0244L13.5 12.0976H15.2727L17.0455 11.5122L18.8182 10.9268L20.5909 9.17073L22.9545 8L24.1364 9.17073V10.9268L25.3182 12.0976Z" stroke="gray" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      `,
+      url: 'https://geohub.webmapp.it/api/export/taxonomy/sardegna-sentieri/aree-caccia.geojson',
+      type: 'button',
+    },
+    {
+      label: {it: 'Aree Catasto digitale'},
+      icon: `<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="40" height="40" rx="4" fill="white"/>
+      <path d="M25.3182 12.0976L26.5 14.439C25.9091 15.2195 24.7273 17.0146 24.7273 17.9512C24.7273 18.8878 25.5152 19.9024 25.9091 20.2927L25.3182 26.1463L24.1364 29.6585C23.7424 29.0732 22.6 28.0195 21.1818 28.4878C19.7636 28.9561 19.4091 30.2439 19.4091 30.8293L18.2273 32L15.8636 29.6585L15.2727 27.3171L15.8636 24.3902L17.0455 22.0488L15.8636 20.2927V17.9512L15.2727 15.0244L13.5 12.0976H15.2727L17.0455 11.5122L18.8182 10.9268L20.5909 9.17073L22.9545 8L24.1364 9.17073V10.9268L25.3182 12.0976Z" stroke="gray" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      `,
+      url: 'https://geohub.webmapp.it/api/export/taxonomy/sardegna-sentieri/aree-catasto.geojson',
+      type: 'button',
+    },
+    {
+      label: {it: 'Aree Montane'},
+      icon: `<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="40" height="40" rx="4" fill="white"/>
+      <path d="M25.3182 12.0976L26.5 14.439C25.9091 15.2195 24.7273 17.0146 24.7273 17.9512C24.7273 18.8878 25.5152 19.9024 25.9091 20.2927L25.3182 26.1463L24.1364 29.6585C23.7424 29.0732 22.6 28.0195 21.1818 28.4878C19.7636 28.9561 19.4091 30.2439 19.4091 30.8293L18.2273 32L15.8636 29.6585L15.2727 27.3171L15.8636 24.3902L17.0455 22.0488L15.8636 20.2927V17.9512L15.2727 15.0244L13.5 12.0976H15.2727L17.0455 11.5122L18.8182 10.9268L20.5909 9.17073L22.9545 8L24.1364 9.17073V10.9268L25.3182 12.0976Z" stroke="gray" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      `,
+      url: 'https://geohub.webmapp.it/api/export/taxonomy/sardegna-sentieri/aree-montane.geojson',
       type: 'button',
     },
   ],
 };
+
 const initialConfState: ICONF = {
   APP: {
     name: 'Webmapp',
@@ -357,7 +399,7 @@ export const confReducer = createReducer(
     localStorage.setItem('appname', state.APP.name);
     let MAP = {...state.MAP, ...conf.MAP};
     if (MAP != null) {
-      MAP = {...MAP, ...{controls: mockControls}};
+      MAP = {...MAP, ...{controls: mockControls, filters: mockFilters}};
       if (MAP.controls) {
         MAP.controls = {...addIdToControls(MAP.controls)};
       }

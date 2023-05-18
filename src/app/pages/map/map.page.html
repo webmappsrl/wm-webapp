@@ -65,6 +65,7 @@
     #wmap
     [wmMapConf]="confMap$|async"
     [wmMapPadding]="mapPadding$|async"
+    [wmMapFilters]="apiElasticState$|async"
     [wmMapTranslationCallback]="translationCallback"
     (wmMapOverlayEVT$)="setWmMapFeatureCollectionUrl($event)"
     [wmMapOverlay]="(enableOverLay$|async)"
@@ -83,7 +84,7 @@
     [jidoUpdateTime]="confJIDOUPDATETIME$|async"
     [wmMapLayerDataLayerUrls]="dataLayerUrls$|async"
     [wmMapLayerLayer]="currentLayer$|async"
-    [wmMapLayerDisableLayers]="(currentFilters$|async).length > 0"
+    [wmMapLayerRefresh]="currentFilters$|async"
     (colorSelectedFromLayerEVT)="trackColor$.next($event)"
     wmMapPois
     [wmMapPoisPoi]="currentPoiIDToMap$|async"

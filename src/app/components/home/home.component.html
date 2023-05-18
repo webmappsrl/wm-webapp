@@ -4,8 +4,7 @@
     *ngIf="showSearch"
     #searchCmp
     [initSearch]="''"
-    (isTypings)="isTyping$.next($event);checkTab($event)"
-    (isBlankEVT)="this.currentTab$.next('')"
+    (isTypings)="isTyping$.next($event)"
     (words)="currentSearch$.next($event)"
     [currentLayer]="currentLayer$|async"
   >
@@ -16,57 +15,59 @@
       (selectedFilters)="setCurrentFilters($event)"
     ></webmapp-filter>
   </webmapp-search>
-  <ng-container *ngIf="currentTab$|async as currentTab">
-    <ion-breadcrumbs>
-      <ion-breadcrumb
-        (click)="goToHome()"
-        *ngIf="currentTab != ''"
-        >{{'Home'|wmtrans}}</ion-breadcrumb
-      >
-      <ng-container *ngIf="(currentLayer$|async) as currentLayer">
-        <ion-breadcrumb (click)="setLayer(null)" *ngIf="currentTab === 'tracks'">
-          {{currentLayer.title|wmtrans}}</ion-breadcrumb
-        >
-      </ng-container>
-      <ng-container *ngIf="(poiCards$|async) as poiCards">
-        <ion-breadcrumb *ngIf="currentTab === 'pois'">
-          <ng-container *ngIf="(selectedFilters$|async) as filters;">
-            <ng-container *ngIf="filters.length ===1">
-              {{(currentSelectedFilter$|async).name|wmtrans}}
+  <ion-grid *ngIf="showResult$|async">
+    <ion-row>
+      <ion-col>Filtri Attivi</ion-col>
+      <ion-col></ion-col>
+      <ion-col size="auto">
+        <ion-chip [outline]="true" (click)="goToHome()">Torna alla home</ion-chip>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col class="chip-list">
+        <ion-chip outline="true" *ngIf="(currentLayer$|async) as currentLayer">
+          <ion-label> {{currentLayer.title|wmtrans}}</ion-label>
+          <ion-icon name="close" (click)="removeLayer(currentLayer)"></ion-icon>
+        </ion-chip>
+        <ng-container *ngIf="(filterShowed$|async) as filters">
+          <ion-chip outline="true" *ngFor="let filter of filters">
+            <ng-container *ngIf="filter.identifier != null;else title">
+              <ng-container *ngIf="filter.icon != null;else imgT">
+                <div appBuildSvg style="height:55%" [svg]="filter.icon"></div>
+              </ng-container>
+              <ng-template #imgT>
+                <img [src]="filter.identifier|getFilterIcn:(filterShowed$|async)" />
+              </ng-template>
+              <ion-label> {{filter.name|wmtrans}}</ion-label>
+              <ion-icon name="close" (click)="removeFilter(filter.identifier)"></ion-icon>
             </ng-container>
-            <ng-container *ngIf="filters.length >1">POIS</ng-container>
-          </ng-container>
-        </ion-breadcrumb>
-      </ng-container>
-    </ion-breadcrumbs>
-  </ng-container>
+            <ng-template #title>
+              <ion-label> {{filter|wmtrans}}</ion-label>
+              <ion-icon name="close" (click)="removeFilter(filter)"></ion-icon>
+            </ng-template>
+          </ion-chip>
+        </ng-container>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-segment
+    [value]="showResultType$|async"
+    (ionChange)="changeResultType($event)"
+    *ngIf="showResult$|async"
+  >
+    <ion-segment-button value="tracks">
+      <ion-label>Sentieri</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="pois">
+      <ion-label>Punti di interesse</ion-label>
+    </ion-segment-button>
+  </ion-segment>
 
   <ion-content style="--offset-top:56px; --offset-bottom:56px;" class="wm-home-cardcontainer">
-    <ng-container
-      *ngIf="(isTyping$|async)||(currentLayer$|async)!=null||(selectedFilters$|async).length>0; else layers"
-    >
-      <ion-segment [value]="currentTab$|async" (ionChange)="segmentChanged($event)">
-        <ng-container *ngIf="elasticSearch$|async as cards">
-          <ion-segment-button
-            value="tracks"
-            *ngIf="(selectedFilters$|async).length==0 && (currentSearch$|async)!='' && cards != null && cards.length> 0"
-          >
-            <ion-label>
-              {{'tracce'|wmtrans}}
-              <ion-badge>{{cards.length === 200? '>': ''}}{{cards.length}} </ion-badge></ion-label
-            >
-          </ion-segment-button>
-        </ng-container>
-        <ng-container *ngIf="(currentLayer$|async)==null && poiCards$|async as poiCards">
-          <ion-segment-button value="pois" *ngIf="poiCards != null && poiCards.length> 0">
-            <ion-label>
-              POI <ion-badge>{{poiCards.length}}</ion-badge></ion-label
-            >
-          </ion-segment-button>
-        </ng-container>
-      </ion-segment>
-      <ng-container *ngIf="currentTab$|async as currentTab">
-        <ng-container *ngIf="currentTab === 'tracks'|| currentTab == null">
+    <ng-container *ngIf="showResult$|async as showResult;else layers">
+      <ng-container *ngIf="showResultType$|async as showResulType;">
+        <ng-container *ngIf="showResulType === 'tracks'|| showResulType == null">
           <wm-search-box
             *ngFor="let card of elasticSearch$|async"
             [data]="card"
@@ -74,7 +75,7 @@
           >
           </wm-search-box>
         </ng-container>
-        <div class="pois" *ngIf="currentTab === 'pois'">
+        <div class="pois" *ngIf="showResulType === 'pois'|| showResulType === 'all'">
           <wm-poi-box *ngFor="let c of poiCards$|async" [data]="c" (clickEVT)="setPoi(c)">
           </wm-poi-box>
         </div>
@@ -82,6 +83,8 @@
     </ng-container>
 
     <ng-template #layers>
+      <webmapp-tracks-box [data]="sardegnaActivities" (trackIdEVT)="setActivities([$event])">
+      </webmapp-tracks-box>
       <ng-container *ngFor="let box of confHOME$|async;let idx = index">
         <webmapp-title *ngIf="box.box_type === 'title'">
           {{box.title|wmtrans}}
@@ -92,7 +95,11 @@
           (clickEVT)="toggleFilter(box.identifier, idx)"
         >
         </wm-poi-type-filter-box>
-        <wm-slug-box *ngIf="box.box_type === 'slug'" [data]="box" (clickEVT)="openSlug(box.slug,idx)">
+        <wm-slug-box
+          *ngIf="box.box_type === 'slug'"
+          [data]="box"
+          (clickEVT)="openSlug(box.slug,idx)"
+        >
         </wm-slug-box>
         <webmapp-box
           *ngIf="box.box_type === 'external_url'"

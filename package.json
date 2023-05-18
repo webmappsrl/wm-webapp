@@ -10,7 +10,9 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "deploy": "ionic build --prod && scp -r ~/Documents/wm-webapp/www/* server:/var/www/html/app.geohub.webmapp.it/"
+    "deploy": "ionic build --prod && scp -r ~/Documents/wm-webapp/www/* server:/var/www/html/app.geohub.webmapp.it/",
+    "surge-sardegna": "ionic build --prod && surge --project ./www --domain http://32.webmapp.surge.sh/",
+    "surge-sardegna-dev": "ionic build --prod && surge --project ./www --domain http://32.dev-webmapp.surge.sh/"
   },
   "private": true,
   "dependencies": {

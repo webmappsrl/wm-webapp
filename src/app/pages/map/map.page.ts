@@ -39,6 +39,7 @@ import {environment} from 'src/environments/environment';
 import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
 import {IGeojsonFeature} from 'src/app/shared/wm-core/types/model';
 import {HomeComponent} from 'src/app/components/home/home.component';
+import {apiElasticState} from 'src/app/shared/wm-core/api/api.selector';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -60,9 +61,8 @@ export class MapPage {
   @ViewChild(HomeComponent) homeCmp: HomeComponent;
   @ViewChild(wmMapTrackRelatedPoisDirective)
   wmMapTrackRelatedPoisDirective: wmMapTrackRelatedPoisDirective;
-  wmMapFeatureCollectionUrl$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(
-    null,
-  );
+
+  apiElasticState$: Observable<any> = this._store.select(apiElasticState);
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
   confJIDOUPDATETIME$: Observable<any> = this._store.select(confJIDOUPDATETIME);
@@ -134,6 +134,9 @@ export class MapPage {
   translationCallback: (any) => string = value => {
     return this._langService.instant(value);
   };
+  wmMapFeatureCollectionUrl$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(
+    null,
+  );
 
   constructor(
     private _route: ActivatedRoute,
@@ -276,6 +279,10 @@ export class MapPage {
     }
   }
 
+  setWmMapFeatureCollectionUrl(url: any): void {
+    this.wmMapFeatureCollectionUrl$.next(url);
+  }
+
   toggleDetails(trackid?): void {
     if (trackid == null) {
       trackid = -1;
@@ -307,9 +314,5 @@ export class MapPage {
       queryParams: {track: trackid ? trackid : null},
       queryParamsHandling: 'merge',
     });
-  }
-
-  setWmMapFeatureCollectionUrl(url: any): void {
-    this.wmMapFeatureCollectionUrl$.next(url);
   }
 }

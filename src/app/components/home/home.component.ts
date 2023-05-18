@@ -2,7 +2,6 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {BehaviorSubject, Observable, merge, of, zip} from 'rxjs';
 import {
   AfterContentInit,
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
@@ -11,7 +10,16 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {confHOME, confPOISFilter} from 'src/app/store/conf/conf.selector';
-import {filter, map, switchMap, tap, debounceTime, withLatestFrom} from 'rxjs/operators';
+import {
+  filter,
+  map,
+  switchMap,
+  tap,
+  debounceTime,
+  withLatestFrom,
+  startWith,
+  take,
+} from 'rxjs/operators';
 import {setCurrentLayer, setCurrentPoi} from 'src/app/store/UI/UI.actions';
 
 import {IConfRootState} from 'src/app/store/conf/conf.reducer';
@@ -22,11 +30,22 @@ import {Store} from '@ngrx/store';
 import {pois} from 'src/app/store/pois/pois.selector';
 import {fromHEXToColor} from 'src/app/shared/map-core/src/utils/styles';
 import {UICurrentLAyer} from 'src/app/store/UI/UI.selector';
-import {query} from 'src/app/shared/wm-core/api/api.actions';
-import {queryApi} from 'src/app/shared/wm-core/api/api.selector';
+import {
+  addActivities,
+  query,
+  removeActivities,
+  setLayerID,
+} from 'src/app/shared/wm-core/api/api.actions';
+import {
+  apiElasticState,
+  apiElasticStateActivities,
+  queryApi,
+} from 'src/app/shared/wm-core/api/api.selector';
 import {IElasticSearchRootState} from 'src/app/shared/wm-core/api/api.reducer';
 import {FilterComponent} from './filter/filter.component';
 import {SearchComponent} from './search/search.component';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {flatten} from 'src/app/shared/map-core/src/utils/ol';
 
 @Component({
   selector: 'webmapp-home',
@@ -36,6 +55,9 @@ import {SearchComponent} from './search/search.component';
   encapsulation: ViewEncapsulation.None,
 })
 export class HomeComponent implements AfterContentInit {
+  private _currentLayerID$: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(
+    null,
+  );
   private _hasLayer: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _hasPois: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _hasTracks: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -69,21 +91,64 @@ export class HomeComponent implements AfterContentInit {
       return p;
     }),
   );
-  currentLayer$ = this._storeUi
-    .select(UICurrentLAyer)
-    .pipe(tap(f => this._hasLayer.next(f != null)));
+  currentLayer$ = this._storeUi.select(UICurrentLAyer).pipe(
+    tap(f => {
+      this._hasLayer.next(f != null);
+      this._currentLayerID$.next(f != null && f.id != null ? +f.id : null);
+    }),
+  );
   currentSearch$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   currentSelectedFilter$: Observable<any>;
   currentSelectedIndentiFierFilter$: BehaviorSubject<string | null> = new BehaviorSubject<
     string | null
   >(null);
-  currentTab$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   elasticSearch$: Observable<IHIT[]> = this._storeSearch
     .select(queryApi)
     .pipe(tap(f => this._hasTracks.next(f != null && f.length > 0)));
+  filterSelected$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  filterShowed$ = this._storeSearch.select(apiElasticState).pipe(
+    tap(state => {
+      if (state.layerID === null && state.activities.length === 0) this.showResult$.next(false);
+    }),
+    map(state => state.activities),
+  );
   isTyping$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   poiCards$: Observable<any[]>;
-  selectedFilters$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  sardegnaActivities: any = {
+    box_type: 'base',
+    items: [
+      {
+        title: 'hiking',
+        track_id: 'hiking',
+        image_url: 'https://www.riglar.it/wp-content/uploads/2013/02/Escursionismo.jpg',
+      },
+      {
+        title: 'horse',
+        track_id: 'horse',
+        image_url:
+          'https://www.csttropea.it/wp-content/uploads/2015/05/big_9ceefcf8-cf0b-4c90-9213-b63b81b7abff-530x353.jpg',
+      },
+      {
+        title: 'nordic-walking',
+        track_id: 'nordic-walking',
+        image_url:
+          'https://qui-montagna.com/wp-content/uploads/2021/03/cose-e-come-si-pratica-il-nordic-walking.jpg',
+      },
+      {
+        title: 'mtb',
+        track_id: 'mtb',
+        image_url:
+          'https://www.agnata.com/wp-content/uploads/2016/04/0000_Mountain-Bike-Agnata-03.jpg',
+      },
+      {
+        title: 'cycling',
+        track_id: 'cycling',
+        image_url: 'https://momentummag.com/wp-content/uploads/2022/05/womancycling.jpg',
+      },
+    ],
+  };
+  showResult$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
   showSearch = true;
 
   constructor(
@@ -94,12 +159,13 @@ export class HomeComponent implements AfterContentInit {
     private _route: ActivatedRoute,
     private _modalCtrl: ModalController,
     private _navCtrl: NavController,
+    fb: FormBuilder,
   ) {
     const allPois: Observable<any[]> = this._storeUi.select(pois).pipe(
       filter(p => p != null),
       map(p => ((p as any).features || []).map(p => (p as any).properties || [])),
     );
-    const selectedPois = zip(this.currentSearch$, allPois, this.selectedFilters$).pipe(
+    const selectedPois = zip(this.currentSearch$, allPois, this.filterSelected$).pipe(
       map(([search, features, filters]) => {
         const isSearch = search.length > 0 || filters.length > 0;
         const whereFilters = filters.filter(f => f.indexOf('where_') >= 0);
@@ -122,7 +188,7 @@ export class HomeComponent implements AfterContentInit {
         }) as any[];
       }),
     );
-    this.poiCards$ = merge(this.currentSearch$, this.selectedFilters$).pipe(
+    this.poiCards$ = merge(this.currentSearch$, this.filterSelected$).pipe(
       switchMap(_ => selectedPois),
       tap(f => this._hasPois.next(f != null && f.length > 0)),
     );
@@ -140,28 +206,22 @@ export class HomeComponent implements AfterContentInit {
             }
           }
         }
-        return null;
+        return of(null);
       }),
     );
   }
 
-  checkTab(check: boolean): void {
-    setTimeout(() => {
-      if (this._hasTracks.value && this._hasLayer.value) {
-        this.currentTab$.next('tracks');
-      } else if (this._hasPois.value) {
-        this.currentTab$.next('pois');
-      } else {
-        this.currentTab$.next('');
-      }
-    }, 400);
+  changeResultType(event): void {
+    this.showResultType$.next(event.target.value);
   }
 
   goToHome(): void {
     this.setLayer(null);
+    this.showResult$.next(false);
     this.setCurrentFilters([]);
-    this.currentTab$.next('');
+    this.currentSelectedIndentiFierFilter$.next('');
     this.searchCmp.reset();
+    this._storeSearch.dispatch(setLayerID(null));
     this._router.navigate([], {
       relativeTo: this._route,
       queryParams: {layer: null, filter: null},
@@ -219,6 +279,28 @@ export class HomeComponent implements AfterContentInit {
     }
   }
 
+  removeFilter(identifier: string): void {
+    this._storeSearch.dispatch(removeActivities({activities: [identifier]}));
+    this.filterSelected$.next(this.filterSelected$.value.filter(f => f != identifier));
+    this.selectedFiltersEVT.emit(this.filterSelected$.value);
+  }
+
+  removeLayer(layer: any): void {
+    this.setLayer(null);
+    this.removeLayerFilter(layer);
+    this.showResult$.next(false);
+    this._storeSearch.dispatch(query({layer: null}));
+  }
+
+  removeLayerFilter(layer: any): void {
+    const taxonomyWhereIdentifier = layer.taxonomy_wheres
+      .filter(t => t.identifier != null)
+      .map(t => `where_${t.identifier}`);
+    const currentFilter = this.filterSelected$.value;
+    const expectedFilter = currentFilter.filter(f => taxonomyWhereIdentifier.indexOf(f) < 0);
+    this.setCurrentFilters(expectedFilter);
+  }
+
   searchCard(id: string | number): void {
     this._router.navigate([], {
       relativeTo: this._route,
@@ -227,39 +309,45 @@ export class HomeComponent implements AfterContentInit {
     });
   }
 
-  segmentChanged(ev: any) {
-    this.currentTab$.next(ev.detail.value);
+  setActivities(activities: string[]) {
+    this._storeSearch.dispatch(addActivities({activities}));
+    this.showResult$.next(true);
+    activities = [...this.filterSelected$.value, ...activities];
+    this.setCurrentFilters(activities);
   }
 
   setCurrentFilters(filters: string[]): void {
-    this.selectedFilters$.next(filters);
+    this.filterSelected$.next(filters);
     this.selectedFiltersEVT.emit(filters);
     if (filters.length === 1) {
       this.currentSelectedIndentiFierFilter$.next(filters[0]);
     } else {
       this.currentSelectedIndentiFierFilter$.next(null);
     }
-    if (filters.length > 0) {
-      this.currentTab$.next('pois');
-    }
-    if (filters.length === 0) {
-      this.currentTab$.next('');
-    }
   }
 
   setLayer(layer: ILAYER | null | any, idx?: number): void {
-    console.log(layer);
     this._storeUi.dispatch(setCurrentLayer({currentLayer: layer}));
     if (layer != null && layer.id != null) {
-      this._storeSearch.dispatch(query({layer: layer.id}));
+      this._storeSearch.dispatch(setLayerID({layerID: layer.id}));
+      this.showResult$.next(true);
+    } else {
+      this.showResult$.next(false);
     }
-    this.currentTab$.next('tracks');
     if (idx) {
       this._router.navigate([], {
         relativeTo: this._route,
         queryParams: {layer: idx},
         queryParamsHandling: 'merge',
       });
+    }
+    if (layer && layer.taxonomy_wheres != null) {
+      const taxonomyWhereIdentifier = layer.taxonomy_wheres
+        .filter(t => t.identifier != null)
+        .map(t => `where_${t.identifier}`);
+      this.filterCmp && this.filterCmp.setFilter(taxonomyWhereIdentifier[0]);
+      this.currentSelectedIndentiFierFilter$.next(taxonomyWhereIdentifier[0]);
+      this.setCurrentFilters(taxonomyWhereIdentifier);
     }
   }
 
@@ -271,6 +359,7 @@ export class HomeComponent implements AfterContentInit {
     this.filterCmp && this.filterCmp.setFilter(identifier);
     this.currentSelectedIndentiFierFilter$.next(identifier);
     this.setCurrentFilters([identifier]);
+    this._storeSearch.dispatch(query({activities: [identifier]}));
     if (idx) {
       this._router.navigate([], {
         relativeTo: this._route,

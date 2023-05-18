@@ -18,7 +18,7 @@ import {BaseBoxComponent} from '../abstract/box';
   encapsulation: ViewEncapsulation.None,
 })
 export class TracksBoxComponent extends BaseBoxComponent<IBASEBOX> {
-  @Output() public trackIdEVT: EventEmitter<number> = new EventEmitter<number>();
+  @Output() public trackIdEVT: EventEmitter<any> = new EventEmitter<number>();
   @ViewChild('tracks') tracksContent: ElementRef;
 
   scrollLeft(): void {

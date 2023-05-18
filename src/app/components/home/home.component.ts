@@ -10,16 +10,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {confHOME, confPOISFilter} from 'src/app/store/conf/conf.selector';
-import {
-  filter,
-  map,
-  switchMap,
-  tap,
-  debounceTime,
-  withLatestFrom,
-  startWith,
-  take,
-} from 'rxjs/operators';
+import {filter, map, switchMap, tap, debounceTime, withLatestFrom} from 'rxjs/operators';
 import {setCurrentLayer, setCurrentPoi} from 'src/app/store/UI/UI.actions';
 
 import {IConfRootState} from 'src/app/store/conf/conf.reducer';
@@ -29,23 +20,21 @@ import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {pois} from 'src/app/store/pois/pois.selector';
 import {fromHEXToColor} from 'src/app/shared/map-core/src/utils/styles';
-import {UICurrentLAyer} from 'src/app/store/UI/UI.selector';
 import {
   addActivities,
   query,
   removeActivities,
-  setLayerID,
+  setLayer,
 } from 'src/app/shared/wm-core/api/api.actions';
 import {
   apiElasticState,
-  apiElasticStateActivities,
+  apiElasticStateLayer,
   queryApi,
 } from 'src/app/shared/wm-core/api/api.selector';
 import {IElasticSearchRootState} from 'src/app/shared/wm-core/api/api.reducer';
 import {FilterComponent} from './filter/filter.component';
 import {SearchComponent} from './search/search.component';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {flatten} from 'src/app/shared/map-core/src/utils/ol';
 
 @Component({
   selector: 'webmapp-home',
@@ -55,10 +44,6 @@ import {flatten} from 'src/app/shared/map-core/src/utils/ol';
   encapsulation: ViewEncapsulation.None,
 })
 export class HomeComponent implements AfterContentInit {
-  private _currentLayerID$: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(
-    null,
-  );
-  private _hasLayer: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _hasPois: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _hasTracks: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
@@ -91,24 +76,16 @@ export class HomeComponent implements AfterContentInit {
       return p;
     }),
   );
-  currentLayer$ = this._storeUi.select(UICurrentLAyer).pipe(
-    tap(f => {
-      this._hasLayer.next(f != null);
-      this._currentLayerID$.next(f != null && f.id != null ? +f.id : null);
-    }),
-  );
+  currentLayer$ = this._storeSearch.select(apiElasticStateLayer);
   currentSearch$: BehaviorSubject<string> = new BehaviorSubject<string>('');
-  currentSelectedFilter$: Observable<any>;
-  currentSelectedIndentiFierFilter$: BehaviorSubject<string | null> = new BehaviorSubject<
-    string | null
-  >(null);
+
   elasticSearch$: Observable<IHIT[]> = this._storeSearch
     .select(queryApi)
     .pipe(tap(f => this._hasTracks.next(f != null && f.length > 0)));
   filterSelected$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   filterShowed$ = this._storeSearch.select(apiElasticState).pipe(
     tap(state => {
-      if (state.layerID === null && state.activities.length === 0) this.showResult$.next(false);
+      if (state.layer === null && state.activities.length === 0) this.showResult$.next(false);
     }),
     map(state => state.activities),
   );
@@ -192,23 +169,6 @@ export class HomeComponent implements AfterContentInit {
       switchMap(_ => selectedPois),
       tap(f => this._hasPois.next(f != null && f.length > 0)),
     );
-
-    this.currentSelectedFilter$ = this.currentSelectedIndentiFierFilter$.asObservable().pipe(
-      withLatestFrom(this.confPOISFilter$),
-      map(([identifier, filters]) => {
-        const filterKeys = Object.keys(filters);
-        for (let i = 0; i < filterKeys.length; i++) {
-          const filterKey = filterKeys[i];
-          for (let j = 0; j < filters[filterKey].length; j++) {
-            const filter = filters[filterKey][j];
-            if (filter.identifier === identifier) {
-              return filter;
-            }
-          }
-        }
-        return of(null);
-      }),
-    );
   }
 
   changeResultType(event): void {
@@ -219,9 +179,8 @@ export class HomeComponent implements AfterContentInit {
     this.setLayer(null);
     this.showResult$.next(false);
     this.setCurrentFilters([]);
-    this.currentSelectedIndentiFierFilter$.next('');
     this.searchCmp.reset();
-    this._storeSearch.dispatch(setLayerID(null));
+    this._storeSearch.dispatch(setLayer(null));
     this._router.navigate([], {
       relativeTo: this._route,
       queryParams: {layer: null, filter: null},
@@ -319,20 +278,15 @@ export class HomeComponent implements AfterContentInit {
   setCurrentFilters(filters: string[]): void {
     this.filterSelected$.next(filters);
     this.selectedFiltersEVT.emit(filters);
-    if (filters.length === 1) {
-      this.currentSelectedIndentiFierFilter$.next(filters[0]);
-    } else {
-      this.currentSelectedIndentiFierFilter$.next(null);
-    }
   }
 
   setLayer(layer: ILAYER | null | any, idx?: number): void {
-    this._storeUi.dispatch(setCurrentLayer({currentLayer: layer}));
     if (layer != null && layer.id != null) {
-      this._storeSearch.dispatch(setLayerID({layerID: layer.id}));
+      this._storeSearch.dispatch(setLayer({layer}));
       this.showResult$.next(true);
     } else {
       this.showResult$.next(false);
+      this._storeSearch.dispatch(setLayer(null));
     }
     if (idx) {
       this._router.navigate([], {
@@ -346,7 +300,6 @@ export class HomeComponent implements AfterContentInit {
         .filter(t => t.identifier != null)
         .map(t => `where_${t.identifier}`);
       this.filterCmp && this.filterCmp.setFilter(taxonomyWhereIdentifier[0]);
-      this.currentSelectedIndentiFierFilter$.next(taxonomyWhereIdentifier[0]);
       this.setCurrentFilters(taxonomyWhereIdentifier);
     }
   }
@@ -357,7 +310,6 @@ export class HomeComponent implements AfterContentInit {
 
   toggleFilter(identifier: string, idx?: number): void {
     this.filterCmp && this.filterCmp.setFilter(identifier);
-    this.currentSelectedIndentiFierFilter$.next(identifier);
     this.setCurrentFilters([identifier]);
     this._storeSearch.dispatch(query({activities: [identifier]}));
     if (idx) {

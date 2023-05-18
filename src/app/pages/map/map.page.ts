@@ -26,7 +26,7 @@ import {
   confHOME,
   confShowDrawTrack,
 } from 'src/app/store/conf/conf.selector';
-import {UICurrentLAyer, UICurrentPoiId} from 'src/app/store/UI/UI.selector';
+import {UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {wmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/directives/track.related-pois.directive';
 import {Store} from '@ngrx/store';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
@@ -39,7 +39,7 @@ import {environment} from 'src/environments/environment';
 import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
 import {IGeojsonFeature} from 'src/app/shared/wm-core/types/model';
 import {HomeComponent} from 'src/app/components/home/home.component';
-import {apiElasticState} from 'src/app/shared/wm-core/api/api.selector';
+import {apiElasticState, apiElasticStateLayer} from 'src/app/shared/wm-core/api/api.selector';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -76,7 +76,7 @@ export class MapPage {
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentFilters$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
-  currentLayer$ = this._store.select(UICurrentLAyer);
+  currentLayer$ = this._store.select(apiElasticStateLayer);
   currentLayerID$: BehaviorSubject<number> = new BehaviorSubject<number | null>(null);
   currentPoi$: BehaviorSubject<IGeojsonFeature> = new BehaviorSubject<IGeojsonFeature | null>(null);
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);

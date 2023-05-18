@@ -10,8 +10,17 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {confHOME, confPOISFilter} from 'src/app/store/conf/conf.selector';
-import {filter, map, switchMap, tap, debounceTime, withLatestFrom} from 'rxjs/operators';
-import {setCurrentLayer, setCurrentPoi} from 'src/app/store/UI/UI.actions';
+import {
+  filter,
+  map,
+  switchMap,
+  tap,
+  debounceTime,
+  withLatestFrom,
+  startWith,
+  distinctUntilChanged,
+} from 'rxjs/operators';
+import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
 
 import {IConfRootState} from 'src/app/store/conf/conf.reducer';
 import {IUIRootState} from 'src/app/store/UI/UI.reducer';
@@ -30,11 +39,11 @@ import {
   apiElasticState,
   apiElasticStateLayer,
   queryApi,
+  apiElasticStateLoading,
 } from 'src/app/shared/wm-core/api/api.selector';
 import {IElasticSearchRootState} from 'src/app/shared/wm-core/api/api.reducer';
 import {FilterComponent} from './filter/filter.component';
 import {SearchComponent} from './search/search.component';
-import {FormBuilder, FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'webmapp-home',
@@ -45,7 +54,6 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 })
 export class HomeComponent implements AfterContentInit {
   private _hasPois: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private _hasTracks: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   @Output() selectedFiltersEVT: EventEmitter<string[]> = new EventEmitter<string[]>();
   @ViewChild('filterCmp') filterCmp: FilterComponent;
@@ -79,13 +87,10 @@ export class HomeComponent implements AfterContentInit {
   currentLayer$ = this._storeSearch.select(apiElasticStateLayer);
   currentSearch$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
-  elasticSearch$: Observable<IHIT[]> = this._storeSearch
-    .select(queryApi)
-    .pipe(tap(f => this._hasTracks.next(f != null && f.length > 0)));
   filterSelected$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   filterShowed$ = this._storeSearch.select(apiElasticState).pipe(
     tap(state => {
-      if (state.layer === null && state.activities.length === 0) this.showResult$.next(false);
+      if (state.layer == null && state.activities.length === 0) this.showResult$.next(false);
     }),
     map(state => state.activities),
   );
@@ -127,7 +132,8 @@ export class HomeComponent implements AfterContentInit {
   showResult$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
   showSearch = true;
-
+  elasticSearch$: Observable<IHIT[]> = this._storeSearch.select(queryApi);
+  elasticSeachLoading$: Observable<boolean> = this._storeSearch.select(apiElasticStateLoading);
   constructor(
     private _storeSearch: Store<IElasticSearchRootState>,
     private _storeConf: Store<IConfRootState>,
@@ -136,7 +142,6 @@ export class HomeComponent implements AfterContentInit {
     private _route: ActivatedRoute,
     private _modalCtrl: ModalController,
     private _navCtrl: NavController,
-    fb: FormBuilder,
   ) {
     const allPois: Observable<any[]> = this._storeUi.select(pois).pipe(
       filter(p => p != null),
@@ -248,7 +253,6 @@ export class HomeComponent implements AfterContentInit {
     this.setLayer(null);
     this.removeLayerFilter(layer);
     this.showResult$.next(false);
-    this._storeSearch.dispatch(query({layer: null}));
   }
 
   removeLayerFilter(layer: any): void {

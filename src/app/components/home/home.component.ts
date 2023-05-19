@@ -22,6 +22,7 @@ import {pois} from 'src/app/store/pois/pois.selector';
 import {fromHEXToColor} from 'src/app/shared/map-core/src/utils/styles';
 import {
   addActivities,
+  inputTyped,
   query,
   removeActivities,
   setLayer,
@@ -83,7 +84,8 @@ export class HomeComponent implements AfterContentInit {
   filterSelected$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   filterShowed$ = this._storeSearch.select(apiElasticState).pipe(
     tap(state => {
-      if (state.layer == null && state.activities.length === 0) this.showResult$.next(false);
+      if (state.layer == null && state.activities.length === 0 && state.inputTypes === '')
+        this.showResult$.next(false);
     }),
     map(state => state.activities),
   );
@@ -141,7 +143,11 @@ export class HomeComponent implements AfterContentInit {
   changeResultType(event): void {
     this.showResultType$.next(event.target.value);
   }
-
+  setSearch(value: string): void {
+    this.currentSearch$.next(value);
+    this._storeSearch.dispatch(inputTyped({inputTyped: value}));
+    this.showResult$.next(true);
+  }
   goToHome(): void {
     this.setLayer(null);
     this.showResult$.next(false);

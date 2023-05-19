@@ -11,8 +11,7 @@
     #searchCmp
     [initSearch]="''"
     (isTypings)="isTyping$.next($event)"
-    (words)="currentSearch$.next($event)"
-    [currentLayer]="currentLayer$|async"
+    (words)="setSearch($event)"
   >
     <webmapp-filter
       #filterCmp

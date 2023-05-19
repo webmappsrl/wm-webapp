@@ -9,17 +9,8 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {confHOME, confPOISFilter} from 'src/app/store/conf/conf.selector';
-import {
-  filter,
-  map,
-  switchMap,
-  tap,
-  debounceTime,
-  withLatestFrom,
-  startWith,
-  distinctUntilChanged,
-} from 'rxjs/operators';
+import {confAPP, confHOME, confPOISFilter} from 'src/app/store/conf/conf.selector';
+import {filter, map, switchMap, tap, debounceTime, withLatestFrom} from 'rxjs/operators';
 import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
 
 import {IConfRootState} from 'src/app/store/conf/conf.reducer';
@@ -44,6 +35,7 @@ import {
 import {IElasticSearchRootState} from 'src/app/shared/wm-core/api/api.reducer';
 import {FilterComponent} from './filter/filter.component';
 import {SearchComponent} from './search/search.component';
+import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
   selector: 'webmapp-home',
@@ -61,6 +53,7 @@ export class HomeComponent implements AfterContentInit {
 
   cards$: Observable<IHIT[]> = of([]);
   confHOME$: Observable<IHOME[]> = this._storeConf.select(confHOME);
+  confAPP$: Observable<IAPP> = this._storeConf.select(confAPP);
   confPOISFilter$: Observable<any> = this._storeConf.select(confPOISFilter).pipe(
     filter(p => p != null),
     map(p => {
@@ -96,39 +89,7 @@ export class HomeComponent implements AfterContentInit {
   );
   isTyping$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   poiCards$: Observable<any[]>;
-  sardegnaActivities: any = {
-    box_type: 'base',
-    items: [
-      {
-        title: 'hiking',
-        track_id: 'hiking',
-        image_url: 'https://www.riglar.it/wp-content/uploads/2013/02/Escursionismo.jpg',
-      },
-      {
-        title: 'horse',
-        track_id: 'horse',
-        image_url:
-          'https://www.csttropea.it/wp-content/uploads/2015/05/big_9ceefcf8-cf0b-4c90-9213-b63b81b7abff-530x353.jpg',
-      },
-      {
-        title: 'nordic-walking',
-        track_id: 'nordic-walking',
-        image_url:
-          'https://qui-montagna.com/wp-content/uploads/2021/03/cose-e-come-si-pratica-il-nordic-walking.jpg',
-      },
-      {
-        title: 'mtb',
-        track_id: 'mtb',
-        image_url:
-          'https://www.agnata.com/wp-content/uploads/2016/04/0000_Mountain-Bike-Agnata-03.jpg',
-      },
-      {
-        title: 'cycling',
-        track_id: 'cycling',
-        image_url: 'https://momentummag.com/wp-content/uploads/2022/05/womancycling.jpg',
-      },
-    ],
-  };
+
   showResult$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
   showSearch = true;
@@ -142,6 +103,7 @@ export class HomeComponent implements AfterContentInit {
     private _route: ActivatedRoute,
     private _modalCtrl: ModalController,
     private _navCtrl: NavController,
+    public sanitizer: DomSanitizer,
   ) {
     const allPois: Observable<any[]> = this._storeUi.select(pois).pipe(
       filter(p => p != null),

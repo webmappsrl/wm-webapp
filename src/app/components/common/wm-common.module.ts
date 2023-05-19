@@ -1,3 +1,4 @@
+import {ConvertToHorizontalScrollBoxItemsPipe} from './horizontal-scroll-box/convert-to-horizontal-scroll-box.pipe';
 import {BoxComponent} from './box/box.component';
 import {CommonModule} from '@angular/common';
 import {ConvertToItemTracksPipe} from './tracks-box/convert-to-base-box.pipe';
@@ -12,6 +13,7 @@ import {SearchBoxComponent} from './search-box/search-box.component';
 import {TitleComponent} from './title/title.component';
 import {TrackAudioComponent} from './track-audio/track-audio.component';
 import {TracksBoxComponent} from './tracks-box/tracks-box.component';
+import {HorizontalScrollBoxComponent} from './horizontal-scroll-box/horizontal-scroll-box.component';
 
 const components = [
   TitleComponent,
@@ -24,6 +26,8 @@ const components = [
   BoxComponent,
   ConvertToItemTracksPipe,
   TrackAudioComponent,
+  HorizontalScrollBoxComponent,
+  ConvertToHorizontalScrollBoxItemsPipe,
 ];
 @NgModule({
   declarations: components,

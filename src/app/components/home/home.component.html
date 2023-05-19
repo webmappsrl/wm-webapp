@@ -1,5 +1,11 @@
 <div class="root">
   <ng-content></ng-content>
+  <ng-container *ngIf="(confAPP$|async) as confAPP">
+    <ion-item lines="none" *ngIf="confAPP.welcome as welcome">
+      <ion-label [innerHTML]="sanitizer.bypassSecurityTrustHtml(welcome | wmtrans)"></ion-label>
+    </ion-item>
+  </ng-container>
+
   <webmapp-search
     *ngIf="showSearch"
     #searchCmp
@@ -17,7 +23,7 @@
   </webmapp-search>
   <ion-grid *ngIf="showResult$|async">
     <ion-row>
-      <ion-col>Filtri Attivi</ion-col>
+      <ion-col>{{'Filtri Attivi'|wmtrans}}</ion-col>
       <ion-col></ion-col>
       <ion-col size="auto">
         <ion-chip [outline]="true" (click)="goToHome()">Torna alla home</ion-chip>
@@ -57,10 +63,10 @@
     *ngIf="showResult$|async"
   >
     <ion-segment-button value="tracks">
-      <ion-label>Sentieri</ion-label>
+      <ion-label>{{'Sentieri'|wmtrans}}</ion-label>
     </ion-segment-button>
     <ion-segment-button value="pois">
-      <ion-label>Punti di interesse</ion-label>
+      <ion-label>{{'Punti di interesse'|wmtrans}}</ion-label>
     </ion-segment-button>
   </ion-segment>
 
@@ -107,12 +113,16 @@
     </ng-container>
 
     <ng-template #layers>
-      <webmapp-tracks-box [data]="sardegnaActivities" (trackIdEVT)="setActivities([$event])">
-      </webmapp-tracks-box>
       <ng-container *ngFor="let box of confHOME$|async;let idx = index">
         <webmapp-title *ngIf="box.box_type === 'title'">
           {{box.title|wmtrans}}
         </webmapp-title>
+        <wm-horizontal-scroll-box
+          *ngIf="box.box_type === 'horizontal_scroll'"
+          [data]="box"
+          (clickEVT)="setActivities([$event])"
+        >
+        </wm-horizontal-scroll-box>
         <wm-poi-type-filter-box
           *ngIf="box.box_type === 'poi_type_filter'"
           [data]="box"

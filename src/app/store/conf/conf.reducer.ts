@@ -399,7 +399,7 @@ export const confReducer = createReducer(
     localStorage.setItem('appname', state.APP.name);
     let MAP = {...state.MAP, ...conf.MAP};
     if (MAP != null) {
-      MAP = {...MAP, ...{controls: mockControls, filters: mockFilters}};
+      MAP = {...MAP, ...{filters: mockFilters}};
       if (MAP.controls) {
         MAP.controls = {...addIdToControls(MAP.controls)};
       }
@@ -419,13 +419,14 @@ export const confReducer = createReducer(
 
 const addIdToControls = (controls: ICONTROLS): ICONTROLS => {
   const keys = Object.keys(controls);
+  let controlsWithIDs = {...controls};
   keys.forEach(key => {
-    controls[key] = controls[key].map((c, index) => {
+    controlsWithIDs[key] = controlsWithIDs[key].map((c, index) => {
       if (c.type === 'button') {
-        c.id = index;
+        return {...c, ...{id: index}};
       }
       return c;
     });
   });
-  return controls;
+  return controlsWithIDs;
 };

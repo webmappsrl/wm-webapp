@@ -77,7 +77,6 @@ export class MapPage {
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentFilters$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   currentLayer$ = this._store.select(apiElasticStateLayer);
-  currentLayerID$: BehaviorSubject<number> = new BehaviorSubject<number | null>(null);
   currentPoi$: BehaviorSubject<IGeojsonFeature> = new BehaviorSubject<IGeojsonFeature | null>(null);
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiIDFromHome$ = this._store.select(UICurrentPoiId);
@@ -193,21 +192,6 @@ export class MapPage {
       map(val => val ?? -1),
       distinctUntilChanged((prev, curr) => +prev === +curr),
     );
-
-    this.currentLayerID$
-      .pipe(
-        filter(id => id != null),
-        withLatestFrom(this.confHOME$),
-        map(([id, home]) => {
-          return home
-            .filter(h => h.box_type === 'layer')
-            .map((l: ILAYERBOX) => l.layer)
-            .find(l => +l.id === +id);
-        }),
-      )
-      .subscribe(layer => {
-        this.homeCmp.setLayer(layer);
-      });
   }
 
   next(): void {
@@ -249,8 +233,8 @@ export class MapPage {
     this.updateUrl(trackid);
   }
 
-  selectedLayer(id: any): void {
-    this.currentLayerID$.next(id);
+  selectedLayer(layer: any): void {
+    this.homeCmp.setLayer(layer);
   }
 
   setCurrentPoi(id): void {

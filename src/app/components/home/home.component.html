@@ -96,13 +96,16 @@
               </ion-item>
             </ion-list>
           </ng-container>
-
-          <wm-search-box
-            *ngFor="let card of elasticSearch$|async"
-            [data]="card"
-            (clickEVT)="searchCard(card.id)"
-          >
-          </wm-search-box>
+          <ng-container *ngIf="elasticSearch$|async as elasticSearch">
+            <ng-container *ngIf="elasticSearch.length > 0; else noResult">
+              <wm-search-box
+                *ngFor="let card of elasticSearch"
+                [data]="card"
+                (clickEVT)="searchCard(card.id)"
+              >
+              </wm-search-box>
+            </ng-container>
+          </ng-container>
         </ng-container>
         <div class="pois" *ngIf="showResulType === 'pois'|| showResulType === 'all'">
           <wm-poi-box *ngFor="let c of poiCards$|async" [data]="c" (clickEVT)="setPoi(c)">
@@ -154,6 +157,11 @@
         >
         </wm-layer-box>
       </ng-container>
+    </ng-template>
+    <ng-template #noResult>
+      <ion-item lines="none">
+        <h5>{{'Spiacenti non ci sono risultati con questi criteri di ricarca.'|wmtrans}}</h5>
+      </ion-item>
     </ng-template>
   </ion-content>
 </div>

@@ -53,8 +53,8 @@ export class HomeComponent implements AfterContentInit {
   @ViewChild('searchCmp') searchCmp: SearchComponent;
 
   cards$: Observable<IHIT[]> = of([]);
-  confHOME$: Observable<IHOME[]> = this._storeConf.select(confHOME);
   confAPP$: Observable<IAPP> = this._storeConf.select(confAPP);
+  confHOME$: Observable<IHOME[]> = this._storeConf.select(confHOME);
   confPOISFilter$: Observable<any> = this._storeConf.select(confPOISFilter).pipe(
     filter(p => p != null),
     map(p => {
@@ -80,7 +80,8 @@ export class HomeComponent implements AfterContentInit {
   );
   currentLayer$ = this._storeSearch.select(apiElasticStateLayer);
   currentSearch$: BehaviorSubject<string> = new BehaviorSubject<string>('');
-
+  elasticSeachLoading$: Observable<boolean> = this._storeSearch.select(apiElasticStateLoading);
+  elasticSearch$: Observable<IHIT[]> = this._storeSearch.select(queryApi);
   filterSelected$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   filterShowed$ = this._storeSearch.select(apiElasticState).pipe(
     tap(state => {
@@ -91,12 +92,10 @@ export class HomeComponent implements AfterContentInit {
   );
   isTyping$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   poiCards$: Observable<any[]>;
-
   showResult$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('tracks');
   showSearch = true;
-  elasticSearch$: Observable<IHIT[]> = this._storeSearch.select(queryApi);
-  elasticSeachLoading$: Observable<boolean> = this._storeSearch.select(apiElasticStateLoading);
+
   constructor(
     private _storeSearch: Store<IElasticSearchRootState>,
     private _storeConf: Store<IConfRootState>,
@@ -143,17 +142,12 @@ export class HomeComponent implements AfterContentInit {
   changeResultType(event): void {
     this.showResultType$.next(event.target.value);
   }
-  setSearch(value: string): void {
-    this.currentSearch$.next(value);
-    this._storeSearch.dispatch(inputTyped({inputTyped: value}));
-    this.showResult$.next(true);
-  }
+
   goToHome(): void {
     this.setLayer(null);
     this.showResult$.next(false);
     this.setCurrentFilters([]);
     this.searchCmp.reset();
-    this._storeSearch.dispatch(setLayer(null));
     this._router.navigate([], {
       relativeTo: this._route,
       queryParams: {layer: null, filter: null},
@@ -278,6 +272,12 @@ export class HomeComponent implements AfterContentInit {
 
   setPoi(currentPoi: any): void {
     this._storeUi.dispatch(setCurrentPoi({currentPoi: currentPoi}));
+  }
+
+  setSearch(value: string): void {
+    this.currentSearch$.next(value);
+    this._storeSearch.dispatch(inputTyped({inputTyped: value}));
+    this.showResult$.next(value != '' ? true : false);
   }
 
   toggleFilter(identifier: string, idx?: number): void {

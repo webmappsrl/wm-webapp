@@ -1,7 +1,7 @@
 import {HttpClient} from '@angular/common/http';
-import {IGeojsonFeature} from 'src/app/types/model';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
+import {FeatureCollection} from 'geojson';
 import {environment} from 'src/environments/environment';
 
 @Injectable({
@@ -20,8 +20,8 @@ export class PoisService {
     }
   }
 
-  public getPois(): Observable<IGeojsonFeature> {
-    return this._http.get<IGeojsonFeature>(
+  public getPois(): Observable<FeatureCollection> {
+    return this._http.get<FeatureCollection>(
       `${environment.api}/api/v1/app/${this._geohubAppId}/pois.geojson`,
     );
   }

@@ -1,12 +1,20 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 
-import {IGeojsonFeature} from 'src/app/types/model';
 import {confFeatureKey} from './pois.reducer';
 import {confPoisIcons} from '../conf/conf.selector';
+import {FeatureCollection} from 'geojson';
 
-export const poisFeature = createFeatureSelector<IGeojsonFeature>(confFeatureKey);
+export const poisFeature = createFeatureSelector<{
+  featureCollection: FeatureCollection;
+  featureCollectionCount: number;
+  stats: {
+    [name: string]: {[identifier: string]: any};
+  };
+  where: string[] | null;
+  filters: string[] | null;
+}>(confFeatureKey);
 export const pois = createSelector(poisFeature, confPoisIcons, (state, icons) => {
-  let s = state as any;
+  let s = state.featureCollection;
   if (s != null && s.features != null && icons != null) {
     const iconKeys = Object.keys(icons);
     const features = s.features.map(f => {
@@ -26,3 +34,13 @@ export const pois = createSelector(poisFeature, confPoisIcons, (state, icons) =>
   }
   return s;
 });
+export const stats = createSelector(poisFeature, state => state.stats);
+export const featureCollectionCount = createSelector(
+  poisFeature,
+  state => state.featureCollectionCount,
+);
+export const featureCollection = createSelector(poisFeature, state => state.featureCollection);
+export const showPoisResult = createSelector(
+  poisFeature,
+  state => state.where != null || state.filters != null,
+);

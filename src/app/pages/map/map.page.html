@@ -89,7 +89,7 @@
     wmMapPois
     [wmMapPoisPoi]="currentPoiIDToMap$|async"
     [wmMapPoisPois]="pois$|async"
-    [wmMapPoisFilters]="currentFilters$|async"
+    [wmMapPoisFilters]="poiFilters$|async"
     [WmMapPoisUnselectPoi]="resetSelectedPoi$|async"
     (currentPoiEvt)="setPoi($event)"
     wmMapTrack
@@ -101,6 +101,14 @@
     (related-poi)="setCurrentRelatedPoi($event)"
     (related-poi-next)="currentPoiNextID$.next(+$event)"
   >
+    <wm-filter
+      top-right
+      #filterCmp
+      [filters]="confPOISFilter$|async"
+      [pois]="pois$|async"
+      [stats]="stats$|async"
+      (selectedFilters)="updateFilters($event)"
+    ></wm-filter>
   </wm-map>
 </ng-container>
 

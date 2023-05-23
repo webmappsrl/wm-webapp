@@ -14,7 +14,7 @@ export class PoisEffects {
       ofType(loadPois),
       switchMap(() =>
         this._poisSvc.getPois().pipe(
-          map(pois => loadPoisSuccess({pois})),
+          map(featureCollection => loadPoisSuccess({featureCollection})),
           catchError(() => of(loadPoisFail())),
         ),
       ),

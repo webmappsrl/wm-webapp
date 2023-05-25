@@ -101,14 +101,15 @@
     (related-poi)="setCurrentRelatedPoi($event)"
     (related-poi-next)="currentPoiNextID$.next(+$event)"
   >
-    <wm-filter
+    <wm-filters
       top-right
       #filterCmp
+      [confFilters]="confFILTERS$|async"
       [filters]="confPOISFilter$|async"
       [pois]="pois$|async"
       [stats]="stats$|async"
       (selectedFilters)="updateFilters($event)"
-    ></wm-filter>
+    ></wm-filters>
   </wm-map>
 </ng-container>
 

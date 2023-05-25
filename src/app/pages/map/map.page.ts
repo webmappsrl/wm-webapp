@@ -1,3 +1,4 @@
+import {confFILTERS} from './../../store/conf/conf.selector';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -77,6 +78,7 @@ export class MapPage {
       }
     }),
   );
+  confFILTERS$: Observable<any> = this._store.select(confFILTERS);
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentFilters$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);

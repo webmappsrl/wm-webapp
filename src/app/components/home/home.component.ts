@@ -22,10 +22,8 @@ import {Store} from '@ngrx/store';
 import {
   featureCollection,
   featureCollectionCount,
-  pois,
   showPoisResult,
 } from 'src/app/store/pois/pois.selector';
-import {fromHEXToColor} from 'src/app/shared/map-core/src/utils/styles';
 import {
   addActivities,
   inputTyped,
@@ -40,7 +38,7 @@ import {
   apiElasticStateLoading,
 } from 'src/app/shared/wm-core/api/api.selector';
 import {IElasticSearchRootState} from 'src/app/shared/wm-core/api/api.reducer';
-import {FilterComponent} from '../../shared/wm-core/filter/filter.component';
+import {FiltersComponent} from '../../shared/wm-core/filters/filters.component';
 import {SearchComponent} from './search/search.component';
 import {DomSanitizer} from '@angular/platform-browser';
 
@@ -55,7 +53,7 @@ export class HomeComponent implements AfterContentInit {
   private _hasPois: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   @Output() selectedFiltersEVT: EventEmitter<string[]> = new EventEmitter<string[]>();
-  @ViewChild('filterCmp') filterCmp: FilterComponent;
+  @ViewChild('filterCmp') filterCmp: FiltersComponent;
   @ViewChild('searchCmp') searchCmp: SearchComponent;
 
   cards$: Observable<IHIT[]> = of([]);

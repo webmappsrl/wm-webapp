@@ -107,7 +107,9 @@
       [confFilters]="confFILTERS$|async"
       [pois]="pois$|async"
       [poisStats]="poisStats$|async"
-      (selectedFilters)="updateFilters($event)"
+      (filterPois)="updatePoiFilters($event)"
+      (filterActivities)="updateActivityFilter($event)"
+      (removeFilterActivities)="removeActivityFilter($event)"
     ></wm-filters>
   </wm-map>
 </ng-container>

@@ -123,7 +123,7 @@
         <wm-poi-type-filter-box
           *ngIf="box.box_type === 'poi_type_filter'"
           [data]="box"
-          (clickEVT)="toggleFilter(box.identifier, idx)"
+          (clickEVT)="toggleFilter(box, idx)"
         >
         </wm-poi-type-filter-box>
         <wm-slug-box

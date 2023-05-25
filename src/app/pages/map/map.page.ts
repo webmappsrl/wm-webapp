@@ -24,6 +24,7 @@ import {HomeComponent} from 'src/app/components/home/home.component';
 import {GeohubService} from 'src/app/services/geohub.service';
 import {wmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/directives/track.related-pois.directive';
 import {IDATALAYER} from 'src/app/shared/map-core/src/types/layer';
+import {addActivities} from 'src/app/shared/wm-core/api/api.actions';
 import {apiElasticState, apiElasticStateLayer} from 'src/app/shared/wm-core/api/api.selector';
 import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
 import {IGeojsonFeature} from 'src/app/shared/wm-core/types/model';
@@ -140,6 +141,7 @@ export class MapPage {
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
   translationCallback: (any) => string = value => {
+    if (value == null) return '';
     return this._langService.instant(value);
   };
   wmMapFeatureCollectionUrl$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(
@@ -320,9 +322,15 @@ export class MapPage {
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
   }
 
-  updateFilters(filters: string[]): void {
+  updatePoiFilters(filters: string[]): void {
     this.currentFilters$.next(filters);
     this._store.dispatch(applyFilter({filters}));
+  }
+  updateActivityFilter(activities: string[]): void {
+    this.homeCmp.setActivities(activities);
+  }
+  removeActivityFilter(activity: string): void {
+    this.homeCmp.removeFilter(activity);
   }
 
   updateUrl(trackid: number): void {

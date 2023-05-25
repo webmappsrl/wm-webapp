@@ -248,7 +248,7 @@ export class HomeComponent implements AfterContentInit {
   }
 
   toggleFilter(filter: IPOITYPEFILTERBOX, idx?: number): void {
-    this.filterCmp && this.filterCmp.addFilter(filter);
+    this.filterCmp && this.filterCmp.addPoisFilter(filter);
     this.setCurrentFilters([filter.identifier]);
     this._storeSearch.dispatch(query({activities: [filter.identifier]}));
     if (idx) {

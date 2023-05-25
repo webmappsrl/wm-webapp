@@ -1,4 +1,3 @@
-import {confFILTERS} from './../../store/conf/conf.selector';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -7,6 +6,8 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {Store} from '@ngrx/store';
+import {FeatureCollection} from 'geojson';
 import {BehaviorSubject, from, merge, Observable, of} from 'rxjs';
 import {
   distinctUntilChanged,
@@ -18,33 +19,31 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators';
+import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
+import {HomeComponent} from 'src/app/components/home/home.component';
+import {GeohubService} from 'src/app/services/geohub.service';
+import {wmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/directives/track.related-pois.directive';
+import {IDATALAYER} from 'src/app/shared/map-core/src/types/layer';
+import {apiElasticState, apiElasticStateLayer} from 'src/app/shared/wm-core/api/api.selector';
+import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
+import {IGeojsonFeature} from 'src/app/shared/wm-core/types/model';
+import {IConfRootState} from 'src/app/store/conf/conf.reducer';
 import {
+  confFILTERS,
   confGeohubId,
+  confHOME,
   confJIDOUPDATETIME,
   confLANGUAGES,
   confMAP,
   confOPTIONS,
-  confHOME,
   confShowDrawTrack,
-  confPOISFilter,
 } from 'src/app/store/conf/conf.selector';
-import {UICurrentPoiId} from 'src/app/store/UI/UI.selector';
-import {wmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/directives/track.related-pois.directive';
-import {Store} from '@ngrx/store';
-import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
-import {GeohubService} from 'src/app/services/geohub.service';
-import {IDATALAYER} from 'src/app/shared/map-core/src/types/layer';
 import {applyFilter, loadPois} from 'src/app/store/pois/pois.actions';
 import {pois, stats} from 'src/app/store/pois/pois.selector';
+import {UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {environment} from 'src/environments/environment';
-import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
-import {IGeojsonFeature} from 'src/app/shared/wm-core/types/model';
-import {HomeComponent} from 'src/app/components/home/home.component';
-import {apiElasticState, apiElasticStateLayer} from 'src/app/shared/wm-core/api/api.selector';
-import {IConfRootState} from 'src/app/store/conf/conf.reducer';
-import {fromHEXToColor} from 'src/app/shared/map-core/src/utils';
-import {FeatureCollection} from 'geojson';
+
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -69,6 +68,7 @@ export class MapPage {
 
   apiElasticState$: Observable<any> = this._store.select(apiElasticState);
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
+  confFILTERS$: Observable<any> = this._store.select(confFILTERS);
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
   confJIDOUPDATETIME$: Observable<any> = this._store.select(confJIDOUPDATETIME);
   confMap$: Observable<any> = this._store.select(confMAP).pipe(
@@ -78,7 +78,6 @@ export class MapPage {
       }
     }),
   );
-  confFILTERS$: Observable<any> = this._store.select(confFILTERS);
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentFilters$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
@@ -105,7 +104,6 @@ export class MapPage {
       }
     }),
   );
-  poiFilters$: Observable<string[]>;
   leftPadding$: Observable<number>;
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   mapPrintDetails$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -129,15 +127,16 @@ export class MapPage {
       }),
     ),
   );
+  poiFilters$: Observable<string[]>;
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<FeatureCollection> = this._store.select(pois);
-  stats$: Observable<{
-    [name: string]: {[identifier: string]: any};
-  }> = this._store.select(stats);
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   resetSelectedPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
+  poisStats$: Observable<{
+    [name: string]: {[identifier: string]: any};
+  }> = this._store.select(stats);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
   translationCallback: (any) => string = value => {
@@ -145,29 +144,6 @@ export class MapPage {
   };
   wmMapFeatureCollectionUrl$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(
     null,
-  );
-  confPOISFilter$: Observable<any> = this._storeConf.select(confPOISFilter).pipe(
-    filter(p => p != null),
-    map(p => {
-      if (p.poi_type != null) {
-        let poi_type = p.poi_type.map(p => {
-          if (p.icon != null && p.color != null) {
-            const namedPoiColor = fromHEXToColor[p.color] || 'darkorange';
-            return {...p, ...{icon: p.icon.replaceAll('darkorange', namedPoiColor)}};
-          }
-          return p;
-        });
-        let res = {};
-        if (p.where) {
-          res = {where: p.where};
-        }
-        if (poi_type) {
-          res = {...res, ...{poi_type}};
-        }
-        return res;
-      }
-      return p;
-    }),
   );
 
   constructor(
@@ -314,10 +290,6 @@ export class MapPage {
       this.trackElevationChartHoverElements$.next(elements);
     }
   }
-  updateFilters(filters: string[]): void {
-    this.currentFilters$.next(filters);
-    this._store.dispatch(applyFilter({filters}));
-  }
 
   setWmMapFeatureCollectionUrl(url: any): void {
     this.wmMapFeatureCollectionUrl$.next(url);
@@ -346,6 +318,11 @@ export class MapPage {
     this.currentRelatedPoi$.next(null);
     this.wmMapTrackRelatedPoisDirective.setPoi = -1;
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
+  }
+
+  updateFilters(filters: string[]): void {
+    this.currentFilters$.next(filters);
+    this._store.dispatch(applyFilter({filters}));
   }
 
   updateUrl(trackid: number): void {

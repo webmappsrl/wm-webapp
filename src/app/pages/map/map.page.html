@@ -105,9 +105,8 @@
       top-right
       #filterCmp
       [confFilters]="confFILTERS$|async"
-      [filters]="confPOISFilter$|async"
       [pois]="pois$|async"
-      [stats]="stats$|async"
+      [poisStats]="poisStats$|async"
       (selectedFilters)="updateFilters($event)"
     ></wm-filters>
   </wm-map>

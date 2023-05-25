@@ -133,7 +133,7 @@ export class HomeComponent implements AfterContentInit {
           this.setLayer(layerBox.layer);
         } else if (params.filter != null && home[params.filter] != null) {
           const filterBox: IPOITYPEFILTERBOX = home[+params.filter] as IPOITYPEFILTERBOX;
-          this.toggleFilter(filterBox.identifier);
+          this.toggleFilter(filterBox);
         }
         if (params.slug != null && home[params.slug] != null) {
           const slugBox: ISLUGBOX = home[+params.slug] as ISLUGBOX;
@@ -247,10 +247,10 @@ export class HomeComponent implements AfterContentInit {
     this.showResultTracks$.next(value != '' ? true : false);
   }
 
-  toggleFilter(identifier: string, idx?: number): void {
-    this.filterCmp && this.filterCmp.addFilter(identifier);
-    this.setCurrentFilters([identifier]);
-    this._storeSearch.dispatch(query({activities: [identifier]}));
+  toggleFilter(filter: IPOITYPEFILTERBOX, idx?: number): void {
+    this.filterCmp && this.filterCmp.addFilter(filter);
+    this.setCurrentFilters([filter.identifier]);
+    this._storeSearch.dispatch(query({activities: [filter.identifier]}));
     if (idx) {
       this._router.navigate([], {
         relativeTo: this._route,

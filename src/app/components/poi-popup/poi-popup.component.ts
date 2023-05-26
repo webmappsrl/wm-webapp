@@ -14,7 +14,7 @@ import {IonSlides} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 
 import {IGeojsonProperties} from 'src/app/types/model';
-import {confShowEditingInline} from 'src/app/shared/wm-core/api/conf/conf.selector';
+import {confShowEditingInline} from 'src/app/shared/wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'webmapp-poi-popup',

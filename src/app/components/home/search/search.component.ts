@@ -10,8 +10,8 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime} from 'rxjs/operators';
 
 import {Store} from '@ngrx/store';
-import {IElasticSearchRootState} from 'src/app/shared/wm-core/api/api.reducer';
-import {inputTyped, query} from 'src/app/shared/wm-core/api/api.actions';
+import {IElasticSearchRootState} from 'src/app/shared/wm-core/store/api/api.reducer';
+import {inputTyped, query} from 'src/app/shared/wm-core/store/api/api.actions';
 @Component({
   selector: 'webmapp-search',
   templateUrl: './search.component.html',

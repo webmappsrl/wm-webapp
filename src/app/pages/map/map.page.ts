@@ -16,6 +16,7 @@ import {
   share,
   startWith,
   switchMap,
+  take,
   tap,
   withLatestFrom,
 } from 'rxjs/operators';
@@ -24,7 +25,10 @@ import {HomeComponent} from 'src/app/components/home/home.component';
 import {GeohubService} from 'src/app/services/geohub.service';
 import {wmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/directives/track.related-pois.directive';
 import {IDATALAYER} from 'src/app/shared/map-core/src/types/layer';
-import {apiElasticState, apiElasticStateLayer} from 'src/app/shared/wm-core/api/api.selector';
+import {
+  apiElasticState,
+  apiElasticStateLayer,
+} from 'src/app/shared/wm-core/store/api/api.selector';
 import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
 import {IGeojsonFeature} from 'src/app/shared/wm-core/types/model';
 import {
@@ -36,12 +40,13 @@ import {
   confMAP,
   confOPTIONS,
   confShowDrawTrack,
-} from 'src/app/shared/wm-core/api/conf/conf.selector';
-import {applyFilter, loadPois} from 'src/app/shared/wm-core/api/pois/pois.actions';
-import {pois, stats} from 'src/app/shared/wm-core/api/pois/pois.selector';
+} from 'src/app/shared/wm-core/store/conf/conf.selector';
+import {applyFilter, loadPois} from 'src/app/shared/wm-core/store/pois/pois.actions';
+import {pois, stats} from 'src/app/shared/wm-core/store/pois/pois.selector';
 import {UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {environment} from 'src/environments/environment';
+import {FiltersComponent} from 'src/app/shared/wm-core/filters/filters.component';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -61,6 +66,7 @@ export class MapPage {
   readonly trackColor$: BehaviorSubject<string> = new BehaviorSubject<string>('#caaf15');
   readonly trackid$: Observable<number>;
 
+  @ViewChild('filterCmp') filterCmp: FiltersComponent;
   @ViewChild(HomeComponent) homeCmp: HomeComponent;
   @ViewChild(wmMapTrackRelatedPoisDirective)
   wmMapTrackRelatedPoisDirective: wmMapTrackRelatedPoisDirective;
@@ -129,13 +135,13 @@ export class MapPage {
   poiFilters$: Observable<string[]>;
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<FeatureCollection> = this._store.select(pois);
+  poisStats$: Observable<{
+    [name: string]: {[identifier: string]: any};
+  }> = this._store.select(stats);
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   resetSelectedPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
-  poisStats$: Observable<{
-    [name: string]: {[identifier: string]: any};
-  }> = this._store.select(stats);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
   translationCallback: (any) => string = value => {
@@ -251,6 +257,10 @@ export class MapPage {
     this.reloadCustomTracks$.next(!this.reloadCustomTracks$.value ?? false);
   }
 
+  removeActivityFilter(activity: string): void {
+    this.homeCmp.removeFilter(activity);
+  }
+
   saveCurrentCustomTrack(track: any): void {
     const clonedTrack = JSON.parse(JSON.stringify(track));
     this.currentCustomTrack$.next(clonedTrack);
@@ -319,15 +329,13 @@ export class MapPage {
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
   }
 
-  updatePoiFilters(filters: string[]): void {
-    this.currentFilters$.next(filters);
-    this._store.dispatch(applyFilter({filters}));
-  }
   updateActivityFilter(activities: string[]): void {
     this.homeCmp.setActivities(activities);
   }
-  removeActivityFilter(activity: string): void {
-    this.homeCmp.removeFilter(activity);
+
+  updatePoiFilters(filters: string[]): void {
+    this.currentFilters$.next(filters);
+    this._store.dispatch(applyFilter({filters}));
   }
 
   updateUrl(trackid: number): void {

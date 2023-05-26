@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
-import {confAPP} from './shared/wm-core/api/conf/conf.selector';
+import {confAPP} from './shared/wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'webmapp-meta',

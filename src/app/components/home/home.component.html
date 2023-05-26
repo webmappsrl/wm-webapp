@@ -13,7 +13,7 @@
     (words)="setSearch($event)"
   >
   </webmapp-search>
-  <ion-grid *ngIf="showResult$|async">
+  <ion-grid *ngIf="showResultz$|async">
     <ion-row>
       <ion-col>{{'Filtri Attivi'|wmtrans}}</ion-col>
       <ion-col></ion-col>
@@ -52,21 +52,33 @@
   <ion-segment
     [value]="showResultType$|async"
     (ionChange)="changeResultType($event)"
-    *ngIf="showResult$|async"
+    *ngIf="showResultz$|async"
   >
-    <ion-segment-button value="tracks">
-      <ion-label>{{'Sentieri'|wmtrans}} {{(elasticSearch$|async).length}}</ion-label>
+    <ion-segment-button value="tracks" [disabled]="(elasticSearch$|async).length === 0">
+      <ion-label
+        >{{'Sentieri'|wmtrans}}
+        <ng-container
+          *ngIf="(elasticSearch$|async) as elasticSearch"
+          >{{elasticSearch.length>0?elasticSearch.length:''}}</ng-container
+        ></ion-label
+      >
     </ion-segment-button>
     <ion-segment-button value="pois">
-      <ion-label>{{'Punti di interesse'|wmtrans}} {{featureCollectionCount$|async}}</ion-label>
+      <ion-label
+        >{{'Punti di interesse'|wmtrans}}
+        <ng-container
+          *ngIf="featureCollectionCount$|async as count"
+          >{{count}}</ng-container
+        ></ion-label
+      >
     </ion-segment-button>
   </ion-segment>
 
   <ion-content style="--offset-top:56px; --offset-bottom:56px;" class="wm-home-cardcontainer">
-    <ng-container *ngIf="(showResult$|async);else layers">
+    <ng-container *ngIf="(showResultz$|async);else layers">
       <ng-container *ngIf="showResultType$|async as showResulType;">
         <ng-container
-          *ngIf="(showResult$|async) && showResulType === 'tracks'|| showResulType == null"
+          *ngIf="(showResultz$|async) && showResulType === 'tracks'|| showResulType == null"
         >
           <ng-container *ngIf="this.elasticSeachLoading$|async">
             <ion-list *ngFor="let idx of [1,1,1,1,1,1,1]">

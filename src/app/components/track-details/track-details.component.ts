@@ -1,4 +1,4 @@
-import {confOPTIONS} from 'src/app/shared/wm-core/api/conf/conf.selector';
+import {confOPTIONS} from 'src/app/shared/wm-core/store/conf/conf.selector';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -15,7 +15,7 @@ import {IGeojsonProperties} from 'src/app/types/model';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
 import {Store} from '@ngrx/store';
-import {confShowEditingInline} from 'src/app/shared/wm-core/api/conf/conf.selector';
+import {confShowEditingInline} from 'src/app/shared/wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'webmapp-track-details',

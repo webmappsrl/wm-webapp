@@ -1,6 +1,3 @@
-import {applyWhere, applyFilter} from 'src/app/shared/wm-core/api/pois/pois.actions';
-import {ActivatedRoute, Router} from '@angular/router';
-import {BehaviorSubject, Observable, merge, of, zip, combineLatest} from 'rxjs';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -10,36 +7,36 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {confAPP, confHOME, confPOISFilter} from 'src/app/shared/wm-core/api/conf/conf.selector';
-import {filter, map, switchMap, tap, debounceTime, withLatestFrom} from 'rxjs/operators';
-import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
-
-import {IUIRootState} from 'src/app/store/UI/UI.reducer';
-import {InnerHtmlComponent} from '../project/project.page.component';
+import {DomSanitizer} from '@angular/platform-browser';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
-import {
-  featureCollection,
-  featureCollectionCount,
-  showPoisResult,
-} from 'src/app/shared/wm-core/api/pois/pois.selector';
+import {BehaviorSubject, combineLatest, merge, Observable, of} from 'rxjs';
+import {debounceTime, filter, map, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {
   addActivities,
   inputTyped,
   query,
   removeActivities,
   setLayer,
-} from 'src/app/shared/wm-core/api/api.actions';
+} from 'src/app/shared/wm-core/store/api/api.actions';
 import {
   apiElasticState,
   apiElasticStateLayer,
-  queryApi,
   apiElasticStateLoading,
-} from 'src/app/shared/wm-core/api/api.selector';
-import {IElasticSearchRootState} from 'src/app/shared/wm-core/api/api.reducer';
+  queryApi,
+} from 'src/app/shared/wm-core/store/api/api.selector';
+import {confAPP, confHOME} from 'src/app/shared/wm-core/store/conf/conf.selector';
+import {applyFilter, applyWhere} from 'src/app/shared/wm-core/store/pois/pois.actions';
+import {
+  featureCollection,
+  featureCollectionCount,
+  showPoisResult,
+} from 'src/app/shared/wm-core/store/pois/pois.selector';
+import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
 import {FiltersComponent} from '../../shared/wm-core/filters/filters.component';
+import {InnerHtmlComponent} from '../project/project.page.component';
 import {SearchComponent} from './search/search.component';
-import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
   selector: 'webmapp-home',
@@ -58,11 +55,12 @@ export class HomeComponent implements AfterContentInit {
   cards$: Observable<IHIT[]> = of([]);
   confAPP$: Observable<IAPP> = this._store.select(confAPP);
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
-
   currentLayer$ = this._store.select(apiElasticStateLayer);
   currentSearch$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   elasticSeachLoading$: Observable<boolean> = this._store.select(apiElasticStateLoading);
   elasticSearch$: Observable<IHIT[]> = this._store.select(queryApi);
+  featureCollection$: Observable<any> = this._store.select(featureCollection);
+  featureCollectionCount$: Observable<number> = this._store.select(featureCollectionCount);
   filterSelected$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   filterShowed$ = this._store.select(apiElasticState).pipe(
     tap(state => {
@@ -73,15 +71,13 @@ export class HomeComponent implements AfterContentInit {
   );
   isTyping$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   poiCards$: Observable<any[]>;
-  showResultTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showResultPois$: Observable<boolean> = this._store.select(showPoisResult);
-  showResult$: Observable<boolean> = combineLatest([
+  showResultTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('pois');
+  showResultz$: Observable<boolean> = combineLatest([
     this.showResultTracks$,
     this.showResultPois$,
   ]).pipe(map(([a, b]) => a || b));
-  showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('pois');
-  featureCollectionCount$: Observable<number> = this._store.select(featureCollectionCount);
-  featureCollection$: Observable<any> = this._store.select(featureCollection);
 
   constructor(
     private _store: Store,
@@ -177,6 +173,11 @@ export class HomeComponent implements AfterContentInit {
     this.setLayer(null);
     this.removeLayerFilter(layer);
     this.showResultTracks$.next(false);
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams: {layer: null},
+      queryParamsHandling: 'merge',
+    });
   }
 
   removeLayerFilter(layer: any): void {

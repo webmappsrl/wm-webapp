@@ -24,11 +24,9 @@ import {HomeComponent} from 'src/app/components/home/home.component';
 import {GeohubService} from 'src/app/services/geohub.service';
 import {wmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/directives/track.related-pois.directive';
 import {IDATALAYER} from 'src/app/shared/map-core/src/types/layer';
-import {addActivities} from 'src/app/shared/wm-core/api/api.actions';
 import {apiElasticState, apiElasticStateLayer} from 'src/app/shared/wm-core/api/api.selector';
 import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
 import {IGeojsonFeature} from 'src/app/shared/wm-core/types/model';
-import {IConfRootState} from 'src/app/store/conf/conf.reducer';
 import {
   confFILTERS,
   confGeohubId,
@@ -38,9 +36,9 @@ import {
   confMAP,
   confOPTIONS,
   confShowDrawTrack,
-} from 'src/app/store/conf/conf.selector';
-import {applyFilter, loadPois} from 'src/app/store/pois/pois.actions';
-import {pois, stats} from 'src/app/store/pois/pois.selector';
+} from 'src/app/shared/wm-core/api/conf/conf.selector';
+import {applyFilter, loadPois} from 'src/app/shared/wm-core/api/pois/pois.actions';
+import {pois, stats} from 'src/app/shared/wm-core/api/pois/pois.selector';
 import {UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {environment} from 'src/environments/environment';
@@ -155,7 +153,6 @@ export class MapPage {
     private _cdr: ChangeDetectorRef,
     private _store: Store,
     private _langService: LangService,
-    private _storeConf: Store<IConfRootState>,
   ) {
     this.poiFilters$ = this.currentFilters$.pipe(
       withLatestFrom(

@@ -14,10 +14,6 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {MetaComponent} from './meta.component';
 import {WmCoreModule} from './shared/wm-core/wm-core.module';
-import {ConfEffects} from './store/conf/conf.effects';
-import {confReducer} from './store/conf/conf.reducer';
-import {PoisEffects} from './store/pois/pois.effects';
-import {poisReducer} from './store/pois/pois.reducer';
 import {UIReducer} from './store/UI/UI.reducer';
 registerLocaleData(localeIt);
 
@@ -32,13 +28,11 @@ registerLocaleData(localeIt);
     WmCoreModule,
     StoreModule.forRoot(
       {
-        conf: confReducer,
         UI: UIReducer,
-        pois: poisReducer,
       },
       {},
     ),
-    EffectsModule.forRoot([ConfEffects, PoisEffects]),
+    EffectsModule.forRoot(),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states
       logOnly: environment.production, // Restrict extension to log-only mode

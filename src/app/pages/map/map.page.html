@@ -33,7 +33,6 @@
       *ngIf="(drawTrackEnable$|async)===false;else customTrack"
       [hidden]="trackid > 0"
       class="webmapp-home"
-      (selectedFiltersEVT)="currentFilters$.next($event)"
     >
       <ion-button expand="full" *ngIf="enableDrawTrack$|async" (click)="toggleDrawTrackEnabled()">
         {{'i miei percorsi'|wmtrans}}

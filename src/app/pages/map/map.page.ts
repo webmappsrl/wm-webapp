@@ -9,28 +9,15 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Store} from '@ngrx/store';
 import {FeatureCollection} from 'geojson';
 import {BehaviorSubject, from, merge, Observable, of} from 'rxjs';
-import {
-  distinctUntilChanged,
-  filter,
-  map,
-  share,
-  startWith,
-  switchMap,
-  take,
-  tap,
-  withLatestFrom,
-} from 'rxjs/operators';
+import {distinctUntilChanged, filter, map, share, startWith, switchMap, tap} from 'rxjs/operators';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {HomeComponent} from 'src/app/components/home/home.component';
 import {GeohubService} from 'src/app/services/geohub.service';
 import {wmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/directives/track.related-pois.directive';
 import {IDATALAYER} from 'src/app/shared/map-core/src/types/layer';
-import {
-  apiElasticState,
-  apiElasticStateLayer,
-} from 'src/app/shared/wm-core/store/api/api.selector';
+import {FiltersComponent} from 'src/app/shared/wm-core/filters/filters.component';
 import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
-import {IGeojsonFeature} from 'src/app/shared/wm-core/types/model';
+import {apiElasticState, apiElasticStateLayer} from 'src/app/shared/wm-core/store/api/api.selector';
 import {
   confFILTERS,
   confGeohubId,
@@ -42,11 +29,11 @@ import {
   confShowDrawTrack,
 } from 'src/app/shared/wm-core/store/conf/conf.selector';
 import {applyFilter, loadPois} from 'src/app/shared/wm-core/store/pois/pois.actions';
-import {pois, stats} from 'src/app/shared/wm-core/store/pois/pois.selector';
+import {poiFilters, pois, stats} from 'src/app/shared/wm-core/store/pois/pois.selector';
+import {IGeojsonFeature} from 'src/app/shared/wm-core/types/model';
 import {UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {environment} from 'src/environments/environment';
-import {FiltersComponent} from 'src/app/shared/wm-core/filters/filters.component';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -85,7 +72,6 @@ export class MapPage {
   );
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
-  currentFilters$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   currentLayer$ = this._store.select(apiElasticStateLayer);
   currentPoi$: BehaviorSubject<IGeojsonFeature> = new BehaviorSubject<IGeojsonFeature | null>(null);
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
@@ -132,7 +118,7 @@ export class MapPage {
       }),
     ),
   );
-  poiFilters$: Observable<string[]>;
+  poiFilters$: Observable<string[]> = this._store.select(poiFilters);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<FeatureCollection> = this._store.select(pois);
   poisStats$: Observable<{
@@ -160,24 +146,6 @@ export class MapPage {
     private _store: Store,
     private _langService: LangService,
   ) {
-    this.poiFilters$ = this.currentFilters$.pipe(
-      withLatestFrom(
-        this.currentLayer$.pipe(
-          map(l => {
-            return l && l.taxonomy_wheres != null && l.taxonomy_wheres[0] != null
-              ? `where_${l.taxonomy_wheres[0].identifier}`
-              : null;
-          }),
-        ),
-      ),
-      map(([filters, layer]) => {
-        if (layer != null) {
-          return [layer, ...filters];
-        }
-        return filters;
-      }),
-    );
-
     if (window.innerWidth < maxWidth) {
       this.mapPadding$.next([initPadding[0], initPadding[1], initPadding[2], menuCloseLeft]);
       this.resizeEVT.next(!this.resizeEVT.value);
@@ -334,7 +302,6 @@ export class MapPage {
   }
 
   updatePoiFilters(filters: string[]): void {
-    this.currentFilters$.next(filters);
     this._store.dispatch(applyFilter({filters}));
   }
 

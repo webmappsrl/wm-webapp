@@ -46,9 +46,6 @@ import {SearchComponent} from './search/search.component';
   encapsulation: ViewEncapsulation.None,
 })
 export class HomeComponent implements AfterContentInit {
-  private _hasPois: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-
-  @Output() selectedFiltersEVT: EventEmitter<string[]> = new EventEmitter<string[]>();
   @ViewChild('filterCmp') filterCmp: FiltersComponent;
   @ViewChild('searchCmp') searchCmp: SearchComponent;
 
@@ -91,10 +88,7 @@ export class HomeComponent implements AfterContentInit {
       filter(p => p != null),
       map(p => ((p as any).features || []).map(p => (p as any).properties || [])),
     );
-    this.poiCards$ = merge(this.currentSearch$, this.filterSelected$).pipe(
-      switchMap(_ => allPois),
-      tap(f => this._hasPois.next(f != null && f.length > 0)),
-    );
+    this.poiCards$ = merge(this.currentSearch$, this.filterSelected$).pipe(switchMap(_ => allPois));
   }
 
   changeResultType(event): void {
@@ -166,7 +160,6 @@ export class HomeComponent implements AfterContentInit {
   removeFilter(identifier: string): void {
     this._store.dispatch(removeActivities({activities: [identifier]}));
     this.filterSelected$.next(this.filterSelected$.value.filter(f => f != identifier));
-    this.selectedFiltersEVT.emit(this.filterSelected$.value);
   }
 
   removeLayer(layer: any): void {
@@ -206,7 +199,6 @@ export class HomeComponent implements AfterContentInit {
 
   setCurrentFilters(filters: string[]): void {
     this.filterSelected$.next(filters);
-    this.selectedFiltersEVT.emit(filters);
   }
 
   setLayer(layer: ILAYER | null | any, idx?: number): void {
@@ -217,7 +209,6 @@ export class HomeComponent implements AfterContentInit {
       this.showResultTracks$.next(false);
       this._store.dispatch(setLayer(null));
       this._store.dispatch(applyWhere({where: null}));
-      this._store.dispatch(applyFilter({filters: null}));
     }
     if (idx) {
       this._router.navigate([], {

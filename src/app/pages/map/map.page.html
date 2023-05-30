@@ -107,9 +107,10 @@
       [pois]="pois$|async"
       [poisStats]="poisStats$|async"
       [poiFilters]="poiFilters$|async"
+      [trackFilters]="trackFilters$|async"
       (filterPoisEvt)="updatePoiFilter($event)"
-      (filterTracksEvt)="updateActivityFilter($event)"
-      (removefilterTracksEvt)="removeActivityFilter($event)"
+      (filterTracksEvt)="updateTrackFilter($event)"
+      (removefilterTracksEvt)="updateTrackFilter($event)"
       (removefilterPoiEvt)="updatePoiFilter($event)"
     ></wm-filters>
   </wm-map>

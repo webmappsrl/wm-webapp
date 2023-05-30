@@ -1,3 +1,4 @@
+import {apiTrackFilters} from './../../shared/wm-core/store/api/api.selector';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -17,9 +18,10 @@ import {wmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/direct
 import {IDATALAYER} from 'src/app/shared/map-core/src/types/layer';
 import {FiltersComponent} from 'src/app/shared/wm-core/filters/filters.component';
 import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
+import {toggleTrackFilter} from 'src/app/shared/wm-core/store/api/api.actions';
 import {
   apiElasticState,
-  apiElasticStateActivityFilters,
+  apiTrackFilter,
   apiElasticStateLayer,
 } from 'src/app/shared/wm-core/store/api/api.selector';
 import {
@@ -32,7 +34,7 @@ import {
   confOPTIONS,
   confShowDrawTrack,
 } from 'src/app/shared/wm-core/store/conf/conf.selector';
-import {loadPois, toggleFilter} from 'src/app/shared/wm-core/store/pois/pois.actions';
+import {loadPois, togglePoiFilter} from 'src/app/shared/wm-core/store/pois/pois.actions';
 import {
   poiFilterIdentifiers,
   poiFilters,
@@ -131,6 +133,7 @@ export class MapPage {
   );
   poiFilterIdentifiers$: Observable<string[]> = this._store.select(poiFilterIdentifiers);
   poiFilters$: Observable<any> = this._store.select(poiFilters);
+  trackFilters$: Observable<any> = this._store.select(apiTrackFilters);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<FeatureCollection> = this._store.select(pois);
   poisStats$: Observable<{
@@ -159,7 +162,7 @@ export class MapPage {
     private _langService: LangService,
   ) {
     this.refreshLayer$ = combineLatest(
-      this._store.select(apiElasticStateActivityFilters),
+      this._store.select(apiTrackFilter),
       this.poiFilterIdentifiers$,
     );
     if (window.innerWidth < maxWidth) {
@@ -313,12 +316,12 @@ export class MapPage {
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
   }
 
-  updateActivityFilter(activities: string[]): void {
-    this.homeCmp.setActivities(activities);
+  updateTrackFilter(filterIdentifier: string): void {
+    this._store.dispatch(toggleTrackFilter({filterIdentifier}));
   }
 
   updatePoiFilter(filterIdentifier: string): void {
-    this._store.dispatch(toggleFilter({filterIdentifier}));
+    this._store.dispatch(togglePoiFilter({filterIdentifier}));
   }
 
   updateUrl(trackid: number): void {

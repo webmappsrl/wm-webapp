@@ -27,38 +27,23 @@
           <ion-label> {{currentLayer.title|wmtrans}}</ion-label>
           <ion-icon name="close" (click)="removeLayer(currentLayer)"></ion-icon>
         </ion-chip>
-        <ng-container *ngIf="(filterShowed$|async) as filters">
-          <ion-chip outline="true" *ngFor="let filter of filters">
-            <ng-container *ngIf="filter.identifier != null;else title">
-              <ng-container *ngIf="filter.icon != null;else imgT">
-                <div appBuildSvg style="height:55%" [svg]="filter.icon"></div>
-              </ng-container>
-              <ng-template #imgT>
-                <img [src]="filter.identifier|getFilterIcn:(filterShowed$|async)" />
-              </ng-template>
-              <ion-label> {{filter.name|wmtrans}}</ion-label>
-              <ion-icon name="close" (click)="removeFilter(filter.identifier)"></ion-icon>
+        <ng-container *ngFor="let f of (trackFilters$|async)">
+          <ion-chip (click)="removeFilter(f.identifier)">
+            <ng-container *ngIf="f.icon != null">
+              <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
             </ng-container>
-            <ng-template #title>
-              <ion-label> {{filter|wmtrans}}</ion-label>
-              <ion-icon name="close" (click)="removeFilter(filter)"></ion-icon>
-            </ng-template>
+            <ion-label>{{f.name|wmtrans}}</ion-label>
           </ion-chip>
-          <ion-chip outline="true" *ngFor="let f of poiFilters$|async">
-            <ng-container *ngIf="f.identifier != null;else title">
-              <ng-container *ngIf="f.icon != null;else imgT">
-                <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
-              </ng-container>
-              <ng-template #imgT>
-                <img [src]="f.identifier|getFilterIcn:(filterShowed$|async)" />
-              </ng-template>
-              <ion-label> {{f.name|wmtrans}}</ion-label>
-              <ion-icon name="close" (click)="removeFilter(f.identifier)"></ion-icon>
+        </ng-container>
+        <ng-container *ngFor="let f of (poiFilters$|async)">
+          <ion-chip (click)="removePoiFilter(f.identifier)">
+            <ng-container *ngIf="f.icon != null;else imgT">
+              <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
             </ng-container>
-            <ng-template #title>
-              <ion-label> {{f|wmtrans}}</ion-label>
-              <ion-icon name="close" (click)="removeFilter(f)"></ion-icon>
+            <ng-template #imgT>
+              <img [src]="f.identifier" />
             </ng-template>
+            <ion-label>{{f.name|wmtrans}}</ion-label>
           </ion-chip>
         </ng-container>
       </ion-col>
@@ -145,7 +130,7 @@
         <wm-horizontal-scroll-box
           *ngIf="box.box_type === 'horizontal_scroll'"
           [data]="box"
-          (clickEVT)="setActivities([$event])"
+          (clickEVT)="setActivities($event)"
         >
         </wm-horizontal-scroll-box>
         <wm-poi-type-filter-box

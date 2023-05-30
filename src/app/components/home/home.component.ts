@@ -2,8 +2,6 @@ import {
   AfterContentInit,
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Output,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -12,22 +10,22 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, combineLatest, merge, Observable, of} from 'rxjs';
-import {debounceTime, filter, map, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {debounceTime, filter, map, switchMap, withLatestFrom} from 'rxjs/operators';
 import {
-  addActivities,
   inputTyped,
   query,
-  removeActivities,
+  resetActivities,
   setLayer,
+  toggleTrackFilter,
 } from 'src/app/shared/wm-core/store/api/api.actions';
 import {
-  apiElasticState,
   apiElasticStateLayer,
   apiElasticStateLoading,
+  apiTrackFilters,
   queryApi,
 } from 'src/app/shared/wm-core/store/api/api.selector';
 import {confAPP, confHOME} from 'src/app/shared/wm-core/store/conf/conf.selector';
-import {applyWhere} from 'src/app/shared/wm-core/store/pois/pois.actions';
+import {applyWhere, togglePoiFilter} from 'src/app/shared/wm-core/store/pois/pois.actions';
 import {
   featureCollection,
   featureCollectionCount,
@@ -60,23 +58,18 @@ export class HomeComponent implements AfterContentInit {
   featureCollection$: Observable<any> = this._store.select(featureCollection);
   featureCollectionCount$: Observable<number> = this._store.select(featureCollectionCount);
   filterSelected$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
-  filterShowed$ = this._store.select(apiElasticState).pipe(
-    tap(state => {
-      if (state.layer == null && state.activities.length === 0 && state.inputTypes === '')
-        this.showResultTracks$.next(false);
-    }),
-    map(state => state.activities),
-  );
   isTyping$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   poiCards$: Observable<any[]>;
   poiFilters$: Observable<any> = this._store.select(poiFilters);
   showResultPois$: Observable<boolean> = this._store.select(showPoisResult);
   showResultTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('pois');
+  trackFilters$: Observable<any> = this._store.select(apiTrackFilters);
   showResultz$: Observable<boolean> = combineLatest([
+    this.trackFilters$,
     this.showResultTracks$,
     this.showResultPois$,
-  ]).pipe(map(([a, b]) => a || b));
+  ]).pipe(map(([a, b, c]) => a.length > 0 || b || c));
 
   constructor(
     private _store: Store,
@@ -159,9 +152,9 @@ export class HomeComponent implements AfterContentInit {
     }
   }
 
-  removeFilter(identifier: string): void {
-    this._store.dispatch(removeActivities({activities: [identifier]}));
-    this.filterSelected$.next(this.filterSelected$.value.filter(f => f != identifier));
+  removeFilter(filterIdentifier: string): void {
+    this._store.dispatch(toggleTrackFilter({filterIdentifier}));
+    this.filterSelected$.next(this.filterSelected$.value.filter(f => f != filterIdentifier));
   }
 
   removeLayer(layer: any): void {
@@ -184,6 +177,10 @@ export class HomeComponent implements AfterContentInit {
     this.setCurrentFilters(expectedFilter);
   }
 
+  removePoiFilter(filterIdentifier: string): void {
+    this._store.dispatch(togglePoiFilter({filterIdentifier}));
+  }
+
   searchCard(id: string | number): void {
     this._router.navigate([], {
       relativeTo: this._route,
@@ -192,11 +189,9 @@ export class HomeComponent implements AfterContentInit {
     });
   }
 
-  setActivities(activities: string[]): void {
-    this._store.dispatch(addActivities({activities}));
+  setActivities(filterIdentifier: string): void {
+    this._store.dispatch(toggleTrackFilter({filterIdentifier}));
     this.showResultTracks$.next(true);
-    activities = [...this.filterSelected$.value, ...activities];
-    this.setCurrentFilters(activities);
   }
 
   setCurrentFilters(filters: string[]): void {
@@ -211,6 +206,7 @@ export class HomeComponent implements AfterContentInit {
       this.showResultTracks$.next(false);
       this._store.dispatch(setLayer(null));
       this._store.dispatch(applyWhere({where: null}));
+      this._store.dispatch(resetActivities());
     }
     if (idx) {
       this._router.navigate([], {

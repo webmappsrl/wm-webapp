@@ -83,12 +83,12 @@
     [jidoUpdateTime]="confJIDOUPDATETIME$|async"
     [wmMapLayerDataLayerUrls]="dataLayerUrls$|async"
     [wmMapLayerLayer]="currentLayer$|async"
-    [wmMapLayerRefresh]="currentFilters$|async"
+    [wmMapLayerRefresh]="refreshLayer$|async"
     (colorSelectedFromLayerEVT)="trackColor$.next($event)"
     wmMapPois
     [wmMapPoisPoi]="currentPoiIDToMap$|async"
     [wmMapPoisPois]="pois$|async"
-    [wmMapPoisFilters]="poiFilters$|async"
+    [wmMapPoisFilters]="poiFilterIdentifiers$|async"
     [WmMapPoisUnselectPoi]="resetSelectedPoi$|async"
     (currentPoiEvt)="setPoi($event)"
     wmMapTrack
@@ -106,9 +106,11 @@
       [confFilters]="confFILTERS$|async"
       [pois]="pois$|async"
       [poisStats]="poisStats$|async"
-      (filterPois)="updatePoiFilters($event)"
-      (filterActivities)="updateActivityFilter($event)"
-      (removeFilterActivities)="removeActivityFilter($event)"
+      [poiFilters]="poiFilters$|async"
+      (filterPoisEvt)="updatePoiFilter($event)"
+      (filterTracksEvt)="updateActivityFilter($event)"
+      (removefilterTracksEvt)="removeActivityFilter($event)"
+      (removefilterPoiEvt)="updatePoiFilter($event)"
     ></wm-filters>
   </wm-map>
 </ng-container>

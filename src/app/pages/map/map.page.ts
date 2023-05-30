@@ -8,7 +8,7 @@ import {
 import {ActivatedRoute, Router} from '@angular/router';
 import {Store} from '@ngrx/store';
 import {FeatureCollection} from 'geojson';
-import {BehaviorSubject, from, merge, Observable, of} from 'rxjs';
+import {BehaviorSubject, combineLatest, from, merge, Observable, of} from 'rxjs';
 import {distinctUntilChanged, filter, map, share, startWith, switchMap, tap} from 'rxjs/operators';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {HomeComponent} from 'src/app/components/home/home.component';
@@ -17,7 +17,11 @@ import {wmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/direct
 import {IDATALAYER} from 'src/app/shared/map-core/src/types/layer';
 import {FiltersComponent} from 'src/app/shared/wm-core/filters/filters.component';
 import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
-import {apiElasticState, apiElasticStateLayer} from 'src/app/shared/wm-core/store/api/api.selector';
+import {
+  apiElasticState,
+  apiElasticStateActivityFilters,
+  apiElasticStateLayer,
+} from 'src/app/shared/wm-core/store/api/api.selector';
 import {
   confFILTERS,
   confGeohubId,
@@ -28,8 +32,13 @@ import {
   confOPTIONS,
   confShowDrawTrack,
 } from 'src/app/shared/wm-core/store/conf/conf.selector';
-import {applyFilter, loadPois} from 'src/app/shared/wm-core/store/pois/pois.actions';
-import {poiFilters, pois, stats} from 'src/app/shared/wm-core/store/pois/pois.selector';
+import {loadPois, toggleFilter} from 'src/app/shared/wm-core/store/pois/pois.actions';
+import {
+  poiFilterIdentifiers,
+  poiFilters,
+  pois,
+  stats,
+} from 'src/app/shared/wm-core/store/pois/pois.selector';
 import {IGeojsonFeature} from 'src/app/shared/wm-core/types/model';
 import {UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
@@ -71,6 +80,8 @@ export class MapPage {
     }),
   );
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
+
+  refreshLayer$: Observable<any>;
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentLayer$ = this._store.select(apiElasticStateLayer);
   currentPoi$: BehaviorSubject<IGeojsonFeature> = new BehaviorSubject<IGeojsonFeature | null>(null);
@@ -118,7 +129,8 @@ export class MapPage {
       }),
     ),
   );
-  poiFilters$: Observable<string[]> = this._store.select(poiFilters);
+  poiFilterIdentifiers$: Observable<string[]> = this._store.select(poiFilterIdentifiers);
+  poiFilters$: Observable<any> = this._store.select(poiFilters);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<FeatureCollection> = this._store.select(pois);
   poisStats$: Observable<{
@@ -146,6 +158,10 @@ export class MapPage {
     private _store: Store,
     private _langService: LangService,
   ) {
+    this.refreshLayer$ = combineLatest(
+      this._store.select(apiElasticStateActivityFilters),
+      this.poiFilterIdentifiers$,
+    );
     if (window.innerWidth < maxWidth) {
       this.mapPadding$.next([initPadding[0], initPadding[1], initPadding[2], menuCloseLeft]);
       this.resizeEVT.next(!this.resizeEVT.value);
@@ -301,8 +317,8 @@ export class MapPage {
     this.homeCmp.setActivities(activities);
   }
 
-  updatePoiFilters(filters: string[]): void {
-    this._store.dispatch(applyFilter({filters}));
+  updatePoiFilter(filterIdentifier: string): void {
+    this._store.dispatch(toggleFilter({filterIdentifier}));
   }
 
   updateUrl(trackid: number): void {

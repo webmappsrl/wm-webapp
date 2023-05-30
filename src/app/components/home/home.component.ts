@@ -27,10 +27,11 @@ import {
   queryApi,
 } from 'src/app/shared/wm-core/store/api/api.selector';
 import {confAPP, confHOME} from 'src/app/shared/wm-core/store/conf/conf.selector';
-import {applyFilter, applyWhere} from 'src/app/shared/wm-core/store/pois/pois.actions';
+import {applyWhere} from 'src/app/shared/wm-core/store/pois/pois.actions';
 import {
   featureCollection,
   featureCollectionCount,
+  poiFilters,
   showPoisResult,
 } from 'src/app/shared/wm-core/store/pois/pois.selector';
 import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
@@ -68,6 +69,7 @@ export class HomeComponent implements AfterContentInit {
   );
   isTyping$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   poiCards$: Observable<any[]>;
+  poiFilters$: Observable<any> = this._store.select(poiFilters);
   showResultPois$: Observable<boolean> = this._store.select(showPoisResult);
   showResultTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('pois');

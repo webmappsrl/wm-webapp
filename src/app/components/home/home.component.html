@@ -44,6 +44,22 @@
               <ion-icon name="close" (click)="removeFilter(filter)"></ion-icon>
             </ng-template>
           </ion-chip>
+          <ion-chip outline="true" *ngFor="let f of poiFilters$|async">
+            <ng-container *ngIf="f.identifier != null;else title">
+              <ng-container *ngIf="f.icon != null;else imgT">
+                <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
+              </ng-container>
+              <ng-template #imgT>
+                <img [src]="f.identifier|getFilterIcn:(filterShowed$|async)" />
+              </ng-template>
+              <ion-label> {{f.name|wmtrans}}</ion-label>
+              <ion-icon name="close" (click)="removeFilter(f.identifier)"></ion-icon>
+            </ng-container>
+            <ng-template #title>
+              <ion-label> {{f|wmtrans}}</ion-label>
+              <ion-icon name="close" (click)="removeFilter(f)"></ion-icon>
+            </ng-template>
+          </ion-chip>
         </ng-container>
       </ion-col>
     </ion-row>

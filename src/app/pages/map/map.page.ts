@@ -1,4 +1,10 @@
-import {apiTrackFilters} from './../../shared/wm-core/store/api/api.selector';
+import {
+  apiTrackFilters,
+  poiFilterIdentifiers,
+  poiFilters,
+  pois,
+  stats,
+} from './../../shared/wm-core/store/api/api.selector';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -18,7 +24,11 @@ import {wmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/direct
 import {IDATALAYER} from 'src/app/shared/map-core/src/types/layer';
 import {FiltersComponent} from 'src/app/shared/wm-core/filters/filters.component';
 import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
-import {toggleTrackFilter} from 'src/app/shared/wm-core/store/api/api.actions';
+import {
+  loadPois,
+  togglePoiFilter,
+  toggleTrackFilter,
+} from 'src/app/shared/wm-core/store/api/api.actions';
 import {
   apiElasticState,
   apiTrackFilter,
@@ -34,13 +44,7 @@ import {
   confOPTIONS,
   confShowDrawTrack,
 } from 'src/app/shared/wm-core/store/conf/conf.selector';
-import {loadPois, togglePoiFilter} from 'src/app/shared/wm-core/store/pois/pois.actions';
-import {
-  poiFilterIdentifiers,
-  poiFilters,
-  pois,
-  stats,
-} from 'src/app/shared/wm-core/store/pois/pois.selector';
+
 import {IGeojsonFeature} from 'src/app/shared/wm-core/types/model';
 import {UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';

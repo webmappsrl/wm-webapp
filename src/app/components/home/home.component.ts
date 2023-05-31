@@ -1,4 +1,3 @@
-import {resetPoiFilters} from './../../shared/wm-core/store/pois/pois.actions';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -13,26 +12,27 @@ import {Store} from '@ngrx/store';
 import {BehaviorSubject, combineLatest, merge, Observable, of} from 'rxjs';
 import {debounceTime, filter, map, switchMap, withLatestFrom} from 'rxjs/operators';
 import {
+  applyWhere,
   inputTyped,
   query,
   resetActivities,
+  resetPoiFilters,
   setLayer,
+  togglePoiFilter,
   toggleTrackFilter,
 } from 'src/app/shared/wm-core/store/api/api.actions';
 import {
   apiElasticStateLayer,
   apiElasticStateLoading,
   apiTrackFilters,
-  queryApi,
-} from 'src/app/shared/wm-core/store/api/api.selector';
-import {confAPP, confHOME} from 'src/app/shared/wm-core/store/conf/conf.selector';
-import {applyWhere, togglePoiFilter} from 'src/app/shared/wm-core/store/pois/pois.actions';
-import {
   featureCollection,
   featureCollectionCount,
   poiFilters,
+  queryApi,
   showPoisResult,
-} from 'src/app/shared/wm-core/store/pois/pois.selector';
+} from 'src/app/shared/wm-core/store/api/api.selector';
+import {confAPP, confHOME} from 'src/app/shared/wm-core/store/conf/conf.selector';
+
 import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
 import {FiltersComponent} from '../../shared/wm-core/filters/filters.component';
 import {InnerHtmlComponent} from '../project/project.page.component';
@@ -196,7 +196,7 @@ export class HomeComponent implements AfterContentInit {
     this._store.dispatch(toggleTrackFilter({filterIdentifier}));
     this.showResultTracks$.next(true);
   }
-  
+
   setFilter(filterIdentifier: string): void {
     if (filterIdentifier.indexOf('poi_') >= 0) {
       this._store.dispatch(togglePoiFilter({filterIdentifier}));

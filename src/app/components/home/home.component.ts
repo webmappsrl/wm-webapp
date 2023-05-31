@@ -1,3 +1,4 @@
+import {resetPoiFilters} from './../../shared/wm-core/store/pois/pois.actions';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -67,9 +68,10 @@ export class HomeComponent implements AfterContentInit {
   trackFilters$: Observable<any> = this._store.select(apiTrackFilters);
   showResultz$: Observable<boolean> = combineLatest([
     this.trackFilters$,
+    this.poiFilters$,
     this.showResultTracks$,
     this.showResultPois$,
-  ]).pipe(map(([a, b, c]) => a.length > 0 || b || c));
+  ]).pipe(map(([a, b, c, d]) => a.length > 0 || b.length > 0 || c || d));
 
   constructor(
     private _store: Store,
@@ -92,6 +94,7 @@ export class HomeComponent implements AfterContentInit {
 
   goToHome(): void {
     this.setLayer(null);
+    this._store.dispatch(resetPoiFilters());
     this.showResultTracks$.next(false);
     this.setCurrentFilters([]);
     this.searchCmp.reset();
@@ -192,6 +195,14 @@ export class HomeComponent implements AfterContentInit {
   setActivities(filterIdentifier: string): void {
     this._store.dispatch(toggleTrackFilter({filterIdentifier}));
     this.showResultTracks$.next(true);
+  }
+  
+  setFilter(filterIdentifier: string): void {
+    if (filterIdentifier.indexOf('poi_') >= 0) {
+      this._store.dispatch(togglePoiFilter({filterIdentifier}));
+    } else {
+      this.setActivities(filterIdentifier);
+    }
   }
 
   setCurrentFilters(filters: string[]): void {

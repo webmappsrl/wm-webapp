@@ -82,8 +82,6 @@ export class MapPage {
     }),
   );
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
-
-  refreshLayer$: Observable<any>;
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentLayer$ = this._store.select(apiElasticStateLayer);
   currentPoi$: BehaviorSubject<IGeojsonFeature> = new BehaviorSubject<IGeojsonFeature | null>(null);
@@ -133,18 +131,19 @@ export class MapPage {
   );
   poiFilterIdentifiers$: Observable<string[]> = this._store.select(poiFilterIdentifiers);
   poiFilters$: Observable<any> = this._store.select(poiFilters);
-  trackFilters$: Observable<any> = this._store.select(apiTrackFilters);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<FeatureCollection> = this._store.select(pois);
   poisStats$: Observable<{
     [name: string]: {[identifier: string]: any};
   }> = this._store.select(stats);
+  refreshLayer$: Observable<any>;
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   resetSelectedPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
+  trackFilters$: Observable<any> = this._store.select(apiTrackFilters);
   translationCallback: (any) => string = value => {
     if (value == null) return '';
     return this._langService.instant(value);
@@ -248,6 +247,10 @@ export class MapPage {
     this.homeCmp.removeFilter(activity);
   }
 
+  resetFilters(): void {
+    this.homeCmp.goToHome();
+  }
+
   saveCurrentCustomTrack(track: any): void {
     const clonedTrack = JSON.parse(JSON.stringify(track));
     this.currentCustomTrack$.next(clonedTrack);
@@ -316,12 +319,12 @@ export class MapPage {
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
   }
 
-  updateTrackFilter(filterIdentifier: string): void {
-    this._store.dispatch(toggleTrackFilter({filterIdentifier}));
-  }
-
   updatePoiFilter(filterIdentifier: string): void {
     this._store.dispatch(togglePoiFilter({filterIdentifier}));
+  }
+
+  updateTrackFilter(filterIdentifier: string): void {
+    this._store.dispatch(toggleTrackFilter({filterIdentifier}));
   }
 
   updateUrl(trackid: number): void {

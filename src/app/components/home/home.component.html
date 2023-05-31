@@ -130,7 +130,7 @@
         <wm-horizontal-scroll-box
           *ngIf="box.box_type === 'horizontal_scroll'"
           [data]="box"
-          (clickEVT)="setActivities($event)"
+          (clickEVT)="setFilter($event)"
         >
         </wm-horizontal-scroll-box>
         <wm-poi-type-filter-box

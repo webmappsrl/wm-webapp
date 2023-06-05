@@ -35,6 +35,7 @@
             <ion-label>{{f.name|wmtrans}}</ion-label>
           </ion-chip>
         </ng-container>
+
         <ng-container *ngFor="let f of (poiFilters$|async)">
           <ion-chip (click)="removePoiFilter(f.identifier)">
             <ng-container *ngIf="f.icon != null;else imgT">
@@ -107,7 +108,7 @@
           <ng-container *ngIf="elasticSearch$|async as elasticSearch">
             <ng-container *ngIf="elasticSearch.length > 0; else noResult">
               <wm-search-box
-                *ngFor="let card of elasticSearch"
+                *ngFor="let card of elasticSearch|slice:0:200"
                 [data]="card"
                 (clickEVT)="searchCard(card.id)"
               >

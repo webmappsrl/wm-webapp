@@ -21,7 +21,7 @@ import {distinctUntilChanged, filter, map, share, startWith, switchMap, tap} fro
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {HomeComponent} from 'src/app/components/home/home.component';
 import {GeohubService} from 'src/app/services/geohub.service';
-import {wmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/directives/track.related-pois.directive';
+import {WmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/directives/track.related-pois.directive';
 import {IDATALAYER} from 'src/app/shared/map-core/src/types/layer';
 import {FiltersComponent} from 'src/app/shared/wm-core/filters/filters.component';
 import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
@@ -71,8 +71,8 @@ export class MapPage {
 
   @ViewChild('filterCmp') filterCmp: FiltersComponent;
   @ViewChild(HomeComponent) homeCmp: HomeComponent;
-  @ViewChild(wmMapTrackRelatedPoisDirective)
-  wmMapTrackRelatedPoisDirective: wmMapTrackRelatedPoisDirective;
+  @ViewChild(WmMapTrackRelatedPoisDirective)
+  WmMapTrackRelatedPoisDirective: WmMapTrackRelatedPoisDirective;
 
   apiElasticState$: Observable<any> = this._store.select(apiElasticState);
   apiSearchInputTyped$: Observable<string> = this._store.select(apiSearchInputTyped);
@@ -121,8 +121,8 @@ export class MapPage {
       distinctUntilChanged(),
       map(p => {
         if (p == null) return null;
-        if (this.wmMapTrackRelatedPoisDirective) {
-          this.wmMapTrackRelatedPoisDirective.setPoi = -1;
+        if (this.WmMapTrackRelatedPoisDirective) {
+          this.WmMapTrackRelatedPoisDirective.setPoi = -1;
         }
         return p;
       }),
@@ -220,11 +220,11 @@ export class MapPage {
   }
 
   next(): void {
-    this.wmMapTrackRelatedPoisDirective.poiNext();
+    this.WmMapTrackRelatedPoisDirective.poiNext();
   }
 
   prev(): void {
-    this.wmMapTrackRelatedPoisDirective.poiPrev();
+    this.WmMapTrackRelatedPoisDirective.poiPrev();
   }
 
   printPage() {
@@ -280,7 +280,7 @@ export class MapPage {
   setCurrentRelatedPoi(poi: IGeojsonFeature | null | number): void {
     if (poi != null && poi != -1) {
       this.currentRelatedPoi$.next(poi as IGeojsonFeature);
-      this.wmMapTrackRelatedPoisDirective.setPoi = (poi as any).id as number;
+      this.WmMapTrackRelatedPoisDirective.setPoi = (poi as any).id as number;
     }
   }
 
@@ -321,7 +321,7 @@ export class MapPage {
   unselectPOI(): void {
     this.currentPoi$.next(null);
     this.currentRelatedPoi$.next(null);
-    this.wmMapTrackRelatedPoisDirective.setPoi = -1;
+    this.WmMapTrackRelatedPoisDirective.setPoi = -1;
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
   }
 

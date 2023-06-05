@@ -33,7 +33,6 @@
       *ngIf="(drawTrackEnable$|async)===false;else customTrack"
       [hidden]="trackid > 0"
       class="webmapp-home"
-      (selectedFiltersEVT)="currentFilters$.next($event)"
     >
       <ion-button expand="full" *ngIf="enableDrawTrack$|async" (click)="toggleDrawTrackEnabled()">
         {{'i miei percorsi'|wmtrans}}
@@ -65,8 +64,16 @@
     #wmap
     [wmMapConf]="confMap$|async"
     [wmMapPadding]="mapPadding$|async"
+    [wmMapFilters]="apiElasticState$|async"
+    [wmMapTranslationCallback]="translationCallback"
+    (wmMapOverlayEVT$)="setWmMapFeatureCollectionUrl($event)"
     [wmMapOverlay]="(enableOverLay$|async)"
     [wmMapOverlayUrl]="'https://geohub.webmapp.it/api/taxonomy/where/geojson/13'"
+    [wmMapFeatureTranslationCallback]="translationCallback"
+    [wmMapFeatureCollection]="(wmMapFeatureCollectionUrl$|async)!= null"
+    [wmMapFeatureCollectionUrl]="wmMapFeatureCollectionUrl$|async"
+    [wmMapFeatureCollection]="false"
+    (wmMapFeatureCollectionLayerSelected)="selectedLayer($event)"
     wmMapCustomTracks
     [wmMapCustomTrackDrawTrack]="drawTrackEnable$|async"
     [wmMapCustomTrackDrawTrackHost]="graphhopperHost$|async"
@@ -76,12 +83,13 @@
     [jidoUpdateTime]="confJIDOUPDATETIME$|async"
     [wmMapLayerDataLayerUrls]="dataLayerUrls$|async"
     [wmMapLayerLayer]="currentLayer$|async"
-    [wmMapLayerDisableLayers]="(currentFilters$|async).length > 0"
+    [wmMapLayerRefresh]="refreshLayer$|async"
     (colorSelectedFromLayerEVT)="trackColor$.next($event)"
     wmMapPois
+    [wmMapInputTyped]="apiSearchInputTyped$|async"
     [wmMapPoisPoi]="currentPoiIDToMap$|async"
     [wmMapPoisPois]="pois$|async"
-    [wmMapPoisFilters]="currentFilters$|async"
+    [wmMapPoisFilters]="poiFilterIdentifiers$|async"
     [WmMapPoisUnselectPoi]="resetSelectedPoi$|async"
     (currentPoiEvt)="setPoi($event)"
     wmMapTrack
@@ -93,6 +101,20 @@
     (related-poi)="setCurrentRelatedPoi($event)"
     (related-poi-next)="currentPoiNextID$.next(+$event)"
   >
+    <wm-filters
+      top-right
+      #filterCmp
+      [confFilters]="confFILTERS$|async"
+      [pois]="pois$|async"
+      [poisStats]="poisStats$|async"
+      [poiFilters]="poiFilters$|async"
+      [trackFilters]="selectedTrackFilters$|async"
+      (filterPoisEvt)="updatePoiFilter($event)"
+      (filterTracksEvt)="updateTrackFilter($event)"
+      (removefilterTracksEvt)="updateTrackFilter($event)"
+      (removefilterPoiEvt)="updatePoiFilter($event)"
+      (resetFiltersEvt)="resetFilters()"
+    ></wm-filters>
   </wm-map>
 </ng-container>
 

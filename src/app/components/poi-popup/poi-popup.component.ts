@@ -13,8 +13,8 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {IonSlides} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 
-import {confShowEditingInline} from 'src/app/store/conf/conf.selector';
 import {IGeojsonProperties} from 'src/app/types/model';
+import {confShowEditingInline} from 'src/app/shared/wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'webmapp-poi-popup',

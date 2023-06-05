@@ -10,8 +10,8 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {debounceTime} from 'rxjs/operators';
 
 import {Store} from '@ngrx/store';
-import {IElasticSearchRootState} from 'src/app/shared/wm-core/api/api.reducer';
-import {query} from 'src/app/shared/wm-core/api/api.actions';
+import {ApiRootState} from 'src/app/shared/wm-core/store/api/api.reducer';
+import {inputTyped, query} from 'src/app/shared/wm-core/store/api/api.actions';
 @Component({
   selector: 'webmapp-search',
   templateUrl: './search.component.html',
@@ -21,12 +21,6 @@ import {query} from 'src/app/shared/wm-core/api/api.actions';
 })
 export class SearchComponent {
   private _currentLayer: number;
-
-  @Input('currentLayer') set setCurrentLayer(layer: ILAYER) {
-    if (layer != null && layer.id != null) {
-      this._currentLayer = +layer.id;
-    }
-  }
 
   @Input('initSearch') public set setSearch(init: string) {
     this.searchForm.controls.search.setValue(init);
@@ -38,18 +32,14 @@ export class SearchComponent {
 
   public searchForm: FormGroup;
 
-  constructor(fb: FormBuilder, store: Store<IElasticSearchRootState>) {
+  constructor(fb: FormBuilder, store: Store<ApiRootState>) {
     this.searchForm = fb.group({
       search: [''],
     });
 
     this.searchForm.valueChanges.pipe(debounceTime(500)).subscribe(words => {
       if (words && words.search != null && words.search !== '') {
-        if (this._currentLayer != null) {
-          store.dispatch(query({layer: this._currentLayer, inputTyped: words.search}));
-        } else {
-          store.dispatch(query({inputTyped: words.search}));
-        }
+        store.dispatch(inputTyped({inputTyped: words.search}));
         this.isTypingsEVT.emit(true);
         this.wordsEVT.emit(words.search);
       } else {

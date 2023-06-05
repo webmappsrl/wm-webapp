@@ -1,8 +1,7 @@
 import {Component} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
-import {IConfRootState} from './store/conf/conf.reducer';
-import {confAPP} from './store/conf/conf.selector';
+import {confAPP} from './shared/wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'webmapp-meta',
@@ -31,5 +30,5 @@ import {confAPP} from './store/conf/conf.selector';
 })
 export class MetaComponent {
   APP$: Observable<any> = this._store.select(confAPP);
-  constructor(private _store: Store<IConfRootState>) {}
+  constructor(private _store: Store<any>) {}
 }

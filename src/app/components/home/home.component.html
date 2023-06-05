@@ -27,7 +27,7 @@
           <ion-label> {{currentLayer.title|wmtrans}}</ion-label>
           <ion-icon name="close" (click)="removeLayer(currentLayer)"></ion-icon>
         </ion-chip>
-        <ng-container *ngFor="let f of (trackFilters$|async)">
+        <ng-container *ngFor="let f of (selectedTrackFilters$|async)">
           <ion-chip (click)="removeFilter(f.identifier)">
             <ng-container *ngIf="f.icon != null">
               <div appBuildSvg style="height:55%" [svg]="f.icon"></div>

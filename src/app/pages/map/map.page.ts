@@ -75,7 +75,7 @@ export class MapPage {
   wmMapTrackRelatedPoisDirective: wmMapTrackRelatedPoisDirective;
 
   apiElasticState$: Observable<any> = this._store.select(apiElasticState);
-  apiSearchInputTyped$: Observable<string> = this._store.select(apiSearchInputTyped)
+  apiSearchInputTyped$: Observable<string> = this._store.select(apiSearchInputTyped);
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
   confFILTERS$: Observable<any> = this._store.select(confFILTERS);
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
@@ -149,7 +149,7 @@ export class MapPage {
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
-  trackFilters$: Observable<any> = this._store.select(apiTrackFilters);
+  selectedTrackFilters$: Observable<any> = this._store.select(apiTrackFilters);
   translationCallback: (any) => string = value => {
     if (value == null) return '';
     return this._langService.instant(value);

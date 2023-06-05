@@ -62,12 +62,12 @@ export class HomeComponent implements AfterContentInit {
   isTyping$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   poiCards$: Observable<any[]>;
   poiFilters$: Observable<any> = this._store.select(poiFilters);
+  selectedTrackFilters$: Observable<any> = this._store.select(apiTrackFilters);
   showResultPois$: Observable<boolean> = this._store.select(showPoisResult);
   showResultTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('pois');
-  trackFilters$: Observable<any> = this._store.select(apiTrackFilters);
   showResultz$: Observable<boolean> = combineLatest([
-    this.trackFilters$,
+    this.selectedTrackFilters$,
     this.poiFilters$,
     this.showResultTracks$,
     this.showResultPois$,
@@ -197,16 +197,17 @@ export class HomeComponent implements AfterContentInit {
     this.showResultTracks$.next(true);
   }
 
+  setCurrentFilters(filters: string[]): void {
+    this.filterSelected$.next(filters);
+  }
+
   setFilter(filterIdentifier: string): void {
+    if (filterIdentifier == null) return;
     if (filterIdentifier.indexOf('poi_') >= 0) {
       this._store.dispatch(togglePoiFilter({filterIdentifier}));
     } else {
       this.setActivities(filterIdentifier);
     }
-  }
-
-  setCurrentFilters(filters: string[]): void {
-    this.filterSelected$.next(filters);
   }
 
   setLayer(layer: ILAYER | null | any, idx?: number): void {

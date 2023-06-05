@@ -108,7 +108,7 @@
       [pois]="pois$|async"
       [poisStats]="poisStats$|async"
       [poiFilters]="poiFilters$|async"
-      [trackFilters]="trackFilters$|async"
+      [trackFilters]="selectedTrackFilters$|async"
       (filterPoisEvt)="updatePoiFilter($event)"
       (filterTracksEvt)="updateTrackFilter($event)"
       (removefilterTracksEvt)="updateTrackFilter($event)"

@@ -86,6 +86,7 @@
     [wmMapLayerRefresh]="refreshLayer$|async"
     (colorSelectedFromLayerEVT)="trackColor$.next($event)"
     wmMapPois
+    [wmMapInputTyped]="apiSearchInputTyped$|async"
     [wmMapPoisPoi]="currentPoiIDToMap$|async"
     [wmMapPoisPois]="pois$|async"
     [wmMapPoisFilters]="poiFilterIdentifiers$|async"

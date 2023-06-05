@@ -1,4 +1,5 @@
 import {
+  apiSearchInputTyped,
   apiTrackFilters,
   poiFilterIdentifiers,
   poiFilters,
@@ -74,6 +75,7 @@ export class MapPage {
   wmMapTrackRelatedPoisDirective: wmMapTrackRelatedPoisDirective;
 
   apiElasticState$: Observable<any> = this._store.select(apiElasticState);
+  apiSearchInputTyped$: Observable<string> = this._store.select(apiSearchInputTyped)
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
   confFILTERS$: Observable<any> = this._store.select(confFILTERS);
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);

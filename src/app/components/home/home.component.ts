@@ -30,6 +30,7 @@ import {
   poiFilters,
   queryApi,
   showPoisResult,
+  showResult,
 } from 'src/app/shared/wm-core/store/api/api.selector';
 import {confAPP, confHOME} from 'src/app/shared/wm-core/store/conf/conf.selector';
 
@@ -63,15 +64,8 @@ export class HomeComponent implements AfterContentInit {
   poiCards$: Observable<any[]>;
   poiFilters$: Observable<any> = this._store.select(poiFilters);
   selectedTrackFilters$: Observable<any> = this._store.select(apiTrackFilters);
-  showResultPois$: Observable<boolean> = this._store.select(showPoisResult);
-  showResultTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  showResult$ = this._store.select(showResult);
   showResultType$: BehaviorSubject<string> = new BehaviorSubject<string>('pois');
-  showResultz$: Observable<boolean> = combineLatest([
-    this.selectedTrackFilters$,
-    this.poiFilters$,
-    this.showResultTracks$,
-    this.showResultPois$,
-  ]).pipe(map(([a, b, c, d]) => a.length > 0 || b.length > 0 || c || d));
 
   constructor(
     private _store: Store,
@@ -95,7 +89,6 @@ export class HomeComponent implements AfterContentInit {
   goToHome(): void {
     this.setLayer(null);
     this._store.dispatch(resetPoiFilters());
-    this.showResultTracks$.next(false);
     this.setCurrentFilters([]);
     this.searchCmp.reset();
     this._router.navigate([], {
@@ -163,7 +156,6 @@ export class HomeComponent implements AfterContentInit {
   removeLayer(layer: any): void {
     this.setLayer(null);
     this.removeLayerFilter(layer);
-    this.showResultTracks$.next(false);
     this._router.navigate([], {
       relativeTo: this._route,
       queryParams: {layer: null},
@@ -194,7 +186,6 @@ export class HomeComponent implements AfterContentInit {
 
   setActivities(filterIdentifier: string): void {
     this._store.dispatch(toggleTrackFilter({filterIdentifier}));
-    this.showResultTracks$.next(true);
   }
 
   setCurrentFilters(filters: string[]): void {
@@ -213,9 +204,7 @@ export class HomeComponent implements AfterContentInit {
   setLayer(layer: ILAYER | null | any, idx?: number): void {
     if (layer != null && layer.id != null) {
       this._store.dispatch(setLayer({layer}));
-      this.showResultTracks$.next(true);
     } else {
-      this.showResultTracks$.next(false);
       this._store.dispatch(setLayer(null));
       this._store.dispatch(applyWhere({where: null}));
       this._store.dispatch(resetActivities());
@@ -243,7 +232,6 @@ export class HomeComponent implements AfterContentInit {
   setSearch(value: string): void {
     this.currentSearch$.next(value);
     this._store.dispatch(inputTyped({inputTyped: value}));
-    this.showResultTracks$.next(value != '' ? true : false);
   }
 
   toggleFilter(filter: IPOITYPEFILTERBOX, idx?: number): void {

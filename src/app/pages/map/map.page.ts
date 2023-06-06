@@ -69,10 +69,10 @@ export class MapPage {
   readonly trackColor$: BehaviorSubject<string> = new BehaviorSubject<string>('#caaf15');
   readonly trackid$: Observable<number>;
 
-  @ViewChild('filterCmp') filterCmp: FiltersComponent;
-  @ViewChild(HomeComponent) homeCmp: HomeComponent;
   @ViewChild(WmMapTrackRelatedPoisDirective)
   WmMapTrackRelatedPoisDirective: WmMapTrackRelatedPoisDirective;
+  @ViewChild('filterCmp') filterCmp: FiltersComponent;
+  @ViewChild(HomeComponent) homeCmp: HomeComponent;
 
   apiElasticState$: Observable<any> = this._store.select(apiElasticState);
   apiSearchInputTyped$: Observable<string> = this._store.select(apiSearchInputTyped);
@@ -146,10 +146,10 @@ export class MapPage {
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   resetSelectedPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  selectedTrackFilters$: Observable<any> = this._store.select(apiTrackFilters);
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
-  selectedTrackFilters$: Observable<any> = this._store.select(apiTrackFilters);
   translationCallback: (any) => string = value => {
     if (value == null) return '';
     return this._langService.instant(value);

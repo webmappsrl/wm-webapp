@@ -56,11 +56,11 @@
     (ionChange)="changeResultType($event)"
     *ngIf="showResult$|async"
   >
-    <ion-segment-button value="tracks" [disabled]="(elasticSearch$|async).length === 0">
+    <ion-segment-button value="tracks" [disabled]="(elasticSearchTracks$|async).length === 0">
       <ion-label
         >{{'Sentieri'|wmtrans}}
         <ng-container
-          *ngIf="(elasticSearch$|async) as elasticSearch"
+          *ngIf="(elasticSearchTracks$|async) as elasticSearch"
           >{{elasticSearch.length>0?elasticSearch.length:''}}</ng-container
         ></ion-label
       >
@@ -69,7 +69,7 @@
       <ion-label
         >{{'Punti di interesse'|wmtrans}}
         <ng-container
-          *ngIf="featureCollectionCount$|async as count"
+          *ngIf="poiFeatureCollectionCount$|async as count"
           >{{count}}</ng-container
         ></ion-label
       >
@@ -105,7 +105,7 @@
               </ion-item>
             </ion-list>
           </ng-container>
-          <ng-container *ngIf="elasticSearch$|async as elasticSearch">
+          <ng-container *ngIf="elasticSearchTracks$|async as elasticSearch">
             <ng-container *ngIf="elasticSearch.length > 0; else noResult">
               <wm-search-box
                 *ngFor="let card of elasticSearch|slice:0:200"

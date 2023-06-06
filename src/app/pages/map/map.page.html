@@ -69,7 +69,6 @@
     (wmMapOverlayEVT$)="setWmMapFeatureCollectionUrl($event)"
     [wmMapOverlay]="(enableOverLay$|async)"
     [wmMapOverlayUrl]="'https://geohub.webmapp.it/api/taxonomy/where/geojson/13'"
-    [wmMapFeatureTranslationCallback]="translationCallback"
     [wmMapFeatureCollection]="(wmMapFeatureCollectionUrl$|async)!= null"
     [wmMapFeatureCollectionUrl]="wmMapFeatureCollectionUrl$|async"
     (wmMapFeatureCollectionLayerSelected)="selectedLayer($event)"

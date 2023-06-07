@@ -6,111 +6,34 @@
     </ion-item>
   </ng-container>
 
-  <webmapp-search
-    #searchCmp
-    [initSearch]="''"
-    (isTypings)="isTyping$.next($event)"
-    (words)="setSearch($event)"
-  >
-  </webmapp-search>
+  <webmapp-search #searchCmp [initSearch]="''" (words)="setSearch($event)"> </webmapp-search>
   <wm-status-filter
     *ngIf="showResult$|async"
     [layer]="currentLayer$|async"
-    [trackFilters]="(selectedTrackFilters$|async)"
+    [trackFilters]="(trackFilters$|async)"
     [poiFilters]=" (poiFilters$|async)"
     (resetFiltersEVT)="goToHome()"
     (removeLayerEVT)="removeLayer($event)"
     (removeTrackFilterEVT)="removeFilter($event)"
     (removePoiFilterEVT)="removePoiFilter($event)"
   ></wm-status-filter>
-
-  <ion-segment
-    [value]="showResultType$|async"
-    (ionChange)="changeResultType($event)"
-    *ngIf="showResult$|async"
-  >
-    <ion-segment-button value="tracks" [disabled]="(elasticSearchTracks$|async).length === 0">
-      <ion-label
-        >{{'Sentieri'|wmtrans}}
-        <ng-container
-          *ngIf="(elasticSearchTracks$|async) as elasticSearch"
-          >{{elasticSearch.length>0?elasticSearch.length:''}}</ng-container
-        ></ion-label
-      >
-    </ion-segment-button>
-    <ion-segment-button value="pois">
-      <ion-label
-        >{{'Punti di interesse'|wmtrans}}
-        <ng-container
-          *ngIf="poiFeatureCollectionCount$|async as count"
-          >{{count}}</ng-container
-        ></ion-label
-      >
-    </ion-segment-button>
-  </ion-segment>
-
-  <ion-content style="--offset-top:56px; --offset-bottom:56px;" class="wm-home-cardcontainer">
-    <ng-container *ngIf="(showResult$|async);else home">
-      <ng-container *ngIf="showResultType$|async as showResulType;">
-        <ng-container
-          *ngIf="(showResult$|async) && showResulType === 'tracks'|| showResulType == null"
-        >
-          <ng-container *ngIf="this.elasticSeachLoading$|async">
-            <ion-list *ngFor="let idx of [1,1,1,1,1,1,1]">
-              <ion-list-header>
-                <ion-skeleton-text [animated]="true" style="width: 80px"></ion-skeleton-text>
-              </ion-list-header>
-              <ion-item>
-                <ion-thumbnail slot="start">
-                  <ion-skeleton-text [animated]="true"></ion-skeleton-text>
-                </ion-thumbnail>
-                <ion-label>
-                  <h3>
-                    <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
-                  </h3>
-                  <p>
-                    <ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text>
-                  </p>
-                  <p>
-                    <ion-skeleton-text [animated]="true" style="width: 30%;"></ion-skeleton-text>
-                  </p>
-                </ion-label>
-              </ion-item>
-            </ion-list>
-          </ng-container>
-          <ng-container *ngIf="elasticSearchTracks$|async as elasticSearch">
-            <ng-container *ngIf="elasticSearch.length > 0; else noResult">
-              <wm-search-box
-                *ngFor="let card of elasticSearch|slice:0:200"
-                [data]="card"
-                (clickEVT)="searchCard(card.id)"
-              >
-              </wm-search-box>
-            </ng-container>
-          </ng-container>
-        </ng-container>
-        <div class="pois" *ngIf="showResulType === 'pois'|| showResulType === 'all'">
-          <wm-poi-box *ngFor="let c of poiCards$|async" [data]="c" (clickEVT)="setPoi(c)">
-          </wm-poi-box>
-        </div>
-      </ng-container>
-    </ng-container>
-
-    <ng-template #home>
-      <wm-home
-        [conf]="confHOME$|async"
-        (horizontalScrollBoxEVT)="setFilter($event)"
-        (poiTypeFilterBoxEVT)="toggleFilter($event[0],$event[1])"
-        (slugBoxEVT)="openSlug($event[0],$event[1])"
-        (externalUrlBoxEVT)="openExternalUrl($event)"
-        (tracksBoxEVT)="searchCard($event)"
-        (layerBoxEVT)="setLayer($event[0],$event[1])"
-      ></wm-home>
-    </ng-template>
-    <ng-template #noResult>
-      <ion-item lines="none">
-        <h5>{{'Spiacenti non ci sono risultati con questi criteri di ricarca.'|wmtrans}}</h5>
-      </ion-item>
-    </ng-template>
-  </ion-content>
+  <wm-home-result
+    *ngIf="showResult$|async;else home"
+    [tracks]="(tracks$|async)"
+    [loadingTracks]="trackLoading$|async"
+    [pois]="(pois$|async)"
+    (trackEVT)="setTrack($event)"
+    (poiEVT)="setPoi($event)"
+  ></wm-home-result>
+  <ng-template #home>
+    <wm-home
+      [conf]="confHOME$|async"
+      (horizontalScrollBoxEVT)="setFilter($event)"
+      (poiTypeFilterBoxEVT)="toggleFilter($event[0],$event[1])"
+      (slugBoxEVT)="openSlug($event[0],$event[1])"
+      (externalUrlBoxEVT)="openExternalUrl($event)"
+      (tracksBoxEVT)="setTrack($event)"
+      (layerBoxEVT)="setLayer($event[0],$event[1])"
+    ></wm-home>
+  </ng-template>
 </div>

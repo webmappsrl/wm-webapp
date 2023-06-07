@@ -16,6 +16,7 @@ import {
 })
 export class ImageModalComponent {
   @Input('showArrows') public showArrow = false;
+  @Input() caption: string;
   @Output() public closeEVT: EventEmitter<void> = new EventEmitter<void>();
   @Output() public nextEVT: EventEmitter<void> = new EventEmitter<void>();
   @Output() public prevEVT: EventEmitter<void> = new EventEmitter<void>();

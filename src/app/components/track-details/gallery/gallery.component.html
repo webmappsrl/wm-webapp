@@ -4,6 +4,7 @@
   *ngIf="(currentImage$|async) as currentImage"
   [image]="currentImage.url !=null? currentImage.url:defaultPhotoPath"
   [showArrows]="true"
+  [caption]="currentImage.caption"
   (closeEVT)="close()"
   (nextEVT)="next()"
   (prevEVT)="prev()"

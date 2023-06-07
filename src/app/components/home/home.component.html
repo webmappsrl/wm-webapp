@@ -119,12 +119,12 @@
           (clickEVT)="openSlug(box.slug,idx)"
         >
         </wm-slug-box>
-        <webmapp-box
+        <wm-box
           *ngIf="box.box_type === 'external_url'"
           [data]="box"
           (clickEVT)="openExternalUrl(box.url)"
         >
-        </webmapp-box>
+        </wm-box>
 
         <webmapp-tracks-box
           *ngIf="box.box_type === 'base'"

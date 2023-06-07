@@ -13,43 +13,16 @@
     (words)="setSearch($event)"
   >
   </webmapp-search>
-  <ion-grid *ngIf="showResult$|async">
-    <ion-row>
-      <ion-col>{{'Filtri Attivi'|wmtrans}}</ion-col>
-      <ion-col></ion-col>
-      <ion-col size="auto">
-        <ion-chip [outline]="true" (click)="goToHome()">Torna alla home</ion-chip>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col class="chip-list">
-        <ion-chip outline="true" *ngIf="(currentLayer$|async) as currentLayer">
-          <ion-label> {{currentLayer.title|wmtrans}}</ion-label>
-          <ion-icon name="close" (click)="removeLayer(currentLayer)"></ion-icon>
-        </ion-chip>
-        <ng-container *ngFor="let f of (selectedTrackFilters$|async)">
-          <ion-chip (click)="removeFilter(f.identifier)">
-            <ng-container *ngIf="f.icon != null">
-              <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
-            </ng-container>
-            <ion-label>{{f.name|wmtrans}}</ion-label>
-          </ion-chip>
-        </ng-container>
-
-        <ng-container *ngFor="let f of (poiFilters$|async)">
-          <ion-chip (click)="removePoiFilter(f.identifier)">
-            <ng-container *ngIf="f.icon != null;else imgT">
-              <div appBuildSvg style="height:55%" [svg]="f.icon"></div>
-            </ng-container>
-            <ng-template #imgT>
-              <img [src]="f.identifier" />
-            </ng-template>
-            <ion-label>{{f.name|wmtrans}}</ion-label>
-          </ion-chip>
-        </ng-container>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <wm-status-filter
+    *ngIf="showResult$|async"
+    [layer]="currentLayer$|async"
+    [trackFilters]="(selectedTrackFilters$|async)"
+    [poiFilters]=" (poiFilters$|async)"
+    (resetFiltersEVT)="goToHome()"
+    (removeLayerEVT)="removeLayer($event)"
+    (removeTrackFilterEVT)="removeFilter($event)"
+    (removePoiFilterEVT)="removePoiFilter($event)"
+  ></wm-status-filter>
 
   <ion-segment
     [value]="showResultType$|async"

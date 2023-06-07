@@ -20,12 +20,17 @@
       class="webmapp-track-details"
     >
       <ng-container *ngIf="(confOPTIONS$|async) as opt">
-        <ion-button
-          id="open-print-modal"
-          expand="block"
-          *ngIf="opt.print_track_enable!= null && opt.print_track_enable=== true"
-          >{{'stampa'|wmtrans}}</ion-button
+        <ion-item
+        *ngIf="opt.print_track_enable != null && opt.print_track_enable === true"
+        [href]="'https://geohub.webmapp.it/track/pdf/'+trackid+'/?app_id='+(geohubId$|async)"
+        class="webmapp-track-download-urls-item"
+        target="_blank"
         >
+        <ion-icon class="wm-icn icon-link" slot="start"></ion-icon>
+        <ion-label class="webmapp-track-download-urls-item-label">
+        {{"apri pdf"|wmtrans}}
+        </ion-label>
+        </ion-item>  
       </ng-container>
     </webmapp-track-details>
 

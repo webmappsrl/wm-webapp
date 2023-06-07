@@ -50,7 +50,7 @@
   </ion-segment>
 
   <ion-content style="--offset-top:56px; --offset-bottom:56px;" class="wm-home-cardcontainer">
-    <ng-container *ngIf="(showResult$|async);else layers">
+    <ng-container *ngIf="(showResult$|async);else home">
       <ng-container *ngIf="showResultType$|async as showResulType;">
         <ng-container
           *ngIf="(showResult$|async) && showResulType === 'tracks'|| showResulType == null"
@@ -96,49 +96,16 @@
       </ng-container>
     </ng-container>
 
-    <ng-template #layers>
-      <ng-container *ngFor="let box of confHOME$|async;let idx = index">
-        <webmapp-title *ngIf="box.box_type === 'title'">
-          {{box.title|wmtrans}}
-        </webmapp-title>
-        <wm-horizontal-scroll-box
-          *ngIf="box.box_type === 'horizontal_scroll'"
-          [data]="box"
-          (clickEVT)="setFilter($event)"
-        >
-        </wm-horizontal-scroll-box>
-        <wm-poi-type-filter-box
-          *ngIf="box.box_type === 'poi_type_filter'"
-          [data]="box"
-          (clickEVT)="toggleFilter(box, idx)"
-        >
-        </wm-poi-type-filter-box>
-        <wm-slug-box
-          *ngIf="box.box_type === 'slug'"
-          [data]="box"
-          (clickEVT)="openSlug(box.slug,idx)"
-        >
-        </wm-slug-box>
-        <wm-box
-          *ngIf="box.box_type === 'external_url'"
-          [data]="box"
-          (clickEVT)="openExternalUrl(box.url)"
-        >
-        </wm-box>
-
-        <webmapp-tracks-box
-          *ngIf="box.box_type === 'base'"
-          [data]="box"
-          (trackIdEVT)="searchCard($event)"
-        >
-        </webmapp-tracks-box>
-        <wm-layer-box
-          *ngIf="box.box_type === 'layer'"
-          [data]="box"
-          (clickEVT)="setLayer(box.layer,idx)"
-        >
-        </wm-layer-box>
-      </ng-container>
+    <ng-template #home>
+      <wm-home
+        [conf]="confHOME$|async"
+        (horizontalScrollBoxEVT)="setFilter($event)"
+        (poiTypeFilterBoxEVT)="toggleFilter($event[0],$event[1])"
+        (slugBoxEVT)="openSlug($event[0],$event[1])"
+        (externalUrlBoxEVT)="openExternalUrl($event)"
+        (tracksBoxEVT)="searchCard($event)"
+        (layerBoxEVT)="setLayer($event[0],$event[1])"
+      ></wm-home>
     </ng-template>
     <ng-template #noResult>
       <ion-item lines="none">

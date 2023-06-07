@@ -100,7 +100,7 @@ export class HomeComponent implements AfterContentInit {
           this.setLayer(layerBox.layer);
         } else if (params.filter != null && home[params.filter] != null) {
           const filterBox: IPOITYPEFILTERBOX = home[+params.filter] as IPOITYPEFILTERBOX;
-          this.toggleFilter(filterBox);
+          this.toggleFilter(filterBox.identifier);
         }
         if (params.slug != null && home[params.slug] != null) {
           const slugBox: ISLUGBOX = home[+params.slug] as ISLUGBOX;
@@ -203,8 +203,8 @@ export class HomeComponent implements AfterContentInit {
     this._store.dispatch(inputTyped({inputTyped: value}));
   }
 
-  toggleFilter(filter: IPOITYPEFILTERBOX, idx?: number): void {
-    this.setFilter(filter.identifier);
+  toggleFilter(filterIdentifier: string, idx?: number): void {
+    this.setFilter(filterIdentifier);
     if (idx) {
       this._router.navigate([], {
         relativeTo: this._route,

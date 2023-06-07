@@ -121,6 +121,7 @@
         <ng-container *ngIf="confOPTIONS.download_track_enable === true">
           <div class="webmapp-title">Downloads</div>
           <webmapp-track-download-urls [feature]="track" id="webmapp-track-details-download-urls">
+            <ng-content></ng-content>
           </webmapp-track-download-urls>
         </ng-container>
       </ng-container>

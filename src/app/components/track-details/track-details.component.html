@@ -33,11 +33,11 @@
         class="webmapp-track-details-from-to"
       >
         <div *ngIf="track.properties.from as from" class="webmapp-track-details-from-to-box">
-          <div>{{"Punto di partenza"|wmtrans}}</div>
+          <div>{{'Punto di partenza'|wmtrans}}</div>
           <div>{{from}}</div>
         </div>
         <div *ngIf="track.properties.to as to" class="webmapp-track-details-from-to-box">
-          <div>{{"Punto di arrivo"|wmtrans}}</div>
+          <div>{{'Punto di arrivo'|wmtrans}}</div>
           <div>{{to}}</div>
         </div>
       </div>
@@ -73,27 +73,27 @@
         </div>
       </ng-container>
       <ng-container *ngIf="false">
-        <div class="webmapp-title">{{'Come arrivare'}}</div>
+        <div class="webmapp-title">{{'Come arrivare'|wmtrans}}</div>
         <div class="webmapp-how-to-get">
           <div class="webmapp-hot-to-get-box">
             <i class="icon-outline-bike"></i>
-            <span class="webmapp-how-to-get-label">Bici muscolari</span>
+            <span class="webmapp-how-to-get-label">{{'Bici muscolari'|wmtrans}}</span>
           </div>
           <div class="webmapp-hot-to-get-box">
             <i class="icon-outline-bike_1"></i>
-            <span class="webmapp-how-to-get-label">Bici elettriche</span>
+            <span class="webmapp-how-to-get-label">{{'Bici elettriche'|wmtrans}}</span>
           </div>
           <div class="webmapp-hot-to-get-box">
             <i class="icon-outline-bike_2"></i>
-            <span class="webmapp-how-to-get-label">Mezzi pubblici</span>
+            <span class="webmapp-how-to-get-label">{{'Mezzi pubblici'|wmtrans}}</span>
           </div>
           <div class="webmapp-hot-to-get-box">
             <i class="icon-outline-bike_4"></i>
-            <span class="webmapp-how-to-get-label">NCC</span>
+            <span class="webmapp-how-to-get-label">{{'NCC'|wmtrans}}</span>
           </div>
           <div class="webmapp-hot-to-get-box">
             <i class="icon-outline-bike_3"></i>
-            <span class="webmapp-how-to-get-label">Auto Propria</span>
+            <span class="webmapp-how-to-get-label">{{'Auto Propria'|wmtrans}}</span>
           </div>
         </div>
       </ng-container>
@@ -103,12 +103,18 @@
         [poi]="poiId"
         (poi-click)="poiClick.emit($event)"
       ></webmapp-track-poi>
+      <ng-container *ngIf="properties?.not_accessible != null && properties?.not_accessible === true">
+        <div class="webmapp-alert">
+          <ion-icon name="warning"></ion-icon>
+          {{ (properties?.not_accessible_message ?? 'Questo percorso non è accessibile' ) | wmtrans}}
+        </div>
+      </ng-container>
       <ng-container *ngIf="properties?.description as description">
-        <div class="webmapp-title">Descrizione</div>
+        <div class="webmapp-title">{{'Descrizione'|wmtrans}}</div>
         <webmapp-track-description [description]="description| wmtrans"></webmapp-track-description>
       </ng-container>
       <ng-container *ngIf="properties?.audio">
-        <div class="webmapp-title">Descrizione Audio</div>
+        <div class="webmapp-title">{{'Descrizione Audio'|wmtrans}}</div>
         <webmapp-track-audio [audio]="properties?.audio"></webmapp-track-audio>
       </ng-container>
       <webmapp-gallery *ngIf="properties?.image_gallery as imageGallery" [gallery]="imageGallery">
@@ -119,14 +125,14 @@
       </ng-container>
       <ng-container *ngIf="confOPTIONS$|async as confOPTIONS">
         <ng-container *ngIf="confOPTIONS.download_track_enable === true">
-          <div class="webmapp-title">Downloads</div>
+          <div class="webmapp-title">{{'Downloads'|wmtrans}}</div>
           <webmapp-track-download-urls [feature]="track" id="webmapp-track-details-download-urls">
             <ng-content></ng-content>
           </webmapp-track-download-urls>
         </ng-container>
       </ng-container>
       <ion-button *ngIf="enableEditingInline$|async" (click)="openGeohub()">
-        edit geohub</ion-button
+        {{'edit geohub'|wmtrans}}</ion-button
       >
     </div>
   </ng-container>

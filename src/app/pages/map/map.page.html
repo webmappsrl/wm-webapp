@@ -106,6 +106,7 @@
       #filterCmp
       [confFilters]="confFILTERS$|async"
       [pois]="pois$|async"
+      [wmFiltersClose]="wmap.wmMapCloseTopRightBtnsEVT$|async"
       [poisStats]="poisStats$|async"
       [poiFilters]="poiFilters$|async"
       [trackFilters]="selectedTrackFilters$|async"
@@ -114,13 +115,14 @@
       (removefilterTracksEvt)="updateTrackFilter($event)"
       (removefilterPoiEvt)="updatePoiFilter($event)"
       (resetFiltersEvt)="resetFilters()"
+      (click)="wmap.wmMapCloseTopRightBtns = 'wm-filters'"
     ></wm-filters>
     <div
-      class="top-right-button"
       top-right
+      class="top-right-button"
       expand="full"
       *ngIf="(enableDrawTrack$|async)"
-      (click)="toggleDrawTrackEnabled()"
+      (click)="toggleDrawTrackEnabled();wmap.wmMapCloseTopRightBtns = 'my-paths'"
     >
       {{ (drawTrackEnable$|async)?'esci':'i miei percorsi'|wmtrans}}
     </div>

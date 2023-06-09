@@ -26,10 +26,10 @@
       <ion-item>
         <ion-label>{{ 'Lista percorsi personali' | wmtrans}}</ion-label>
       </ion-item>
-      <ion-item *ngFor="let savedTrack of savedTracks;let idx =index">
+      <ion-item *ngFor="let savedTrack of savedTracks;let idx = index">
         <ion-card
-          (click)="centerCustomTrack(savedTrack)"
-          [ngClass]="{'selected': savedTrack === selectedTrack}"
+          (click)="centerCustomTrack(savedTrack);selectedTrackIdx = idx"
+          [ngClass]="{'selected': idx === selectedTrackIdx}"
         >
           <ion-card-header>
             <ion-card-title>{{savedTrack.properties.name}}</ion-card-title>

@@ -32,6 +32,7 @@ export class DrawTrackComponent {
 
   savedTracks$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
   track$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  selectedTrack: any = null;
 
   constructor(private _http: HttpClient) {
     this._initSavedTracks();
@@ -45,6 +46,7 @@ export class DrawTrackComponent {
       duration: 500,
       maxZoom: this.map.getView().getZoom(),
     });
+    this.selectedTrack = feature;
   }
 
   deleteCustomTrack(id: number): void {

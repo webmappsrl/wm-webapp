@@ -26,7 +26,7 @@
     (poiEVT)="setPoi($event)"
   ></wm-home-result>
   <ng-template #home>
-    <wm-home
+    <wm-home-page
       [conf]="confHOME$|async"
       (horizontalScrollBoxEVT)="setFilter($event)"
       (poiTypeFilterBoxEVT)="toggleFilter($event[0],$event[1])"
@@ -34,6 +34,6 @@
       (externalUrlBoxEVT)="openExternalUrl($event)"
       (tracksBoxEVT)="setTrack($event)"
       (layerBoxEVT)="setLayer($event[0],$event[1])"
-    ></wm-home>
+    ></wm-home-page>
   </ng-template>
 </div>

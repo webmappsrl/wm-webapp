@@ -7,7 +7,11 @@
     </ion-card-header>
     <ion-item>
       <ion-label> {{ 'nome del percorso' | wmtrans }}</ion-label>
-      <ion-input [(ngModel)]="track.properties.name"></ion-input>
+      <ion-input
+        [(ngModel)]="track.properties.name"
+        autofocus
+        placeholder="{{ 'nome del percorso' | wmtrans }}"
+      ></ion-input>
     </ion-item>
     <webmapp-track-elevation-chart [feature]="track"></webmapp-track-elevation-chart>
     <webmapp-track-technical-data [feature]="track"></webmapp-track-technical-data>
@@ -15,6 +19,7 @@
     <ion-button expand="full" (click)="saveCustomTrack()">{{ 'salva' | wmtrans}}</ion-button>
   </ion-card>
 </ng-container>
+
 <ng-template #customTrackList>
   <ng-container *ngIf="savedTracks$|async as savedTracks">
     <ion-list *ngIf="savedTracks.length > 0;else savedTracksEmpy">
@@ -56,9 +61,24 @@
               </ion-list>
             </ion-item>
           </ion-card-content>
-          <ion-item>
-            <ion-button (click)="deleteCustomTrack(idx)">{{ 'elimina' | wmtrans}}</ion-button>
-          </ion-item>
+          <ion-grid>
+            <ion-row>
+              <ion-col>
+                <ion-button
+                  (click)="editCustomTrackName(savedTrack)"
+                  >{{ 'modifica' | wmtrans}}</ion-button
+                ></ion-col
+              >
+              <ion-col></ion-col>
+              <ion-col>
+                <ion-button
+                  color="danger"
+                  (click)="deleteCustomTrack(idx)"
+                  >{{ 'elimina' | wmtrans}}</ion-button
+                ></ion-col
+              >
+            </ion-row>
+          </ion-grid>
         </ion-card>
       </ion-item>
     </ion-list>

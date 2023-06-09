@@ -2,4 +2,12 @@ wm-draw-track {
   .downloads > ion-list {
     cursor: pointer;
   }
+  .edit-button-container {
+    display: flex;
+    align-items: center;
+  }
+  .edit-button-text {
+    margin-left: 5px;
+  }
+ 
 }

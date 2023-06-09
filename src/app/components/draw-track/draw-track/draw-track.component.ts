@@ -75,7 +75,16 @@ export class DrawTrackComponent {
   saveCustomTrack(): void {
     const savedTracks = this.savedTracks$.value;
     if (this.track$.value != null) {
-      savedTracks.push(this.track$.value);
+      if (!this.track$.value.properties.name || this.track$.value.properties.name.trim() === '') {
+        while (this.track$.value.properties.name == '') {
+          this.track$.value.properties.name = prompt(
+            'Per favore, inserisci un nome per il percorso.',
+          );
+        }
+      }
+      if (this.track$.value.properties.name) {
+        savedTracks.push(this.track$.value);
+      }
     }
     localStorage.setItem('wm-saved-tracks', JSON.stringify(savedTracks));
     this.savedTracks$.next(savedTracks);
@@ -100,6 +109,14 @@ export class DrawTrackComponent {
     const localSavedTracks = JSON.parse(stringedLocalSavedTracks);
     if (localSavedTracks != null) {
       this.savedTracks$.next(localSavedTracks);
+    }
+  }
+
+  editCustomTrackName(savedTrack: any): void {
+    const newName = prompt('Inserisci il nuovo nome:', savedTrack.properties.name);
+    if (newName) {
+      savedTrack.properties.name = newName;
+      this.saveCustomTrack();
     }
   }
 }

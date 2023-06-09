@@ -33,22 +33,17 @@
         </ion-item>
       </ng-container>
     </webmapp-track-details>
-
     <webmapp-home
       *ngIf="(drawTrackEnable$|async)===false;else customTrack"
       [hidden]="trackid > 0"
       class="webmapp-home"
     >
-      <ion-button expand="full" *ngIf="enableDrawTrack$|async" (click)="toggleDrawTrackEnabled()">
-        {{'i miei percorsi'|wmtrans}}
-      </ion-button>
       <wm-lang-selector
         [langs]="(langs$|async)?.available"
         [defaultLang]="(langs$|async)?.default"
       ></wm-lang-selector>
     </webmapp-home>
     <ng-template #customTrack>
-      <ion-button expand="full" (click)="toggleDrawTrackEnabled()"> {{'esci'|wmtrans}} </ion-button>
       <wm-draw-track
         *ngIf="(wmap.map$|async) as map"
         [map]="map"
@@ -87,6 +82,7 @@
     [wmMapLayerDataLayerUrls]="dataLayerUrls$|async"
     [wmMapLayerLayer]="currentLayer$|async"
     [wmMapLayerRefresh]="refreshLayer$|async"
+    [wmMapLayerDisableLayers]="drawTrackEnable$|async"
     (colorSelectedFromLayerEVT)="trackColor$.next($event)"
     wmMapPois
     [wmMapInputTyped]="apiSearchInputTyped$|async"
@@ -94,6 +90,7 @@
     [wmMapPoisPois]="pois$|async"
     [wmMapPoisFilters]="poiFilterIdentifiers$|async"
     [WmMapPoisUnselectPoi]="resetSelectedPoi$|async"
+    [wmMapPoisDisableClusterLayer]="drawTrackEnable$|async"
     (currentPoiEvt)="setPoi($event)"
     wmMapTrack
     [track]="track$|async"
@@ -118,6 +115,15 @@
       (removefilterPoiEvt)="updatePoiFilter($event)"
       (resetFiltersEvt)="resetFilters()"
     ></wm-filters>
+    <div
+      class="top-right-button"
+      top-right
+      expand="full"
+      *ngIf="(enableDrawTrack$|async)"
+      (click)="toggleDrawTrackEnabled()"
+    >
+      {{ (drawTrackEnable$|async)?'esci':'i miei percorsi'|wmtrans}}
+    </div>
   </wm-map>
 </ng-container>
 

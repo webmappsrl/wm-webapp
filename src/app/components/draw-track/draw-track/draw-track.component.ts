@@ -32,6 +32,7 @@ export class DrawTrackComponent {
 
   savedTracks$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
   track$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  selectedTrackIdx: number = -1;
 
   constructor(private _http: HttpClient) {
     this._initSavedTracks();

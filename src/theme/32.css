@@ -1,23 +1,71 @@
-.wm-active-filters-count {
-  box-sizing: border-box;
-
+/* start filters component */
+.wm-reset-filters {
+  --background: white;
+  --box-shadow: none;
+  --color: black;
+  text-decoration: underline;
+  margin-top: -10px;
+  text-transform: none;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 28px;
+  color: #4D4D4D;
+}
+.wm-filters-count {
   padding: 4px 8px;
-  gap: 10px;
-
-  width: 24px;
+  min-width: 24px;
+  max-width: 50px;
   height: 26px;
-
   background: #fffaf2;
   border: 1px solid var(--wm-color-primary);
   border-radius: 4px;
-
   font-weight: 500;
   font-size: 13px;
   line-height: 18px;
-
   color: var(--wm-color-primary);
-
-  flex: none;
-  order: 0;
-  flex-grow: 0;
 }
+.wm-chip {
+  height: 36px;
+  border-style: none !important;
+}
+.wm-selected-filters > .wm-active-filter {
+  box-sizing: border-box;
+  border-style: solid !important;
+  background: white;
+  border-width: 1px 2px 2px 1px;
+  border-style: solid;
+  border-color: #4d4d4d;
+  border-radius: 4px;  
+}
+.wm-selected-filters > .wm-active-filter > span {
+  margin-left: 10px;
+}
+.wm-selected-filters > .wm-filter-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: -10px;
+  margin-left: -10px;
+  margin-top: -2px;
+  height: 40% !important;
+}
+.wm-chip >.wm-label {
+  margin-left: 10px ;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 28px;
+  color: #4D4D4D;
+}
+.ion-color-light {
+  --ion-color-light: 'white';
+}
+.wm-filter-content{
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 28px;
+  color: #4D4D4D;
+}
+/* end filters component */

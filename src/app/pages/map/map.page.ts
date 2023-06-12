@@ -154,7 +154,7 @@ export class MapPage {
     if (value == null) return '';
     return this._langService.instant(value);
   };
-  wmMapFeatureCollectionUrl$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(
+  wmMapFeatureCollectionOverlay$: BehaviorSubject<any | null> = new BehaviorSubject<any | null>(
     null,
   );
 
@@ -296,8 +296,8 @@ export class MapPage {
     }
   }
 
-  setWmMapFeatureCollectionUrl(url: any): void {
-    this.wmMapFeatureCollectionUrl$.next(url);
+  setWmMapFeatureCollection(overlay: any): void {
+    this.wmMapFeatureCollectionOverlay$.next(overlay);
   }
 
   toggleDetails(trackid?): void {

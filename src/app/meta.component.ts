@@ -1,7 +1,9 @@
-import {Component} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {Component, Inject} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
-import {confAPP} from './shared/wm-core/store/conf/conf.selector';
+import {filter, take} from 'rxjs/operators';
+import {confAPP, confGeohubId} from './shared/wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'webmapp-meta',
@@ -26,9 +28,24 @@ import {confAPP} from './shared/wm-core/store/conf/conf.selector';
     <!-- add to homescreen for ios -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <link id="client-theme" rel="stylesheet" type="text/css'" href="/theme/0.scss" />
   `,
 })
 export class MetaComponent {
   APP$: Observable<any> = this._store.select(confAPP);
-  constructor(private _store: Store<any>) {}
+  confGeohubId$: Observable<number> = this._store.select(confGeohubId);
+
+  constructor(private _store: Store<any>, @Inject(DOCUMENT) private _document: Document) {
+    this.confGeohubId$
+      .pipe(
+        filter(p => p != null),
+        take(1),
+      )
+      .subscribe(id => {
+        if (id) {
+          const styleLink: any = this._document.getElementById('client-theme');
+          styleLink.href = `/theme/${id}.scss`;
+        }
+      });
+  }
 }

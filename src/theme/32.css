@@ -10,7 +10,7 @@
   font-weight: 600;
   font-size: 16px;
   line-height: 28px;
-  color: #4D4D4D;
+  color: #4d4d4d;
 }
 .wm-filters-count {
   padding: 4px 8px;
@@ -36,7 +36,7 @@
   border-width: 1px 2px 2px 1px;
   border-style: solid;
   border-color: #4d4d4d;
-  border-radius: 4px;  
+  border-radius: 4px;
 }
 .wm-selected-filters > .wm-active-filter > span {
   margin-left: 10px;
@@ -50,22 +50,21 @@
   margin-top: -2px;
   height: 40% !important;
 }
-.wm-chip >.wm-label {
-  margin-left: 10px ;
+.wm-chip > .wm-label {
+  margin-left: 10px;
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
   line-height: 28px;
-  color: #4D4D4D;
 }
 .ion-color-light {
   --ion-color-light: 'white';
 }
-.wm-filter-content{
+.wm-filter-content {
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
   line-height: 28px;
-  color: #4D4D4D;
+  color: #4d4d4d;
 }
 /* end filters component */

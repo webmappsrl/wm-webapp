@@ -67,4 +67,8 @@
   line-height: 28px;
   color: #4d4d4d;
 }
+
+wm-filters .wm-filters-title {
+  line-height: unset;
+}
 /* end filters component */

@@ -17,6 +17,7 @@
     (removeTrackFilterEVT)="removeFilter($event)"
     (removePoiFilterEVT)="removePoiFilter($event)"
   ></wm-status-filter>
+  <wm-home-layer *ngIf="currentLayer$|async as currentLayer" [layer]="currentLayer"></wm-home-layer>
   <wm-home-result
     *ngIf="showResult$|async;else home"
     [tracks]="(tracks$|async)"

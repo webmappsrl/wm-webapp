@@ -29,7 +29,7 @@
   height: 36px;
   border-style: none !important;
 }
-.wm-selected-filters > .wm-active-filter {
+.wm-selected-filters .wm-active-filter {
   box-sizing: border-box;
   border-style: solid !important;
   background: white;
@@ -41,7 +41,7 @@
 .wm-selected-filters > .wm-active-filter > span {
   margin-left: 10px;
 }
-.wm-selected-filters > .wm-filter-icon {
+.wm-selected-filters.wm-filter-icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,7 +50,7 @@
   margin-top: -2px;
   height: 40% !important;
 }
-.wm-chip > .wm-label {
+.wm-chip .wm-label {
   margin-left: 10px;
   font-style: normal;
   font-weight: 600;
@@ -72,3 +72,85 @@ wm-filters .wm-filters-title {
   line-height: unset;
 }
 /* end filters component */
+
+/* start webmapp-search component */
+webmapp-search {
+  box-sizing: border-box;
+  background-color: #f7f7f7;
+  border: 15px solid #f7f7f7;
+}
+webmapp-search div {
+  background-color: white;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.09);
+  border-radius: 4px;
+}
+webmapp-search input {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  background-color: white !important;
+  color: rgba(92, 92, 92, 0.63);
+}
+.wm-search-icon {
+  font-style: normal;
+  font-weight: 300;
+  font-size: 20px;
+  line-height: 29px;
+  margin-top: 4px;
+}
+/* end webmapp-search component */
+
+/* start wm-home-page component */
+webmapp-title {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 1vw;
+  line-height: 10px;
+  color: #333333;
+}
+/* end wm-home-page component */
+
+/* start wm-horizontal-scroll-box component */
+.wm-items-container wm-box {
+  margin-right: -13px !important;
+  min-width: unset !important;
+  width: 100% !important;
+  height: 185.9px;
+}
+.wm-box {
+  border-radius: 0px;
+  box-shadow: none !important;
+}
+.wm-box .wm-result-img {
+  border-radius: 0px;
+  min-width: 125px;
+}
+.wm-box-title {
+  font-size: 20px !important;
+  font-style: normal !important;
+  font-weight: 600 !important;
+  line-height: 20px !important;
+}
+.wm-item-arrow {
+  display: none !important;
+}
+.wm-img-image {
+  border-radius: 0px !important;
+}
+.webmapp-menubtn.webmapp-menubtn {
+  width: 37px;
+  height: 44px;
+}
+.webmapp-menubtn.webmapp-menubtn-opened {
+  left: 521px !important;
+  width: 37px;
+  height: 44px;
+}
+.details-container.details-container-visible {
+  width: 521px !important;
+}
+.wm-items-container .wm-box-title {
+  font-size: 14px !important;
+}
+/* end wm-horizontal-scroll-box component */

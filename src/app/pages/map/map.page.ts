@@ -324,11 +324,12 @@ export class MapPage {
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
   }
 
-  updatePoiFilter(filter: Filter): void {
+  updatePoiFilter(filter: SelectFilterOption | SliderFilter | Filter): void {
     this._store.dispatch(togglePoiFilter({filterIdentifier: filter.identifier}));
   }
 
-  updateTrackFilter(filter: Filter): void {
+  updateTrackFilter(filterGeneric: SelectFilterOption | SliderFilter | Filter): void {
+    let filter = filterGeneric as Filter;
     if (filter.type === 'slider') {
       this._store.dispatch(updateTrackFilter({filter}));
     } else {

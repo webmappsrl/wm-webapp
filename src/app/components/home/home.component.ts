@@ -18,6 +18,7 @@ import {
   setLayer,
   togglePoiFilter,
   toggleTrackFilter,
+  toggleTrackFilterByIdentifier,
 } from 'src/app/shared/wm-core/store/api/api.actions';
 import {
   apiElasticStateLayer,
@@ -148,7 +149,7 @@ export class HomeComponent implements AfterContentInit {
     if (filterIdentifier.indexOf('poi_') >= 0) {
       this._store.dispatch(togglePoiFilter({filterIdentifier}));
     } else {
-      //   this._store.dispatch(toggleTrackFilter({filterIdentifier}));
+      this._store.dispatch(toggleTrackFilterByIdentifier({filterIdentifier}));
     }
   }
 

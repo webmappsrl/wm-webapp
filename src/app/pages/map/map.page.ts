@@ -324,8 +324,8 @@ export class MapPage {
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
   }
 
-  updatePoiFilter(filterIdentifier: string): void {
-    this._store.dispatch(togglePoiFilter({filterIdentifier}));
+  updatePoiFilter(filter: Filter): void {
+    this._store.dispatch(togglePoiFilter({filterIdentifier: filter.identifier}));
   }
 
   updateTrackFilter(filter: Filter): void {

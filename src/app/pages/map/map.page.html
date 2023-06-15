@@ -71,7 +71,7 @@
     [wmMapOverlayUrl]="'https://geohub.webmapp.it/api/taxonomy/where/geojson/13'"
     [wmMapFeatureCollection]="(wmMapFeatureCollectionOverlay$|async)!= null"
     [wmMapFeatureCollectionOverlay]="wmMapFeatureCollectionOverlay$|async"
-    (wmMapFeatureCollectionLayerSelected)="selectedLayer($event)"
+    (wmMapFeatureCollectionLayerSelected)="selectedLayer($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
     wmMapCustomTracks
     [wmMapCustomTrackDrawTrack]="drawTrackEnable$|async"
     [wmMapCustomTrackDrawTrackHost]="graphhopperHost$|async"

@@ -267,6 +267,7 @@ export class MapPage {
 
   selectedLayer(layer: any): void {
     this.homeCmp.setLayer(layer);
+    this.setWmMapFeatureCollection(null);
   }
 
   setCurrentPoi(id): void {

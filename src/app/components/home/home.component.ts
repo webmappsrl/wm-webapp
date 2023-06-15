@@ -13,7 +13,7 @@ import {Observable} from 'rxjs';
 import {debounceTime, filter, map, withLatestFrom} from 'rxjs/operators';
 import {
   inputTyped,
-  resetActivities,
+  resetTrackFilters,
   resetPoiFilters,
   setLayer,
   togglePoiFilter,
@@ -22,7 +22,7 @@ import {
 import {
   apiElasticStateLayer,
   apiElasticStateLoading,
-  apiTrackFilters,
+  apiFilterTracks,
   featureCollection,
   poiFilters,
   queryApi,
@@ -52,7 +52,7 @@ export class HomeComponent implements AfterContentInit {
     map(p => ((p as any).features || []).map(p => (p as any).properties || [])),
   );
   showResult$ = this._store.select(showResult);
-  trackFilters$: Observable<any> = this._store.select(apiTrackFilters);
+  trackFilters$: Observable<any> = this._store.select(apiFilterTracks);
   trackLoading$: Observable<boolean> = this._store.select(apiElasticStateLoading);
   tracks$: Observable<IHIT[]> = this._store.select(queryApi);
 
@@ -126,8 +126,8 @@ export class HomeComponent implements AfterContentInit {
     }
   }
 
-  removeFilter(filterIdentifier: string): void {
-    this._store.dispatch(toggleTrackFilter({filterIdentifier}));
+  removeFilter(filter: Filter): void {
+    this._store.dispatch(toggleTrackFilter({filter}));
   }
 
   removeLayer(_: any): void {
@@ -148,7 +148,7 @@ export class HomeComponent implements AfterContentInit {
     if (filterIdentifier.indexOf('poi_') >= 0) {
       this._store.dispatch(togglePoiFilter({filterIdentifier}));
     } else {
-      this._store.dispatch(toggleTrackFilter({filterIdentifier}));
+      //   this._store.dispatch(toggleTrackFilter({filterIdentifier}));
     }
   }
 
@@ -157,7 +157,7 @@ export class HomeComponent implements AfterContentInit {
       this._store.dispatch(setLayer({layer}));
     } else {
       this._store.dispatch(setLayer(null));
-      this._store.dispatch(resetActivities());
+      this._store.dispatch(resetTrackFilters());
     }
     if (idx) {
       this._router.navigate([], {

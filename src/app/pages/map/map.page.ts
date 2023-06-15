@@ -1,6 +1,9 @@
+import {updateTrackFilter} from './../../shared/wm-core/store/api/api.actions';
 import {
+  apiFilterTracks,
   apiSearchInputTyped,
-  apiTrackFilters,
+  apiElasticState,
+  apiElasticStateLayer,
   poiFilterIdentifiers,
   poiFilters,
   pois,
@@ -30,11 +33,7 @@ import {
   togglePoiFilter,
   toggleTrackFilter,
 } from 'src/app/shared/wm-core/store/api/api.actions';
-import {
-  apiElasticState,
-  apiTrackFilter,
-  apiElasticStateLayer,
-} from 'src/app/shared/wm-core/store/api/api.selector';
+
 import {
   confFILTERS,
   confGeohubId,
@@ -146,7 +145,7 @@ export class MapPage {
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   resetSelectedPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  selectedTrackFilters$: Observable<any> = this._store.select(apiTrackFilters);
+  selectedTrackFilters$: Observable<any> = this._store.select(apiFilterTracks);
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
@@ -167,7 +166,7 @@ export class MapPage {
     private _langService: LangService,
   ) {
     this.refreshLayer$ = combineLatest(
-      this._store.select(apiTrackFilter),
+      this._store.select(apiFilterTracks),
       this.poiFilterIdentifiers$,
     );
     if (window.innerWidth < maxWidth) {
@@ -250,7 +249,7 @@ export class MapPage {
   }
 
   removeActivityFilter(activity: string): void {
-    this.homeCmp.removeFilter(activity);
+    //  this.homeCmp.removeFilter(activity);
   }
 
   resetFilters(): void {
@@ -329,8 +328,15 @@ export class MapPage {
     this._store.dispatch(togglePoiFilter({filterIdentifier}));
   }
 
-  updateTrackFilter(filterIdentifier: string): void {
-    this._store.dispatch(toggleTrackFilter({filterIdentifier}));
+  updateTrackFilter(filter: Filter): void {
+    if (filter.type === 'slider') {
+      this._store.dispatch(updateTrackFilter({filter}));
+    } else {
+      this._store.dispatch(toggleTrackFilter({filter}));
+    }
+  }
+  removeTrackFilter(filter: Filter): void {
+    this._store.dispatch(toggleTrackFilter({filter}));
   }
 
   updateUrl(trackid: number): void {

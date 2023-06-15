@@ -1,5 +1,12 @@
-import {HttpClientModule} from '@angular/common/http';
-import {LOCALE_ID, NgModule} from '@angular/core';
+import {
+  HttpClientModule,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+  HttpResponse,
+  HTTP_INTERCEPTORS,
+} from '@angular/common/http';
+import {Injectable, LOCALE_ID, NgModule} from '@angular/core';
 import {IonicModule, IonicRouteStrategy} from '@ionic/angular';
 
 import {registerLocaleData} from '@angular/common';
@@ -15,8 +22,24 @@ import {AppComponent} from './app.component';
 import {MetaComponent} from './meta.component';
 import {WmCoreModule} from './shared/wm-core/wm-core.module';
 import {UIReducer} from './store/UI/UI.reducer';
+import {tap} from 'rxjs/operators';
 registerLocaleData(localeIt);
+@Injectable()
+export class MyHttpInterceptor implements HttpInterceptor {
+  constructor() {}
 
+  intercept(request: HttpRequest<any>, next: HttpHandler) {
+    console.log('Chiamata HTTP in corso:', request.url);
+
+    return next.handle(request).pipe(
+      tap(event => {
+        if (event instanceof HttpResponse) {
+          console.log('Chiamata HTTP completata:', request.url);
+        }
+      }),
+    );
+  }
+}
 @NgModule({
   declarations: [AppComponent, MetaComponent],
   entryComponents: [],
@@ -41,6 +64,11 @@ registerLocaleData(localeIt);
   providers: [
     {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
     {provide: LOCALE_ID, useValue: 'it'},
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: MyHttpInterceptor,
+      multi: true,
+    },
   ],
   bootstrap: [AppComponent, MetaComponent],
 })

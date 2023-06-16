@@ -144,12 +144,14 @@ export class HomeComponent implements AfterContentInit {
     this._store.dispatch(togglePoiFilter({filterIdentifier}));
   }
 
-  setFilter(filterIdentifier: string): void {
-    if (filterIdentifier == null) return;
-    if (filterIdentifier.indexOf('poi_') >= 0) {
-      this._store.dispatch(togglePoiFilter({filterIdentifier}));
+  setFilter(filter: {identifier: string; taxonomy: string}): void {
+    if (filter == null) return;
+    if (filter.taxonomy === 'poi_types') {
+      this._store.dispatch(togglePoiFilter({filterIdentifier: filter.identifier}));
     } else {
-      this._store.dispatch(toggleTrackFilterByIdentifier({filterIdentifier}));
+      this._store.dispatch(
+        toggleTrackFilterByIdentifier({identifier: filter.identifier, taxonomy: filter.taxonomy}),
+      );
     }
   }
 
@@ -189,7 +191,7 @@ export class HomeComponent implements AfterContentInit {
   }
 
   toggleFilter(filterIdentifier: string, idx?: number): void {
-    this.setFilter(filterIdentifier);
+    this.setFilter({identifier: filterIdentifier, taxonomy: 'activities'});
     if (idx) {
       this._router.navigate([], {
         relativeTo: this._route,

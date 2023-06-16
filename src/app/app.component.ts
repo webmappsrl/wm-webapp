@@ -3,6 +3,7 @@ import {Component, Inject, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/operators';
+import {query} from './shared/wm-core/store/api/api.actions';
 import {loadConf} from './shared/wm-core/store/conf/conf.actions';
 import {confTHEMEVariables} from './shared/wm-core/store/conf/conf.selector';
 @Component({
@@ -16,6 +17,7 @@ export class AppComponent {
 
   constructor(@Inject(DOCUMENT) private _document: Document, private _storeConf: Store<any>) {
     this._storeConf.dispatch(loadConf());
+    this._storeConf.dispatch(query({init: true}));
     this.confTHEMEVariables$.pipe(take(2)).subscribe(css => this._setGlobalCSS(css));
   }
 

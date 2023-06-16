@@ -8,6 +8,7 @@ import {
   poiFilters,
   pois,
   stats,
+  trackStats,
 } from './../../shared/wm-core/store/api/api.selector';
 import {
   ChangeDetectionStrategy,
@@ -149,6 +150,9 @@ export class MapPage {
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
+  trackStats$: Observable<{
+    [name: string]: {[identifier: string]: any};
+  }> = this._store.select(trackStats);
   translationCallback: (any) => string = value => {
     if (value == null) return '';
     return this._langService.instant(value);
@@ -252,6 +256,10 @@ export class MapPage {
     //  this.homeCmp.removeFilter(activity);
   }
 
+  removeTrackFilter(filter: Filter): void {
+    this._store.dispatch(toggleTrackFilter({filter}));
+  }
+
   resetFilters(): void {
     this.homeCmp.goToHome();
   }
@@ -336,9 +344,6 @@ export class MapPage {
     } else {
       this._store.dispatch(toggleTrackFilter({filter}));
     }
-  }
-  removeTrackFilter(filter: Filter): void {
-    this._store.dispatch(toggleTrackFilter({filter}));
   }
 
   updateUrl(trackid: number): void {

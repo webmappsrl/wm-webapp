@@ -64,11 +64,11 @@ export class MyHttpInterceptor implements HttpInterceptor {
   providers: [
     {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
     {provide: LOCALE_ID, useValue: 'it'},
-    {
+    /*     {
       provide: HTTP_INTERCEPTORS,
       useClass: MyHttpInterceptor,
       multi: true,
-    },
+    }, */
   ],
   bootstrap: [AppComponent, MetaComponent],
 })

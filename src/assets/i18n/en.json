@@ -14,13 +14,13 @@
       "difficulty": "difficoltà"
     },
     "downloadUrls": {
-      "gpx": "scarica il tracciato GPX",
-      "kml": "scarica il tracciato KML",
-      "geojson": "scarica il tracciato GEOJSON"
+      "gpx": "download the GPX track",
+      "kml": "download the KML track",
+      "geojson": "download the GEOJSON track"
     },
     "description": {
-      "readAll": "leggi tutto",
-      "hide": "nascondi"
+      "readAll": "Read all",
+      "hide": "Hide"
     },
     "elevationChart": {
       "slope": {

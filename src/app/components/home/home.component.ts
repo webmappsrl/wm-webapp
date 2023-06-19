@@ -92,7 +92,7 @@ export class HomeComponent implements AfterContentInit {
           this.setLayer(layerBox.layer);
         } else if (params.filter != null && home[params.filter] != null) {
           const filterBox: IPOITYPEFILTERBOX = home[+params.filter] as IPOITYPEFILTERBOX;
-          this.toggleFilter(filterBox.identifier);
+          this.togglePoiFilter(filterBox.identifier);
         }
         if (params.slug != null && home[params.slug] != null) {
           const slugBox: ISLUGBOX = home[+params.slug] as ISLUGBOX;
@@ -192,8 +192,8 @@ export class HomeComponent implements AfterContentInit {
     });
   }
 
-  toggleFilter(filterIdentifier: string, idx?: number): void {
-    this.setFilter({identifier: filterIdentifier, taxonomy: 'activities'});
+  togglePoiFilter(filterIdentifier: string, idx?: number): void {
+    this.setFilter({identifier: filterIdentifier, taxonomy: 'poi_types'});
     if (idx) {
       this._router.navigate([], {
         relativeTo: this._route,

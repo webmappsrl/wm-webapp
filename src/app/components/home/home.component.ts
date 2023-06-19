@@ -19,6 +19,7 @@ import {
   togglePoiFilter,
   toggleTrackFilter,
   toggleTrackFilterByIdentifier,
+  goToHome,
 } from 'src/app/shared/wm-core/store/api/api.actions';
 import {
   apiElasticStateLayer,
@@ -69,6 +70,7 @@ export class HomeComponent implements AfterContentInit {
   goToHome(): void {
     this.setLayer(null);
     this._store.dispatch(resetPoiFilters());
+    this._store.dispatch(goToHome());
     this.searchCmp.reset();
     this._router.navigate([], {
       relativeTo: this._route,

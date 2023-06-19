@@ -9,19 +9,30 @@ import {
   pois,
   stats,
   trackStats,
+  apiGoToHome,
 } from './../../shared/wm-core/store/api/api.selector';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  OnDestroy,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Store} from '@ngrx/store';
 import {FeatureCollection} from 'geojson';
-import {BehaviorSubject, combineLatest, from, merge, Observable, of} from 'rxjs';
-import {distinctUntilChanged, filter, map, share, startWith, switchMap, tap} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, from, merge, Observable, of, Subscription} from 'rxjs';
+import {
+  distinctUntilChanged,
+  filter,
+  map,
+  share,
+  skip,
+  startWith,
+  switchMap,
+  tap,
+} from 'rxjs/operators';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {HomeComponent} from 'src/app/components/home/home.component';
 import {GeohubService} from 'src/app/services/geohub.service';
@@ -64,7 +75,7 @@ const maxWidth = 600;
   encapsulation: ViewEncapsulation.None,
   providers: [LangService],
 })
-export class MapPage {
+export class MapPage implements OnDestroy {
   readonly track$: Observable<CGeojsonLineStringFeature | null>;
   readonly trackColor$: BehaviorSubject<string> = new BehaviorSubject<string>('#caaf15');
   readonly trackid$: Observable<number>;
@@ -75,6 +86,7 @@ export class MapPage {
   @ViewChild(HomeComponent) homeCmp: HomeComponent;
 
   apiElasticState$: Observable<any> = this._store.select(apiElasticState);
+  apiGoToHome$: Observable<boolean> = this._store.select(apiGoToHome);
   apiSearchInputTyped$: Observable<string> = this._store.select(apiSearchInputTyped);
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
   confFILTERS$: Observable<any> = this._store.select(confFILTERS);
@@ -160,6 +172,7 @@ export class MapPage {
   wmMapFeatureCollectionOverlay$: BehaviorSubject<any | null> = new BehaviorSubject<any | null>(
     null,
   );
+  goToHomeSub$: Subscription = Subscription.EMPTY;
 
   constructor(
     private _route: ActivatedRoute,
@@ -220,6 +233,10 @@ export class MapPage {
       map(val => val ?? -1),
       distinctUntilChanged((prev, curr) => +prev === +curr),
     );
+
+    this.goToHomeSub$ = this.apiGoToHome$.pipe(skip(1)).subscribe(_ => {
+      this.unselectPOI();
+    });
   }
 
   next(): void {
@@ -352,5 +369,9 @@ export class MapPage {
       queryParams: {track: trackid ? trackid : null},
       queryParamsHandling: 'merge',
     });
+  }
+
+  ngOnDestroy(): void {
+    this.goToHomeSub$.unsubscribe();
   }
 }

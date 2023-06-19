@@ -66,7 +66,6 @@ wm-filters .wm-filter-content {
   line-height: 28px;
   color: #4d4d4d;
 }
-
 wm-filters .wm-filters-title,
 wm-status-filter .wm-filters-title {
   line-height: unset;
@@ -79,6 +78,9 @@ wm-filters ion-item ion-chip ion-label {
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
+}
+wm-filters .wm-selected-filters ion-chip ion-label {
+  margin-top: 0px;
 }
 /* end wm-filters component */
 
@@ -101,15 +103,6 @@ webmapp-search input {
   background-color: white !important;
   color: rgba(92, 92, 92, 0.63);
 }
-/* .wm-search-icon {
-  font-style: normal;
-  font-weight: 300;
-  font-size: 20px;
-  line-height: 29px;
-  margin-top: 4px;
-  color: red;
-  background-color: red;
-} */
 /* end webmapp-search component */
 
 /* start wm-home-page component */
@@ -379,3 +372,62 @@ webmapp-map-page .details-container.details-container-visible {
   width: 521px !important;
 }
 /* end webmapp-map-page component */
+
+/* start webmapp-track-details component */
+webmapp-track-details .webmapp-track-title {
+  display: none !important;
+}
+webmapp-track-details ion-toolbar {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: 521px;
+  height: 74px;
+  left: 0px;
+  top: 0px;
+  background: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+}
+webmapp-track-details ion-toolbar ion-title {
+  color: #333333;
+  height: 11px;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 24px !important;
+  display: flex;
+  align-items: center;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+webmapp-track-details .header-md::after {
+  display: none;
+}
+webmapp-track-details #webmapp-track-details-content {
+  display: flex;
+  flex-direction: column;
+}
+webmapp-track-details webmapp-track-description {
+  order: -1;
+  line-height: 30px;
+}
+webmapp-track-details div.wm-title-description {
+  order: -1;
+  line-height: 30px;
+}
+webmapp-track-details .webmapp-title {
+  height: 11px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 10px;
+  display: flex;
+  align-items: center;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  color: #333333;
+}
+/* end webmapp-track-details component */

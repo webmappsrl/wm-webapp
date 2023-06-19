@@ -103,14 +103,16 @@
         [poi]="poiId"
         (poi-click)="poiClick.emit($event)"
       ></webmapp-track-poi>
-      <ng-container *ngIf="properties?.not_accessible != null && properties?.not_accessible === true">
+      <ng-container
+        *ngIf="properties?.not_accessible != null && properties?.not_accessible === true"
+      >
         <div class="webmapp-alert">
           <ion-icon name="warning"></ion-icon>
           {{ (properties?.not_accessible_message ?? 'Questo percorso non è accessibile' ) | wmtrans}}
         </div>
       </ng-container>
       <ng-container *ngIf="properties?.description as description">
-        <div class="webmapp-title">{{'Descrizione'|wmtrans}}</div>
+        <div class="webmapp-title wm-title-description">{{'Descrizione'|wmtrans}}</div>
         <webmapp-track-description [description]="description| wmtrans"></webmapp-track-description>
       </ng-container>
       <ng-container *ngIf="properties?.audio">

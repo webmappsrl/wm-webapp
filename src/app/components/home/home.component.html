@@ -5,31 +5,21 @@
       <ion-label [innerHTML]="sanitizer.bypassSecurityTrustHtml(welcome | wmtrans)"></ion-label>
     </ion-item>
   </ng-container>
-
   <webmapp-search #searchCmp [initSearch]="''" (words)="setSearch($event)"> </webmapp-search>
-  <wm-status-filter
-    *ngIf="showResult$|async"
-    [layer]="currentLayer$|async"
-    [trackFilters]="(trackFilters$|async)"
-    [poiFilters]=" (poiFilters$|async)"
-    (resetFiltersEVT)="goToHome()"
-    (removeLayerEVT)="removeLayer($event)"
-    (removeTrackFilterEVT)="removeFilter($event)"
-    (removePoiFilterEVT)="removePoiFilter($event)"
-  ></wm-status-filter>
-  <wm-home-layer *ngIf="currentLayer$|async as currentLayer" [layer]="currentLayer"></wm-home-layer>
-  <wm-home-result
-    *ngIf="showResult$|async;else home"
-    [tracks]="(tracks$|async)"
-    [loadingTracks]="trackLoading$|async"
-    [pois]="(pois$|async)"
-    (trackEVT)="setTrack($event)"
-    (poiEVT)="setPoi($event)"
-  ></wm-home-result>
+  <ng-container *ngIf="showResult$|async;else home">
+    <wm-status-filter
+      (resetFiltersEVT)="goToHome()"
+      (removeLayerEVT)="removeLayer($event)"
+    ></wm-status-filter>
+    <wm-home-layer></wm-home-layer>
+    <wm-home-result
+      *ngIf="showResult$|async;else home"
+      (trackEVT)="setTrack($event)"
+      (poiEVT)="setPoi($event)"
+    ></wm-home-result>
+  </ng-container>
   <ng-template #home>
     <wm-home-page
-      [conf]="confHOME$|async"
-      (horizontalScrollBoxEVT)="setFilter($event)"
       (poiTypeFilterBoxEVT)="togglePoiFilter($event[0],$event[1])"
       (slugBoxEVT)="openSlug($event[0],$event[1])"
       (externalUrlBoxEVT)="openExternalUrl($event)"

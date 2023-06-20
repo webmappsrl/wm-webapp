@@ -292,7 +292,7 @@ export class MapPage implements OnDestroy {
 
   selectedLayer(layer: any): void {
     this.homeCmp.setLayer(layer);
-    this.setWmMapFeatureCollection(null);
+    this.wmMapFeatureCollectionOverlay$.next(null);
   }
 
   setCurrentPoi(id): void {
@@ -309,8 +309,6 @@ export class MapPage implements OnDestroy {
     }
   }
 
-  setCustomTrackEnabled(): void {}
-
   setPoi(poi: any): void {
     this.currentPoi$.next(poi);
   }
@@ -322,6 +320,7 @@ export class MapPage implements OnDestroy {
   }
 
   setWmMapFeatureCollection(overlay: any): void {
+    this.homeCmp.setLayer(null);
     this.wmMapFeatureCollectionOverlay$.next(overlay);
   }
 

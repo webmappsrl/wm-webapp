@@ -10,26 +10,15 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
-import {debounceTime, filter, map, withLatestFrom} from 'rxjs/operators';
+import {debounceTime, filter, withLatestFrom} from 'rxjs/operators';
 import {
   inputTyped,
   resetTrackFilters,
-  resetPoiFilters,
   setLayer,
   togglePoiFilter,
-  toggleTrackFilter,
   toggleTrackFilterByIdentifier,
-  goToHome,
 } from 'src/app/shared/wm-core/store/api/api.actions';
-import {
-  apiElasticStateLayer,
-  apiElasticStateLoading,
-  apiFilterTracks,
-  featureCollection,
-  poiFilters,
-  queryApi,
-  showResult,
-} from 'src/app/shared/wm-core/store/api/api.selector';
+import {showResult} from 'src/app/shared/wm-core/store/api/api.selector';
 import {confAPP, confHOME} from 'src/app/shared/wm-core/store/conf/conf.selector';
 import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
 import {InnerHtmlComponent} from '../project/project.page.component';
@@ -47,16 +36,8 @@ export class HomeComponent implements AfterContentInit {
 
   confAPP$: Observable<IAPP> = this._store.select(confAPP);
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
-  currentLayer$ = this._store.select(apiElasticStateLayer);
-  poiFilters$: Observable<any> = this._store.select(poiFilters);
-  pois$: Observable<any[]> = this._store.select(featureCollection).pipe(
-    filter(p => p != null),
-    map(p => ((p as any).features || []).map(p => (p as any).properties || [])),
-  );
+
   showResult$ = this._store.select(showResult);
-  trackFilters$: Observable<any> = this._store.select(apiFilterTracks);
-  trackLoading$: Observable<boolean> = this._store.select(apiElasticStateLoading);
-  tracks$: Observable<IHIT[]> = this._store.select(queryApi);
 
   constructor(
     private _store: Store,
@@ -69,8 +50,6 @@ export class HomeComponent implements AfterContentInit {
 
   goToHome(): void {
     this.setLayer(null);
-    this._store.dispatch(resetPoiFilters());
-    this._store.dispatch(goToHome());
     this.searchCmp.reset();
     this._router.navigate([], {
       relativeTo: this._route,
@@ -129,10 +108,6 @@ export class HomeComponent implements AfterContentInit {
     }
   }
 
-  removeFilter(filter: Filter): void {
-    this._store.dispatch(toggleTrackFilter({filter}));
-  }
-
   removeLayer(_: any): void {
     this.setLayer(null);
     this._router.navigate([], {
@@ -140,10 +115,6 @@ export class HomeComponent implements AfterContentInit {
       queryParams: {layer: null},
       queryParamsHandling: 'merge',
     });
-  }
-
-  removePoiFilter(filterIdentifier: string): void {
-    this._store.dispatch(togglePoiFilter({filterIdentifier}));
   }
 
   setFilter(filter: {identifier: string; taxonomy: string}): void {

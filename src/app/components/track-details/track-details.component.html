@@ -5,7 +5,7 @@
       <ion-toolbar class="webmapp-track-details-toolbar">
         <ion-title
           *ngIf="properties?.name"
-          [innerHtml]="properties.name | wmtrans | lowercase"
+          [innerHtml]="properties.name | wmtrans"
           class="webmapp-track-details-header"
         ></ion-title>
         <ion-buttons slot="end">
@@ -17,7 +17,7 @@
     </ion-header>
     <div #content id="webmapp-track-details-content">
       <div class="webmapp-track-title" *ngIf="properties?.name as name">
-        {{name | wmtrans | lowercase}}
+        {{name | wmtrans}}
       </div>
 
       <webmapp-track-elevation-chart

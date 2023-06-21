@@ -1,22 +1,22 @@
 {
   "trackDetails": {
     "technicalData": {
-      "ascent": "dislivello positivo",
-      "descent": "dislivello negativo",
-      "ele_from": "quota di partenza",
-      "ele_to": "quota di arrivo",
-      "ele_min": "quota minima",
-      "ele_max": "quota massima",
-      "duration": "durata",
-      "duration_forward": "durata di andata",
-      "duration_backward": "durata di ritorno",
-      "distance": "lunghezza",
-      "difficulty": "difficoltà"
+      "ascent": "Positive elevation",
+      "descent": "Negative elevation",
+      "ele_from": "Starting altitude",
+      "ele_to": "Arrival altitude",
+      "ele_min": "Minimum altitude",
+      "ele_max": "Maximum altitude",
+      "duration": "Duration",
+      "duration_forward": "Outward duration",
+      "duration_backward": "Return duration",
+      "distance": "Length",
+      "difficulty": "Difficulty"
     },
     "downloadUrls": {
-      "gpx": "download the GPX track",
-      "kml": "download the KML track",
-      "geojson": "download the GEOJSON track"
+      "gpx": "Download the GPX track",
+      "kml": "Download the KML track",
+      "geojson": "Download the GEOJSON track"
     },
     "description": {
       "readAll": "Read all",
@@ -24,48 +24,48 @@
     },
     "elevationChart": {
       "slope": {
-        "label": "slope"
+        "label": "Slope"
       },
       "surfaces": {
         "asphalt": {
-          "label": "asphalt"
+          "label": "Asphalt"
         },
         "concrete": {
-          "label": "concrete"
+          "label": "Concrete"
         },
         "dirt": {
-          "label": "land"
+          "label": "Land"
         },
         "grass": {
-          "label": "grass"
+          "label": "Grass"
         },
         "gravel": {
-          "label": "gravel"
+          "label": "Gravel"
         },
         "paved": {
-          "label": "paved"
+          "label": "Paved"
         },
         "sand": {
-          "label": "sand"
+          "label": "Sand"
         }
       }
     }
   },
   "home": {
-    "duration": "Durata",
-    "length": "Lunghezza",
-    "difference": "Dislivello"
+    "duration": "Duration",
+    "length": "Length",
+    "difference": "Elevation"
   },
-  "skitouring": "Scialpinismo",
-  "walking": "Passeggiata",
-  "running": "Corsa",
-  "cycling": "In bicicletta",
+  "skitouring": "Ski touring",
+  "walking": "Walking",
+  "running": "Running",
+  "cycling": "Cycling",
   "Punto di partenza": "Start point",
   "Punto di arrivo": "End point",
-  "Dettagli tecnici": "Technical Details",
+  "Dettagli tecnici": "Technical details",
   "Percorribilità": "Viability",
   "Punti di interesse": "Points of interest",
-  "Collegamenti esterni": "external links",
+  "Collegamenti esterni": "External links",
   "Filtri": "Filters",
-  "where": "PLACES"
+  "where": "Places"
 }

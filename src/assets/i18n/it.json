@@ -1,52 +1,52 @@
 {
   "trackDetails": {
     "technicalData": {
-      "ascent": "dislivello positivo",
-      "descent": "dislivello negativo",
-      "ele_from": "quota di partenza",
-      "ele_to": "quota di arrivo",
-      "ele_min": "quota minima",
-      "ele_max": "quota massima",
-      "duration": "durata",
-      "duration_forward": "durata di andata",
-      "duration_backward": "durata di ritorno",
-      "distance": "lunghezza",
-      "difficulty": "difficoltà"
+      "ascent": "Dislivello positivo",
+      "descent": "Dislivello negativo",
+      "ele_from": "Quota di partenza",
+      "ele_to": "Quota di arrivo",
+      "ele_min": "Quota minima",
+      "ele_max": "Quota massima",
+      "duration": "Durata",
+      "duration_forward": "Durata di andata",
+      "duration_backward": "Durata di ritorno",
+      "distance": "Lunghezza",
+      "difficulty": "Difficoltà"
     },
     "downloadUrls": {
-      "gpx": "scarica il tracciato GPX",
-      "kml": "scarica il tracciato KML",
-      "geojson": "scarica il tracciato GEOJSON"
+      "gpx": "Scarica il tracciato GPX",
+      "kml": "Scarica il tracciato KML",
+      "geojson": "Scarica il tracciato GEOJSON"
     },
     "description": {
-      "readAll": "leggi tutto",
-      "hide": "nascondi"
+      "readAll": "Leggi tutto",
+      "hide": "Nascondi"
     },
     "elevationChart": {
       "slope": {
-        "label": "pendenza"
+        "label": "Pendenza"
       },
       "surfaces": {
         "asphalt": {
-          "label": "asfalto"
+          "label": "Asfalto"
         },
         "concrete": {
-          "label": "cemento"
+          "label": "Cemento"
         },
         "dirt": {
-          "label": "terra"
+          "label": "Terra"
         },
         "grass": {
-          "label": "erba"
+          "label": "Erba"
         },
         "gravel": {
-          "label": "ghiaia"
+          "label": "Ghiaia"
         },
         "paved": {
-          "label": "lastricato"
+          "label": "Lastricato"
         },
         "sand": {
-          "label": "sabbia"
+          "label": "Sabbia"
         }
       }
     }
@@ -56,11 +56,11 @@
     "length": "Lunghezza",
     "difference": "Dislivello"
   },
-  "hiking": "escursionismo",
+  "hiking": "Escursionismo",
   "skitouring": "Scialpinismo",
   "walking": "Passeggiata",
   "running": "Corsa",
   "cycling": "In bicicletta",
-  "poi_type": "punti di interesse",
-  "where": "luoghi"
+  "poi_type": "Punti di interesse",
+  "where": "Luoghi"
 }

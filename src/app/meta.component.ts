@@ -3,7 +3,7 @@ import {Component, Inject, Renderer2} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
-import {confAPP, confGeohubId} from './shared/wm-core/store/conf/conf.selector';
+import {confAPP, confGeohubId, confWEBAPP} from './shared/wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'webmapp-meta',
@@ -32,12 +32,13 @@ import {confAPP, confGeohubId} from './shared/wm-core/store/conf/conf.selector';
 })
 export class MetaComponent {
   APP$: Observable<any> = this._store.select(confAPP);
+  WEBAPP$: Observable<any> = this._store.select(confWEBAPP);
   confGeohubId$: Observable<number> = this._store.select(confGeohubId);
 
   constructor(
     private _store: Store<any>,
     @Inject(DOCUMENT) private _document: Document,
-    private _renderer2: Renderer2,
+    private _renderer: Renderer2,
   ) {
     this.confGeohubId$
       .pipe(
@@ -46,12 +47,36 @@ export class MetaComponent {
       )
       .subscribe(id => {
         if (id) {
-          const styleLink: any = this._renderer2.createElement('link') as HTMLLinkElement;
-          this._renderer2.setProperty(styleLink, 'rel', 'stylesheet');
-          this._renderer2.setProperty(styleLink, 'href', `theme/${id}.css`);
-          this._renderer2.setProperty(styleLink, 'id', 'client-theme');
-          this._renderer2.appendChild(this._document.head, styleLink);
+          const styleLink: any = this._renderer.createElement('link') as HTMLLinkElement;
+          this._renderer.setProperty(styleLink, 'rel', 'stylesheet');
+          this._renderer.setProperty(styleLink, 'href', `theme/${id}.css`);
+          this._renderer.setProperty(styleLink, 'id', 'client-theme');
+          this._renderer.appendChild(this._document.head, styleLink);
         }
       });
+    this.WEBAPP$.pipe(
+      filter(webApp => webApp != null && webApp.gu_id != null),
+      take(1),
+    ).subscribe(webApp => {
+      this._loadScript(`https://www.googletagmanager.com/gtag/js?id=${webApp.gu_id}`);
+
+      const script = this._renderer.createElement('script');
+      this._renderer.appendChild(this._document.head, script);
+      script.textContent = `
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "${webApp.gu_id}");
+  `;
+    });
+  }
+
+  private _loadScript(url: string): void {
+    const s = this._renderer.createElement('script');
+    this._renderer.setAttribute(s, 'src', url);
+    this._renderer.setAttribute(s, 'async', '');
+    this._renderer.appendChild(this._document.head, s);
   }
 }

@@ -1,15 +1,12 @@
 import {updateTrackFilter} from './../../shared/wm-core/store/api/api.actions';
 import {
-  apiFilterTracks,
   apiSearchInputTyped,
   apiElasticState,
   apiElasticStateLayer,
   poiFilterIdentifiers,
-  poiFilters,
   pois,
-  stats,
-  trackStats,
   apiGoToHome,
+  countSelectedFilters,
 } from './../../shared/wm-core/store/api/api.selector';
 import {
   ChangeDetectionStrategy,
@@ -22,7 +19,7 @@ import {
 import {ActivatedRoute, Router} from '@angular/router';
 import {Store} from '@ngrx/store';
 import {FeatureCollection} from 'geojson';
-import {BehaviorSubject, combineLatest, from, merge, Observable, of, Subscription} from 'rxjs';
+import {BehaviorSubject, from, merge, Observable, of, Subscription} from 'rxjs';
 import {
   distinctUntilChanged,
   filter,
@@ -47,7 +44,6 @@ import {
 } from 'src/app/shared/wm-core/store/api/api.actions';
 
 import {
-  confFILTERS,
   confGeohubId,
   confHOME,
   confJIDOUPDATETIME,
@@ -89,7 +85,6 @@ export class MapPage implements OnDestroy {
   apiGoToHome$: Observable<boolean> = this._store.select(apiGoToHome);
   apiSearchInputTyped$: Observable<string> = this._store.select(apiSearchInputTyped);
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
-  confFILTERS$: Observable<any> = this._store.select(confFILTERS);
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
   confJIDOUPDATETIME$: Observable<any> = this._store.select(confJIDOUPDATETIME);
   confMap$: Observable<any> = this._store.select(confMAP).pipe(
@@ -148,23 +143,16 @@ export class MapPage implements OnDestroy {
     ),
   );
   poiFilterIdentifiers$: Observable<string[]> = this._store.select(poiFilterIdentifiers);
-  poiFilters$: Observable<any> = this._store.select(poiFilters);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<FeatureCollection> = this._store.select(pois);
-  poisStats$: Observable<{
-    [name: string]: {[identifier: string]: any};
-  }> = this._store.select(stats);
+
   refreshLayer$: Observable<any>;
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   resetSelectedPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  selectedTrackFilters$: Observable<any> = this._store.select(apiFilterTracks);
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
-  trackStats$: Observable<{
-    [name: string]: {[identifier: string]: any};
-  }> = this._store.select(trackStats);
   translationCallback: (any) => string = value => {
     if (value == null) return '';
     return this._langService.instant(value);
@@ -182,10 +170,7 @@ export class MapPage implements OnDestroy {
     private _store: Store,
     private _langService: LangService,
   ) {
-    this.refreshLayer$ = combineLatest(
-      this._store.select(apiFilterTracks),
-      this.poiFilterIdentifiers$,
-    );
+    this.refreshLayer$ = this._store.select(countSelectedFilters);
     if (window.innerWidth < maxWidth) {
       this.mapPadding$.next([initPadding[0], initPadding[1], initPadding[2], menuCloseLeft]);
       this.resizeEVT.next(!this.resizeEVT.value);

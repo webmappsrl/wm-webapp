@@ -104,13 +104,7 @@
     <wm-filters
       top-right
       #filterCmp
-      [confFilters]="confFILTERS$|async"
-      [pois]="pois$|async"
       [wmFiltersClose]="wmap.wmMapCloseTopRightBtnsEVT$|async"
-      [poisStats]="poisStats$|async"
-      [trackStats]="trackStats$|async"
-      [poiFilters]="poiFilters$|async"
-      [trackFilters]="selectedTrackFilters$|async"
       (filterPoisEvt)="updatePoiFilter($event)"
       (filterTracksEvt)="updateTrackFilter($event)"
       (removefilterTracksEvt)="removeTrackFilter($event)"

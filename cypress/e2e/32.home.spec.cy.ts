@@ -1,5 +1,6 @@
 import {wmIT} from './../../src/app/shared/wm-core/localization/i18n/it';
-const serverURL = 'https://32.app.geohub.webmapp.it/#/map';
+// const serverURL = 'https://32.app.geohub.webmapp.it/#/map';
+const serverURL = '/';
 const confURL = 'https://geohub.webmapp.it/api/app/webmapp/32/config.json';
 describe('HOME', () => {
   let conf = null;

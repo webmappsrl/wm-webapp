@@ -1,6 +1,4 @@
 import {wmIT} from './../../src/app/shared/wm-core/localization/i18n/it';
-// const serverURL = 'https://32.app.geohub.webmapp.it/#/map';
-const serverURL = '/';
 const confURL = 'https://geohub.webmapp.it/api/app/webmapp/32/config.json';
 describe('HOME', () => {
   let conf = null;
@@ -8,11 +6,7 @@ describe('HOME', () => {
   let wmTitleConf: ITITLEBOX[] = [];
   let wmLayerConf: ILAYERBOX[] = [];
   before(() => {
-    // Cypress starts out with a blank slate for each test
-    // so we must tell it to visit our website with the `cy.visit()` command.
-    // Since we want to visit the same URL at the start of all our tests,
-    // we include it in our beforeEach function so that it runs before each test
-    cy.request(confURL) // Sostituisci '/your-url' con l'URL desiderato
+    cy.request(confURL)
       .its('body')
       .then(res => {
         conf = res;
@@ -22,11 +16,7 @@ describe('HOME', () => {
       });
   });
   beforeEach(() => {
-    // Cypress starts out with a blank slate for each test
-    // so we must tell it to visit our website with the `cy.visit()` command.
-    // Since we want to visit the same URL at the start of all our tests,
-    // we include it in our beforeEach function so that it runs before each test
-    cy.visit(serverURL);
+    cy.visit('/');
   });
   it('welcome', () => {
     const welcome = conf.APP.welcome;
@@ -56,20 +46,19 @@ describe('HOME', () => {
   it('wm-horizontal-scroll-box: elem', () => {
     cy.get('wm-home-page wm-horizontal-scroll-box').each((elem, idx) => {
       cy.wrap(elem)
-        .find('.wm-box') // Seleziona gli elementi <wm-box> all'interno di ciascun <wm-horizontal-scroll-box>
-        .should('have.length', wmHorizontalScrollBoxConf[idx].items.length) // Verifica che ci siano esattamente 5 elementi selezionati
+        .find('.wm-box')
+        .should('have.length', wmHorizontalScrollBoxConf[idx].items.length)
         .each(($box, idx2) => {
           const word = wmHorizontalScrollBoxConf[idx].items[idx2].title as string;
-          // Verifica che il testo all'interno del wm-box corrente sia corretto
           cy.wrap($box)
             .find('.wm-box-title')
             .should('have.text', wmIT[word] ?? word);
           const img = $box.find('img.wm-result-img');
-          expect(img).to.exist; // Verifica che l'immagine sia presente
+          expect(img).to.exist;
           const imageUrl = img.attr('src');
           expect(imageUrl).to.be.equal(wmHorizontalScrollBoxConf[idx].items[idx2].image_url);
           cy.request(imageUrl).then(response => {
-            expect(response.status).to.eq(200); // Verifica che la risposta HTTP per l'immagine sia 200 (OK)
+            expect(response.status).to.eq(200);
           });
         });
     });
@@ -90,12 +79,11 @@ describe('HOME', () => {
     cy.get('wm-home-page > wm-layer-box').each((elem, idx) => {
       cy.wrap(elem).should('include.text', wmLayerConf[idx].title);
       const img = elem.find('img.wm-img-image');
-      expect(img).to.exist; // Verifica che l'immagine sia presente
+      expect(img).to.exist;
       const imageUrl = img.attr('src');
       cy.request(imageUrl).then(response => {
-        expect(response.status).to.eq(200); // Verifica che la risposta HTTP per l'immagine sia 200 (OK)
+        expect(response.status).to.eq(200);
       });
     });
   });
 });
-// Funzione per ottenere il testo corretto del wm-box in base all'indice

@@ -1,5 +1,4 @@
 import {wmIT} from '../../src/app/shared/wm-core/localization/i18n/it';
-const serverURL = 'https://32.app.geohub.webmapp.it/#/map';
 const confURL = 'https://geohub.webmapp.it/api/app/webmapp/32/config.json';
 describe('HOME:Click sul box "Attività"', () => {
   let conf = null;
@@ -19,7 +18,7 @@ describe('HOME:Click sul box "Attività"', () => {
         wmTitleConf = conf.HOME.filter(el => el.box_type === 'title');
         wmLayerConf = conf.HOME.filter(el => el.box_type === 'layer');
       });
-    cy.visit(serverURL);
+    cy.visit('/');
     cy.get('wm-horizontal-scroll-box').first().find('.wm-box').first().click();
   });
 
@@ -31,9 +30,7 @@ describe('HOME:Click sul box "Attività"', () => {
     cy.get('wm-status-filter > ion-grid > ion-row > ion-col')
       .last()
       .should('have.text', 'Torna alla home');
-    
-      cy.get('ion-chip')
-      .first()
-      .should('have.text', 'Escursionismo');
+
+    cy.get('ion-chip').first().should('have.text', 'Escursionismo');
   });
 });

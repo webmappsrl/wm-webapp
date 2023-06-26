@@ -1,5 +1,5 @@
 import {FeatureCollection} from 'geojson';
-import {filterFeatureCollectionByInputTyped as filterFeatureCollectionByInputTypedFn} from '../../src/app/shared/wm-core/store/api/utils';
+import {filterFeatureCollectionByInputTyped as filterFeatureCollectionByInputTypedFn} from '../../../src/app/shared/wm-core/store/api/utils';
 const inputTyped = 'cento';
 const confURL = 'https://geohub.webmapp.it/api/app/webmapp/33/config.json';
 const apiURL = 'https://elastic-json.webmapp.it/search/?id=33&query=' + inputTyped;

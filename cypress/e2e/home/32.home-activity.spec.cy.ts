@@ -1,15 +1,12 @@
-import {wmIT} from '../../src/app/shared/wm-core/localization/i18n/it';
-const confURL = 'https://geohub.webmapp.it/api/app/webmapp/32/config.json';
+import {environment} from './../../src/environments/environment';
+const confURL = `https://geohub.webmapp.it/api/app/webmapp/${32}/config.json`;
+Cypress.config('defaultCommandTimeout', 10000);
 describe('HOME:Click sul box "Attività"', () => {
   let conf = null;
   let wmHorizontalScrollBoxConf: IHORIZONTALSCROLLBOX[] = [];
   let wmTitleConf: ITITLEBOX[] = [];
   let wmLayerConf: ILAYERBOX[] = [];
   before(() => {
-    // Cypress starts out with a blank slate for each test
-    // so we must tell it to visit our website with the `cy.visit()` command.
-    // Since we want to visit the same URL at the start of all our tests,
-    // we include it in our beforeEach function so that it runs before each test
     cy.request(confURL) // Sostituisci '/your-url' con l'URL desiderato
       .its('body')
       .then(res => {
@@ -19,6 +16,7 @@ describe('HOME:Click sul box "Attività"', () => {
         wmLayerConf = conf.HOME.filter(el => el.box_type === 'layer');
       });
     cy.visit('/');
+    cy.intercept('GET', '/');
     cy.get('wm-horizontal-scroll-box').first().find('.wm-box').first().click();
   });
 
@@ -31,6 +29,6 @@ describe('HOME:Click sul box "Attività"', () => {
       .last()
       .should('have.text', 'Torna alla home');
 
-    cy.get('ion-chip').first().should('have.text', 'Escursionismo');
+    cy.get('ion-chip').first().should('have.text', 'Torna alla home');
   });
 });

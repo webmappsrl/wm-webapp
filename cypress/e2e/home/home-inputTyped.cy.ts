@@ -14,12 +14,6 @@ describe('HOME_inputTyped', () => {
   let wmTitleConf: ITITLEBOX[] = [];
   let wmLayerConf: ILAYERBOX[] = [];
   let filterFeatureCollectionByInputTyped: FeatureCollection;
-  const hexToRgb = (hex: string): number[] => {
-    let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result
-      ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
-      : null;
-  };
 
   before(() => {
     cy.request(confURL)
@@ -74,44 +68,6 @@ describe('HOME_inputTyped', () => {
       .find('span')
       .should('include.text', tracksCountExpected);
   });
-  it.skip(`wm-home-result: tracks count should be have #1271b7 color`, () => {
-    const hexColor = '#1271b7';
-    const rgbColor = hexToRgb(hexColor).join(', ');
-
-    cy.get('wm-home-result > ion-segment > ion-segment-button')
-      .first()
-      .find('span')
-      .should('have.css', 'color', `rgb(${rgbColor})`);
-  });
-  it.skip(`wm-home-result: tracks count should be have #1271b7 border color`, () => {
-    const hexColor = '#1271b7';
-    const rgbColor = hexToRgb(hexColor).join(', ');
-
-    cy.get('wm-home-result > ion-segment > ion-segment-button')
-      .first()
-      .find('span')
-      .should('have.css', 'border', `1px solid rgb(${rgbColor})`);
-  });
-  it.skip(`wm-home-result: tracks count should be have #f2f5ff background color`, () => {
-    const hexColor = '#f2f5ff';
-    const rgbColor = hexToRgb(hexColor).join(', ');
-
-    cy.get('wm-home-result > ion-segment > ion-segment-button')
-      .first()
-      .find('span')
-      .should(
-        'have.css',
-        'background',
-        `rgb(${rgbColor}) none repeat scroll 0% 0% / auto padding-box border-box`,
-      );
-  });
-  it.skip(`wm-home-result: tracks images should have border-radius 0px`, () => {
-    cy.get(
-      'wm-home-result wm-img .wm-img-image, wm-home-result wm-poi-box wm-img .wm-img-image',
-    ).each($el => {
-      cy.wrap($el).should('have.css', 'border-radius', '0px');
-    });
-  });
   it('wm-home-result: tracks elem', () => {
     cy.get('wm-home-result ion-content').each((ionContent, idx) => {
       cy.wrap(ionContent)
@@ -138,45 +94,6 @@ describe('HOME_inputTyped', () => {
       .last()
       .find('span')
       .should('include.text', poisCountExpected);
-  });
-  it.skip(`wm-home-result: pois count should be have #b7127f color`, () => {
-    const hexColor = '#b7127f';
-    const rgbColor = hexToRgb(hexColor).join(', ');
-
-    cy.get('wm-home-result ion-segment-button[value="pois"]').click();
-    cy.get('wm-home-result > ion-segment > ion-segment-button')
-      .last()
-      .find('span')
-      .should('have.css', 'color', `rgb(${rgbColor})`);
-  });
-  it.skip(`wm-home-result: pois count should be have #b7127f border color`, () => {
-    const hexColor = '#b7127f';
-    const rgbColor = hexToRgb(hexColor).join(', ');
-
-    cy.get('wm-home-result ion-segment-button[value="pois"]').click();
-    cy.get('wm-home-result > ion-segment > ion-segment-button')
-      .last()
-      .find('span')
-      .should('have.css', 'border', `1px solid rgb(${rgbColor})`);
-  });
-  it.skip(`wm-home-result: pois count should be have #fff6fc background color`, () => {
-    const hexColor = '#fff6fc';
-    const rgbColor = hexToRgb(hexColor).join(', ');
-
-    cy.get('wm-home-result > ion-segment > ion-segment-button')
-      .last()
-      .find('span')
-      .should(
-        'have.css',
-        'background',
-        `rgb(${rgbColor}) none repeat scroll 0% 0% / auto padding-box border-box`,
-      );
-  });
-  it.skip(`wm-home-result: pois images should have border-radius 0px`, () => {
-    cy.get('wm-home-result ion-segment-button[value="pois"]').click();
-    cy.get('wm-home-result ion-content div wm-img img').each($el => {
-      cy.wrap($el).should('have.css', 'border-radius', '0px');
-    });
   });
   it('wm-home-result: pois elem', () => {
     cy.get('wm-home-result > ion-segment > ion-segment-button').last().click();

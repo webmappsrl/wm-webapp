@@ -45,15 +45,15 @@ describe('HOME_inputTyped', () => {
         );
         poisCountExpected = filterFeatureCollectionByInputTyped.features.length ?? 0;
       });
-  });
-  beforeEach(() => {
+
     cy.visit('/');
     cy.get('webmapp-search div form input').type(inputTyped);
-    cy.wait(5000);
   });
+
   it('home_inputTyped should exist', () => {
     cy.get('webmapp-search div form input').should('exist');
   });
+
   it('wm-status-filter: should show "Filtri attivi" button text', () => {
     cy.get('wm-status-filter > ion-grid > ion-row > ion-col')
       .first()

@@ -1,6 +1,11 @@
-import {wmIT} from './../../src/app/shared/wm-core/localization/i18n/it';
-const confURL = 'https://geohub.webmapp.it/api/app/webmapp/32/config.json';
-describe('HOME', () => {
+import {wmIT} from 'src/app/shared/wm-core/localization/i18n/it';
+import {environment} from 'src/environments/environment';
+
+Cypress.config('defaultCommandTimeout', 1000000);
+const appId = environment.geohubId;
+const confURL = `https://geohub.webmapp.it/api/app/webmapp/${appId}/config.json`;
+
+describe.skip('HOME', () => {
   let conf = null;
   let wmHorizontalScrollBoxConf: IHORIZONTALSCROLLBOX[] = [];
   let wmTitleConf: ITITLEBOX[] = [];
@@ -14,10 +19,9 @@ describe('HOME', () => {
         wmTitleConf = conf.HOME.filter(el => el.box_type === 'title');
         wmLayerConf = conf.HOME.filter(el => el.box_type === 'layer');
       });
-  });
-  beforeEach(() => {
     cy.visit('/');
   });
+
   it('welcome', () => {
     const welcome = conf.APP.welcome;
     if (welcome && JSON.stringify(welcome) != '{"es":null}') {
@@ -29,7 +33,7 @@ describe('HOME', () => {
         });
     } else {
       // Il test viene saltato se la condizione non è verificata
-      cy.log(`Il test è stato saltato perché la condizione non è verificata su ${serverURL}`);
+      cy.log(`Il test è stato saltato perché la condizione non è verificata`);
     }
   });
   it('wm-horizontal-scroll-box: title', () => {

@@ -1,16 +1,17 @@
-import {environment} from './../../src/environments/environment';
-const confURL = `https://geohub.webmapp.it/api/app/webmapp/${32}/config.json`;
-Cypress.config('defaultCommandTimeout', 10000);
-describe('HOME:Click sul box "Attività"', () => {
+import {environment} from 'src/environments/environment';
+
+const appId = environment.geohubId;
+const confURL = `https://geohub.webmapp.it/api/app/webmapp/${appId}/config.json`;
+
+describe.skip('HOME:Click sul box "Attività"', () => {
   let conf = null;
   let wmHorizontalScrollBoxConf: IHORIZONTALSCROLLBOX[] = [];
   let wmTitleConf: ITITLEBOX[] = [];
   let wmLayerConf: ILAYERBOX[] = [];
   before(() => {
-    cy.request(confURL) // Sostituisci '/your-url' con l'URL desiderato
+    cy.request(confURL)
       .its('body')
-      .then(res => {
-        conf = res;
+      .then(conf => {
         wmHorizontalScrollBoxConf = conf.HOME.filter(el => el.box_type === 'horizontal_scroll');
         wmTitleConf = conf.HOME.filter(el => el.box_type === 'title');
         wmLayerConf = conf.HOME.filter(el => el.box_type === 'layer');

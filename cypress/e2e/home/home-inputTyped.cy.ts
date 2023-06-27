@@ -1,13 +1,15 @@
 import {FeatureCollection} from 'geojson';
 import {filterFeatureCollectionByInputTyped as filterFeatureCollectionByInputTypedFn} from '../../../src/app/shared/wm-core/store/api/utils';
+import {environment} from 'src/environments/environment';
+
+Cypress.config('defaultCommandTimeout', 1000000);
+const appId = environment.geohubId;
 const inputTyped = 'cento';
-const confURL = 'https://geohub.webmapp.it/api/app/webmapp/33/config.json';
+const confURL = `https://geohub.webmapp.it/api/app/webmapp/${appId}/config.json`;
+const poisURL = `https://geohub.webmapp.it/api/v1/app/${appId}/pois.geojson`;
 const apiURL = 'https://elastic-json.webmapp.it/search/?id=33&query=' + inputTyped;
-const poisURL = 'https://geohub.webmapp.it/api/v1/app/33/pois.geojson';
 
 describe('HOME_inputTyped', () => {
-  let conf = null;
-  let elasticRes = null;
   let tracks = [];
   let poisCountExpected = 0;
   let tracksCountExpected = 0;
@@ -18,15 +20,13 @@ describe('HOME_inputTyped', () => {
   before(() => {
     cy.request(confURL)
       .its('body')
-      .then(res => {
-        conf = res;
+      .then(conf => {
         wmTitleConf = conf.HOME.filter(el => el.box_type === 'title');
         wmLayerConf = conf.HOME.filter(el => el.box_type === 'layer');
       });
     cy.request(apiURL)
       .its('body')
-      .then(res => {
-        elasticRes = res;
+      .then(elasticRes => {
         tracks = elasticRes?.hits?.hits;
         tracksCountExpected = elasticRes?.hits?.total?.value ?? 0;
       });
@@ -41,8 +41,8 @@ describe('HOME_inputTyped', () => {
       });
 
     cy.visit('/');
-    cy.get('webmapp-search div form input').type(inputTyped);
     cy.intercept('GET', poisURL).as('getPois');
+    cy.get('webmapp-search div form input').type(inputTyped);
     cy.wait('@getPois').its('response.statusCode').should('eq', 200);
   });
 

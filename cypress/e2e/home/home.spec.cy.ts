@@ -1,11 +1,11 @@
 import {wmIT} from 'src/app/shared/wm-core/localization/i18n/it';
 import {environment} from 'src/environments/environment';
 
-Cypress.config('defaultCommandTimeout', 1000000);
+Cypress.config('defaultCommandTimeout', 10000);
 const appId = environment.geohubId;
 const confURL = `https://geohub.webmapp.it/api/app/webmapp/${appId}/config.json`;
 
-describe.skip('HOME', () => {
+describe('HOME', () => {
   let conf = null;
   let wmHorizontalScrollBoxConf: IHORIZONTALSCROLLBOX[] = [];
   let wmTitleConf: ITITLEBOX[] = [];
@@ -23,71 +23,105 @@ describe.skip('HOME', () => {
   });
 
   it('welcome', () => {
-    const welcome = conf.APP.welcome;
-    if (welcome && JSON.stringify(welcome) != '{"es":null}') {
+    const welcome = JSON.stringify(conf.APP.welcome);
+
+    if (welcome && welcome != '[]' && welcome != '{"es":null}') {
       cy.get('span')
         .first()
         .invoke('text')
         .then(text => {
-          expect(welcome.it).to.include(text);
+          expect(conf.APP.welcome.it).to.include(text);
         });
     } else {
-      // Il test viene saltato se la condizione non è verificata
-      cy.log(`Il test è stato saltato perché la condizione non è verificata`);
+      cy.log(`SKIP(welcome): non presente nella HOME della app con id ${appId}`);
     }
   });
   it('wm-horizontal-scroll-box: title', () => {
-    cy.get('wm-horizontal-scroll-box webmapp-title').each((elem, idx) => {
-      expect(elem.text()).to.include(wmHorizontalScrollBoxConf[idx].title);
-    });
+    if (wmHorizontalScrollBoxConf.length > 0) {
+      cy.get('wm-horizontal-scroll-box webmapp-title').each((elem, idx) => {
+        expect(elem.text()).to.include(wmHorizontalScrollBoxConf[idx].title);
+      });
+    } else {
+      cy.log(
+        `SKIP(wm-horizontal-scroll-box: title): non presente nella HOME della app con id ${appId}`,
+      );
+    }
   });
   it('wm-horizontal-scroll-box: length', () => {
-    cy.get('wm-home-page wm-horizontal-scroll-box').should(
-      'have.length',
-      wmHorizontalScrollBoxConf.length,
-    );
+    if (wmHorizontalScrollBoxConf.length > 0) {
+      cy.get('wm-home-page wm-horizontal-scroll-box').should(
+        'have.length',
+        wmHorizontalScrollBoxConf.length,
+      );
+    } else {
+      cy.log(
+        `SKIP(wm-horizontal-scroll-box: length): non presente nella HOME della app con id ${appId}`,
+      );
+    }
   });
   it('wm-horizontal-scroll-box: elem', () => {
-    cy.get('wm-home-page wm-horizontal-scroll-box').each((elem, idx) => {
-      cy.wrap(elem)
-        .find('.wm-box')
-        .should('have.length', wmHorizontalScrollBoxConf[idx].items.length)
-        .each(($box, idx2) => {
-          const word = wmHorizontalScrollBoxConf[idx].items[idx2].title as string;
-          cy.wrap($box)
-            .find('.wm-box-title')
-            .should('have.text', wmIT[word] ?? word);
-          const img = $box.find('img.wm-result-img');
-          expect(img).to.exist;
-          const imageUrl = img.attr('src');
-          expect(imageUrl).to.be.equal(wmHorizontalScrollBoxConf[idx].items[idx2].image_url);
-          cy.request(imageUrl).then(response => {
-            expect(response.status).to.eq(200);
+    if (wmHorizontalScrollBoxConf.length > 0) {
+      cy.get('wm-home-page wm-horizontal-scroll-box').each((elem, idx) => {
+        cy.wrap(elem)
+          .find('.wm-box')
+          .should('have.length', wmHorizontalScrollBoxConf[idx].items.length)
+          .each(($box, idx2) => {
+            const word = wmHorizontalScrollBoxConf[idx].items[idx2].title as string;
+            cy.wrap($box)
+              .find('.wm-box-title')
+              .should('have.text', wmIT[word] ?? word);
+            const img = $box.find('img.wm-result-img');
+            expect(img).to.exist;
+            const imageUrl = img.attr('src');
+            expect(imageUrl).to.be.equal(wmHorizontalScrollBoxConf[idx].items[idx2].image_url);
+            cy.request(imageUrl).then(response => {
+              expect(response.status).to.eq(200);
+            });
           });
-        });
-    });
+      });
+    } else {
+      cy.log(
+        `SKIP(wm-horizontal-scroll-box: elem): non presente nella HOME della app con id ${appId}`,
+      );
+    }
   });
   it('wm-title: length', () => {
-    cy.get('wm-home-page > webmapp-title').should('have.length', wmTitleConf.length);
+    if (wmTitleConf.length > 0) {
+      cy.get('wm-home-page > webmapp-title').should('have.length', wmTitleConf.length);
+    } else {
+      cy.log(`SKIP(wm-title: length): non presente nella HOME della app con id ${appId}`);
+    }
   });
   it('wm-title: text', () => {
-    cy.get('wm-home-page > webmapp-title').each((elem, idx) => {
-      cy.wrap(elem).should('include.text', wmTitleConf[idx].title);
-    });
+    if (wmTitleConf.length > 0) {
+      cy.get('wm-home-page > webmapp-title').each((elem, idx) => {
+        cy.wrap(elem).should('include.text', wmTitleConf[idx].title);
+      });
+    } else {
+      cy.log(`SKIP(wm-title: text): non presente nella HOME della app con id ${appId}`);
+    }
   });
 
   it('wm-layer-box: length', () => {
-    cy.get('wm-home-page > wm-layer-box').should('have.length', wmLayerConf.length);
+    if (wmLayerConf.length > 0) {
+      cy.get('wm-home-page > wm-layer-box').should('have.length', wmLayerConf.length);
+    } else {
+      cy.log(`SKIP(wm-layer-box: length): non presente nella HOME della app con id ${appId}`);
+    }
   });
   it('wm-layer-box: elem', () => {
-    cy.get('wm-home-page > wm-layer-box').each((elem, idx) => {
-      cy.wrap(elem).should('include.text', wmLayerConf[idx].title);
-      const img = elem.find('img.wm-img-image');
-      expect(img).to.exist;
-      const imageUrl = img.attr('src');
-      cy.request(imageUrl).then(response => {
-        expect(response.status).to.eq(200);
+    if (wmLayerConf.length > 0) {
+      cy.get('wm-home-page > wm-layer-box').each((elem, idx) => {
+        cy.wrap(elem).should('include.text', wmLayerConf[idx].title);
+        const img = elem.find('img.wm-img-image');
+        expect(img).to.exist;
+        const imageUrl = img.attr('src');
+        cy.request(imageUrl).then(response => {
+          expect(response.status).to.eq(200);
+        });
       });
-    });
+    } else {
+      cy.log(`SKIP(wm-layer-box: elem): non presente nella HOME della app con id ${appId}`);
+    }
   });
 });

@@ -2,7 +2,7 @@ import {FeatureCollection} from 'geojson';
 import {environment} from 'src/environments/environment';
 import {filterFeatureCollectionByInputTyped as filterFeatureCollectionByInputTypedFn} from '../../../src/app/shared/wm-core/store/api/utils';
 
-Cypress.config('defaultCommandTimeout', 1000000);
+Cypress.config('defaultCommandTimeout', 10000);
 const appId = environment.geohubId;
 const inputTyped = 'anello';
 const layerId = 164;

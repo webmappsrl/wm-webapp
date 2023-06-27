@@ -1,13 +1,14 @@
 import {FeatureCollection} from 'geojson';
 import {filterFeatureCollectionByInputTyped as filterFeatureCollectionByInputTypedFn} from '../../../src/app/shared/wm-core/store/api/utils';
 import {environment} from 'src/environments/environment';
+import {context} from '../../support/context';
 
-Cypress.config('defaultCommandTimeout', 1000000);
+Cypress.config('defaultCommandTimeout', 50000);
 const appId = environment.geohubId;
-const inputTyped = 'cento';
+const inputTyped = context[appId]?.inputTyped ?? '';
 const confURL = `https://geohub.webmapp.it/api/app/webmapp/${appId}/config.json`;
 const poisURL = `https://geohub.webmapp.it/api/v1/app/${appId}/pois.geojson`;
-const apiURL = 'https://elastic-json.webmapp.it/search/?id=33&query=' + inputTyped;
+const apiURL = `https://elastic-json.webmapp.it/search/?id=${appId}&query=` + inputTyped;
 
 describe('HOME_inputTyped', () => {
   let tracks = [];
@@ -91,25 +92,47 @@ describe('HOME_inputTyped', () => {
     });
   });
   //pois tab
+
+  it(`wm-home-result: no pois in search ${inputTyped}`, () => {
+    if (poisCountExpected === 0) {
+      cy.get('wm-home-result > ion-segment > ion-segment-button').should('have.length', 1);
+    } else {
+      cy.log(
+        `SKIP(wm-home-result: no pois in search ${inputTyped}): non presente nella HOME della app con id ${appId}`,
+      );
+    }
+  });
   it(`wm-home-result: second tab should be have same count of pois`, () => {
-    cy.get('wm-home-result > ion-segment > ion-segment-button')
-      .last()
-      .find('span')
-      .should('include.text', poisCountExpected);
+    if (poisCountExpected > 0) {
+      cy.get('wm-home-result > ion-segment > ion-segment-button')
+        .last()
+        .find('span')
+        .should('include.text', poisCountExpected);
+    } else {
+      cy.log(
+        `SKIP(wm-home-result: second tab should be have same count of pois ${inputTyped}): non presente nella HOME della app con id ${appId}`,
+      );
+    }
   });
   it('wm-home-result: pois elem', () => {
-    cy.get('wm-home-result > ion-segment > ion-segment-button').last().click();
+    if (poisCountExpected > 0) {
+      cy.get('wm-home-result > ion-segment > ion-segment-button').last().click();
 
-    cy.get('wm-poi-box').each((wmPoiBox, idx) => {
-      const currentFeature = filterFeatureCollectionByInputTyped.features[idx];
-      const currentProperties = currentFeature.properties;
-      const rawName = JSON.stringify(currentProperties.name);
-      cy.wrap(wmPoiBox)
-        .invoke('text')
-        .then(wmPoiBoxText => {
-          expect(rawName).to.include(wmPoiBoxText);
-        });
-    });
+      cy.get('wm-poi-box').each((wmPoiBox, idx) => {
+        const currentFeature = filterFeatureCollectionByInputTyped.features[idx];
+        const currentProperties = currentFeature.properties;
+        const rawName = JSON.stringify(currentProperties.name);
+        cy.wrap(wmPoiBox)
+          .invoke('text')
+          .then(wmPoiBoxText => {
+            expect(rawName).to.include(wmPoiBoxText);
+          });
+      });
+    } else {
+      cy.log(
+        `SKIP(wm-home-result: pois elem ${inputTyped}): non presente nella HOME della app con id ${appId}`,
+      );
+    }
   });
 });
 

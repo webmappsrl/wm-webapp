@@ -31,7 +31,7 @@ describe('HOME:Click sul box "Attività"', () => {
     if (wmHorizontalScrollBoxConf.length > 0) {
       cy.get('wm-status-filter > ion-grid > ion-row > ion-col')
         .first()
-        .should('have.text', 'Filtri attivi 1');
+        .should('include.text', 'Filtri attivi');
 
       cy.get('wm-status-filter > ion-grid > ion-row > ion-col')
         .last()

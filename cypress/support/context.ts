@@ -1,11 +1,11 @@
 export const context: {[appID: number]: any} = {
   32: {
-    inputTyped: 'oasi',
+    inputsTyped: ['oasi'],
   },
   33: {
-    inputTyped: 'cento',
+    inputsTyped: ['cento'],
   },
   52: {
-    inputTyped: 'percorsi',
+    inputsTyped: ['percorsi', 'chiesa', 'l', 'asd'],
   },
 };

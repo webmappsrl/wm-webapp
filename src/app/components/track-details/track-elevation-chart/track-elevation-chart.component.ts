@@ -45,8 +45,10 @@ export class TrackElevationChartComponent implements AfterViewInit {
 
   @Input('feature')
   set feature(value: CGeojsonLineStringFeature) {
-    const condition = (value.geometry.coordinates[0] as any[]).length > 3;
+    const condition = (value.geometry.coordinates[0] as any[]).length > 2;
     this.enableChart$.next(condition);
+    const slopeCondition = (value.geometry.coordinates[0] as any[]).length > 3;
+    this.enableSlope$.next(slopeCondition);
     this._cdr.detectChanges();
     this._feature = value;
     if (this._chart) {
@@ -69,6 +71,7 @@ export class TrackElevationChartComponent implements AfterViewInit {
 
   public _feature: CGeojsonLineStringFeature;
   enableChart$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  enableSlope$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   public slope: {
     available: boolean;
     selectedValue: number;

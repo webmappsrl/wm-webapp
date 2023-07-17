@@ -3,13 +3,13 @@
     <canvas #chartCanvas class="webmapp-track-elevation-chart-canvas"></canvas>
   </div>
   <div class="webmapp-track-elevation-chart-legend-container">
-    <div class="webmapp-track-elevation-chart-legend-slope-container" *ngIf="slope?.available">
+    <div class="webmapp-track-elevation-chart-legend-slope-container" *ngIf="enableSlope$|async">
       <div class="webmapp-track-elevation-chart-legend-slope-label">
         {{ "trackDetails.elevationChart.slope.label" | wmtrans }}
       </div>
       <div class="webmapp-track-elevation-chart-legend-slope-bar">
         <div
-          *ngIf="slope?.selectedValue !== undefined"
+          *ngIf="slope?.selectedValue !== undefined && slope.selectedPercentage > 0"
           class="webmapp-track-elevation-chart-legend-slope-selected-container"
           [ngStyle]="{
             left: slope.selectedPercentage + '%'

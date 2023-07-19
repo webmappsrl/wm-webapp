@@ -224,4 +224,16 @@ webmapp-track-details {
       }
     }
   }
+  .wm-alert {
+    color: #ff0000;
+    display: flex;
+    flex-direction: row;
+    ion-icon {
+      font-size: 25px;
+      align-self: center;
+    }
+    ion-label {
+      align-self: center;
+    }
+  }
 }

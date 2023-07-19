@@ -19,7 +19,12 @@
       <div class="webmapp-track-title" *ngIf="properties?.name as name">
         {{name | wmtrans}}
       </div>
-
+      <div class="wm-alert">
+        <ion-icon name="warning"></ion-icon>
+        <ion-label>
+          {{ (properties?.not_accessible_message ?? 'Questo percorso non è accessibile' ) | wmtrans}}
+        </ion-label>
+      </div>
       <webmapp-track-elevation-chart
         *ngIf="track !=null"
         [feature]="track"
@@ -46,7 +51,7 @@
       <webmapp-track-technical-data [feature]="track" id="webmapp-track-details-technical-data">
       </webmapp-track-technical-data>
       <ng-container *ngIf="properties.taxonomy  as taxonomy">
-        <div class="webmapp-title">{{'Percorribilità'|wmtrans}}</div>
+        <div class="webmapp-title">{{'Attività'|wmtrans}}</div>
         <div class="webmapp-walkability" *ngIf="taxonomy.activity as activity">
           <ng-container *ngFor="let item of activity">
             <div class="webmapp-walkability-box" *ngIf="item.identifier ==='hiking'">
@@ -106,10 +111,6 @@
       <ng-container
         *ngIf="properties?.not_accessible != null && properties?.not_accessible === true"
       >
-        <div class="webmapp-alert">
-          <ion-icon name="warning"></ion-icon>
-          {{ (properties?.not_accessible_message ?? 'Questo percorso non è accessibile' ) | wmtrans}}
-        </div>
       </ng-container>
       <ng-container *ngIf="properties?.description as description">
         <div class="webmapp-title wm-title-description">{{'Descrizione'|wmtrans}}</div>

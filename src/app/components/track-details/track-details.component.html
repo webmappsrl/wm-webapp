@@ -19,7 +19,10 @@
       <div class="webmapp-track-title" *ngIf="properties?.name as name">
         {{name | wmtrans}}
       </div>
-      <div class="wm-alert">
+      <div
+        class="wm-alert"
+        *ngIf="properties?.not_accessible != null && properties?.not_accessible === true"
+      >
         <ion-icon name="warning"></ion-icon>
         <ion-label>
           {{ (properties?.not_accessible_message ?? 'Questo percorso non è accessibile' ) | wmtrans}}

@@ -59,31 +59,37 @@
         </webmapp-track-technical-data>
       </div>
       <div class="wm-track-details-activities" *ngIf="properties.taxonomy  as taxonomy">
-        <div class="webmapp-title">{{'Attività'|wmtrans}}</div>
-        <div class="webmapp-walkability" *ngIf="taxonomy.activity as activity">
-          <ng-container *ngFor="let item of activity">
-            <div class="webmapp-walkability-box" *ngIf="item.identifier ==='hiking'">
-              <i class="icon-fill-trekking"></i>
-              <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
-            </div>
-            <div class="webmapp-walkability-box" *ngIf="item.identifier === 'cycling'">
-              <i class="icon-outline-bike"></i>
-              <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
-            </div>
-            <div class="webmapp-walkability-box" *ngIf="item.identifier === 'running'">
-              <i class="icon-outline-running"></i>
-              <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
-            </div>
-            <div class="webmapp-walkability-box" *ngIf="item.identifier === 'walking'">
-              <i class="icon-outline-walking"></i>
-              <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
-            </div>
-            <div class="webmapp-walkability-box" *ngIf="item.identifier === 'skitouring'">
-              <i class="icon-outline-nordic-walking"></i>
-              <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
-            </div>
-          </ng-container>
-        </div>
+        <ng-container *ngIf="taxonomy?.activity && taxonomy?.activity?.length > 0">
+          <div class="webmapp-title">{{'Attività'|wmtrans}}</div>
+          <div class="webmapp-walkability">
+            <ng-container *ngFor="let item of taxonomy.activity">
+              <div class="webmapp-walkability-box" *ngIf="item.identifier ==='mtb'">
+                <i class="icon-outline-MTB"></i>
+                <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
+              </div>
+              <div class="webmapp-walkability-box" *ngIf="item.identifier ==='hiking'">
+                <i class="icon-fill-trekking"></i>
+                <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
+              </div>
+              <div class="webmapp-walkability-box" *ngIf="item.identifier === 'cycling'">
+                <i class="icon-outline-bike"></i>
+                <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
+              </div>
+              <div class="webmapp-walkability-box" *ngIf="item.identifier === 'running'">
+                <i class="icon-outline-running"></i>
+                <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
+              </div>
+              <div class="webmapp-walkability-box" *ngIf="item.identifier === 'walking'">
+                <i class="icon-outline-walking"></i>
+                <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
+              </div>
+              <div class="webmapp-walkability-box" *ngIf="item.identifier === 'skitouring'">
+                <i class="icon-outline-nordic-walking"></i>
+                <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
       </div>
       <ng-container *ngIf="false">
         <div class="webmapp-title">{{'Come arrivare'|wmtrans}}</div>
@@ -110,24 +116,25 @@
           </div>
         </div>
       </ng-container>
-      <div class="wm-track-details-track-related-poi">
-        <div class="webmapp-title">{{'Punti di interesse'|wmtrans}}</div>
-        <webmapp-track-poi
-          [track]="track"
-          [poi]="poiId"
-          (poi-click)="poiClick.emit($event)"
-        ></webmapp-track-poi>
-      </div>
-      <ng-container
-        *ngIf="properties?.not_accessible != null && properties?.not_accessible === true"
-      >
-      </ng-container>
-      <div class="wm-track-details-description" *ngIf="properties?.description as description">
-        <div class="webmapp-title wm-track-details-title-description">
-          {{'Descrizione'|wmtrans}}
+      <ng-container *ngIf="track?.properties?.related_pois?.length > 0">
+        <div class="wm-track-details-track-related-poi">
+          <div class="webmapp-title">{{'Punti di interesse'|wmtrans}}</div>
+          <webmapp-track-poi
+            [track]="track"
+            [poi]="poiId"
+            (poi-click)="poiClick.emit($event)"
+          ></webmapp-track-poi>
         </div>
-        <webmapp-track-description [description]="description| wmtrans"></webmapp-track-description>
-      </div>
+      </ng-container>
+      <ng-container
+        *ngIf="(properties?.description?.it || properties?.description?.en || properties?.description?.fr || properties?.description?.de || properties?.description?.es || properties?.description?.pr)"
+      >
+        <div class="webmapp-title wm-title-description">{{'Descrizione'|wmtrans}}</div>
+        <webmapp-track-description
+          [description]="properties?.description| wmtrans"
+        ></webmapp-track-description>
+      </ng-container>
+
       <ng-container *ngIf="properties?.audio">
         <div class="webmapp-title">{{'Descrizione Audio'|wmtrans}}</div>
         <webmapp-track-audio [audio]="properties?.audio"></webmapp-track-audio>

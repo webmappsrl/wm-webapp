@@ -1,13 +1,11 @@
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormsModule} from '@angular/forms';
 
 import {CommonModule} from '@angular/common';
-import {GalleryComponent} from './gallery/gallery.component';
 import {IonicModule} from '@ionic/angular';
 import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
 import {NgModule} from '@angular/core';
 import {PipeModule} from 'src/app/pipes/pipe.module';
 import {SwiperModule} from 'swiper/angular';
-import {TrackAudioComponent} from '../common/track-audio/track-audio.component';
 import {TrackDescriptionComponent} from './track-description/track-description.component';
 import {TrackDetailsComponent} from './track-details.component';
 import {TrackDownloadUrlsComponent} from './track-download-urls/track-download-urls.component';
@@ -25,7 +23,6 @@ import {WMCommonModule} from '../common/wm-common.module';
     TrackDescriptionComponent,
     TrackElevationChartComponent,
     TrackPoiComponent,
-    GalleryComponent,
     ModalGalleryComponent,
     TrackRelatedUrlsComponent,
   ],

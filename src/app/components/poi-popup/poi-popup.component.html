@@ -1,11 +1,4 @@
 <ng-container *ngIf="poiProperties!= null">
-  <ng-container>
-    <webmapp-image-modal
-      *ngIf="toggleImage$|async as image"
-      (closeEVT)="toggleImage()"
-      [image]="image"
-    ></webmapp-image-modal>
-  </ng-container>
   <div class="row">
     <button class="webmapp-poi-popup-close" (click)="closeEVT.emit()">
       <i class="icon-outline-close"></i>
@@ -37,46 +30,11 @@
     </div>
   </div>
 
-  <div
-    class="row gallery"
+  <wm-gallery
+    class="row"
     *ngIf="poiProperties.feature_image !=null || (poiProperties.image_gallery !=null && poiProperties.image_gallery.length> 0)"
-  >
-    <ion-slides #gallery class="gallery" [options]="slideOptions">
-      <ion-slide
-        pager="true"
-        *ngIf="poiProperties.feature_image !=null"
-        (click)="toggleImage(poiProperties.feature_image.url)"
-      >
-        <img class="webmapp-poi-popup-img" [src]="poiProperties.feature_image.url" />
-      </ion-slide>
-      <ng-container
-        *ngIf="poiProperties.image_gallery!= null && poiProperties.image_gallery.length > 0"
-      >
-        <ion-slide
-          *ngFor="let image of poiProperties.image_gallery"
-          pager="true"
-          (click)="toggleImage(image.url)"
-        >
-          <img [src]="image.url" class="webmapp-poi-popup-img" />
-        </ion-slide>
-      </ng-container>
-    </ion-slides>
-    <ng-container
-      *ngIf="poiProperties.image_gallery!= null && poiProperties.image_gallery.length > 0"
-    >
-      <button type="submit" ion-button class="webmapp-poi-popup-left left circle" (click)="prev()">
-        <ion-icon name="caret-back-outline"></ion-icon>
-      </button>
-      <button
-        type="submit"
-        ion-button
-        class="webmapp-poi-popup-right right circle"
-        (click)="next()"
-      >
-        <ion-icon name="caret-forward-outline"></ion-icon>
-      </button>
-    </ng-container>
-  </div>
+    [gallery]="poiProperties.image_gallery"
+  ></wm-gallery>
   <div class="webmapp-poi-popup-btns">
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.address">
       <i class="wm-icn icon-fill-pin"></i>

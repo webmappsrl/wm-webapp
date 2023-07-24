@@ -18,6 +18,10 @@ export interface IGeojsonGeometry {
 export interface ILocaleString {
   en?: string;
   it?: string;
+  fr?: string;
+  de?: string;
+  es?: string;
+  pr?: string;
 }
 
 /**

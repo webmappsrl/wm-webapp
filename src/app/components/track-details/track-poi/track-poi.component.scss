@@ -1,6 +1,8 @@
 webmapp-track-poi {
+  display: flex;
+  flex-direction: column;
   .webmapp-track-poi-list {
-    margin-top: 10px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -18,15 +20,17 @@ webmapp-track-poi {
       align-content: stretch;
       align-items: stretch;
       margin-bottom: 10px;
-      height: 140px;
+      height: 160px;
       cursor: pointer;
     }
     .webmapp-track-poi-text {
       margin-left: 5px;
       flex: 1 1 auto;
       align-self: auto;
-      height: 100%;
-
+      height: fit-content;
+      width: 230px;
+      display: flex;
+      flex-direction: column;
       .webmapp-track-poi-title {
         font-size: 18px;
         font-weight: 700;

@@ -15,11 +15,14 @@
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <div #content id="webmapp-track-details-content">
+    <div class="wm-track-details-content" #content id="webmapp-track-details-content">
       <div class="webmapp-track-title" *ngIf="properties?.name as name">
         {{name | wmtrans}}
       </div>
-      <div class="wm-alert">
+      <div
+        class="wm-alert"
+        *ngIf="properties?.not_accessible != null && properties?.not_accessible === true"
+      >
         <ion-icon name="warning"></ion-icon>
         <ion-label>
           {{ (properties?.not_accessible_message ?? 'Questo percorso non è accessibile' ) | wmtrans}}
@@ -46,10 +49,16 @@
           <div>{{to}}</div>
         </div>
       </div>
-      <span class="webmapp-title">{{'Dettagli tecnici'|wmtrans}}</span>
-      <webmapp-track-technical-data [feature]="track" id="webmapp-track-details-technical-data">
-      </webmapp-track-technical-data>
-      <ng-container *ngIf="properties.taxonomy  as taxonomy">
+      <div class="wm-track-details-title-technical-details">
+        <span class="webmapp-title">{{'Dettagli tecnici'|wmtrans}}</span>
+        <webmapp-track-technical-data
+          class="wm-track-details-technical-details-data"
+          [feature]="track"
+          id="webmapp-track-details-technical-data"
+        >
+        </webmapp-track-technical-data>
+      </div>
+      <div class="wm-track-details-activities" *ngIf="properties.taxonomy  as taxonomy">
         <ng-container *ngIf="taxonomy?.activity && taxonomy?.activity?.length > 0">
           <div class="webmapp-title">{{'Attività'|wmtrans}}</div>
           <div class="webmapp-walkability">
@@ -81,8 +90,7 @@
             </ng-container>
           </div>
         </ng-container>
-      </ng-container>
-
+      </div>
       <ng-container *ngIf="false">
         <div class="webmapp-title">{{'Come arrivare'|wmtrans}}</div>
         <div class="webmapp-how-to-get">
@@ -109,16 +117,14 @@
         </div>
       </ng-container>
       <ng-container *ngIf="track?.properties?.related_pois?.length > 0">
-        <div class="webmapp-title">{{'Punti di interesse'|wmtrans}}</div>
-        <webmapp-track-poi
-          [track]="track"
-          [poi]="poiId"
-          (poi-click)="poiClick.emit($event)"
-        ></webmapp-track-poi>
-      </ng-container>
-      <ng-container
-        *ngIf="properties?.not_accessible != null && properties?.not_accessible === true"
-      >
+        <div class="wm-track-details-track-related-poi">
+          <div class="webmapp-title">{{'Punti di interesse'|wmtrans}}</div>
+          <webmapp-track-poi
+            [track]="track"
+            [poi]="poiId"
+            (poi-click)="poiClick.emit($event)"
+          ></webmapp-track-poi>
+        </div>
       </ng-container>
       <ng-container
         *ngIf="(properties?.description?.it || properties?.description?.en || properties?.description?.fr || properties?.description?.de || properties?.description?.es || properties?.description?.pr)"
@@ -128,24 +134,31 @@
           [description]="properties?.description| wmtrans"
         ></webmapp-track-description>
       </ng-container>
+
       <ng-container *ngIf="properties?.audio">
         <div class="webmapp-title">{{'Descrizione Audio'|wmtrans}}</div>
         <webmapp-track-audio [audio]="properties?.audio"></webmapp-track-audio>
       </ng-container>
       <webmapp-gallery *ngIf="properties?.image_gallery as imageGallery" [gallery]="imageGallery">
       </webmapp-gallery>
-      <ng-container *ngIf="properties.related_url as relatedUrl">
-        <div class="webmapp-title">{{'Collegamenti esterni'|wmtrans}}</div>
+      <div class="wm-track-details-related-url" *ngIf="properties.related_url as relatedUrl">
+        <div class="webmapp-title">
+          {{'Collegamenti esterni'|wmtrans}}
+        </div>
         <webmapp-related-urls [relatedUrls]="relatedUrl"> </webmapp-related-urls>
-      </ng-container>
-      <ng-container *ngIf="confOPTIONS$|async as confOPTIONS">
+      </div>
+      <div class="wm-track-details-download" *ngIf="confOPTIONS$|async as confOPTIONS">
         <ng-container *ngIf="confOPTIONS.download_track_enable === true">
           <div class="webmapp-title">{{'Downloads'|wmtrans}}</div>
-          <webmapp-track-download-urls [feature]="track" id="webmapp-track-details-download-urls">
+          <webmapp-track-download-urls
+            class="wm-track-details-download-urls"
+            [feature]="track"
+            id="webmapp-track-details-download-urls"
+          >
             <ng-content></ng-content>
           </webmapp-track-download-urls>
         </ng-container>
-      </ng-container>
+      </div>
       <ion-button *ngIf="enableEditingInline$|async" (click)="openGeohub()">
         {{'edit geohub'|wmtrans}}</ion-button
       >

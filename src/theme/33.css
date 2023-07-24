@@ -1,0 +1,46 @@
+/* start track-details component */
+.wm-track-details-content {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: inherit;
+  align-self: flex-start;
+  .wm-track-details-description {
+    order: 1;
+  }
+}
+.wm-track-details-title-technical-details {
+  order: 4;
+}
+.wm-track-details-activities {
+  order: 5;
+}
+.wm-track-details-track-related-poi {
+  order: 6;
+}
+.wm-track-details-related-url {
+  order: 7;
+}
+.wm-track-details-download {
+  order: 8;
+}
+.webmapp-track-title {
+  order: -1;
+}
+webmapp-track-description {
+  margin-top: -15px;
+}
+webmapp-gallery {
+  order: 2;
+}
+webmapp-track-elevation-chart {
+  align-self: flex-start;
+  order: 3;
+  width: 100%;
+}
+webmapp-track-technical-data {
+  margin-top: 15px;
+}
+webmapp-track-download-urls {
+  margin-top: -10px;
+}
+/* end track-details component */

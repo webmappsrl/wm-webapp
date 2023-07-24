@@ -414,14 +414,11 @@ webmapp-track-details #webmapp-track-details-content {
   display: flex;
   flex-direction: column;
 }
-webmapp-track-details webmapp-track-description {
+.wm-track-details-description {
   order: -1;
   line-height: 30px;
 }
-webmapp-track-details div.wm-title-description {
-  order: -1;
-  line-height: 30px;
-}
+
 webmapp-track-details .webmapp-title {
   height: 11px;
   font-style: normal;

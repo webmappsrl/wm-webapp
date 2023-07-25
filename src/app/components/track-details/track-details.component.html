@@ -139,8 +139,8 @@
         <div class="webmapp-title">{{'Descrizione Audio'|wmtrans}}</div>
         <webmapp-track-audio [audio]="properties?.audio"></webmapp-track-audio>
       </ng-container>
-      <webmapp-gallery *ngIf="properties?.image_gallery as imageGallery" [gallery]="imageGallery">
-      </webmapp-gallery>
+      <wm-gallery *ngIf="properties?.image_gallery as imageGallery" [gallery]="imageGallery">
+      </wm-gallery>
       <div class="wm-track-details-related-url" *ngIf="properties.related_url as relatedUrl">
         <div class="webmapp-title">
           {{'Collegamenti esterni'|wmtrans}}

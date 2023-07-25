@@ -83,7 +83,7 @@ webmapp-map-page {
     top: 0;
     left: 0;
     transition: width 500ms;
-    z-index: 10000;
+    z-index: 2;
     background: var(--wm-color-light);
     color: var(--wm-color-dark);
 
@@ -275,7 +275,7 @@ webmapp-map-page {
   .filter-container {
     position: relative;
   }
-  
+
   .draw-track-button {
     position: absolute;
     top: 0;
@@ -283,5 +283,4 @@ webmapp-map-page {
     margin-top: 8px;
     margin-right: 14px;
   }
-  
 }

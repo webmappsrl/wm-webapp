@@ -1,0 +1,22 @@
+<ion-slides [options]="slideOptions" #slider>
+  <ion-slide *ngFor="let item of gallery" (click)="currentImage$.next(item)">
+    <img [src]="item.url" (click)="currentImage$.next(item)" />
+  </ion-slide>
+</ion-slides>
+<ng-container *ngIf="gallery && gallery.length > 1">
+  <button type="submit" ion-button class="left circle" (click)="prev()">
+    <ion-icon name="caret-back-outline"></ion-icon>
+  </button>
+  <button type="submit" ion-button class="right circle" (click)="next()">
+    <ion-icon name="caret-forward-outline"></ion-icon>
+  </button>
+</ng-container>
+<webmapp-image-modal
+  *ngIf="(currentImage$|async) as currentImage"
+  [image]="currentImage.url !=null? currentImage.url:defaultPhotoPath"
+  [showArrows]="gallery && gallery.length > 1"
+  [caption]="currentImage.caption"
+  (closeEVT)="close()"
+  (nextEVT)="next()"
+  (prevEVT)="prev()"
+></webmapp-image-modal>

@@ -61,27 +61,6 @@ webmapp-poi-popup {
       margin-left: 5px;
     }
   }
-  .gallery {
-    width: -webkit-fill-available !important;
-    max-height: 100%;
-    position: relative;
-    background-color: white !important;
-
-    .left {
-      position: absolute;
-      left: 0;
-      top: 40%;
-      z-index: 99999;
-      margin-left: 5px;
-    }
-    .right {
-      position: absolute;
-      right: 0;
-      top: 40%;
-      z-index: 99999;
-      margin-right: 5px;
-    }
-  }
   .circle {
     width: 33px;
     height: 33px;
@@ -89,31 +68,6 @@ webmapp-poi-popup {
   }
   .webmapp-poi-popup-close {
     float: right;
-  }
-  ion-slide {
-    background-color: white;
-  }
-
-  .webmapp-poi-popup-img {
-    width: 100%;
-    object-fit: cover;
-    border-radius: 15px;
-    flex: 0 0 auto;
-    align-self: auto;
-    cursor: pointer;
-    flex-basis: 225px;
-    height: 250px !important;
-    background-color: white;
-  }
-
-  .webmapp-poi-popup-header {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    align-content: stretch;
-    align-items: baseline;
-    flex-basis: min-content;
   }
 
   .webmapp-poi-popup-title {

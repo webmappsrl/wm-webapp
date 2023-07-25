@@ -151,6 +151,11 @@ webmapp-track-details {
     font-family: var(--wm-font-family-content);
     padding: 15px 20px 20px;
 
+    display: flex;
+    flex-direction: column;
+    flex-wrap: inherit;
+    align-self: flex-start;
+
     #webmapp-track-details-technical-data,
     #webmapp-track-details-download-urls,
     #webmapp-track-details-gallery {

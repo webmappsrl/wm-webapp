@@ -15,7 +15,7 @@
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <div class="wm-track-details-content" #content id="webmapp-track-details-content">
+    <div #content id="webmapp-track-details-content">
       <div class="webmapp-track-title" *ngIf="properties?.name as name">
         {{name | wmtrans}}
       </div>
@@ -159,7 +159,11 @@
           </webmapp-track-download-urls>
         </ng-container>
       </div>
-      <ion-button *ngIf="enableEditingInline$|async" (click)="openGeohub()">
+      <ion-button
+        class="wm-track-details-edit-geohub"
+        *ngIf="enableEditingInline$|async"
+        (click)="openGeohub()"
+      >
         {{'edit geohub'|wmtrans}}</ion-button
       >
     </div>

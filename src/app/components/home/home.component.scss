@@ -4,6 +4,7 @@ webmapp-home {
     height: 100%;
     padding: 1%;
     padding-bottom: 100px;
+    overflow-y: auto;
     ion-content {
       --padding-bottom: 100px;
     }

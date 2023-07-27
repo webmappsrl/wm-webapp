@@ -7,6 +7,7 @@ import {
   pois,
   apiGoToHome,
   countSelectedFilters,
+  poisInitFeatureCollection,
 } from './../../shared/wm-core/store/api/api.selector';
 import {
   ChangeDetectionStrategy,
@@ -21,6 +22,7 @@ import {Store} from '@ngrx/store';
 import {FeatureCollection} from 'geojson';
 import {BehaviorSubject, from, merge, Observable, of, Subscription} from 'rxjs';
 import {
+  debounceTime,
   distinctUntilChanged,
   filter,
   map,
@@ -141,6 +143,16 @@ export class MapPage implements OnDestroy {
         return p;
       }),
     ),
+  ).pipe(
+    tap(poi => {
+      if (poi != null) {
+        this._router.navigate([], {
+          relativeTo: this._route,
+          queryParams: {poi: poi.properties.id},
+          queryParamsHandling: 'merge',
+        });
+      }
+    }),
   );
   poiFilterIdentifiers$: Observable<string[]> = this._store.select(poiFilterIdentifiers);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
@@ -161,6 +173,7 @@ export class MapPage implements OnDestroy {
     null,
   );
   goToHomeSub$: Subscription = Subscription.EMPTY;
+  setCurrentPoiSub$: Subscription = Subscription.EMPTY;
 
   constructor(
     private _route: ActivatedRoute,
@@ -187,6 +200,18 @@ export class MapPage implements OnDestroy {
         } as IDATALAYER;
       }),
     );
+    this.setCurrentPoiSub$ = this._store
+      .select(poisInitFeatureCollection)
+      .pipe(
+        filter(p => p != null),
+        switchMap(_ => this._route.queryParams),
+        filter(params => params != null),
+        debounceTime(500),
+      )
+      .subscribe(params => {
+        this.setCurrentPoi(params.poi);
+      });
+
     this.trackid$ = this._route.queryParams.pipe(
       filter(params => params != null && params.track != null),
       map(params => +params.track),
@@ -332,6 +357,11 @@ export class MapPage implements OnDestroy {
     this.currentRelatedPoi$.next(null);
     this.WmMapTrackRelatedPoisDirective.setPoi = -1;
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams: {poi: undefined},
+      queryParamsHandling: 'merge',
+    });
   }
 
   updatePoiFilter(filter: SelectFilterOption | SliderFilter | Filter): void {
@@ -357,5 +387,6 @@ export class MapPage implements OnDestroy {
 
   ngOnDestroy(): void {
     this.goToHomeSub$.unsubscribe();
+    this.setCurrentPoiSub$.unsubscribe();
   }
 }

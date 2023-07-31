@@ -11,6 +11,7 @@ import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {debounceTime, filter, withLatestFrom} from 'rxjs/operators';
+import {WmMapBaseDirective} from 'src/app/shared/map-core/src/directives';
 import {
   inputTyped,
   resetTrackFilters,
@@ -36,7 +37,6 @@ export class HomeComponent implements AfterContentInit {
 
   confAPP$: Observable<IAPP> = this._store.select(confAPP);
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
-
   showResult$ = this._store.select(showResult);
 
   constructor(
@@ -56,6 +56,7 @@ export class HomeComponent implements AfterContentInit {
       queryParams: {layer: null, filter: null},
       queryParamsHandling: 'merge',
     });
+    WmMapBaseDirective.priority = 0;
   }
 
   ngAfterContentInit(): void {

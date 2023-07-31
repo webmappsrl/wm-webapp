@@ -59,6 +59,7 @@ import {IGeojsonFeature} from 'src/app/shared/wm-core/types/model';
 import {UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {environment} from 'src/environments/environment';
+import {WmMapBaseDirective} from 'src/app/shared/map-core/src/directives';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -113,6 +114,7 @@ export class MapPage implements OnDestroy {
   enableDrawTrack$ = this._store.select(confShowDrawTrack);
   enableOverLay$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   geohubId$ = this._store.select(confGeohubId);
+  goToHomeSub$: Subscription = Subscription.EMPTY;
   graphhopperHost$: Observable<string> = of(environment.graphhopperHost);
   langs$ = this._store.select(confLANGUAGES).pipe(
     tap(l => {
@@ -157,11 +159,11 @@ export class MapPage implements OnDestroy {
   poiFilterIdentifiers$: Observable<string[]> = this._store.select(poiFilterIdentifiers);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<FeatureCollection> = this._store.select(pois);
-
   refreshLayer$: Observable<any>;
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   resetSelectedPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  setCurrentPoiSub$: Subscription = Subscription.EMPTY;
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
@@ -172,8 +174,6 @@ export class MapPage implements OnDestroy {
   wmMapFeatureCollectionOverlay$: BehaviorSubject<any | null> = new BehaviorSubject<any | null>(
     null,
   );
-  goToHomeSub$: Subscription = Subscription.EMPTY;
-  setCurrentPoiSub$: Subscription = Subscription.EMPTY;
 
   constructor(
     private _route: ActivatedRoute,
@@ -251,6 +251,11 @@ export class MapPage implements OnDestroy {
 
   next(): void {
     this.WmMapTrackRelatedPoisDirective.poiNext();
+  }
+
+  ngOnDestroy(): void {
+    this.goToHomeSub$.unsubscribe();
+    this.setCurrentPoiSub$.unsubscribe();
   }
 
   prev(): void {
@@ -337,6 +342,7 @@ export class MapPage implements OnDestroy {
   toggleDetails(trackid?): void {
     if (trackid == null) {
       trackid = -1;
+      WmMapBaseDirective.priority = 0;
     }
     this.updateUrl(trackid);
   }
@@ -383,10 +389,5 @@ export class MapPage implements OnDestroy {
       queryParams: {track: trackid ? trackid : null},
       queryParamsHandling: 'merge',
     });
-  }
-
-  ngOnDestroy(): void {
-    this.goToHomeSub$.unsubscribe();
-    this.setCurrentPoiSub$.unsubscribe();
   }
 }

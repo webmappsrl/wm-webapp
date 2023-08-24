@@ -6,7 +6,7 @@ import {
   HttpResponse,
   HTTP_INTERCEPTORS,
 } from '@angular/common/http';
-import {Injectable, LOCALE_ID, NgModule} from '@angular/core';
+import {Injectable, Injector, LOCALE_ID, NgModule} from '@angular/core';
 import {IonicModule, IonicRouteStrategy} from '@ionic/angular';
 
 import {registerLocaleData} from '@angular/common';
@@ -23,6 +23,8 @@ import {MetaComponent} from './meta.component';
 import {WmCoreModule} from './shared/wm-core/wm-core.module';
 import {UIReducer} from './store/UI/UI.reducer';
 import {tap} from 'rxjs/operators';
+import {createCustomElement} from '@angular/elements';
+
 registerLocaleData(localeIt);
 @Injectable()
 export class MyHttpInterceptor implements HttpInterceptor {
@@ -72,4 +74,9 @@ export class MyHttpInterceptor implements HttpInterceptor {
   ],
   bootstrap: [AppComponent, MetaComponent],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(injector: Injector) {
+    const webAppElement = createCustomElement(AppComponent, {injector});
+    customElements.define('webmapp-app-root', webAppElement);
+  }
+}

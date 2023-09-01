@@ -32,3 +32,5 @@ npm-debug.log*
 cypress/fixtures
 cypress/videos
 cypress/screenshots
+
+web-component/

@@ -10,6 +10,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "deploy": "ionic build --prod && scp -r ~/Documents/wm-webapp/www/* server:/var/www/html/app.geohub.webmapp.it/",
+    "deploy-webcomponent": "ng build --configuration production --output-hashing=none --output-path=web-component",
     "surge-sardegna": "ionic build --prod && surge --project ./www --domain http://32.webmapp.surge.sh/",
     "surge-sardegna-dev": "ionic build --prod && surge --project ./www --domain http://32.dev-webmapp.surge.sh/",
     "cy:open": "cypress open",

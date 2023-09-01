@@ -29,8 +29,8 @@ npm-debug.log*
 /platforms
 /plugins
 /www
+/web-component
 cypress/fixtures
 cypress/videos
 cypress/screenshots
 
-web-component/

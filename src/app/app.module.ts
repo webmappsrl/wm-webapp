@@ -77,6 +77,6 @@ export class MyHttpInterceptor implements HttpInterceptor {
 export class AppModule {
   constructor(injector: Injector) {
     const webAppElement = createCustomElement(AppComponent, {injector});
-    customElements.define('webmapp-app-root', webAppElement);
+    customElements.define('wm-webapp', webAppElement);
   }
 }

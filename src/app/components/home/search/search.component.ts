@@ -6,7 +6,7 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {debounceTime} from 'rxjs/operators';
 
 import {Store} from '@ngrx/store';
@@ -30,9 +30,9 @@ export class SearchComponent {
   @Output('words') wordsEVT: EventEmitter<string> = new EventEmitter<string>(false);
   @Output() isBlankEVT: EventEmitter<void> = new EventEmitter<void>();
 
-  public searchForm: FormGroup;
+  public searchForm: UntypedFormGroup;
 
-  constructor(fb: FormBuilder, store: Store<ApiRootState>) {
+  constructor(fb: UntypedFormBuilder, store: Store<ApiRootState>) {
     this.searchForm = fb.group({
       search: [''],
     });

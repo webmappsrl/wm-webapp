@@ -43,36 +43,32 @@ export class MyHttpInterceptor implements HttpInterceptor {
   }
 }
 @NgModule({
-  declarations: [AppComponent, MetaComponent],
-  entryComponents: [],
-  imports: [
-    BrowserModule,
-    IonicModule.forRoot(),
-    HttpClientModule,
-    AppRoutingModule,
-    WmCoreModule,
-    StoreModule.forRoot(
-      {
-        UI: UIReducer,
-      },
-      {},
-    ),
-    EffectsModule.forRoot(),
-    StoreDevtoolsModule.instrument({
-      maxAge: 25, // Retains last 25 states
-      logOnly: environment.production, // Restrict extension to log-only mode
-    }),
-  ],
-  providers: [
-    {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
-    {provide: LOCALE_ID, useValue: 'it'},
-    /*     {
-      provide: HTTP_INTERCEPTORS,
-      useClass: MyHttpInterceptor,
-      multi: true,
-    }, */
-  ],
-  bootstrap: [AppComponent, MetaComponent],
+    declarations: [AppComponent, MetaComponent],
+    imports: [
+        BrowserModule,
+        IonicModule.forRoot(),
+        HttpClientModule,
+        AppRoutingModule,
+        WmCoreModule,
+        StoreModule.forRoot({
+            UI: UIReducer,
+        }, {}),
+        EffectsModule.forRoot(),
+        StoreDevtoolsModule.instrument({
+            maxAge: 25,
+            logOnly: environment.production, // Restrict extension to log-only mode
+        }),
+    ],
+    providers: [
+        { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+        { provide: LOCALE_ID, useValue: 'it' },
+        /*     {
+          provide: HTTP_INTERCEPTORS,
+          useClass: MyHttpInterceptor,
+          multi: true,
+        }, */
+    ],
+    bootstrap: [AppComponent, MetaComponent]
 })
 export class AppModule {
   constructor(injector: Injector) {

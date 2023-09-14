@@ -45,6 +45,8 @@
     "css-vars-ponyfill": "^2.4.7",
     "document-register-element": "^1.7.2",
     "geojson-to-kml": "0.0.1",
+    "graphhopper-js-api-client": "5.0.2",
+    "localforage": "^1.10.0",
     "ngx-print-jg": "^1.2.6",
     "ol": "7.1.0",
     "ol-ext": "^4.0.2",

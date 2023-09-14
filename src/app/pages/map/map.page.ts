@@ -150,7 +150,7 @@ export class MapPage implements OnDestroy {
       if (poi != null) {
         this._router.navigate([], {
           relativeTo: this._route,
-          queryParams: {poi: poi.properties.id},
+          queryParams: {poi:poi.id?? poi.properties.id},
           queryParamsHandling: 'merge',
         });
       }
@@ -249,13 +249,13 @@ export class MapPage implements OnDestroy {
     });
   }
 
-  next(): void {
-    this.WmMapTrackRelatedPoisDirective.poiNext();
-  }
-
   ngOnDestroy(): void {
     this.goToHomeSub$.unsubscribe();
     this.setCurrentPoiSub$.unsubscribe();
+  }
+
+  next(): void {
+    this.WmMapTrackRelatedPoisDirective.poiNext();
   }
 
   prev(): void {

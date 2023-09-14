@@ -51,14 +51,16 @@
         <a> {{poiProperties.ele}} {{'metri'|wmtrans}} </a>
       </p>
     </div>
-    <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.contact_phone" target="_blank">
-      <i class="wm-icn icon-fill-phone"></i>
-      <p>
-        <a href="tel:{{poiProperties.contact_phone}}">
-          {{poiProperties.contact_phone}}
-        </a>
-      </p>
-    </div>
+    <ng-container *ngIf="poiProperties.contact_phone|toArray as arrayOfPhones">
+      <div class="webmapp-poi-popup-btn" *ngFor="let cphone of arrayOfPhones" target="_blank">
+        <i class="wm-icn icon-fill-phone"></i>
+        <p>
+          <a href="tel:{{cphone}}">
+            {{cphone}}
+          </a>
+        </p>
+      </div>
+    </ng-container>
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.contact_email" target="_blank">
       <i class="wm-icn icon-fill-mail"></i>
       <a [href]="'mailto:' + poiProperties.contact_email">

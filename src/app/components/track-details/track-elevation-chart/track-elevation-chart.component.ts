@@ -108,6 +108,7 @@ export class TrackElevationChartComponent implements AfterViewInit {
     labels: Array<number>,
     length: number,
     maxAltitude: number,
+    minAltitude: number,
     surfaceValues: Array<{
       surface: string;
       values: Array<number>;
@@ -115,6 +116,7 @@ export class TrackElevationChartComponent implements AfterViewInit {
     }>,
     slopeValues: Array<[number, number]>,
   ) {
+    const delta = (maxAltitude - minAltitude) * 0.1;
     if (this._chartCanvas) {
       const surfaceDatasets: Array<ChartDataset> = [];
 
@@ -183,7 +185,8 @@ export class TrackElevationChartComponent implements AfterViewInit {
               title: {
                 display: false,
               },
-              max: maxAltitude,
+              max: maxAltitude + delta,
+              min: minAltitude - delta,
               ticks: {
                 maxTicksLimit: 2,
                 maxRotation: 0,
@@ -496,8 +499,8 @@ export class TrackElevationChartComponent implements AfterViewInit {
         this._feature.geometry.coordinates[0][2],
       );
       this._chartValues.push(currentLocation);
-      maxAlt = currentLocation.altitude;
-      minAlt = currentLocation.altitude;
+      maxAlt = currentLocation.altitude ?? 0;
+      minAlt = currentLocation.altitude ?? 0;
 
       const surface = Object.values(ETrackElevationChartSurface)[0];
       surfaceValues = this._setSurfaceValue(
@@ -521,10 +524,10 @@ export class TrackElevationChartComponent implements AfterViewInit {
         );
         trackLength += this._mapService.distanceBetweenPoints(previousLocation, currentLocation);
 
-        if (!maxAlt || maxAlt < currentLocation.altitude) {
+        if (maxAlt < currentLocation.altitude) {
           maxAlt = currentLocation.altitude;
         }
-        if (!minAlt || minAlt > currentLocation.altitude) {
+        if (minAlt > currentLocation.altitude) {
           minAlt = currentLocation.altitude;
         }
       }
@@ -602,7 +605,7 @@ export class TrackElevationChartComponent implements AfterViewInit {
       }
 
       setTimeout(() => {
-        this._createChart(labels, trackLength, maxAlt, surfaceValues, slopeValues);
+        this._createChart(labels, trackLength, maxAlt, minAlt, surfaceValues, slopeValues);
       }, 100);
     }
   }

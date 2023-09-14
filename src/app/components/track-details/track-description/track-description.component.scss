@@ -19,7 +19,7 @@
     width: 100%;
     text-align: center;
     padding-top: 40px;
-    padding-bottom: 30px;
+    padding-bottom: 5px;
     cursor: pointer;
     left: 0;
 
@@ -85,15 +85,15 @@
     }
   }
   @media print {
-    .webmapp-track-description-expand-container{
+    .webmapp-track-description-expand-container {
       display: none;
     }
-    #webmapp-track-description-html{
-      padding: 0!important;
+    #webmapp-track-description-html {
+      padding: 0 !important;
     }
- #webmapp-track-description-container{
-  position: absolute;
-  height:100%
- }   
+    #webmapp-track-description-container {
+      position: absolute;
+      height: 100%;
+    }
   }
 }

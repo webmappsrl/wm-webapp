@@ -52,7 +52,11 @@
       </p>
     </div>
     <ng-container *ngIf="poiProperties.contact_phone|toArray as arrayOfPhones">
-      <div class="webmapp-poi-popup-btn" *ngFor="let cphone of arrayOfPhones" target="_blank">
+      <div
+        class="webmapp-poi-popup-btn webmapp-poi-popup-phone"
+        *ngFor="let cphone of arrayOfPhones"
+        target="_blank"
+      >
         <i class="wm-icn icon-fill-phone"></i>
         <p>
           <a href="tel:{{cphone}}">
@@ -61,13 +65,20 @@
         </p>
       </div>
     </ng-container>
-    <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.contact_email" target="_blank">
+    <div
+      class="webmapp-poi-popup-btn webmapp-poi-popup-mail"
+      *ngIf="poiProperties.contact_email"
+      target="_blank"
+    >
       <i class="wm-icn icon-fill-mail"></i>
       <a [href]="'mailto:' + poiProperties.contact_email">
         {{poiProperties.contact_email}}
       </a>
     </div>
-    <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.related_url != null">
+    <div
+      class="webmapp-poi-popup-btn webmapp-poi-popup-urls"
+      *ngIf="poiProperties.related_url != null"
+    >
       <i class="wm-icn icon-fill-globe"></i>
       <webmapp-related-urls [relatedUrls]="poiProperties.related_url"></webmapp-related-urls>
     </div>

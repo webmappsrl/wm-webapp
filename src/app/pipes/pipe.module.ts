@@ -4,10 +4,11 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {WmGetFilterIcnPipe} from './webmapp-get-filter-icn.pipe';
 import {WmGetIcnPipe} from './webmapp-get-icn.pipe';
+import {WmToArrayPipe} from './webmapp-to-array.pipe';
 
 @NgModule({
-  declarations: [WmGetIcnPipe, WmGetFilterIcnPipe, BuildSvgDirective],
+  declarations: [WmGetIcnPipe, WmGetFilterIcnPipe, WmToArrayPipe, BuildSvgDirective],
   imports: [CommonModule, WmPipeModule],
-  exports: [WmGetIcnPipe, WmGetFilterIcnPipe, BuildSvgDirective, WmPipeModule],
+  exports: [WmGetIcnPipe, WmGetFilterIcnPipe, WmToArrayPipe, BuildSvgDirective, WmPipeModule],
 })
 export class PipeModule {}

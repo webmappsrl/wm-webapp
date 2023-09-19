@@ -20,7 +20,6 @@
   </ng-container>
   <ng-template #home>
     <wm-home-page
-      (poiTypeFilterBoxEVT)="togglePoiFilter($event[0],$event[1])"
       (slugBoxEVT)="openSlug($event[0],$event[1])"
       (externalUrlBoxEVT)="openExternalUrl($event)"
       (tracksBoxEVT)="setTrack($event)"

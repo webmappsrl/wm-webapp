@@ -60,6 +60,7 @@ import {UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {environment} from 'src/environments/environment';
 import {WmMapBaseDirective} from 'src/app/shared/map-core/src/directives';
+import {WmLoadingService} from 'src/app/shared/wm-core/services/loading.service';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -150,7 +151,7 @@ export class MapPage implements OnDestroy {
       if (poi != null) {
         this._router.navigate([], {
           relativeTo: this._route,
-          queryParams: {poi:poi.id?? poi.properties.id},
+          queryParams: {poi: poi.id ?? poi.properties.id},
           queryParamsHandling: 'merge',
         });
       }
@@ -182,6 +183,7 @@ export class MapPage implements OnDestroy {
     private _cdr: ChangeDetectorRef,
     private _store: Store,
     private _langService: LangService,
+    private _loadingSvc: WmLoadingService,
   ) {
     this.refreshLayer$ = this._store.select(countSelectedFilters);
     if (window.innerWidth < maxWidth) {
@@ -321,6 +323,15 @@ export class MapPage implements OnDestroy {
     if (poi != null && poi != -1) {
       this.currentRelatedPoi$.next(poi as IGeojsonFeature);
       this.WmMapTrackRelatedPoisDirective.setPoi = (poi as any).id as number;
+    }
+  }
+
+  setLoader(event: string): void {
+    if (event === 'rendering:start') {
+      this._loadingSvc.show('rendering');
+    }
+    if (event === 'rendering:done') {
+      this._loadingSvc.close();
     }
   }
 

@@ -92,6 +92,7 @@
     [WmMapPoisUnselectPoi]="resetSelectedPoi$|async"
     [wmMapPoisDisableClusterLayer]="drawTrackEnable$|async"
     (currentPoiEvt)="setPoi($event)"
+    (wmMapPoiStateEvt)="setLoader($event)"
     wmMapTrack
     [track]="track$|async"
     [wmMapTrackColor]="trackColor$|async"

@@ -48,17 +48,6 @@ export class HomeComponent implements AfterContentInit {
     public sanitizer: DomSanitizer,
   ) {}
 
-  goToHome(): void {
-    this.setLayer(null);
-    this.searchCmp.reset();
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: {layer: null, filter: null},
-      queryParamsHandling: 'merge',
-    });
-    WmMapBaseDirective.priority = 0;
-  }
-
   ngAfterContentInit(): void {
     this.confHOME$
       .pipe(
@@ -79,6 +68,16 @@ export class HomeComponent implements AfterContentInit {
           this.openSlug(slugBox.slug);
         }
       });
+  }
+
+  goToHome(): void {
+    this.setLayer(null);
+    this.searchCmp.reset();
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams: {layer: null, filter: null},
+      queryParamsHandling: 'merge',
+    });
   }
 
   openExternalUrl(url: string): void {

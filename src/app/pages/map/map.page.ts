@@ -206,6 +206,7 @@ export class MapPage implements OnDestroy {
       .select(poisInitFeatureCollection)
       .pipe(
         filter(p => p != null),
+        tap(() => this._loadingSvc.close('Loading pois...')),
         switchMap(_ => this._route.queryParams),
         filter(params => params != null),
         debounceTime(500),
@@ -327,11 +328,22 @@ export class MapPage implements OnDestroy {
   }
 
   setLoader(event: string): void {
-    if (event === 'rendering:start') {
-      this._loadingSvc.show('rendering');
-    }
-    if (event === 'rendering:done') {
-      this._loadingSvc.close();
+    console.log(event);
+    switch (event) {
+      case 'rendering:layer_start':
+        this._loadingSvc.show('Rendering Layer');
+        break;
+      case 'rendering:layer_done':
+        this._loadingSvc.close('Rendering Layer');
+        break;
+      case 'rendering:pois_start':
+        this._loadingSvc.show('Rendering Pois');
+        break;
+      case 'rendering:pois_done':
+        this._loadingSvc.close('Rendering Pois');
+        break;
+      default:
+        this._loadingSvc.close();
     }
   }
 
@@ -353,7 +365,6 @@ export class MapPage implements OnDestroy {
   toggleDetails(trackid?): void {
     if (trackid == null) {
       trackid = -1;
-      WmMapBaseDirective.priority = 0;
     }
     this.updateUrl(trackid);
   }

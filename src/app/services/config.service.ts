@@ -8,18 +8,6 @@ import {environment} from 'src/environments/environment';
 export class ConfigService {
   private _geohubAppId: number;
 
-  constructor() {
-    const hostname: string = window.location.hostname;
-    if (hostname.indexOf('localhost') >= 0) {
-      this._geohubAppId = environment.geohubId;
-    } else {
-      this._geohubAppId = parseInt(hostname.split('.')[0], 10);
-      if (Number.isNaN(this._geohubAppId)) {
-        this._geohubAppId = environment.geohubId;
-      }
-    }
-  }
-
   public get configUrl(): string {
     return `${this._geohubApiBaseUrl}config`;
   }
@@ -34,5 +22,19 @@ export class ConfigService {
 
   private get _geohubApiBaseUrl(): string {
     return `${environment.api}/api/app/webapp/${this._geohubAppId}/`;
+  }
+
+  constructor() {
+    const hostname: string = window.location.hostname;
+    if (hostname.indexOf('localhost') < 0) {
+      if (hostname.indexOf('sentieri.caiparma') > -1) {
+        this._geohubAppId = 33;
+      } else {
+        const newGeohubId = parseInt(hostname.split('.')[0], 10);
+        if (!Number.isNaN(newGeohubId)) {
+          this._geohubAppId = newGeohubId;
+        }
+      }
+    }
   }
 }

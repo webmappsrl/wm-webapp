@@ -14,6 +14,7 @@ import {TrackPoiComponent} from './track-poi/track-poi.component';
 import {TrackRelatedUrlsComponent} from './track-related-urls/track-related-urls.component';
 import {TrackTechnicalDataComponent} from './track-technical-data/track-technical-data.component';
 import {WMCommonModule} from '../common/wm-common.module';
+import {WmCoreModule} from '../../shared/wm-core/wm-core.module';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,6 @@ import {WMCommonModule} from '../common/wm-common.module';
     ModalGalleryComponent,
     TrackRelatedUrlsComponent,
   ],
-  imports: [CommonModule, WMCommonModule, FormsModule, IonicModule, PipeModule, SwiperModule],
   exports: [
     TrackPoiComponent,
     TrackDetailsComponent,
@@ -34,6 +34,15 @@ import {WMCommonModule} from '../common/wm-common.module';
     TrackTechnicalDataComponent,
     TrackDownloadUrlsComponent,
     TrackDescriptionComponent,
+  ],
+  imports: [
+    CommonModule,
+    WMCommonModule,
+    FormsModule,
+    IonicModule,
+    PipeModule,
+    SwiperModule,
+    WmCoreModule,
   ],
 })
 export class TrackDetailsModule {}

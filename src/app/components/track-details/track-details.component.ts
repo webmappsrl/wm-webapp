@@ -1,4 +1,4 @@
-import {confOPTIONS} from 'src/app/shared/wm-core/store/conf/conf.selector';
+import {confMAP, confOPTIONS} from 'src/app/shared/wm-core/store/conf/conf.selector';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -16,6 +16,8 @@ import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-c
 import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
 import {Store} from '@ngrx/store';
 import {confShowEditingInline} from 'src/app/shared/wm-core/store/conf/conf.selector';
+import {apiElasticStateLayer} from 'src/app/shared/wm-core/store/api/api.selector';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'webmapp-track-details',
@@ -46,6 +48,7 @@ export class TrackDetailsComponent {
   @ViewChild('content') content: IonContent;
 
   confOPTIONS$ = this._store.select(confOPTIONS);
+  currentLayer$ = this._store.select(apiElasticStateLayer);
   public data: Partial<IGeojsonProperties>;
   enableEditingInline$ = this._store.select(confShowEditingInline);
   public feature: CGeojsonLineStringFeature;

@@ -35,20 +35,8 @@
         id="webmapp-track-details-elevation-chart"
       >
       </webmapp-track-elevation-chart>
+      <wm-track-edges [properties]="track.properties" [conf]="currentLayer$|async"></wm-track-edges>
 
-      <div
-        *ngIf="track && (track.properties.from || track.properties.to)"
-        class="webmapp-track-details-from-to"
-      >
-        <div *ngIf="track.properties.from as from" class="webmapp-track-details-from-to-box">
-          <div>{{'Punto di partenza'|wmtrans}}</div>
-          <div>{{from}}</div>
-        </div>
-        <div *ngIf="track.properties.to as to" class="webmapp-track-details-from-to-box">
-          <div>{{'Punto di arrivo'|wmtrans}}</div>
-          <div>{{to}}</div>
-        </div>
-      </div>
       <div class="wm-track-details-title-technical-details">
         <span class="webmapp-title">{{'Dettagli tecnici'|wmtrans}}</span>
         <webmapp-track-technical-data

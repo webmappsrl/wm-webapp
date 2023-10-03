@@ -15,7 +15,7 @@ wm-gallery {
 .wm-track-details-title-technical-details {
   order: 6;
 }
-webmapp-track-elevation-chart {
+wm-slope-chart {
   align-self: flex-start;
   order: 7;
   width: 100%;

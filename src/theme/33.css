@@ -2,7 +2,7 @@
 wm-gallery {
   order: 2;
 }
-webmapp-track-elevation-chart {
+wm-slope-chart {
   align-self: flex-start;
   order: 3;
   width: 100%;

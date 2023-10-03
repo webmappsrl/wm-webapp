@@ -28,13 +28,13 @@
           {{ (properties?.not_accessible_message ?? 'Questo percorso non è accessibile' ) | wmtrans}}
         </ion-label>
       </div>
-      <webmapp-track-elevation-chart
+      <wm-slope-chart
         *ngIf="track !=null"
-        [feature]="track"
+        [currentTrack]="track"
         (hover)="onLocationHover($event)"
         id="webmapp-track-details-elevation-chart"
       >
-      </webmapp-track-elevation-chart>
+      </wm-slope-chart>
       <wm-track-edges [properties]="track.properties" [conf]="currentLayer$|async"></wm-track-edges>
 
       <div class="wm-track-details-title-technical-details">

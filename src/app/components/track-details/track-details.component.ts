@@ -57,7 +57,7 @@ export class TrackDetailsComponent {
 
   constructor(private _modalController: ModalController, private _store: Store) {}
 
-  onLocationHover(event: ITrackElevationChartHoverElements) {
+  onLocationHover(event: ITrackElevationChartHoverElements | any) {
     this.trackElevationChartHover.emit(event);
   }
 

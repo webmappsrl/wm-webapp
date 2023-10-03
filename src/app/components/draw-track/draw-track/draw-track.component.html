@@ -13,7 +13,7 @@
         placeholder="{{ 'nome del percorso' | wmtrans }}"
       ></ion-input>
     </ion-item>
-    <webmapp-track-elevation-chart [feature]="track"></webmapp-track-elevation-chart>
+    <wm-slope-chart *ngIf="track !=null" [currentTrack]="track"></wm-slope-chart>
     <webmapp-track-technical-data [feature]="track"></webmapp-track-technical-data>
     <webmapp-track-download-urls [feature]="track"></webmapp-track-download-urls>
     <ion-button expand="full" (click)="saveCustomTrack()">{{ 'salva' | wmtrans}}</ion-button>
@@ -36,7 +36,7 @@
           </ion-card-header>
           <ion-card-content>
             <ion-item>
-              <webmapp-track-elevation-chart [feature]="savedTrack"></webmapp-track-elevation-chart>
+              <wm-slope-chart [currentTrack]="savedTrack"></wm-slope-chart>
             </ion-item>
             <ion-item>
               <webmapp-track-technical-data [feature]="savedTrack"> </webmapp-track-technical-data>

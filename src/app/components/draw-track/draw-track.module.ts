@@ -5,10 +5,11 @@ import {IonicModule} from '@ionic/angular';
 import {NgModule} from '@angular/core';
 import {PipeModule} from 'src/app/pipes/pipe.module';
 import {TrackDetailsModule} from '../track-details/track-details.module';
+import {WmCoreModule} from 'src/app/shared/wm-core/wm-core.module';
 
 @NgModule({
   declarations: [DrawTrackComponent],
-  imports: [CommonModule, FormsModule, TrackDetailsModule, IonicModule, PipeModule],
+  imports: [CommonModule, FormsModule, TrackDetailsModule, IonicModule, PipeModule, WmCoreModule],
   exports: [DrawTrackComponent],
 })
 export class DrawTrackModule {}

@@ -9,7 +9,6 @@ import {SwiperModule} from 'swiper/angular';
 import {TrackDescriptionComponent} from './track-description/track-description.component';
 import {TrackDetailsComponent} from './track-details.component';
 import {TrackDownloadUrlsComponent} from './track-download-urls/track-download-urls.component';
-import {TrackElevationChartComponent} from './track-elevation-chart/track-elevation-chart.component';
 import {TrackPoiComponent} from './track-poi/track-poi.component';
 import {TrackRelatedUrlsComponent} from './track-related-urls/track-related-urls.component';
 import {TrackTechnicalDataComponent} from './track-technical-data/track-technical-data.component';
@@ -22,7 +21,6 @@ import {WmCoreModule} from '../../shared/wm-core/wm-core.module';
     TrackTechnicalDataComponent,
     TrackDownloadUrlsComponent,
     TrackDescriptionComponent,
-    TrackElevationChartComponent,
     TrackPoiComponent,
     ModalGalleryComponent,
     TrackRelatedUrlsComponent,
@@ -30,7 +28,6 @@ import {WmCoreModule} from '../../shared/wm-core/wm-core.module';
   exports: [
     TrackPoiComponent,
     TrackDetailsComponent,
-    TrackElevationChartComponent,
     TrackTechnicalDataComponent,
     TrackDownloadUrlsComponent,
     TrackDescriptionComponent,

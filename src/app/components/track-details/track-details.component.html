@@ -3,11 +3,11 @@
   <ng-container *ngIf="track.properties as properties">
     <ion-header>
       <ion-toolbar class="webmapp-track-details-toolbar">
-        <ion-title
+        <span
           *ngIf="properties?.name"
           [innerHtml]="properties.name | wmtrans"
-          class="webmapp-track-details-header"
-        ></ion-title>
+          class="wm-track-details-header"
+        ></span>
         <ion-buttons slot="end">
           <ion-button class="webmapp-track-details-dismiss" (click)="triggerDismiss()">
             <ion-icon name="close"></ion-icon>

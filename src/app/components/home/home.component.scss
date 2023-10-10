@@ -1,4 +1,9 @@
 webmapp-home {
+  ion-item {
+    ion-label {
+      white-space: pre-wrap !important;
+    }
+  }
   .root {
     width: 100%;
     height: 100%;

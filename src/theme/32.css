@@ -23,7 +23,7 @@ wm-select-filter ion-accordion div[slot='content'] div ion-chip ion-label {
   margin-left: 10px;
   font-style: normal;
   font-weight: 400;
-  font-size: 16px;
+  font-size: 12px;
   line-height: 140%;
 }
 wm-select-filter ion-accordion ion-item,

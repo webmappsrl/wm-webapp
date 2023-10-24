@@ -1,4 +1,3 @@
-import {confMAP, confOPTIONS} from 'src/app/shared/wm-core/store/conf/conf.selector';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -9,15 +8,15 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {IonContent, ModalController} from '@ionic/angular';
+import {confOPTIONS} from 'shared/wm-core/store/conf/conf.selector';
 
+import {Store} from '@ngrx/store';
+import {apiElasticStateLayer} from 'shared/wm-core/store/api/api.selector';
+import {confShowEditingInline} from 'shared/wm-core/store/conf/conf.selector';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {IGeojsonProperties} from 'src/app/types/model';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
-import {Store} from '@ngrx/store';
-import {confShowEditingInline} from 'src/app/shared/wm-core/store/conf/conf.selector';
-import {apiElasticStateLayer} from 'src/app/shared/wm-core/store/api/api.selector';
-import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'webmapp-track-details',

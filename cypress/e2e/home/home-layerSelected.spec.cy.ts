@@ -1,7 +1,8 @@
 import {FeatureCollection} from 'geojson';
+import {wmIT} from 'shared/wm-core/localization/i18n/it';
+import {filterFeatureCollectionByInputTyped as filterFeatureCollectionByInputTypedFn} from 'shared/wm-core/store/api/utils';
+import {ILAYERBOX, ITITLEBOX} from 'shared/wm-core/types/config';
 import {environment} from 'src/environments/environment';
-import {filterFeatureCollectionByInputTyped as filterFeatureCollectionByInputTypedFn} from '../../../src/app/shared/wm-core/store/api/utils';
-import {wmIT} from 'src/app/shared/wm-core/localization/i18n/it';
 Cypress.config('defaultCommandTimeout', 10000);
 const appId = environment.geohubId;
 const inputTyped = 'l';

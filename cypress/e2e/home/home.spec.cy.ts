@@ -1,4 +1,5 @@
-import {wmIT} from 'src/app/shared/wm-core/localization/i18n/it';
+import {wmIT} from 'shared/wm-core/localization/i18n/it';
+import {IHORIZONTALSCROLLBOX, ILAYERBOX, ITITLEBOX} from 'shared/wm-core/types/config';
 import {environment} from 'src/environments/environment';
 
 Cypress.config('defaultCommandTimeout', 10000);

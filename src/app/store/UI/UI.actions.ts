@@ -1,4 +1,5 @@
 import {createAction, props} from '@ngrx/store';
+import {ILAYER} from 'src/app/shared/map-core/src/types/layer';
 
 export const setCurrentLayer = createAction(
   '[UI] Set current layer',

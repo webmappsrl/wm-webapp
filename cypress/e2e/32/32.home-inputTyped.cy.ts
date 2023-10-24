@@ -1,5 +1,6 @@
 import {FeatureCollection} from 'geojson';
-import {filterFeatureCollectionByInputTyped as filterFeatureCollectionByInputTypedFn} from '../../../src/app/shared/wm-core/store/api/utils';
+import {ITITLEBOX, ILAYERBOX} from 'shared/wm-core/types/config';
+import {filterFeatureCollectionByInputTyped as filterFeatureCollectionByInputTypedFn} from 'shared/wm-core/store/api/utils';
 const inputTyped = 'oasi';
 const confURL = 'https://geohub.webmapp.it/api/app/webmapp/32/config.json';
 const apiURL = 'https://elastic-json.webmapp.it/search/?id=32&query=' + inputTyped;

@@ -1,4 +1,5 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
+import {ILAYER} from 'src/app/shared/map-core/src/types/layer';
 import {featureKey} from './UI.reducer';
 
 const feature = createFeatureSelector<{

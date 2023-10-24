@@ -1,4 +1,5 @@
 import {createReducer, on} from '@ngrx/store';
+import {ILAYER} from 'src/app/shared/map-core/src/types/layer';
 import {enabledDrawTrack, setCurrentFilters, setCurrentLayer, setCurrentPoi} from './UI.actions';
 
 export const featureKey = 'UI';

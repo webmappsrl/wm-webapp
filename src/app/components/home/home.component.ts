@@ -11,16 +11,23 @@ import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {debounceTime, filter, withLatestFrom} from 'rxjs/operators';
-import {WmMapBaseDirective} from 'src/app/shared/map-core/src/directives';
 import {
   inputTyped,
   resetTrackFilters,
   setLayer,
   togglePoiFilter,
   toggleTrackFilterByIdentifier,
-} from 'src/app/shared/wm-core/store/api/api.actions';
-import {showResult} from 'src/app/shared/wm-core/store/api/api.selector';
-import {confAPP, confHOME} from 'src/app/shared/wm-core/store/conf/conf.selector';
+} from 'shared/wm-core/store/api/api.actions';
+import {showResult} from 'shared/wm-core/store/api/api.selector';
+import {confAPP, confHOME} from 'shared/wm-core/store/conf/conf.selector';
+import {
+  IAPP,
+  IHOME,
+  ILAYER,
+  ILAYERBOX,
+  IPOITYPEFILTERBOX,
+  ISLUGBOX,
+} from 'shared/wm-core/types/config';
 import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
 import {InnerHtmlComponent} from '../project/project.page.component';
 import {SearchComponent} from './search/search.component';

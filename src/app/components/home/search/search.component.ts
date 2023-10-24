@@ -10,8 +10,8 @@ import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {debounceTime} from 'rxjs/operators';
 
 import {Store} from '@ngrx/store';
-import {ApiRootState} from 'src/app/shared/wm-core/store/api/api.reducer';
-import {inputTyped, query} from 'src/app/shared/wm-core/store/api/api.actions';
+import {inputTyped} from 'shared/wm-core/store/api/api.actions';
+import {ApiRootState} from 'shared/wm-core/store/api/api.reducer';
 @Component({
   selector: 'webmapp-search',
   templateUrl: './search.component.html',
@@ -26,9 +26,9 @@ export class SearchComponent {
     this.searchForm.controls.search.setValue(init);
   }
 
+  @Output() isBlankEVT: EventEmitter<void> = new EventEmitter<void>();
   @Output('isTypings') isTypingsEVT: EventEmitter<boolean> = new EventEmitter<boolean>(false);
   @Output('words') wordsEVT: EventEmitter<string> = new EventEmitter<string>(false);
-  @Output() isBlankEVT: EventEmitter<void> = new EventEmitter<void>();
 
   public searchForm: UntypedFormGroup;
 

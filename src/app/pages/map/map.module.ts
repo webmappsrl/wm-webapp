@@ -1,4 +1,3 @@
-import {WmCoreModule} from './../../shared/wm-core/wm-core.module';
 import {CommonModule} from '@angular/common';
 import {DrawTrackModule} from 'src/app/components/draw-track/draw-track.module';
 import {FormsModule} from '@angular/forms';
@@ -11,6 +10,7 @@ import {PipeModule} from 'src/app/pipes/pipe.module';
 import {PoiPopupModule} from 'src/app/components/poi-popup/poi-popup.module';
 import {SharedModule} from 'src/app/shared/shared.module';
 import {TrackDetailsModule} from 'src/app/components/track-details/track-details.module';
+import {WmCoreModule} from 'shared/wm-core/wm-core.module';
 
 @NgModule({
   imports: [

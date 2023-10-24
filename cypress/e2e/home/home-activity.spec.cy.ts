@@ -1,3 +1,4 @@
+import {IHORIZONTALSCROLLBOX, ILAYERBOX, ITITLEBOX} from 'shared/wm-core/types/config';
 import {environment} from 'src/environments/environment';
 
 Cypress.config('defaultCommandTimeout', 10000);

@@ -1,10 +1,10 @@
-import {Router, ActivatedRoute} from '@angular/router';
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 
 import {DomSanitizer} from '@angular/platform-browser';
 import {ModalController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
-import {confPROJECT} from 'src/app/shared/wm-core/store/conf/conf.selector';
+import {confPROJECT} from 'shared/wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'webmapp-project-page',

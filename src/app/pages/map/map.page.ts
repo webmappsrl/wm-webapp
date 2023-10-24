@@ -1,14 +1,3 @@
-import {updateTrackFilter} from './../../shared/wm-core/store/api/api.actions';
-import {
-  apiSearchInputTyped,
-  apiElasticState,
-  apiElasticStateLayer,
-  poiFilterIdentifiers,
-  pois,
-  apiGoToHome,
-  countSelectedFilters,
-  poisInitFeatureCollection,
-} from './../../shared/wm-core/store/api/api.selector';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -32,35 +21,51 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators';
+import {FiltersComponent} from 'shared/wm-core/filters/filters.component';
+import {WmLoadingService} from 'shared/wm-core/services/loading.service';
+import {
+  loadPois,
+  toggleTrackFilter,
+  togglePoiFilter,
+  updateTrackFilter,
+} from 'shared/wm-core/store/api/api.actions';
+import {
+  confHOME,
+  confJIDOUPDATETIME,
+  confMAP,
+  confOPTIONS,
+  confShowDrawTrack,
+  confGeohubId,
+  confLANGUAGES,
+} from 'shared/wm-core/store/conf/conf.selector';
+import {
+  IHOME,
+  IOPTIONS,
+  Filter,
+  SelectFilterOption,
+  SliderFilter,
+} from 'shared/wm-core/types/config';
+import {
+  apiElasticState,
+  apiElasticStateLayer,
+  apiGoToHome,
+  apiSearchInputTyped,
+  countSelectedFilters,
+  poiFilterIdentifiers,
+  pois,
+  poisInitFeatureCollection,
+} from 'shared/wm-core/store/api/api.selector';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {HomeComponent} from 'src/app/components/home/home.component';
 import {GeohubService} from 'src/app/services/geohub.service';
 import {WmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/directives/track.related-pois.directive';
 import {IDATALAYER} from 'src/app/shared/map-core/src/types/layer';
-import {FiltersComponent} from 'src/app/shared/wm-core/filters/filters.component';
-import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
-import {
-  loadPois,
-  togglePoiFilter,
-  toggleTrackFilter,
-} from 'src/app/shared/wm-core/store/api/api.actions';
 
-import {
-  confGeohubId,
-  confHOME,
-  confJIDOUPDATETIME,
-  confLANGUAGES,
-  confMAP,
-  confOPTIONS,
-  confShowDrawTrack,
-} from 'src/app/shared/wm-core/store/conf/conf.selector';
-
-import {IGeojsonFeature} from 'src/app/shared/wm-core/types/model';
 import {UICurrentPoiId} from 'src/app/store/UI/UI.selector';
+import {IGeojsonFeature} from 'src/app/types/model';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {environment} from 'src/environments/environment';
-import {WmMapBaseDirective} from 'src/app/shared/map-core/src/directives';
-import {WmLoadingService} from 'src/app/shared/wm-core/services/loading.service';
+import {LangService} from 'shared/wm-core/localization/lang.service';
 
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;

@@ -3,9 +3,9 @@ import {Component, Inject, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/operators';
-import {query} from './shared/wm-core/store/api/api.actions';
-import {loadConf} from './shared/wm-core/store/conf/conf.actions';
-import {confTHEMEVariables} from './shared/wm-core/store/conf/conf.selector';
+import {query} from 'shared/wm-core/store/api/api.actions';
+import {loadConf} from 'shared/wm-core/store/conf/conf.actions';
+import {confTHEMEVariables} from 'shared/wm-core/store/conf/conf.selector';
 @Component({
   selector: 'webmapp-app-root',
   templateUrl: 'app.component.html',

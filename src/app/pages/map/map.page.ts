@@ -1,4 +1,4 @@
-import {updateTrackFilter} from './../../shared/wm-core/store/api/api.actions';
+import {setLastFilterType, updateTrackFilter} from './../../shared/wm-core/store/api/api.actions';
 import {
   apiSearchInputTyped,
   apiElasticState,
@@ -394,6 +394,9 @@ export class MapPage implements OnDestroy {
 
   updatePoiFilter(filter: SelectFilterOption | SliderFilter | Filter): void {
     this._store.dispatch(togglePoiFilter({filterIdentifier: filter.identifier}));
+  }
+  updateLastFilterType(filter: 'tracks' | 'pois') {
+    this._store.dispatch(setLastFilterType({filter}));
   }
 
   updateTrackFilter(filterGeneric: SelectFilterOption | SliderFilter | Filter): void {

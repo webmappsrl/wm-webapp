@@ -106,6 +106,7 @@
       top-right
       #filterCmp
       [wmFiltersClose]="wmap.wmMapCloseTopRightBtnsEVT$|async"
+      (lastFilterTypeEvt)="updateLastFilterType($event)"
       (filterPoisEvt)="updatePoiFilter($event)"
       (filterTracksEvt)="updateTrackFilter($event)"
       (removefilterTracksEvt)="removeTrackFilter($event)"

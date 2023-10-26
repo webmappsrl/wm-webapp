@@ -166,6 +166,8 @@ export class MapPage implements OnDestroy {
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   setCurrentPoiSub$: Subscription = Subscription.EMPTY;
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
+  toggleLayerDirective$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  togglePoisDirective$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
   translationCallback: (any) => string = value => {
@@ -260,7 +262,17 @@ export class MapPage implements OnDestroy {
   next(): void {
     this.WmMapTrackRelatedPoisDirective.poiNext();
   }
-
+  toggleDirective(data: {type: 'layers' | 'pois'; toggle: boolean}): void {
+    switch (data.type) {
+      case 'layers':
+        this.toggleLayerDirective$.next(data.toggle);
+        break;
+      case 'pois':
+        this.togglePoisDirective$.next(data.toggle);
+        break;
+    }
+    console.log(data);
+  }
   prev(): void {
     this.WmMapTrackRelatedPoisDirective.poiPrev();
   }
@@ -326,7 +338,9 @@ export class MapPage implements OnDestroy {
       this.WmMapTrackRelatedPoisDirective.setPoi = (poi as any).id as number;
     }
   }
-
+  selectDirective(directive: string) {
+    console.log(directive);
+  }
   setLoader(event: string): void {
     console.log(event);
     switch (event) {
@@ -358,7 +372,9 @@ export class MapPage implements OnDestroy {
   }
 
   setWmMapFeatureCollection(overlay: any): void {
-    this.homeCmp.setLayer(null);
+    try {
+      this.homeCmp.setLayer(null);
+    } catch (_) {}
     this.wmMapFeatureCollectionOverlay$.next(overlay);
   }
 
@@ -392,11 +408,12 @@ export class MapPage implements OnDestroy {
     });
   }
 
-  updatePoiFilter(filter: SelectFilterOption | SliderFilter | Filter): void {
-    this._store.dispatch(togglePoiFilter({filterIdentifier: filter.identifier}));
-  }
   updateLastFilterType(filter: 'tracks' | 'pois') {
     this._store.dispatch(setLastFilterType({filter}));
+  }
+
+  updatePoiFilter(filter: SelectFilterOption | SliderFilter | Filter): void {
+    this._store.dispatch(togglePoiFilter({filterIdentifier: filter.identifier}));
   }
 
   updateTrackFilter(filterGeneric: SelectFilterOption | SliderFilter | Filter): void {

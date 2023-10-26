@@ -72,6 +72,7 @@
     [wmMapFeatureCollection]="(wmMapFeatureCollectionOverlay$|async)!= null"
     [wmMapFeatureCollectionOverlay]="wmMapFeatureCollectionOverlay$|async"
     (wmMapStateEvt)="setLoader($event)"
+    (wmMapToggleDataEVT$)="toggleDirective($event)"
     (wmMapFeatureCollectionLayerSelected)="selectedLayer($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
     wmMapCustomTracks
     [wmMapCustomTrackDrawTrack]="drawTrackEnable$|async"
@@ -83,7 +84,7 @@
     [wmMapLayerDataLayerUrls]="dataLayerUrls$|async"
     [wmMapLayerLayer]="currentLayer$|async"
     [wmMapLayerRefresh]="refreshLayer$|async"
-    [wmMapLayerDisableLayers]="drawTrackEnable$|async"
+    [wmMapLayerDisableLayers]="(drawTrackEnable$|async)||(!(toggleLayerDirective$|async) && (currentLayer$|async)==null)"
     (colorSelectedFromLayerEVT)="trackColor$.next($event)"
     wmMapPois
     [wmMapInputTyped]="apiSearchInputTyped$|async"
@@ -91,7 +92,7 @@
     [wmMapPoisPois]="pois$|async"
     [wmMapPoisFilters]="poiFilterIdentifiers$|async"
     [WmMapPoisUnselectPoi]="resetSelectedPoi$|async"
-    [wmMapPoisDisableClusterLayer]="drawTrackEnable$|async"
+    [wmMapPoisDisableClusterLayer]="(drawTrackEnable$|async)||(!(togglePoisDirective$|async) && (currentLayer$|async)==null)"
     (currentPoiEvt)="setPoi($event)"
     wmMapTrack
     [track]="track$|async"

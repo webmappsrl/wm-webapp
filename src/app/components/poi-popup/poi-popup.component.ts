@@ -8,13 +8,13 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 
 import {IonSlides} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 
 import {IGeojsonProperties} from 'src/app/types/model';
-import {confShowEditingInline} from 'src/app/shared/wm-core/store/conf/conf.selector';
+import {confShowEditingInline} from 'wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'webmapp-poi-popup',

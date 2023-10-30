@@ -13,7 +13,7 @@ import {TrackPoiComponent} from './track-poi/track-poi.component';
 import {TrackRelatedUrlsComponent} from './track-related-urls/track-related-urls.component';
 import {TrackTechnicalDataComponent} from './track-technical-data/track-technical-data.component';
 import {WMCommonModule} from '../common/wm-common.module';
-import {WmCoreModule} from '../../shared/wm-core/wm-core.module';
+import {WmCoreModule} from 'src/app/shared/wm-core/projects/wm-core/src/wm-core.module';
 
 @NgModule({
   declarations: [

@@ -1,4 +1,10 @@
-import {setLastFilterType, updateTrackFilter} from './../../shared/wm-core/store/api/api.actions';
+import {
+  setLastFilterType,
+  updateTrackFilter,
+  loadPois,
+  togglePoiFilter,
+  toggleTrackFilter,
+} from 'wm-core/store/api/api.actions';
 import {
   apiSearchInputTyped,
   apiElasticState,
@@ -8,7 +14,7 @@ import {
   apiGoToHome,
   countSelectedFilters,
   poisInitFeatureCollection,
-} from './../../shared/wm-core/store/api/api.selector';
+} from 'wm-core/store/api/api.selector';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -37,13 +43,6 @@ import {HomeComponent} from 'src/app/components/home/home.component';
 import {GeohubService} from 'src/app/services/geohub.service';
 import {WmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/directives/track.related-pois.directive';
 import {IDATALAYER} from 'src/app/shared/map-core/src/types/layer';
-import {FiltersComponent} from 'src/app/shared/wm-core/filters/filters.component';
-import {LangService} from 'src/app/shared/wm-core/localization/lang.service';
-import {
-  loadPois,
-  togglePoiFilter,
-  toggleTrackFilter,
-} from 'src/app/shared/wm-core/store/api/api.actions';
 
 import {
   confGeohubId,
@@ -53,15 +52,16 @@ import {
   confMAP,
   confOPTIONS,
   confShowDrawTrack,
-} from 'src/app/shared/wm-core/store/conf/conf.selector';
+} from 'wm-core/store/conf/conf.selector';
 
-import {IGeojsonFeature} from 'src/app/shared/wm-core/types/model';
+import {IGeojsonFeature} from 'wm-core/types/model';
 import {UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {environment} from 'src/environments/environment';
-import {WmMapBaseDirective} from 'src/app/shared/map-core/src/directives';
-import {WmLoadingService} from 'src/app/shared/wm-core/services/loading.service';
-
+import {WmLoadingService} from 'wm-core/services/loading.service';
+import {Filter, IHOME, IOPTIONS, SelectFilterOption, SliderFilter} from 'wm-core/types/config';
+import {LangService} from 'wm-core/localization/lang.service';
+import {FiltersComponent} from 'wm-core/filters/filters.component';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -262,17 +262,7 @@ export class MapPage implements OnDestroy {
   next(): void {
     this.WmMapTrackRelatedPoisDirective.poiNext();
   }
-  toggleDirective(data: {type: 'layers' | 'pois'; toggle: boolean}): void {
-    switch (data.type) {
-      case 'layers':
-        this.toggleLayerDirective$.next(data.toggle);
-        break;
-      case 'pois':
-        this.togglePoisDirective$.next(data.toggle);
-        break;
-    }
-    console.log(data);
-  }
+
   prev(): void {
     this.WmMapTrackRelatedPoisDirective.poiPrev();
   }
@@ -316,6 +306,10 @@ export class MapPage implements OnDestroy {
     this.currentCustomTrack$.next(clonedTrack);
   }
 
+  selectDirective(directive: string) {
+    console.log(directive);
+  }
+
   selectTrack(trackid: any = -1): void {
     this.updateUrl(trackid);
   }
@@ -338,9 +332,7 @@ export class MapPage implements OnDestroy {
       this.WmMapTrackRelatedPoisDirective.setPoi = (poi as any).id as number;
     }
   }
-  selectDirective(directive: string) {
-    console.log(directive);
-  }
+
   setLoader(event: string): void {
     console.log(event);
     switch (event) {
@@ -383,6 +375,18 @@ export class MapPage implements OnDestroy {
       trackid = -1;
     }
     this.updateUrl(trackid);
+  }
+
+  toggleDirective(data: {type: 'layers' | 'pois'; toggle: boolean}): void {
+    switch (data.type) {
+      case 'layers':
+        this.toggleLayerDirective$.next(data.toggle);
+        break;
+      case 'pois':
+        this.togglePoisDirective$.next(data.toggle);
+        break;
+    }
+    console.log(data);
   }
 
   toggleDrawTrackEnabled(): void {

@@ -1,4 +1,3 @@
-import {BoxModule} from 'src/app/shared/wm-core/box/box.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {CardComponent} from './card/card.component';
@@ -10,7 +9,9 @@ import {NgModule} from '@angular/core';
 import {PipeModule} from 'src/app/pipes/pipe.module';
 import {SearchComponent} from './search/search.component';
 import {WMCommonModule} from '../common/wm-common.module';
-import {WmCoreModule} from '../../shared/wm-core/wm-core.module';
+import {WmCoreModule} from 'src/app/shared/wm-core/projects/wm-core/src/wm-core.module';
+
+import {BoxModule} from 'src/app/shared/wm-core/projects/wm-core/src/box/box.module';
 
 @NgModule({
   declarations: [HomeComponent, CardComponent, SearchComponent, InnerHtmlComponent],

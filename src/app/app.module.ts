@@ -21,10 +21,11 @@ import {environment} from 'src/environments/environment';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {MetaComponent} from './meta.component';
-import {WmCoreModule} from './shared/wm-core/wm-core.module';
 import {UIReducer} from './store/UI/UI.reducer';
 import {tap} from 'rxjs/operators';
 import {createCustomElement} from '@angular/elements';
+import {WmCoreModule} from 'wm-core/wm-core.module';
+import {ENVIRONMENT_CONFIG} from 'wm-core/store/conf/conf.token';
 
 registerLocaleData(localeIt);
 @Injectable()
@@ -64,6 +65,7 @@ export class MyHttpInterceptor implements HttpInterceptor {
     }),
   ],
   providers: [
+    {provide: ENVIRONMENT_CONFIG, useValue: environment},
     {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
     {provide: LOCALE_ID, useValue: 'it'},
     /*     {

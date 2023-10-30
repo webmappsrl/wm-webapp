@@ -1,4 +1,5 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
+import {ILAYER} from 'wm-core/types/config';
 import {featureKey} from './UI.reducer';
 
 const feature = createFeatureSelector<{

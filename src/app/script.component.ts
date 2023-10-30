@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
-import {confWEBAPP} from './shared/wm-core/store/conf/conf.selector';
+import {confWEBAPP} from 'wm-core/store/conf/conf.selector';
 @Component({
   selector: 'wm-script',
   template: ``,

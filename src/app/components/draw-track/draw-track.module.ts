@@ -5,7 +5,7 @@ import {IonicModule} from '@ionic/angular';
 import {NgModule} from '@angular/core';
 import {PipeModule} from 'src/app/pipes/pipe.module';
 import {TrackDetailsModule} from '../track-details/track-details.module';
-import {WmCoreModule} from 'src/app/shared/wm-core/wm-core.module';
+import {WmCoreModule} from 'src/app/shared/wm-core/projects/wm-core/src/wm-core.module';
 
 @NgModule({
   declarations: [DrawTrackComponent],

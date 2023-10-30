@@ -1,4 +1,4 @@
-import {confMAP, confOPTIONS} from 'src/app/shared/wm-core/store/conf/conf.selector';
+import {confOPTIONS} from 'wm-core/store/conf/conf.selector';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -15,8 +15,8 @@ import {IGeojsonProperties} from 'src/app/types/model';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
 import {Store} from '@ngrx/store';
-import {confShowEditingInline} from 'src/app/shared/wm-core/store/conf/conf.selector';
-import {apiElasticStateLayer} from 'src/app/shared/wm-core/store/api/api.selector';
+import {confShowEditingInline} from 'wm-core/store/conf/conf.selector';
+import {apiElasticStateLayer} from 'wm-core/store/api/api.selector';
 import {map} from 'rxjs/operators';
 
 @Component({

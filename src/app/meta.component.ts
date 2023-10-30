@@ -3,7 +3,7 @@ import {Component, Inject, Renderer2} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
-import {confAPP, confGeohubId, confWEBAPP} from './shared/wm-core/store/conf/conf.selector';
+import {confAPP, confGeohubId, confWEBAPP} from 'wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'webmapp-meta',

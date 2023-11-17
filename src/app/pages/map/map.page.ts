@@ -412,7 +412,7 @@ export class MapPage implements OnDestroy {
     });
   }
 
-  updateLastFilterType(filter: 'tracks' | 'pois') {
+  updateLastFilterType(filter: 'tracks' | 'pois'): void {
     this._store.dispatch(setLastFilterType({filter}));
   }
 

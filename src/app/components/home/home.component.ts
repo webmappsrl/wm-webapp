@@ -129,6 +129,9 @@ export class HomeComponent implements AfterContentInit {
   }
 
   setLayer(layer: ILAYER | null | any, idx?: number): void {
+    if (layer != null && typeof layer === 'number') {
+      layer = {id: layer};
+    }
     if (layer != null && layer.id != null) {
       this._store.dispatch(setLayer({layer}));
     } else {

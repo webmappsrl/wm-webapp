@@ -316,7 +316,6 @@ export class MapPage implements OnDestroy {
 
   selectedLayer(layer: any): void {
     this.homeCmp.setLayer(layer);
-    this.wmMapFeatureCollectionOverlay$.next(null);
   }
 
   setCurrentPoi(id): void {

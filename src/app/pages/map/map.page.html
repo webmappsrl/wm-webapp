@@ -73,7 +73,7 @@
     [wmMapFeatureCollectionOverlay]="wmMapFeatureCollectionOverlay$|async"
     (wmMapStateEvt)="setLoader($event)"
     (wmMapToggleDataEVT$)="toggleDirective($event)"
-    (wmMapFeatureCollectionLayerSelected)="selectedLayer($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
+    (wmMapFeatureCollectionLayerSelected)="selectedLayerById($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
     wmMapCustomTracks
     [wmMapCustomTrackDrawTrack]="drawTrackEnable$|async"
     [wmMapCustomTrackDrawTrackHost]="graphhopperHost$|async"

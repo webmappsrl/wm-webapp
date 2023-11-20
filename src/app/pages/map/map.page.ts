@@ -37,6 +37,7 @@ import {
   startWith,
   switchMap,
   tap,
+  take,
 } from 'rxjs/operators';
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {HomeComponent} from 'src/app/components/home/home.component';
@@ -50,6 +51,7 @@ import {
   confJIDOUPDATETIME,
   confLANGUAGES,
   confMAP,
+  confMAPLAYERS,
   confOPTIONS,
   confShowDrawTrack,
 } from 'wm-core/store/conf/conf.selector';
@@ -59,7 +61,14 @@ import {UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {environment} from 'src/environments/environment';
 import {WmLoadingService} from 'wm-core/services/loading.service';
-import {Filter, IHOME, IOPTIONS, SelectFilterOption, SliderFilter} from 'wm-core/types/config';
+import {
+  Filter,
+  IHOME,
+  ILAYER,
+  IOPTIONS,
+  SelectFilterOption,
+  SliderFilter,
+} from 'wm-core/types/config';
 import {LangService} from 'wm-core/localization/lang.service';
 import {FiltersComponent} from 'wm-core/filters/filters.component';
 const menuOpenLeft = 400;
@@ -76,6 +85,8 @@ const maxWidth = 600;
   providers: [LangService],
 })
 export class MapPage implements OnDestroy {
+  private _confMAPLAYERS$: Observable<ILAYER[]> = this._store.select(confMAPLAYERS);
+
   readonly track$: Observable<CGeojsonLineStringFeature | null>;
   readonly trackColor$: BehaviorSubject<string> = new BehaviorSubject<string>('#caaf15');
   readonly trackid$: Observable<number>;
@@ -316,6 +327,20 @@ export class MapPage implements OnDestroy {
 
   selectedLayer(layer: any): void {
     this.homeCmp.setLayer(layer);
+  }
+
+  selectedLayerById(id: number): void {
+    this._confMAPLAYERS$
+      .pipe(
+        take(1),
+        map(layers => {
+          const layer = layers.filter(l => +l.id === id);
+          return layer.length === 1 ? layer[0] : null;
+        }),
+      )
+      .subscribe(layer => {
+        this.selectedLayer(layer);
+      });
   }
 
   setCurrentPoi(id): void {

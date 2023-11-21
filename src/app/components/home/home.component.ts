@@ -93,7 +93,7 @@ export class HomeComponent implements AfterContentInit {
             .create({
               component: WmInnerHtmlComponent,
               componentProps: {
-                html: conf.HTML,
+                html: conf.html ? conf.html : conf.HTML,
               },
               cssClass: 'wm-modal',
               backdropDismiss: true,

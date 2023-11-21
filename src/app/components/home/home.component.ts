@@ -10,7 +10,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
-import {debounceTime, filter, withLatestFrom} from 'rxjs/operators';
+import {debounceTime, filter, take, withLatestFrom} from 'rxjs/operators';
 import {
   inputTyped,
   resetTrackFilters,
@@ -19,12 +19,11 @@ import {
   toggleTrackFilterByIdentifier,
 } from 'wm-core/store/api/api.actions';
 import {showResult} from 'wm-core/store/api/api.selector';
-import {confAPP, confHOME} from 'wm-core/store/conf/conf.selector';
+import {confAPP, confHOME, confPROJECT} from 'wm-core/store/conf/conf.selector';
 import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
-import {InnerHtmlComponent} from '../project/project.page.component';
 import {SearchComponent} from './search/search.component';
 import {IAPP, IHOME, ILAYER, ILAYERBOX, IPOITYPEFILTERBOX, ISLUGBOX} from 'wm-core/types/config';
-
+import {WmInnerHtmlComponent} from 'wm-core/inner-html/inner-html.component';
 @Component({
   selector: 'webmapp-home',
   templateUrl: './home.component.html',
@@ -86,22 +85,30 @@ export class HomeComponent implements AfterContentInit {
 
   openSlug(slug: string, idx?: number): void {
     if (slug === 'project') {
-      this._modalCtrl
-        .create({
-          component: InnerHtmlComponent,
-          cssClass: 'wm-modal',
-          backdropDismiss: true,
-          keyboardClose: true,
-        })
-        .then(modal => {
-          modal.present();
-          if (idx) {
-            this._router.navigate([], {
-              relativeTo: this._route,
-              queryParams: {slug: idx},
-              queryParamsHandling: 'merge',
+      this._store
+        .select(confPROJECT)
+        .pipe(take(1))
+        .subscribe(conf => {
+          this._modalCtrl
+            .create({
+              component: WmInnerHtmlComponent,
+              componentProps: {
+                html: conf.HTML,
+              },
+              cssClass: 'wm-modal',
+              backdropDismiss: true,
+              keyboardClose: true,
+            })
+            .then(modal => {
+              modal.present();
+              if (idx) {
+                this._router.navigate([], {
+                  relativeTo: this._route,
+                  queryParams: {slug: idx},
+                  queryParamsHandling: 'merge',
+                });
+              }
             });
-          }
         });
     } else {
       this._navCtrl.navigateForward(slug);

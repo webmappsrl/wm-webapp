@@ -23,13 +23,13 @@ jobs:
       - name: Bucket actions
         uses: actions/setup-node@v1
         with:
-          node-version: 16
+          node-version: 16.19.1
       - name: Install Ionic CLI
         run: npm install -g @ionic/cli
       - name: run npm install
         run: npm install
       - name: run ionic build
-        run: ionic build --prod --verbose
+        run: ionic build --prod
       - name: Publish
         uses: nogsantos/scp-deploy@master
         with:

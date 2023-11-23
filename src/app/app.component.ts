@@ -22,9 +22,11 @@ export class AppComponent {
     this._storeConf.dispatch(loadConf());
     this._storeConf.dispatch(query({init: true}));
     this.confTHEMEVariables$.pipe(take(2)).subscribe(css => this._setGlobalCSS(css));
-    console.warn(
-      `app: ${appPackage.version}, map-core:${mapCorePackage.version}, wm-core:${wmCorePackage.version}`,
-    );
+    console.table({
+      'app': appPackage.version,
+      'map-core': mapCorePackage.version,
+      'wm-core': wmCorePackage.version,
+    });
   }
 
   private _setGlobalCSS(css: {[name: string]: string | number}) {

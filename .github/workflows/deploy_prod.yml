@@ -1,0 +1,38 @@
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  contents: write
+  pull-requests: write
+
+name: Make a release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build and Deploy
+
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Bucket actions
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: Install Ionic CLI
+        run: npm install -g @ionic/cli
+      - name: run npm install
+        run: npm install
+      - name: run ionic build
+        run: ionic build --prod
+      - name: Publish
+        uses: nogsantos/scp-deploy@master
+        with:
+          src: ./www/*
+          host: ${{ secrets.SSH_HOST }}
+          remote: ${{ secrets.SSH_DIR }}
+          port: ${{ secrets.SSH_PORT }}
+          user: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}

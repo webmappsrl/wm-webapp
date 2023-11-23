@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: 16
       - name: Install Ionic CLI
-        run: npm install -g @ionic/cli@5.4.16
+        run: npm install -g @ionic/cli
       - name: run npm install
         run: npm install
       - name: run ionic build

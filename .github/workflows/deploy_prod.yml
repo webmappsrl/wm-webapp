@@ -29,7 +29,7 @@ jobs:
       - name: run npm install
         run: npm install
       - name: run ionic build
-        run: ionic build --prod
+        run: ionic build --prod --verbose
       - name: Publish
         uses: nogsantos/scp-deploy@master
         with:

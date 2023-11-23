@@ -29,6 +29,8 @@ jobs:
         run: npm install -g @ionic/cli
       - name: run npm install
         run: npm install
+      - name: run npm install ol-ext
+        run: npm install ol-ext
       - name: run ionic build
         run: ionic build --prod
       - name: Publish

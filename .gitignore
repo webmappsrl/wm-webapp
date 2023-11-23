@@ -35,3 +35,5 @@ cypress/fixtures
 cypress/videos
 cypress/screenshots
 
+cypress/screenshots/
+cypress/videos/

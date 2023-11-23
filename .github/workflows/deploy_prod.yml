@@ -20,17 +20,14 @@ jobs:
         run: |
           git submodule update --init --recursive
 
-
       - name: Bucket actions
         uses: actions/setup-node@v1
         with:
           node-version: 16
       - name: Install Ionic CLI
-        run: npm install -g @ionic/cli
+        run: npm install -g @ionic/cli@5.4.16
       - name: run npm install
         run: npm install
-      - name: run npm install ol-ext
-        run: npm install ol-ext
       - name: run ionic build
         run: ionic build --prod
       - name: Publish

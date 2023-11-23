@@ -6,9 +6,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
-
-name: Make a release
-
+name: Deploy
 jobs:
   build:
     runs-on: ubuntu-latest

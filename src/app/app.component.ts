@@ -6,6 +6,9 @@ import {take} from 'rxjs/operators';
 import {query} from 'wm-core/store/api/api.actions';
 import {loadConf} from 'wm-core/store/conf/conf.actions';
 import {confTHEMEVariables} from 'wm-core/store/conf/conf.selector';
+import appPackage from 'package.json';
+import wmCorePackage from './shared/wm-core/package.json';
+import mapCorePackage from './shared/map-core/package.json';
 @Component({
   selector: 'webmapp-app-root',
   templateUrl: 'app.component.html',
@@ -19,6 +22,9 @@ export class AppComponent {
     this._storeConf.dispatch(loadConf());
     this._storeConf.dispatch(query({init: true}));
     this.confTHEMEVariables$.pipe(take(2)).subscribe(css => this._setGlobalCSS(css));
+    console.warn(
+      `app: ${appPackage.version}, map-core:${mapCorePackage.version}, wm-core:${wmCorePackage.version}`,
+    );
   }
 
   private _setGlobalCSS(css: {[name: string]: string | number}) {

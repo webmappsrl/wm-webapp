@@ -53,6 +53,7 @@
     "rxjs": "~6.6.0",
     "swiper": "^7.3.1",
     "togpx": "^0.5.4",
+    "@dwayneparton/geojson-to-gpx":"0.0.30",
     "tslib": "^2.2.0",
     "zone.js": "~0.13.3"
   },

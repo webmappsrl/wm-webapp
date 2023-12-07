@@ -9,7 +9,7 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {debounceTime, filter, take, withLatestFrom} from 'rxjs/operators';
 import {
   inputTyped,
@@ -36,6 +36,7 @@ export class HomeComponent implements AfterContentInit {
 
   confAPP$: Observable<IAPP> = this._store.select(confAPP);
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
+  popup$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   showResult$ = this._store.select(showResult);
 
   constructor(

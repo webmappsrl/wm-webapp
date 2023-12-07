@@ -1,5 +1,6 @@
 <div class="root">
   <ng-content></ng-content>
+
   <ng-container *ngIf="(confAPP$|async) as confAPP">
     <ion-item lines="none" *ngIf="confAPP.welcome as welcome">
       <ion-label [innerHTML]="sanitizer.bypassSecurityTrustHtml(welcome | wmtrans)"></ion-label>
@@ -25,5 +26,11 @@
       (tracksBoxEVT)="setTrack($event)"
       (layerBoxEVT)="setLayer($event[0],$event[1])"
     ></wm-home-page>
+    <ng-container *ngIf="(popup$|async) as popup">
+      <wm-inner-component-html
+        [html]="popup.html"
+        [enableDismiss]="false"
+      ></wm-inner-component-html>
+    </ng-container>
   </ng-template>
 </div>

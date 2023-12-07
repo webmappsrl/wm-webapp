@@ -274,6 +274,10 @@ export class MapPage implements OnDestroy {
     this.WmMapTrackRelatedPoisDirective.poiNext();
   }
 
+  openPopup(popup: {name: string; html: string}): void {
+    this.homeCmp.popup$.next(popup);
+  }
+
   prev(): void {
     this.WmMapTrackRelatedPoisDirective.poiPrev();
   }

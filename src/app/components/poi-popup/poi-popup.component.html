@@ -82,9 +82,9 @@
       <i class="wm-icn icon-fill-globe"></i>
       <webmapp-related-urls [relatedUrls]="poiProperties.related_url"></webmapp-related-urls>
     </div>
-    <div *ngIf="poiProperties.osm_url as osm" target="_blank">
+    <div *ngIf="poiProperties.osm_url as osm">
       <ion-icon class="wm-icn icon-link" slot="start"> </ion-icon>
-      <a class="webmapp-track-download-urls-item-label" [href]="osm">
+      <a class="webmapp-track-download-urls-item-label" [href]="osm" target="_blank">
         {{ "Vedi su OpenStreetMap" | wmtrans }}
       </a>
     </div>

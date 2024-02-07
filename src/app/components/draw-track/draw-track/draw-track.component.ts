@@ -1,4 +1,5 @@
 import {HttpClient} from '@angular/common/http';
+import GeoJsonToGpx from '@dwayneparton/geojson-to-gpx';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -31,8 +32,8 @@ export class DrawTrackComponent {
   @Output() reloadEvt: EventEmitter<void> = new EventEmitter<void>();
 
   savedTracks$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
-  track$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   selectedTrackIdx: number = -1;
+  track$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
   constructor(private _http: HttpClient) {
     this._initSavedTracks();
@@ -62,15 +63,31 @@ export class DrawTrackComponent {
   }
 
   downloadGpx(feature): void {
-    const gpx = toGpx(feature);
+    const options = {
+      metadata: {
+        name: feature.properties.name,
+        ...feature.properties,
+      },
+    };
+    const gpx = GeoJsonToGpx(feature, options);
+    const xmlGpx = new XMLSerializer().serializeToString(gpx);
+
     const name = `${feature.properties.name || 'noname'}.gpx`;
-    this._downloadFile(name, gpx);
+    this._downloadFile(name, xmlGpx);
   }
 
   downloadKml(feature): void {
     const kml = tokml(feature);
     const name = `${feature.properties.name || 'noname'}.kml`;
     this._downloadFile(name, kml);
+  }
+
+  editCustomTrackName(savedTrack: any): void {
+    const newName = prompt('Inserisci il nuovo nome:', savedTrack.properties.name);
+    if (newName) {
+      savedTrack.properties.name = newName;
+      this.saveCustomTrack();
+    }
   }
 
   saveCustomTrack(): void {
@@ -93,6 +110,23 @@ export class DrawTrackComponent {
     this.reloadEvt.emit();
   }
 
+  private _convertNumericsToStrings(obj) {
+    // Iterare su tutte le proprietà dell'oggetto
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        // Controllare se il valore della proprietà è di tipo numerico
+        if (typeof obj[key] === 'number') {
+          // Convertire il valore numerico in stringa
+          obj[key] = obj[key].toString();
+        } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+          // Se il valore è un oggetto (non null), applicare la funzione ricorsivamente
+          this._convertNumericsToStrings(obj[key]);
+        }
+      }
+    }
+    return obj;
+  }
+
   private _downloadFile(name, body): void {
     var element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(body));
@@ -110,14 +144,6 @@ export class DrawTrackComponent {
     const localSavedTracks = JSON.parse(stringedLocalSavedTracks);
     if (localSavedTracks != null) {
       this.savedTracks$.next(localSavedTracks);
-    }
-  }
-
-  editCustomTrackName(savedTrack: any): void {
-    const newName = prompt('Inserisci il nuovo nome:', savedTrack.properties.name);
-    if (newName) {
-      savedTrack.properties.name = newName;
-      this.saveCustomTrack();
     }
   }
 }

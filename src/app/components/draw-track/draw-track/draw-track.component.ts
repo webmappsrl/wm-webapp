@@ -14,7 +14,6 @@ import Map from 'ol/Map';
 
 import tokml from 'geojson-to-kml';
 import {BehaviorSubject} from 'rxjs';
-import toGpx from 'togpx';
 
 @Component({
   selector: 'wm-draw-track',
@@ -108,23 +107,6 @@ export class DrawTrackComponent {
     this.savedTracks$.next(savedTracks);
     this.track$.next(null);
     this.reloadEvt.emit();
-  }
-
-  private _convertNumericsToStrings(obj) {
-    // Iterare su tutte le proprietà dell'oggetto
-    for (let key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        // Controllare se il valore della proprietà è di tipo numerico
-        if (typeof obj[key] === 'number') {
-          // Convertire il valore numerico in stringa
-          obj[key] = obj[key].toString();
-        } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-          // Se il valore è un oggetto (non null), applicare la funzione ricorsivamente
-          this._convertNumericsToStrings(obj[key]);
-        }
-      }
-    }
-    return obj;
   }
 
   private _downloadFile(name, body): void {

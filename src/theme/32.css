@@ -30,6 +30,21 @@ wm-select-filter ion-accordion ion-item,
 wm-slider-filter ion-accordion ion-item {
   --ion-color-light: 'white';
 }
+.wm-filters-count {
+  padding: 4px 8px;
+  min-width: 24px;
+  max-width: 50px;
+  height: 26px;
+  background: #fffaf2;
+  border: 1px solid var(--wm-color-primary);
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--wm-color-primary);
+  margin-top: -2px;
+  margin-left: 4px;
+}
 /* end wm-select-filter component */
 
 /* start wm-filters component */

@@ -4,11 +4,19 @@
       <i class="icon-outline-close"></i>
     </button>
   </div>
-  <div
-    class="row category"
-    *ngIf="poiProperties.taxonomy && poiProperties.taxonomy.poi_type as poiType"
-    [innerHTML]="poiType.name|wmtrans"
-  ></div>
+  <ng-container
+    *ngIf="poiProperties.taxonomy && poiProperties.taxonomy.poi_types as poiTypes;else poiType"
+    ><ng-container *ngFor="let poiType of poiTypes">
+      <div class="row category" *ngIf="poiType" [innerHTML]="poiType.name|wmtrans"></div>
+    </ng-container>
+  </ng-container>
+  <ng-template #poiType>
+    <div
+      class="row category"
+      *ngIf="poiProperties.taxonomy && poiProperties.taxonomy.poi_type as poiType"
+      [innerHTML]="poiType.name|wmtrans"
+    ></div>
+  </ng-template>
   <div class="row">
     <div class="title">
       <button

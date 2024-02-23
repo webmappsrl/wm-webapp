@@ -69,6 +69,7 @@ export interface IGeojsonProperties {
     activity?: any[];
     where?: string[];
     poi_type?: PoiTypeTaxonomy;
+    poi_types?: PoiTypeTaxonomy[];
   };
   updated_at?: Date;
   user_id?: number;

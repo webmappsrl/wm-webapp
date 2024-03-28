@@ -209,9 +209,10 @@ export class MapPage implements OnDestroy {
         if (geohubId == 13) {
           this.enableOverLay$.next(true);
         }
+
         return {
-          low: `https://jidotile.webmapp.it/?x={x}&y={y}&z={z}&index=geohub_app_low_${geohubId}`,
-          high: `https://jidotile.webmapp.it/?x={x}&y={y}&z={z}&index=geohub_app_high_${geohubId}`,
+          low: `https://wmpbf.s3.eu-central-1.amazonaws.com/${geohubId}/{z}/{x}/{y}.pbf`,
+          high: `https://wmpbf.s3.eu-central-1.amazonaws.com/${geohubId}/{z}/{x}/{y}.pbf`,
         } as IDATALAYER;
       }),
     );

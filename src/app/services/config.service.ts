@@ -21,7 +21,7 @@ export class ConfigService {
   }
 
   private get _geohubApiBaseUrl(): string {
-    return `${environment.api}/api/app/webapp/${this._geohubAppId}/`;
+    return `${environment.api}/api/${this._geohubAppId}/`;
   }
 
   constructor() {

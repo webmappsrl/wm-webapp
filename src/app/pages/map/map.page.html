@@ -67,41 +67,15 @@
     [wmMapFilters]="apiElasticState$|async"
     [wmMapTranslationCallback]="translationCallback"
     (wmMapOverlayEVT$)="setWmMapFeatureCollection($event)"
-    [wmMapOverlay]="(enableOverLay$|async)"
-    [wmMapOverlayUrl]="'https://geohub.webmapp.it/api/taxonomy/where/geojson/13'"
     [wmMapFeatureCollection]="(wmMapFeatureCollectionOverlay$|async)!= null"
     [wmMapFeatureCollectionOverlay]="wmMapFeatureCollectionOverlay$|async"
     (wmMapStateEvt)="setLoader($event)"
     (wmMapToggleDataEVT$)="toggleDirective($event)"
     (wmMapFeatureCollectionLayerSelected)="selectedLayerById($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
-    (wmMapFeatureCollectionPopup)="openPopup($event);wmap.wmMapCloseTopRightBtnsEVT$.emit('')"
-    wmMapCustomTracks
-    [wmMapCustomTrackDrawTrack]="drawTrackEnable$|async"
-    [wmMapCustomTrackDrawTrackHost]="graphhopperHost$|async"
-    [reloadCustomTracks]="reloadCustomTracks$|async"
-    (currentCustomTrack)="saveCurrentCustomTrack($event)"
-    wmMapLayer
-    [jidoUpdateTime]="confJIDOUPDATETIME$|async"
-    [wmMapLayerDataLayerUrls]="dataLayerUrls$|async"
-    [wmMapLayerLayer]="currentLayer$|async"
-    [wmMapLayerRefresh]="refreshLayer$|async"
-    [wmMapLayerDisableLayers]="(drawTrackEnable$|async)||(!(toggleLayerDirective$|async) && (currentLayer$|async)==null)"
-    (colorSelectedFromLayerEVT)="trackColor$.next($event)"
-    wmMapPois
-    [wmMapInputTyped]="apiSearchInputTyped$|async"
-    [wmMapPoisPoi]="currentPoiIDToMap$|async"
-    [wmMapPoisPois]="pois$|async"
-    [wmMapPoisFilters]="poiFilterIdentifiers$|async"
-    [WmMapPoisUnselectPoi]="resetSelectedPoi$|async"
-    [wmMapPoisDisableClusterLayer]="(drawTrackEnable$|async)||(!(togglePoisDirective$|async) && (currentLayer$|async)==null)"
+    (wmMapFeatureCollectionPopup)="openPopup($event)"
+    wmMapHitMapUrl="https://carg.dev.maphub.it/api/sheets.json"
+    wmMapHitMapCollection
     (currentPoiEvt)="setPoi($event)"
-    wmMapTrack
-    [track]="track$|async"
-    [trackElevationChartElements]="trackElevationChartHoverElements$|async"
-    (trackSelectedFromLayerEVT)="toggleDetails($event)"
-    wmMapTrackRelatedPois
-    (related-poi)="setCurrentRelatedPoi($event)"
-    (related-poi-next)="currentPoiNextID$.next(+$event)"
   >
     <wm-filters
       top-right
@@ -126,84 +100,3 @@
     </div>
   </wm-map>
 </ng-container>
-
-<ion-modal
-  #printModal
-  class="print-modal"
-  trigger="open-print-modal"
-  id="print-page"
-  (willDismiss)="mapPrintDetails$.next(false)"
->
-  <ng-template>
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-button (click)="printModal.dismiss()">{{'esci'|wmtrans}}</ion-button>
-        </ion-buttons>
-        <ion-title>{{'anteprima di stampa'|wmtrans}}</ion-title>
-        <ion-buttons slot="end">
-          <ion-item>
-            <ion-label>{{'dettagli'|wmtrans}}</ion-label>
-            <ion-toggle
-              slot="end"
-              (click)="mapPrintDetails$.next(!mapPrintDetails$.value)"
-            ></ion-toggle>
-          </ion-item>
-          <ion-button (click)="printPage()" [strong]="true">{{'stampa'|wmtrans}}</ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content>
-      <div class="print-container" *ngIf="(mapPrintDetails$|async) === false">
-        <wm-map
-          #wmapprint
-          [wmMapConf]="confMap$|async"
-          wmMapTarget="ol-stamp"
-          [wmMapPadding]="mapPrintPadding$|async"
-          [wmMapOverlay]="(enableOverLay$|async)"
-          [wmMapOverlayUrl]="'https://geohub.webmapp.it/api/taxonomy/where/geojson/13'"
-          (currentCustomTrack)="saveCurrentCustomTrack($event)"
-          wmMapTrack
-          [track]="track$|async"
-          [trackElevationChartElements]="trackElevationChartHoverElements$|async"
-          (trackSelectedFromLayerEVT)="toggleDetails($event)"
-          wmMapTrackRelatedPois
-          (related-poi-click)="setCurrentRelatedPoi($event)"
-        >
-        </wm-map>
-        <ion-card class="print-details" *ngIf="(track$|async) as track">
-          <ng-container *ngIf="track.properties as prop">
-            <ion-card-header>
-              <ion-card-title>{{prop.name|wmtrans}}</ion-card-title>
-              <ion-card-subtitle>
-                <ng-container *ngIf="prop.from as from"
-                  >{{'Punto di partenza'|wmtrans}}: {{from}}</ng-container
-                >
-                <ng-container *ngIf="prop.to as to"
-                  >{{'Punto di arrivo'|wmtrans}}: {{prop.to}}</ng-container
-                >
-              </ion-card-subtitle>
-            </ion-card-header>
-            <ion-card-content>
-              <webmapp-track-technical-data
-                [feature]="track"
-                id="webmapp-track-details-technical-data"
-              >
-              </webmapp-track-technical-data>
-            </ion-card-content>
-          </ng-container>
-        </ion-card>
-      </div>
-      <div class="print-details-wrapper" *ngIf="(mapPrintDetails$|async) === true">
-        <div class="print-container-details" *ngIf="track$|async as track">
-          <div *ngIf="track.properties as prop">
-            <webmapp-track-description
-              [description]="prop.description|wmtrans"
-            ></webmapp-track-description>
-            <webmapp-track-poi [track]="track"></webmapp-track-poi>
-          </div>
-        </div>
-      </div>
-    </ion-content>
-  </ng-template>
-</ion-modal>

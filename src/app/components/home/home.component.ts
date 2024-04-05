@@ -10,7 +10,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {debounceTime, filter, take, withLatestFrom} from 'rxjs/operators';
+import {debounceTime, filter, skip, take, withLatestFrom} from 'rxjs/operators';
 import {
   inputTyped,
   resetTrackFilters,
@@ -19,10 +19,18 @@ import {
   toggleTrackFilterByIdentifier,
 } from 'wm-core/store/api/api.actions';
 import {showResult} from 'wm-core/store/api/api.selector';
-import {confAPP, confHOME, confPROJECT} from 'wm-core/store/conf/conf.selector';
+import {confAPP, confHOME, confPROJECT, confOPTIONS} from 'wm-core/store/conf/conf.selector';
 import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
 import {SearchComponent} from './search/search.component';
-import {IAPP, IHOME, ILAYER, ILAYERBOX, IPOITYPEFILTERBOX, ISLUGBOX} from 'wm-core/types/config';
+import {
+  IAPP,
+  IHOME,
+  ILAYER,
+  ILAYERBOX,
+  IOPTIONS,
+  IPOITYPEFILTERBOX,
+  ISLUGBOX,
+} from 'wm-core/types/config';
 import {WmInnerHtmlComponent} from 'wm-core/inner-html/inner-html.component';
 @Component({
   selector: 'webmapp-home',
@@ -36,6 +44,7 @@ export class HomeComponent implements AfterContentInit {
 
   confAPP$: Observable<IAPP> = this._store.select(confAPP);
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
+  confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   popup$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   showResult$ = this._store.select(showResult);
 

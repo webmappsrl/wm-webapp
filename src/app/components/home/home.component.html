@@ -6,7 +6,13 @@
       <ion-label [innerHTML]="sanitizer.bypassSecurityTrustHtml(welcome | wmtrans)"></ion-label>
     </ion-item>
   </ng-container>
-  <webmapp-search #searchCmp [initSearch]="''" (words)="setSearch($event)"> </webmapp-search>
+  <webmapp-search
+    *ngIf="(confOPTIONS$|async).show_searchbar"
+    #searchCmp
+    [initSearch]="''"
+    (words)="setSearch($event)"
+  >
+  </webmapp-search>
   <ng-container *ngIf="showResult$|async;else home">
     <wm-status-filter
       (resetFiltersEVT)="goToHome()"

@@ -138,13 +138,13 @@
       <div class="wm-track-details-download" *ngIf="confOPTIONS$|async as confOPTIONS">
         <ng-container *ngIf="confOPTIONS.download_track_enable === true">
           <div class="webmapp-title">{{'Downloads'|wmtrans}}</div>
-          <webmapp-track-download-urls
+          <wm-track-download-urls
             class="wm-track-details-download-urls"
-            [feature]="track"
+            [properties]="track.properties"
             id="webmapp-track-details-download-urls"
           >
             <ng-content></ng-content>
-          </webmapp-track-download-urls>
+          </wm-track-download-urls>
         </ng-container>
       </div>
       <ion-button

@@ -8,7 +8,6 @@ import {PipeModule} from 'src/app/pipes/pipe.module';
 import {SwiperModule} from 'swiper/angular';
 import {TrackDescriptionComponent} from './track-description/track-description.component';
 import {TrackDetailsComponent} from './track-details.component';
-import {TrackDownloadUrlsComponent} from './track-download-urls/track-download-urls.component';
 import {TrackPoiComponent} from './track-poi/track-poi.component';
 import {TrackRelatedUrlsComponent} from './track-related-urls/track-related-urls.component';
 import {TrackTechnicalDataComponent} from './track-technical-data/track-technical-data.component';
@@ -19,7 +18,6 @@ import {WmCoreModule} from 'src/app/shared/wm-core/projects/wm-core/src/wm-core.
   declarations: [
     TrackDetailsComponent,
     TrackTechnicalDataComponent,
-    TrackDownloadUrlsComponent,
     TrackDescriptionComponent,
     TrackPoiComponent,
     ModalGalleryComponent,
@@ -29,7 +27,6 @@ import {WmCoreModule} from 'src/app/shared/wm-core/projects/wm-core/src/wm-core.
     TrackPoiComponent,
     TrackDetailsComponent,
     TrackTechnicalDataComponent,
-    TrackDownloadUrlsComponent,
     TrackDescriptionComponent,
   ],
   imports: [

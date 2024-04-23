@@ -75,6 +75,14 @@
                 <i class="icon-outline-nordic-walking"></i>
                 <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
               </div>
+              <div class="webmapp-walkability-box" *ngIf="item.identifier === 'trekking'">
+                <i class="icon-outline-trekking"></i>
+                <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
+              </div>
+              <div class="webmapp-walkability-box" *ngIf="item.identifier === 'horse'">
+                <i class="icon-outline-horse"></i>
+                <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
+              </div>
             </ng-container>
           </div>
         </ng-container>

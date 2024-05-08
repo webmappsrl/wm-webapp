@@ -12,6 +12,7 @@
     "deploy": "ionic build --prod && scp -r ~/Documents/wm-webapp/www/* server:/var/www/html/app.geohub.webmapp.it/",
     "deploy-webcomponent": "ng build --configuration production --output-hashing=none --output-path=web-component",
     "surge-sardegna": "ionic build --prod && surge --project ./www --domain http://32.webmapp.surge.sh/",
+    "surge-carg": "ionic build --prod && surge --project ./www --domain http://55.webmapp.surge.sh/",
     "surge-sardegna-dev": "ionic build --prod && surge --project ./www --domain http://32.dev-webmapp.surge.sh/",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
@@ -53,7 +54,7 @@
     "rxjs": "~6.6.0",
     "swiper": "^7.3.1",
     "togpx": "^0.5.4",
-    "@dwayneparton/geojson-to-gpx":"0.0.30",
+    "@dwayneparton/geojson-to-gpx": "0.0.30",
     "tslib": "^2.2.0",
     "zone.js": "~0.13.3"
   },

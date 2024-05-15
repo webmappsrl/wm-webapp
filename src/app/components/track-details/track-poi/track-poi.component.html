@@ -4,10 +4,20 @@
     (click)="selectPoi(item)"
     [ngClass]="{'selected': currentPoi != null &&item.id === currentPoi.id}"
   >
-    <img
-      class="webmapp-track-poi-img"
-      [src]="item.feature_image !=null? item.feature_image.url:defaultPhotoPath"
-    />
+    <ng-container *ngIf="item.feature_image !=null as featureImage;else svgTemplate">
+      <img class="webmapp-track-poi-img" [src]="item.feature_image.sizes['108x148']" />
+    </ng-container>
+    <ng-template #svgTemplate>
+      <ng-container *ngIf="item.taxonomy.poi_type.icon != null;else noImage">
+        <ng-container *ngIf="item.taxonomy.poi_type.icon as svg">
+          <div appBuildSvg class="wm-filter-icon" [svg]="svg"></div>
+        </ng-container>
+      </ng-container>
+    </ng-template>
+    <ng-template #noImage>
+      <img class="webmapp-track-poi-img" [src]="defaultPhotoPath" />
+    </ng-template>
+
     <div class="webmapp-track-poi-text">
       <div class="webmapp-track-poi-title">
         {{ item.name | wmtrans|lowercase }}

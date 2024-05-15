@@ -20,7 +20,7 @@ webmapp-track-poi {
       align-content: stretch;
       align-items: stretch;
       margin-bottom: 10px;
-      height: 160px;
+      max-height: 160px;
       cursor: pointer;
     }
     .webmapp-track-poi-text {
@@ -70,6 +70,13 @@ webmapp-track-poi {
 
       flex: 0 1 auto;
       align-self: auto;
+    }
+    .wm-filter-icon {
+      height: 32px;
+      svg {
+        height: 100%;
+        padding: 4px;
+      }
     }
     .selected {
       background-color: rgba(243, 244, 246, 1);

@@ -1,22 +1,26 @@
 import {DOCUMENT} from '@angular/common';
-import {Component, Inject, ViewEncapsulation} from '@angular/core';
+import {Component, Inject, OnInit, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
-import {take} from 'rxjs/operators';
+import {filter, skip, switchMap, take} from 'rxjs/operators';
 import {query} from 'wm-core/store/api/api.actions';
 import {loadConf} from 'wm-core/store/conf/conf.actions';
-import {confTHEMEVariables} from 'wm-core/store/conf/conf.selector';
+import {confAPP, confTHEMEVariables, confWEBAPP} from 'wm-core/store/conf/conf.selector';
 import appPackage from 'package.json';
 import wmCorePackage from './shared/wm-core/package.json';
 import mapCorePackage from './shared/map-core/package.json';
+import {environment} from 'src/environments/environment';
+import {IAPP, IWEBAPP} from 'wm-core/types/config';
 @Component({
   selector: 'webmapp-app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  confAPP$: Observable<any> = this._storeConf.select(confAPP);
   confTHEMEVariables$: Observable<any> = this._storeConf.select(confTHEMEVariables);
+  confWEBAPP$: Observable<any> = this._storeConf.select(confWEBAPP);
 
   constructor(@Inject(DOCUMENT) private _document: Document, private _storeConf: Store<any>) {
     this._storeConf.dispatch(loadConf());
@@ -29,10 +33,51 @@ export class AppComponent {
     });
   }
 
+  ngOnInit(): void {
+    this.confWEBAPP$
+      .pipe(
+        skip(1),
+        filter((c: IWEBAPP) => c.splash_screen_show),
+        switchMap(() => this.confAPP$),
+        take(1),
+      )
+      .subscribe((conf: IAPP) => {
+        this.setSplashScreenImage(conf);
+        this.hideSplashScreen();
+      });
+  }
+
   private _setGlobalCSS(css: {[name: string]: string | number}) {
     const rootDocument = this._document.querySelector(':root');
     Object.keys(css).forEach(element => {
       (rootDocument as any).style.setProperty(element, `${css[element]}`);
     });
+  }
+
+  private hideSplashScreen() {
+    setTimeout(() => {
+      const splashScreen = document.getElementById('splash-screen');
+      if (splashScreen) {
+        splashScreen.style.opacity = '0';
+        splashScreen.style.transition = 'opacity 0.5s ease-out';
+        setTimeout(() => {
+          splashScreen.remove();
+        }, 500);
+      }
+    }, 3000); // Attendi 3 secondi prima di nascondere la splash screen
+  }
+
+  private setSplashScreenImage(conf: IAPP) {
+    const bodyElement = document.body;
+    if (bodyElement && conf.geohubId) {
+      const splashScreen = document.createElement('div') as HTMLImageElement;
+      splashScreen.id = 'splash-screen';
+      const img = document.createElement('img');
+      img.id = 'splash-screen-img';
+      img.alt = 'Logo';
+      img.src = `https://geohub.webmapp.it/storage/api/app/${conf.geohubId}/resources/splash.png`;
+      splashScreen.appendChild(img);
+      bodyElement.appendChild(splashScreen);
+    }
   }
 }

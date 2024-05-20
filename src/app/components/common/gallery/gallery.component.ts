@@ -18,10 +18,18 @@ import {IWmImage} from 'src/app/types/model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GalleryComponent {
+  @Input('gallery') public set imageGallery(gallery: IWmImage[]) {
+    this.gallery = gallery;
+    if(gallery.length> 0 ) {
+      this.currentImage$.next(gallery[0])
+    }
+  }
+
+  @ViewChild('slider') slider: IonSlides;
+
   currentImage$: BehaviorSubject<IWmImage | null> = new BehaviorSubject<IWmImage | null>(null);
   public defaultPhotoPath = '/assets/icon/no-photo.svg';
   public gallery: IWmImage[] = [];
-  @ViewChild('slider') slider: IonSlides;
   slideOptions = {
     slidesPerView: 1,
     allowTouchMove: false,
@@ -93,9 +101,6 @@ export class GalleryComponent {
       },
     },
   };
-  @Input('gallery') public set imageGallery(value: IWmImage[]) {
-    this.gallery = value;
-  }
 
   @HostListener('document:keydown.Escape', ['$event'])
   public close(): void {

@@ -20,9 +20,6 @@ import {IWmImage} from 'src/app/types/model';
 export class GalleryComponent {
   @Input('gallery') public set imageGallery(gallery: IWmImage[]) {
     this.gallery = gallery;
-    if(gallery.length> 0 ) {
-      this.currentImage$.next(gallery[0])
-    }
   }
 
   @ViewChild('slider') slider: IonSlides;

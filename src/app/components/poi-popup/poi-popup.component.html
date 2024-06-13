@@ -40,8 +40,8 @@
 
   <wm-gallery
     class="row"
-    *ngIf="poiProperties.feature_image !=null || (poiProperties.image_gallery !=null && poiProperties.image_gallery.length> 0)"
-    [gallery]="poiProperties.image_gallery"
+    *ngIf="combinedGallery.length > 0"
+    [gallery]="combinedGallery"
   ></wm-gallery>
   <div class="webmapp-poi-popup-btns">
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.address">

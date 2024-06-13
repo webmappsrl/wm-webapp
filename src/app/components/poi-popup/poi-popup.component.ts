@@ -52,6 +52,7 @@ export class PoiPopupComponent {
       }
 
       this.poiProperties = {...poi.properties, ...prop};
+      this.updateCombinedGallery();
     }
   }
 
@@ -60,6 +61,7 @@ export class PoiPopupComponent {
   @Output() prevEVT: EventEmitter<void> = new EventEmitter<void>();
   @ViewChild('gallery') slider: IonSlides;
 
+  combinedGallery: any[] = [];
   defaultPhotoPath = '/assets/icon/no-photo.svg';
   enableEditingInline$ = this._store.select(confShowEditingInline);
   isEnd$: Observable<boolean>;
@@ -87,6 +89,18 @@ export class PoiPopupComponent {
     if (id != null) {
       const url = `https://geohub.webmapp.it/resources/ec-pois/${id}/edit?viaResource&viaResourceId&viaRelationship`;
       window.open(url, '_blank').focus();
+    }
+  }
+
+  updateCombinedGallery(): void {
+    const gallery = this.poiProperties?.image_gallery ?? [];
+    const featureImage = this.poiProperties?.feature_image ?? null;
+    if (featureImage) {
+      this.combinedGallery = [featureImage, ...gallery].filter(
+        (image, index, self) => self.findIndex(t => t.id === image.id) === index,
+      );
+    } else {
+      this.combinedGallery = gallery;
     }
   }
 }

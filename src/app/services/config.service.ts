@@ -7,6 +7,12 @@ import {environment} from 'src/environments/environment';
 })
 export class ConfigService {
   private _geohubAppId: number;
+  private _hostToGeohubAppId: { [key: string]: number } = {
+    'sentieri.caiparma': 33,
+    'motomappa.motoabbigliament': 53,
+    'maps.parcoforestecasentinesi': 49,
+    'maps.parcopan': 63,
+  };
 
   public get configUrl(): string {
     return `${this._geohubApiBaseUrl}config`;
@@ -27,12 +33,12 @@ export class ConfigService {
   constructor() {
     const hostname: string = window.location.hostname;
     if (hostname.indexOf('localhost') < 0) {
-      if (hostname.indexOf('sentieri.caiparma') > -1) {
-        this._geohubAppId = 33;
-      } else if (hostname.indexOf('motomappa.motoabbigliament') > -1) {
-        this._geohubAppId = 53;
-      } else if (hostname.indexOf('maps.parcoforestecasentinesi.it') > -1) {
-        this._geohubAppId = 49;
+      const matchedHost = Object.keys(this._hostToGeohubAppId).find((host) =>
+        hostname.includes(host)
+      );
+    
+      if (matchedHost) {
+        this._geohubAppId = this._hostToGeohubAppId[matchedHost];
       } else {
         const newGeohubId = parseInt(hostname.split('.')[0], 10);
         if (!Number.isNaN(newGeohubId)) {

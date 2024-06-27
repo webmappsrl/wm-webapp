@@ -339,6 +339,7 @@ export class MapPage implements OnDestroy {
     this._confMAPLAYERS$
       .pipe(
         take(1),
+        filter(l => l != null),
         map(layers => {
           const layer = layers.filter(l => +l.id === id);
           return layer.length === 1 ? layer[0] : null;
@@ -394,6 +395,9 @@ export class MapPage implements OnDestroy {
   }
 
   setWmMapFeatureCollection(overlay: any): void {
+    try {
+      this.homeCmp.setLayer(null);
+    } catch (_) {}
     this.overlayFeatureCollections$.pipe(take(1)).subscribe(feature => {
       this.wmMapFeatureCollectionOverlay$.next({
         ...overlay,

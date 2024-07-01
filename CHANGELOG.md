@@ -1,5 +1,88 @@
 # Changelog
 
+## 1.0.0 (2024-07-01)
+
+
+### Features
+
+* **action:** add deploy action ([7c1d7b8](https://github.com/webmappsrl/wm-webapp/commit/7c1d7b82c1abe48937469f2f4f230322bee17961))
+* add @dwayneparton/geojson-to-gpx package ([c0454dd](https://github.com/webmappsrl/wm-webapp/commit/c0454dd2e40f4a08597837d4ed976e5fd53d8470))
+* Add popup functionality to map page ([df7d5bd](https://github.com/webmappsrl/wm-webapp/commit/df7d5bd51a67fc5a84af06d0e21cc7019944e036))
+* Add WmCoreModule to DrawTrackModule imports ([2a0a0a4](https://github.com/webmappsrl/wm-webapp/commit/2a0a0a4d28d69c63c5b1fa07fdfef67eae2fb214))
+* **config:** add mapping of hostnames to geohub app ids ([82f3491](https://github.com/webmappsrl/wm-webapp/commit/82f349179b3feb45322b99631ea6aeba0224bf9c))
+* **config:** add support for new geohub app ([4940028](https://github.com/webmappsrl/wm-webapp/commit/4940028d8fa02d7472eaca37464cd9d321d80e75))
+* **facet:** aff facet activities ([e5c0fe6](https://github.com/webmappsrl/wm-webapp/commit/e5c0fe62e1241ce338e29238773ce2b9c299f7b5))
+* **filters:** ... ([6fbdac5](https://github.com/webmappsrl/wm-webapp/commit/6fbdac5a4451dfcb70c60d04fb93f7d00065969b))
+* **filters:** add reset filters ([28164c8](https://github.com/webmappsrl/wm-webapp/commit/28164c8c80b88ca9929f258df597164e6654decc))
+* **filters:** implements slider filters ([0b9ebd4](https://github.com/webmappsrl/wm-webapp/commit/0b9ebd418d90df9b355411debd5925402ea5a124))
+* **gallery-component:** implementation ([#10](https://github.com/webmappsrl/wm-webapp/issues/10)) ([c0337bc](https://github.com/webmappsrl/wm-webapp/commit/c0337bc55195ef2f55186e9df0d3db05b8edffa3))
+* **hide_popups_when_going_to_home:** implements 1006 ([8d7d3c0](https://github.com/webmappsrl/wm-webapp/commit/8d7d3c04b5bf36fb01e6c2e75a097e7a2d2d8ba9))
+* **highlights on custom track:** implements ([#5](https://github.com/webmappsrl/wm-webapp/issues/5)) ([fb583c7](https://github.com/webmappsrl/wm-webapp/commit/fb583c7800c5bfffea1d0600b162e27909283636))
+* **i_miei_percorsi_add_elevation_chart:** implements ([76ae068](https://github.com/webmappsrl/wm-webapp/commit/76ae068cb95fc468d1c70ecd87c36419b6fb57ca))
+* **i_miei_percorsi:** implements ([e1feb2f](https://github.com/webmappsrl/wm-webapp/commit/e1feb2fa6e63eed00ce584091df7f2660de76bb7))
+* **installare_angular_elements:** implements ([9d80760](https://github.com/webmappsrl/wm-webapp/commit/9d8076093bde6b9f4769174eee9bbf04223835b7))
+* **iubenda:** implements ([44a50ef](https://github.com/webmappsrl/wm-webapp/commit/44a50ef1a8fec3a932b6825fd1c7b5b8d9525d23))
+* **map-page:** add close menu top-right ([9280d3a](https://github.com/webmappsrl/wm-webapp/commit/9280d3ac881350f4290a4a28e2d92871ceaf485c))
+* **mettere_deep_link_per_i_POI:** implements ([#13](https://github.com/webmappsrl/wm-webapp/issues/13)) ([df26c69](https://github.com/webmappsrl/wm-webapp/commit/df26c6989464f081b04bc7f2182e428057d59ee7))
+* Refactor draw-track component ([9349725](https://github.com/webmappsrl/wm-webapp/commit/9349725cf50231abf9e63bc7a80a799ff2649d4e))
+* update to new geoserver  ([92dd160](https://github.com/webmappsrl/wm-webapp/commit/92dd16089389586029a733f6db322cd651ac51eb))
+
+
+### Bug Fixes
+
+* ** change_track_label_based_on_itinerari_sentieri_tappe:** fixed ([63bc7c9](https://github.com/webmappsrl/wm-webapp/commit/63bc7c9b4f9c7ad6cb81668345660414d6e9ce76))
+* ** Integrazione dei campi Not Accessible e il suo messaggio nella webapp:** added translations in track-details ([3e81e71](https://github.com/webmappsrl/wm-webapp/commit/3e81e71e4426591ad6e6d98ccdcf9af6bdf35027))
+* ** Integrazione dei campi Not Accessible e il suo messaggio nella webapp:** implements ([3e81e71](https://github.com/webmappsrl/wm-webapp/commit/3e81e71e4426591ad6e6d98ccdcf9af6bdf35027))
+* **Aggiungere le didascalie Caption delle immagini al click sull'immagine:** implements ([b9e2e0e](https://github.com/webmappsrl/wm-webapp/commit/b9e2e0e93b38f3f66d29ae562e22fa1f13fc1bd6))
+* **Attivazione del campo codice analytics - Google - o l'alternativa:** implements ([9bf948c](https://github.com/webmappsrl/wm-webapp/commit/9bf948c44fa1a6ac44247b5aad03738856a31f95))
+* **click_on_related_poi_on_track_error:** fixed ([7ca0994](https://github.com/webmappsrl/wm-webapp/commit/7ca0994b3d0a4d1054c5b0915c8c6f603acfe851))
+* **config:** add support for maps.parcoforestecasentinesi.it oc:2768 ([6048bc3](https://github.com/webmappsrl/wm-webapp/commit/6048bc305f19f7a61e325d3039f02f45453d07f1))
+* **description_read_more_padding:** implements ([#15](https://github.com/webmappsrl/wm-webapp/issues/15)) ([a3dc3a7](https://github.com/webmappsrl/wm-webapp/commit/a3dc3a75b1a0dce8badc40eddf340123f223e2a3))
+* **dynamic-css:** implements ([94cf4e0](https://github.com/webmappsrl/wm-webapp/commit/94cf4e051cef39090fea3132477cea6f5ce00a77))
+* Enhance DrawTrackComponent with new features and refactoring ([7285721](https://github.com/webmappsrl/wm-webapp/commit/7285721697abda6255f8d5191e24c88cc11304e8))
+* **filter:** remove useless filter ([ed7c41d](https://github.com/webmappsrl/wm-webapp/commit/ed7c41d9a38c143bd735d03849b260a2760e6392))
+* **fitView:** add priority ([e4a46d4](https://github.com/webmappsrl/wm-webapp/commit/e4a46d4f8e40428d6194e04ab26965e106edfa41))
+* **iinner-html:** set  correct behaviour ([d1f03e3](https://github.com/webmappsrl/wm-webapp/commit/d1f03e37921b1d4b204230d325774f64dbcf11af))
+* **map-core:** added in the download section the open pdf button ([2c3a524](https://github.com/webmappsrl/wm-webapp/commit/2c3a524c9f3a728899b62d2649c4320346720dc2))
+* **map:** add functionality to update last filter type oc:1932 ([81ddf28](https://github.com/webmappsrl/wm-webapp/commit/81ddf288e4b1adcf0959cb6efc38e37fc0b6d2db))
+* **overlay:** close after clicking ([e6ae2ac](https://github.com/webmappsrl/wm-webapp/commit/e6ae2acdb30315d4b89f43e2f2ad193086c383ea))
+* **overlayes - parco-png:** ref 1054 ([1382664](https://github.com/webmappsrl/wm-webapp/commit/13826645c826279533e6bead26041696db161e20))
+* **overlays - parco-pnc:** ref 1050 ([0514f0d](https://github.com/webmappsrl/wm-webapp/commit/0514f0d59329965c87b0aba56ee7a181d0313ac5))
+* **poi_add_multiple_telephone:** implements ([#14](https://github.com/webmappsrl/wm-webapp/issues/14)) ([f4e02f4](https://github.com/webmappsrl/wm-webapp/commit/f4e02f4a9aa06d989df775148e88064875aaab7b))
+* **poi_popup_tel_and_email_html_error:** implements ([#12](https://github.com/webmappsrl/wm-webapp/issues/12)) ([814dac2](https://github.com/webmappsrl/wm-webapp/commit/814dac2b27ca8b90296df12c480c879fba6f5781))
+* **profile_optimization_scale:** fix min altitude and add delta ([104d7ee](https://github.com/webmappsrl/wm-webapp/commit/104d7ee71578a38b61eb62d4582c012c7e8d9d7b))
+* **remove_lower_case_in_track_title:** implements ([e94b95c](https://github.com/webmappsrl/wm-webapp/commit/e94b95c1309ca2869cd99572b46ba6e0bae4f1a9))
+* **select layer:** select layer by feature collection ([e71df1b](https://github.com/webmappsrl/wm-webapp/commit/e71df1b4f959ef9cdf8860d9a711258e70e87f5f))
+* **track_alert_always_present:** fixed ([829bc74](https://github.com/webmappsrl/wm-webapp/commit/829bc744442845c44e8dcfa65d07045c78feb860))
+* **track_page_visualization_bug:** added overflow-y auto ([936f71a](https://github.com/webmappsrl/wm-webapp/commit/936f71a15a70bc9ca1e744b5e3c28322911fdcb6))
+* **track_remove_empty_titles:** implements ([#9](https://github.com/webmappsrl/wm-webapp/issues/9)) ([46cae72](https://github.com/webmappsrl/wm-webapp/commit/46cae727ff86769957cd77dc5e60d1fee4f793d1))
+* **translate_no_results:** implements ([#16](https://github.com/webmappsrl/wm-webapp/issues/16)) ([edbd8b6](https://github.com/webmappsrl/wm-webapp/commit/edbd8b67a5a09cf69c5ec57e843e2600aa709c7f))
+* **webapp_i_miei_percorsi_modifiche:** id 2090 ([1549287](https://github.com/webmappsrl/wm-webapp/commit/15492879a3108e136145cb62131d13f5e3cfed1e))
+
+
+### Miscellaneous
+
+* Add release_please.yml workflow ([532bafb](https://github.com/webmappsrl/wm-webapp/commit/532bafb647d03e98f1b33a49782f5d1e25e2e37b))
+* **inner-html:** use wm-core  inner html ([eb4634b](https://github.com/webmappsrl/wm-webapp/commit/eb4634b24986d395b6d3214b98913ebcb7be4b99))
+* Remove unnecessary code in GalleryComponent ([998d46c](https://github.com/webmappsrl/wm-webapp/commit/998d46c91cdcccb3929f4e9d737b0e143d81b4a6))
+* Update angular.json to include new asset mapping ([e4d3b73](https://github.com/webmappsrl/wm-webapp/commit/e4d3b739f8298664e6a05e07933a4e08c4bd6ff1))
+* Update font size in theme CSS file ([0d97c57](https://github.com/webmappsrl/wm-webapp/commit/0d97c57c795f844110feb1c037c9382aa7d03796))
+* Update font size in theme CSS file ([186a757](https://github.com/webmappsrl/wm-webapp/commit/186a7576f0fdc318ba35a733e1d239838fb57b93))
+* Update gallery.component.ts oc:2864 ([a50c78f](https://github.com/webmappsrl/wm-webapp/commit/a50c78fe0bbedc1c9007fdefeeb909f3706c852e))
+* Update home.component.html and home.component.ts ([f246c70](https://github.com/webmappsrl/wm-webapp/commit/f246c70bb787de46a4e3d14d45c5058632866b57))
+* Update map page and environment configuration ([3a06bdc](https://github.com/webmappsrl/wm-webapp/commit/3a06bdc0ab2ae1b2cd5b92347978a58bf3deddcb))
+* Update map page HTML, SCSS, and TypeScript files ([277f767](https://github.com/webmappsrl/wm-webapp/commit/277f767826fea1ae8426264131c4a037ce22d09e))
+* Update ol-ext dependency to version 4.0.11 ([9a4e4a2](https://github.com/webmappsrl/wm-webapp/commit/9a4e4a25e9544a740950376b377414b335726ea5))
+* Update poi-popup.component.html and model.d.ts oc:2583 ([1755b2e](https://github.com/webmappsrl/wm-webapp/commit/1755b2e61fa5dd7220a051360fc6175257e1168b))
+* Update poi-popup.component.html id:2445 ([ce475f9](https://github.com/webmappsrl/wm-webapp/commit/ce475f9bbfd19def6780e9f608ad0f63da7392d7))
+* Update subproject commit reference ([65d912e](https://github.com/webmappsrl/wm-webapp/commit/65d912e16a38e2694d4e790c68ebc42749c67a33))
+* Update subproject commits in map-core and wm-core ([66f6cc7](https://github.com/webmappsrl/wm-webapp/commit/66f6cc71d112881aceea6d16ccd1b21781832a0a))
+* Update subproject oc: 2556 ([ca16ae7](https://github.com/webmappsrl/wm-webapp/commit/ca16ae777ec2576203591f11aeb3a7b8c2266fd1))
+* Update subprojects ([58a858e](https://github.com/webmappsrl/wm-webapp/commit/58a858e077dddd2ff5ccb1be152341c1b0887221))
+* Update track download URLs component ([6bb4726](https://github.com/webmappsrl/wm-webapp/commit/6bb47262b95921b5be290dad93f444abbf8531c3))
+* Update track-poi component HTML and SCSS oc: 2534 ([38d42ae](https://github.com/webmappsrl/wm-webapp/commit/38d42ae807ce4cfeaf54a9d4d2ad46c4a02444bc))
+* Update walkability icons and translations for horse riding in multiple languages ([e0a4ec1](https://github.com/webmappsrl/wm-webapp/commit/e0a4ec17eb279aaaeb0f558e8b74b2ff0c1bed58))
+
 ## 1.0.0 (2023-10-03)
 
 

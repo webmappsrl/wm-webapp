@@ -8,7 +8,7 @@
       <img class="webmapp-track-poi-img" [src]="item.feature_image.sizes['108x148']" />
     </ng-container>
     <ng-template #svgTemplate>
-      <ng-container *ngIf="item.taxonomy.poi_type.icon != null;else noImage">
+      <ng-container *ngIf="item.taxonomy?.poi_type?.icon != null;else noImage">
         <ng-container *ngIf="item.taxonomy.poi_type.icon as svg">
           <div appBuildSvg class="wm-filter-icon" [svg]="svg"></div>
         </ng-container>

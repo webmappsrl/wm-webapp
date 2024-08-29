@@ -125,7 +125,7 @@
     >
       {{ (drawTrackEnable$|async)?'esci':'i miei percorsi'|wmtrans}}
     </div>
-    <wm-profile
+    <wm-profile *ngIf="false"
       top-right
     ></wm-profile>
   </wm-map>

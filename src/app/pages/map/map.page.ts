@@ -46,6 +46,7 @@ import {WmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/direct
 import {IDATALAYER} from 'src/app/shared/map-core/src/types/layer';
 
 import {
+  confAUTHEnable,
   confGeohubId,
   confHOME,
   confJIDOUPDATETIME,
@@ -71,6 +72,8 @@ import {
 } from 'wm-core/types/config';
 import {LangService} from 'wm-core/localization/lang.service';
 import {FiltersComponent} from 'wm-core/filters/filters.component';
+import { ModalController } from '@ionic/angular';
+import { LoginComponent } from 'wm-core/login/login.component';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -110,6 +113,7 @@ export class MapPage implements OnDestroy {
     }),
   );
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
+  authEnable$: Observable<boolean> = this._store.select(confAUTHEnable);
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentLayer$ = this._store.select(apiElasticStateLayer);
   currentPoi$: BehaviorSubject<IGeojsonFeature> = new BehaviorSubject<IGeojsonFeature | null>(null);
@@ -197,6 +201,7 @@ export class MapPage implements OnDestroy {
     private _store: Store,
     private _langService: LangService,
     private _loadingSvc: WmLoadingService,
+    private _modalCtrl: ModalController,
   ) {
     this.refreshLayer$ = this._store.select(countSelectedFilters);
     if (window.innerWidth < maxWidth) {

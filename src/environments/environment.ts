@@ -4,11 +4,13 @@
 
 export const environment = {
   production: false,
-  geohubId: 33,
+  geohubId: 26,
   api: 'https://geohub.webmapp.it',
+  elasticApi: 'https://elastic-json.webmapp.it/v2/search',
   graphhopperHost: 'https://graphhopper.webmapp.it/',
   //graphhopperHost: 'https://graphhopper.sviluppo.lunet.it/',
-  // api: 'http://127.0.0.1:8000',
+  //api: 'http://127.0.0.1:8000',
+  //elasticApi: 'http://localhost:3000/v2/search'
 };
 
 /*

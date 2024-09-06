@@ -1,21 +1,11 @@
-import {GeohubService} from './geohub.service';
 import {Injectable} from '@angular/core';
 import {environment} from 'src/environments/environment';
-
+import { hostToGeohubAppId } from 'wm-core/store/api/api.service';
 @Injectable({
   providedIn: 'root',
 })
 export class ConfigService {
   private _geohubAppId: number;
-  private _hostToGeohubAppId: { [key: string]: number } = {
-    'sentieri.caiparma': 33,
-    'motomappa.motoabbigliament': 53,
-    'maps.parcoforestecasentinesi': 49,
-    'maps.parcopan': 63,
-    'maps.acquasorgente.cai': 58,
-    'maps.caipontedera': 59,
-    'maps.parcapuane': 62,
-  };
 
   public get configUrl(): string {
     return `${this._geohubApiBaseUrl}config`;
@@ -35,13 +25,14 @@ export class ConfigService {
 
   constructor() {
     const hostname: string = window.location.hostname;
+    console.log(hostToGeohubAppId);
     if (hostname.indexOf('localhost') < 0) {
-      const matchedHost = Object.keys(this._hostToGeohubAppId).find((host) =>
+      const matchedHost = Object.keys(hostToGeohubAppId).find((host) =>
         hostname.includes(host)
       );
     
       if (matchedHost) {
-        this._geohubAppId = this._hostToGeohubAppId[matchedHost];
+        this._geohubAppId = hostToGeohubAppId[matchedHost];
       } else {
         const newGeohubId = parseInt(hostname.split('.')[0], 10);
         if (!Number.isNaN(newGeohubId)) {

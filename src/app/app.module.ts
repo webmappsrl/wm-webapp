@@ -25,7 +25,8 @@ import {UIReducer} from './store/UI/UI.reducer';
 import {tap} from 'rxjs/operators';
 import {createCustomElement} from '@angular/elements';
 import {WmCoreModule} from 'wm-core/wm-core.module';
-import {ENVIRONMENT_CONFIG} from 'wm-core/store/conf/conf.token';
+import {APP_ID, ENVIRONMENT_CONFIG} from 'wm-core/store/conf/conf.token';
+import { ConfigService } from './services/config.service';
 
 registerLocaleData(localeIt);
 @Injectable()
@@ -67,6 +68,11 @@ export class MyHttpInterceptor implements HttpInterceptor {
   providers: [
     {provide: ENVIRONMENT_CONFIG, useValue: environment},
     {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
+    {
+      provide: APP_ID,
+      useFactory: (configService: ConfigService) => configService.geohubAppId,
+      deps: [ConfigService]
+    },
     {provide: LOCALE_ID, useValue: 'it'},
     /*     {
           provide: HTTP_INTERCEPTORS,

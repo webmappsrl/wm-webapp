@@ -8,7 +8,7 @@ export class ConfigService {
   private _geohubAppId: number;
 
   public get configUrl(): string {
-    return `${this._geohubApiBaseUrl}config`;
+    return `${environment.awsApi}/config/${this._geohubAppId}.json`;
   }
 
   public get geohubAppId(): number {

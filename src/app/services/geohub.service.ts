@@ -39,7 +39,7 @@ export class GeohubService {
         'app-id': `${environment.geohubId}` // Aggiungi l'header con l'id dell'app
       });
       const result = await this._communicationService
-        .get(`${environment.api}/api/ec/track/${id}`,{headers})
+        .get(`${environment.trackApi}${id}.json`)
         .pipe(
           map((apiResult: CGeojsonLineStringFeature) => {
             const related_pois = (apiResult.properties.related_pois || []).map(p => {

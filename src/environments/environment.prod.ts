@@ -4,4 +4,5 @@ export const environment = {
   api: 'https://geohub.webmapp.it',
   elasticApi: 'https://elastic-json.webmapp.it/v2/search',
   graphhopperHost: 'https://graphhopper.webmapp.it/',
+  trackApi:'https://wmfe.s3.eu-central-1.amazonaws.com/geohub/tracks/'
 };

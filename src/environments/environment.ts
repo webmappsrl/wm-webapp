@@ -4,10 +4,11 @@
 
 export const environment = {
   production: false,
-  geohubId: 26,
+  geohubId: 53,
   api: 'https://geohub.webmapp.it',
   elasticApi: 'https://elastic-json.webmapp.it/v2/search',
   graphhopperHost: 'https://graphhopper.webmapp.it/',
+  trackApi:'https://wmfe.s3.eu-central-1.amazonaws.com/geohub/tracks/'
   //graphhopperHost: 'https://graphhopper.sviluppo.lunet.it/',
   //api: 'http://127.0.0.1:8000',
   //elasticApi: 'http://localhost:3000/v2/search'

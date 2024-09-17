@@ -11,8 +11,9 @@
 
   <div class="details-container" [class.details-container-visible]="(showMenu$|async)">
     <webmapp-track-details
+      *ngIf="!(isUgcSelected$|async); else ugcDetails"
       [track]="track$|async"
-      [hidden]="trackid <= 0"
+      [hidden]="+trackid <= 0"
       [poi]="currentPoiIDToMap$|async"
       (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
       (poi-click)="setCurrentRelatedPoi($event)"
@@ -35,7 +36,7 @@
     </webmapp-track-details>
     <webmapp-home
       *ngIf="(drawTrackEnable$|async)===false;else customTrack"
-      [hidden]="trackid > 0"
+      [hidden]="trackid != -1"
       class="webmapp-home"
     >
       <wm-lang-selector
@@ -51,6 +52,18 @@
         (reloadEvt)="reloadCustomTrack()"
       ></wm-draw-track>
     </ng-template>
+    <ng-template #ugcDetails>
+      <wm-ugc-details
+        [track]="ugcTrack$|async"
+        [hidden]="+trackid <= 0"
+        [poi]="currentPoiIDToMap$|async"
+        (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
+        (poi-click)="setCurrentRelatedPoi($event)"
+        (dismiss)="toggleDetails()"
+        class="webmapp-track-details"
+      ></wm-ugc-details>
+    </ng-template>
+
   </div>
   <webmapp-poi-popup
     *ngIf="mergedPoi$|async as poi"
@@ -96,7 +109,7 @@
     [wmMapPoisDisableClusterLayer]="(drawTrackEnable$|async)||(!(togglePoisDirective$|async) && (currentLayer$|async)==null)"
     (currentPoiEvt)="setPoi($event)"
     wmMapTrack
-    [track]="track$|async"
+    [track]="(isUgcSelected$|async) ? (ugcTrack$|async) : (track$|async)"
     [trackElevationChartElements]="trackElevationChartHoverElements$|async"
     (trackSelectedFromLayerEVT)="toggleDetails($event)"
     wmMapTrackRelatedPois
@@ -105,6 +118,8 @@
     [wmMapReletedPoisDisableClusterLayer]="(drawTrackEnable$|async)||(!(togglePoisDirective$|async) && (currentLayer$|async)==null)"
     wmMapHitMapCollection
     [wmMapHitMapUrl]="wmMapHitMapUrl$|async"
+    wmUgcTracks
+    [wmMapUgcTracks]="ugcTracks$|async"
   >
     <wm-filters
       top-right
@@ -127,7 +142,7 @@
     >
       {{ (drawTrackEnable$|async)?'esci':'i miei percorsi'|wmtrans}}
     </div>
-    <wm-profile *ngIf="false"
+    <wm-profile *ngIf="true"
       top-right
     ></wm-profile>
   </wm-map>

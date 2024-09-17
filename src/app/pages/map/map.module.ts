@@ -13,6 +13,7 @@ import {SharedModule} from 'src/app/shared/shared.module';
 import {TrackDetailsModule} from 'src/app/components/track-details/track-details.module';
 import {MapPage} from './map.page';
 import { ProfileModule } from 'src/app/components/profile-popup/profile.module';
+import { UgcDetailsModule } from 'src/app/components/ugc-details/ugc-details.module';
 
 @NgModule({
   imports: [
@@ -22,6 +23,7 @@ import { ProfileModule } from 'src/app/components/profile-popup/profile.module';
     MapPageRoutingModule,
     PipeModule,
     TrackDetailsModule,
+    UgcDetailsModule,
     HomeModule,
     PoiPopupModule,
     ProfileModule,

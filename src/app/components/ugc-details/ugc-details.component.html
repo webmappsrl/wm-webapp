@@ -1,0 +1,56 @@
+<ng-content></ng-content>
+<ng-container *ngIf="track != null">
+
+    <ion-header>
+      <ion-toolbar class="webmapp-track-details-toolbar">
+        <span
+          *ngIf="track"
+          [innerHtml]="track.title | wmtrans"
+          class="wm-track-details-header"
+        ></span>
+        <ion-buttons slot="end">
+          <ion-button class="webmapp-track-details-dismiss" (click)="triggerDismiss()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <div #content id="webmapp-track-details-content">
+      <div class="webmapp-track-title" *ngIf="track.title as title">
+        {{title | wmtrans}}
+      </div>
+
+      <wm-slope-chart
+        *ngIf="track !=null"
+        [currentTrack]="track"
+        (hover)="onLocationHover($event)"
+        id="webmapp-track-details-elevation-chart"
+      >
+      </wm-slope-chart>
+      <!-- <wm-track-edges [properties]="track.properties" [conf]="currentLayer$|async"></wm-track-edges> -->
+
+      <!-- <wm-gallery *ngIf="properties?.image_gallery as imageGallery" [gallery]="imageGallery">
+      </wm-gallery> -->
+
+      <!-- <div class="wm-track-details-download" *ngIf="confOPTIONS$|async as confOPTIONS">
+        <ng-container *ngIf="confOPTIONS.download_track_enable === true">
+          <div class="webmapp-title">{{'Downloads'|wmtrans}}</div>
+          <wm-track-download-urls
+            class="wm-track-details-download-urls"
+            [properties]="track.properties"
+            id="webmapp-track-details-download-urls"
+          >
+            <ng-content></ng-content>
+          </wm-track-download-urls>
+        </ng-container>
+      </div> -->
+
+      <!-- <ion-button
+        class="wm-track-details-edit-geohub"
+        *ngIf="enableEditingInline$|async"
+        (click)="openGeohub()"
+      >
+        {{'edit geohub'|wmtrans}}</ion-button
+      > -->
+    </div>
+</ng-container>

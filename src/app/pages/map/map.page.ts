@@ -14,6 +14,7 @@ import {
   apiGoToHome,
   countSelectedFilters,
   poisInitFeatureCollection,
+  isUgcSelected,
 } from 'wm-core/store/api/api.selector';
 import {
   ChangeDetectionStrategy,
@@ -74,6 +75,8 @@ import {FiltersComponent} from 'wm-core/filters/filters.component';
 import { hitMapFeatureCollection } from 'src/app/shared/map-core/src/store/map-core.selector';
 import { ModalController } from '@ionic/angular';
 import { LoginComponent } from 'wm-core/login/login.component';
+import { SaveService } from 'wm-core/services/save.service';
+import { ITrack } from 'wm-core/types/track';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -91,8 +94,9 @@ export class MapPage implements OnDestroy {
   private _confMAPLAYERS$: Observable<ILAYER[]> = this._store.select(confMAPLAYERS);
 
   readonly track$: Observable<Feature>;
+  readonly ugcTrack$: Observable<ITrack | null>;
   readonly trackColor$: BehaviorSubject<string> = new BehaviorSubject<string>('#caaf15');
-  readonly trackid$: Observable<number>;
+  readonly trackid$: Observable<number|string>;
 
   @ViewChild(WmMapTrackRelatedPoisDirective)
   WmMapTrackRelatedPoisDirective: WmMapTrackRelatedPoisDirective;
@@ -195,6 +199,9 @@ export class MapPage implements OnDestroy {
   );
   wmMapHitMapUrl$: Observable<string | null> = this.confMap$.pipe(map(conf => conf?.hitMapUrl));
 
+  isUgcSelected$: Observable<boolean> = this._store.select(isUgcSelected);
+  ugcTracks$: Observable<ITrack[]>  = from(this._saveSvc.getTracks());
+
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
@@ -204,6 +211,7 @@ export class MapPage implements OnDestroy {
     private _langService: LangService,
     private _loadingSvc: WmLoadingService,
     private _modalCtrl: ModalController,
+    private _saveSvc: SaveService,
   ) {
     this.refreshLayer$ = this._store.select(countSelectedFilters);
     if (window.innerWidth < maxWidth) {
@@ -238,19 +246,21 @@ export class MapPage implements OnDestroy {
 
     this.trackid$ = this._route.queryParams.pipe(
       filter(params => params != null && params.track != null),
-      map(params => +params.track),
+      map(params => params.track),
       startWith(-1),
     );
     this.track$ = this.trackid$.pipe(
       distinctUntilChanged((prev, curr) => {
         return prev === curr;
       }),
-      switchMap(trackid =>
-        trackid > -1 ? from(this._geohubService.getEcTrack(trackid)) : of(null),
+      filter( t => t.toString().indexOf('ugc') < 0),
+      switchMap(trackid => {
+          return +trackid > -1 ? from(this._geohubService.getEcTrack(+trackid)) : of(null);
+      }
       ),
       tap(track => {
         if (track != null) {
-          const poiIDs = (track.properties.related_pois || []).map(poi => poi.properties.id);
+          const poiIDs = (track.properties?.related_pois || []).map(poi => poi.properties.id);
           this.poiIDs$.next(poiIDs);
         } else {
           this.poiIDs$.next([]);
@@ -258,6 +268,16 @@ export class MapPage implements OnDestroy {
       }),
       share(),
     );
+    this.ugcTrack$ = this.trackid$.pipe(
+      distinctUntilChanged((prev, curr) => {
+        return prev === curr;
+      }),
+      filter( t => t.toString().indexOf('ugc') > -1),
+      switchMap(trackid => {
+        trackid = trackid.toString().split(':')[1];
+        return from(this._saveSvc.getTrack(trackid));
+      })
+    )
 
     this.caretOutLine$ = this.showMenu$.pipe(
       map(showMenu => (showMenu ? 'caret-back-outline' : 'caret-forward-outline')),

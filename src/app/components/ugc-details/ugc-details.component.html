@@ -20,17 +20,15 @@
         {{title | wmtrans}}
       </div>
 
-      <wm-slope-chart
-        *ngIf="track !=null"
+      <wm-form [confPOIFORMS]="confTRACKFORMS$|async" [init]="track" [disabled]="!(isEditing$|async)"></wm-form>
+
+      <!-- <wm-slope-chart
+        *ngIf="track != null"
         [currentTrack]="track"
         (hover)="onLocationHover($event)"
         id="webmapp-track-details-elevation-chart"
       >
-      </wm-slope-chart>
-      <!-- <wm-track-edges [properties]="track.properties" [conf]="currentLayer$|async"></wm-track-edges> -->
-
-      <!-- <wm-gallery *ngIf="properties?.image_gallery as imageGallery" [gallery]="imageGallery">
-      </wm-gallery> -->
+      </wm-slope-chart> -->
 
       <!-- <div class="wm-track-details-download" *ngIf="confOPTIONS$|async as confOPTIONS">
         <ng-container *ngIf="confOPTIONS.download_track_enable === true">
@@ -45,12 +43,24 @@
         </ng-container>
       </div> -->
 
-      <!-- <ion-button
-        class="wm-track-details-edit-geohub"
-        *ngIf="enableEditingInline$|async"
-        (click)="openGeohub()"
-      >
-        {{'edit geohub'|wmtrans}}</ion-button
-      > -->
+      <ng-container *ngIf="enableEditingInline$|async">
+        <ion-button
+          *ngIf="!(isEditing$|async); else editingButtons"
+          class="wm-track-details-edit-geohub"
+          (click)="this.isEditing$.next(true)"
+        >{{'edit'|wmtrans}}</ion-button>
+        <ng-template #editingButtons>
+          <ion-button
+            class="wm-track-details-edit-geohub"
+            *ngIf="enableEditingInline$|async"
+            (click)="save()"
+          >{{'save'|wmtrans}}</ion-button>
+          <ion-button
+            class="wm-track-details-edit-geohub"
+            *ngIf="enableEditingInline$|async"
+            (click)="this.isEditing$.next(false)"
+          >{{'cancel'|wmtrans}}</ion-button>
+        </ng-template>
+      </ng-container>
     </div>
 </ng-container>

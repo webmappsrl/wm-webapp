@@ -1,4 +1,4 @@
-import {confOPTIONS} from 'wm-core/store/conf/conf.selector';
+import {confOPTIONS, confTRACKFORMS} from 'wm-core/store/conf/conf.selector';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -18,7 +18,7 @@ import {confShowEditingInline} from 'wm-core/store/conf/conf.selector';
 import {apiElasticStateLayer} from 'wm-core/store/api/api.selector';
 import {map} from 'rxjs/operators';
 import { ITrack } from 'wm-core/types/track';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Component({
   selector: 'wm-ugc-details',
@@ -48,6 +48,7 @@ export class UgcDetailsComponent {
     new EventEmitter<ITrackElevationChartHoverElements>();
   @ViewChild('content') content: IonContent;
 
+  confTRACKFORMS$: Observable<any[]> = this._store.select(confTRACKFORMS);
   confOPTIONS$ = this._store.select(confOPTIONS);
   currentLayer$ = this._store.select(apiElasticStateLayer);
   public data: Partial<IGeojsonProperties>;
@@ -55,6 +56,7 @@ export class UgcDetailsComponent {
   public feature: CGeojsonLineStringFeature;
   poiId: number;
   track: ITrack;
+  isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private _modalCtrl: ModalController, private _store: Store) {}
 
@@ -62,18 +64,8 @@ export class UgcDetailsComponent {
     this.trackElevationChartHover.emit(event);
   }
 
-  open() {
-    // this._modalCtrl
-    //   .create({
-    //     component: ModalGalleryComponent,
-    //     cssClass: 'modal-gallery-class',
-    //     componentProps: {
-    //       gallery: [this.data.featureImage],
-    //     },
-    //   })
-    //   .then(modal => {
-    //     modal.present();
-    //   });
+  save(): void {
+    console.log("SALVA MODIFICHE");
   }
 
   // openGeohub(): void {
@@ -84,8 +76,12 @@ export class UgcDetailsComponent {
   //   }
   // }
 
-  triggerDismiss() {
+  triggerDismiss(): void {
     this.dismiss.emit();
+  }
+
+  enableEditing(): void {
+    this.isEditing$
   }
 
   /**

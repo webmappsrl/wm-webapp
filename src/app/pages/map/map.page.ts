@@ -272,10 +272,10 @@ export class MapPage implements OnDestroy {
       distinctUntilChanged((prev, curr) => {
         return prev === curr;
       }),
-      filter( t => t.toString().indexOf('ugc') > -1),
+      filter( t => t == -1 || t.toString().indexOf('ugc') > -1),
       switchMap(trackid => {
-        trackid = trackid.toString().split(':')[1];
-        return from(this._saveSvc.getTrack(trackid));
+        const ugcTrackid = trackid.toString().split(':')[1];
+        return trackid != -1 ? from(this._saveSvc.getTrack(ugcTrackid)) : of(null);
       })
     )
 

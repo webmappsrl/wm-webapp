@@ -71,6 +71,7 @@ import {
 } from 'wm-core/types/config';
 import {LangService} from 'wm-core/localization/lang.service';
 import {FiltersComponent} from 'wm-core/filters/filters.component';
+import { hitMapFeatureCollection } from 'src/app/shared/map-core/src/store/map-core.selector';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -168,6 +169,7 @@ export class MapPage implements OnDestroy {
       }
     }),
   );
+  overlayFeatureCollections$ = this._store.select(hitMapFeatureCollection);
   poiFilterIdentifiers$: Observable<string[]> = this._store.select(poiFilterIdentifiers);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
   pois$: Observable<FeatureCollection> = this._store.select(pois);
@@ -188,6 +190,7 @@ export class MapPage implements OnDestroy {
   wmMapFeatureCollectionOverlay$: BehaviorSubject<any | null> = new BehaviorSubject<any | null>(
     null,
   );
+  wmMapHitMapUrl$: Observable<string | null> = this.confMap$.pipe(map(conf => conf?.hitMapUrl));
 
   constructor(
     private _route: ActivatedRoute,
@@ -398,6 +401,14 @@ export class MapPage implements OnDestroy {
       this.homeCmp.setLayer(null);
     } catch (_) {}
     this.wmMapFeatureCollectionOverlay$.next(overlay);
+    this.overlayFeatureCollections$.pipe(take(1)).subscribe(feature => {
+      if (overlay['featureType'] != null && feature[overlay['featureType']] != null) {
+        this.wmMapFeatureCollectionOverlay$.next({
+          ...overlay,
+          ...{url: feature[overlay['featureType']]},
+        });
+      }
+    });
   }
 
   toggleDetails(trackid?): void {

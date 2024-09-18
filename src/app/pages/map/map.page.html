@@ -103,6 +103,8 @@
     (related-poi)="setCurrentRelatedPoi($event)"
     (related-poi-next)="currentPoiNextID$.next(+$event)"
     [wmMapReletedPoisDisableClusterLayer]="(drawTrackEnable$|async)||(!(togglePoisDirective$|async) && (currentLayer$|async)==null)"
+    wmMapHitMapCollection
+    [wmMapHitMapUrl]="wmMapHitMapUrl$|async"
   >
     <wm-filters
       top-right

@@ -175,6 +175,21 @@ wm-ugc-details {
       max-height: 30vh;
       display: block;
     }
+    .wm-trackdetail-photoslider {
+      padding: 15px 0;
+      overflow: visible;
+      .wm-trackdetail-photocontainer {
+        position: relative;
+        .wm-trackdetail-photo {
+          height: 100px;
+          width: 140px;
+          &::part(image) {
+            object-fit: cover;
+            border-radius: 15px;
+          }
+        }
+      }
+    }
     .webmapp-track-title {
       font-weight: 700;
       line-height: 22px;
@@ -205,12 +220,13 @@ wm-ugc-details {
         text-align: left;
       }
     }
-    .webmapp-track-activity {
-      color: var(--wm-color-primary);
-      text-transform: uppercase;
-      padding: 10px 20px 0;
-      font-weight: 700;
-      font-family: var(--wm-font-family-header);
+    .webmapp-track-activity-content{
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-content: flex-start;
+      align-items: flex-start;
     }
     .webmapp-track-picture {
       text-align: center;

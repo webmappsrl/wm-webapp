@@ -13,6 +13,7 @@ import {TrackRelatedUrlsComponent} from './track-related-urls/track-related-urls
 import {TrackTechnicalDataComponent} from './track-technical-data/track-technical-data.component';
 import {WMCommonModule} from '../common/wm-common.module';
 import {WmCoreModule} from 'src/app/shared/wm-core/projects/wm-core/src/wm-core.module';
+import { TrackActivityComponent } from './track-activity/track-activity.component';
 
 @NgModule({
   declarations: [
@@ -22,12 +23,14 @@ import {WmCoreModule} from 'src/app/shared/wm-core/projects/wm-core/src/wm-core.
     TrackPoiComponent,
     ModalGalleryComponent,
     TrackRelatedUrlsComponent,
+    TrackActivityComponent,
   ],
   exports: [
     TrackPoiComponent,
     TrackDetailsComponent,
     TrackTechnicalDataComponent,
     TrackDescriptionComponent,
+    TrackActivityComponent,
   ],
   imports: [
     CommonModule,

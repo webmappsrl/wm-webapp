@@ -8,7 +8,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {IonContent, ModalController} from '@ionic/angular';
+import {IonContent} from '@ionic/angular';
 
 import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {IGeojsonProperties} from 'src/app/types/model';
@@ -16,9 +16,8 @@ import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-c
 import {Store} from '@ngrx/store';
 import {confShowEditingInline} from 'wm-core/store/conf/conf.selector';
 import {apiElasticStateLayer} from 'wm-core/store/api/api.selector';
-import {map} from 'rxjs/operators';
-import { ITrack } from 'wm-core/types/track';
-import { BehaviorSubject, Observable } from 'rxjs';
+import {ITrack} from 'wm-core/types/track';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 @Component({
   selector: 'wm-ugc-details',
@@ -37,7 +36,6 @@ export class UgcDetailsComponent {
   @Input('track') set setTrack(track: ITrack) {
     if (track != null) {
       this.track = track;
-      this._initializeFeature();
     }
   }
 
@@ -58,44 +56,21 @@ export class UgcDetailsComponent {
   track: ITrack;
   isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  constructor(private _modalCtrl: ModalController, private _store: Store) {}
+  constructor(private _store: Store) {}
 
   onLocationHover(event: ITrackElevationChartHoverElements | any) {
     this.trackElevationChartHover.emit(event);
   }
 
   save(): void {
-    console.log("SALVA MODIFICHE");
+    console.log('SALVA MODIFICHE');
   }
-
-  // openGeohub(): void {
-  //   const id = this.track && this.track.properties && this.track.properties.id;
-  //   if (id != null) {
-  //     const url = `https://geohub.webmapp.it/resources/ec-tracks/${id}/edit?viaResource&viaResourceId&viaRelationship`;
-  //     window.open(url, '_blank').focus();
-  //   }
-  // }
 
   triggerDismiss(): void {
     this.dismiss.emit();
   }
 
   enableEditing(): void {
-    this.isEditing$
-  }
-
-  /**
-   * Get the track geojson and initialize all the data to show
-   *
-   * @returns
-   */
-  private async _initializeFeature(): Promise<void> {
-    if (!this.track) {
-      this.data = undefined;
-      return;
-    }
-    if (this.track) {
-      // this.data = {...this.track.properties};
-    }
+    this.isEditing$;
   }
 }

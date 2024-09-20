@@ -20,28 +20,71 @@
         {{title | wmtrans}}
       </div>
 
-      <wm-form [confPOIFORMS]="confTRACKFORMS$|async" [init]="track" [disabled]="!(isEditing$|async)"></wm-form>
+      <!-- EDIT MODE -->
+      <wm-form
+        *ngIf="isEditing$|async; else viewData"
+        [confPOIFORMS]="confTRACKFORMS$|async"
+        [init]="track"
+      ></wm-form>
 
-      <!-- <wm-slope-chart
-        *ngIf="track != null"
-        [currentTrack]="track"
-        (hover)="onLocationHover($event)"
-        id="webmapp-track-details-elevation-chart"
-      >
-      </wm-slope-chart> -->
-
-      <!-- <div class="wm-track-details-download" *ngIf="confOPTIONS$|async as confOPTIONS">
-        <ng-container *ngIf="confOPTIONS.download_track_enable === true">
-          <div class="webmapp-title">{{'Downloads'|wmtrans}}</div>
-          <wm-track-download-urls
-            class="wm-track-details-download-urls"
-            [properties]="track.properties"
-            id="webmapp-track-details-download-urls"
-          >
-            <ng-content></ng-content>
-          </wm-track-download-urls>
+      <ng-template #viewData>
+        <!-- CHART -->
+        <wm-slope-chart
+          *ngIf="track != null"
+          [currentTrack]="track"
+          (hover)="onLocationHover($event)"
+          id="webmapp-track-details-elevation-chart"
+        >
+        </wm-slope-chart>
+        <!-- DETAILS -->
+        <div class="webmapp-title ion-margin-top">{{"Dettagli" | wmtrans}}</div>
+        <wm-ugc-track-data
+          [geojson]="track.geojson"
+        ></wm-ugc-track-data>
+        <!-- ACTIVITY -->
+        <ng-container *ngIf="track.activity">
+          <div class="webmapp-title">{{'Attività'|wmtrans}}</div>
+          <div class="webmapp-track-activity-content">
+            <wm-track-activity
+              [activity]="track.activity"
+            ></wm-track-activity>
+          </div>
         </ng-container>
-      </div> -->
+        <!-- DESCRIPTIONS -->
+        <div class="webmapp-title ion-margin-top">{{"Descrizione" | wmtrans}}</div>
+        <webmapp-track-description
+          [description]="track.description | wmtrans"
+        ></webmapp-track-description>
+        <!-- PHOTOS -->
+        <ng-container *ngIf="track.photos != null && track.photos.length >0">
+          <div class="webmapp-title ion-margin-top">{{"Media" | wmtrans}}</div>
+          <ion-slides
+            pager="false"
+            [options]="{slidesPerView: 2.5}"
+            class="wm-trackdetail-photoslider"
+            #slider
+          >
+            <ion-slide *ngFor="let photo of track.photos;let idx = index">
+              <div class="wm-trackdetail-photocontainer">
+                <ion-img [src]="photo | wmCreateBlob" class="wm-trackdetail-photo"></ion-img>
+              </div>
+            </ion-slide>
+          </ion-slides>
+        </ng-container>
+        <!-- DOWNLOADS -->
+        <ng-container class="wm-track-details-download" *ngIf="confOPTIONS$|async as confOPTIONS">
+          <ng-container *ngIf="confOPTIONS.download_track_enable === true">
+            <div class="webmapp-title ion-margin-top">{{'Downloads'|wmtrans}}</div>
+            <wm-track-download-urls
+              class="wm-track-details-download-urls"
+              [track]="track"
+              id="webmapp-track-details-download-urls"
+            >
+              <ng-content></ng-content>
+            </wm-track-download-urls>
+          </ng-container>
+        </ng-container>
+      </ng-template>
 
       <ng-container *ngIf="enableEditingInline$|async">
         <ion-button

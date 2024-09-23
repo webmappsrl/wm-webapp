@@ -427,7 +427,6 @@ export class MapPage implements OnDestroy {
         this.togglePoisDirective$.next(data.toggle);
         break;
     }
-    console.log(data);
   }
 
   toggleDrawTrackEnabled(): void {

@@ -25,7 +25,7 @@ import {
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Store} from '@ngrx/store';
-import {FeatureCollection} from 'geojson';
+import {Feature, FeatureCollection} from 'geojson';
 import {BehaviorSubject, from, merge, Observable, of, Subscription} from 'rxjs';
 import {
   debounceTime,
@@ -39,7 +39,6 @@ import {
   tap,
   take,
 } from 'rxjs/operators';
-import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {HomeComponent} from 'src/app/components/home/home.component';
 import {GeohubService} from 'src/app/services/geohub.service';
 import {WmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/directives/track.related-pois.directive';
@@ -88,7 +87,7 @@ const maxWidth = 600;
 export class MapPage implements OnDestroy {
   private _confMAPLAYERS$: Observable<ILAYER[]> = this._store.select(confMAPLAYERS);
 
-  readonly track$: Observable<CGeojsonLineStringFeature | null>;
+  readonly track$: Observable<Feature>;
   readonly trackColor$: BehaviorSubject<string> = new BehaviorSubject<string>('#caaf15');
   readonly trackid$: Observable<number>;
 

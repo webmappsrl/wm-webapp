@@ -26,8 +26,8 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Store} from '@ngrx/store';
 import {Feature, FeatureCollection} from 'geojson';
+import {select, Store} from '@ngrx/store';
 import {BehaviorSubject, from, merge, Observable, of, Subscription} from 'rxjs';
 import {
   debounceTime,
@@ -77,6 +77,7 @@ import { ModalController } from '@ionic/angular';
 import { LoginComponent } from 'wm-core/login/login.component';
 import { SaveService } from 'wm-core/services/save.service';
 import { ITrack } from 'wm-core/types/track';
+import { isLogged } from 'wm-core/store/auth/auth.selectors';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -197,6 +198,7 @@ export class MapPage implements OnDestroy {
     null,
   );
 
+  isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
   isUgcSelected$: Observable<boolean> = this._store.select(isUgcSelected);
   ugcTracks$: Observable<ITrack[]>  = from(this._saveSvc.getTracks());
 

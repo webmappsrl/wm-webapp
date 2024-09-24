@@ -2,21 +2,21 @@
 <ng-container *ngIf="track != null">
 
     <ion-header>
-      <ion-toolbar class="webmapp-track-details-toolbar">
+      <ion-toolbar>
         <span
           *ngIf="track"
           [innerHtml]="track.title | wmtrans"
-          class="wm-track-details-header"
+          class="wm-ugc-track-details-header"
         ></span>
         <ion-buttons slot="end">
-          <ion-button class="webmapp-track-details-dismiss" (click)="triggerDismiss()">
+          <ion-button (click)="triggerDismiss()">
             <ion-icon name="close"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <div #content id="webmapp-track-details-content">
-      <div class="webmapp-track-title" *ngIf="track.title as title">
+    <div #content id="wm-ugc-track-details-content">
+      <div class="wm-ugc-track-title" *ngIf="track.title as title">
         {{title | wmtrans}}
       </div>
 
@@ -27,83 +27,88 @@
         [init]="track"
       ></wm-form>
 
+      <!-- VIEW MODE -->
       <ng-template #viewData>
         <!-- CHART -->
         <wm-slope-chart
           *ngIf="track != null"
           [currentTrack]="track"
           (hover)="onLocationHover($event)"
-          id="webmapp-track-details-elevation-chart"
-        >
-        </wm-slope-chart>
+        ></wm-slope-chart>
         <!-- DETAILS -->
-        <div class="webmapp-title ion-margin-top">{{"Dettagli" | wmtrans}}</div>
+        <div class="wm-ugc-category-title ion-margin-top">{{"Dettagli" | wmtrans}}</div>
         <wm-ugc-track-data
           [geojson]="track.geojson"
         ></wm-ugc-track-data>
         <!-- ACTIVITY -->
         <ng-container *ngIf="track.activity">
-          <div class="webmapp-title">{{'Attività'|wmtrans}}</div>
-          <div class="webmapp-track-activity-content">
+          <div class="wm-ugc-category-title">{{'Attività'|wmtrans}}</div>
+          <div class="wm-ugc-track-activity-content">
             <wm-track-activity
               [activity]="track.activity"
             ></wm-track-activity>
           </div>
         </ng-container>
         <!-- DESCRIPTIONS -->
-        <div class="webmapp-title ion-margin-top">{{"Descrizione" | wmtrans}}</div>
+        <div class="wm-ugc-category-title ion-margin-top">{{"Descrizione" | wmtrans}}</div>
         <webmapp-track-description
           [description]="track.description | wmtrans"
         ></webmapp-track-description>
         <!-- PHOTOS -->
-        <ng-container *ngIf="track.photos != null && track.photos.length >0">
-          <div class="webmapp-title ion-margin-top">{{"Media" | wmtrans}}</div>
+        <div *ngIf="track.photos != null && track.photos.length >0" class="wm-ugc-track-media-content">
+          <div class="wm-ugc-category-title ion-margin-top">{{"Media" | wmtrans}}</div>
           <ion-slides
-            pager="false"
-            [options]="{slidesPerView: 2.5}"
-            class="wm-trackdetail-photoslider"
+            [options]="slideOptions"
             #slider
           >
             <ion-slide *ngFor="let photo of track.photos;let idx = index">
-              <div class="wm-trackdetail-photocontainer">
-                <ion-img [src]="photo | wmCreateBlob" class="wm-trackdetail-photo"></ion-img>
-              </div>
+              <img [src]="photo | wmCreateBlob" (click)="clickPhoto()"/>
             </ion-slide>
           </ion-slides>
-        </ng-container>
+          <ng-container *ngIf="track.photos.length > 1">
+            <button type="submit" ion-button class="wm-slider-btn left" (click)="prev()">
+              <ion-icon name="caret-back-outline"></ion-icon>
+            </button>
+            <button type="submit" ion-button class="wm-slider-btn right" (click)="next()">
+              <ion-icon name="caret-forward-outline"></ion-icon>
+            </button>
+          </ng-container>
+        </div>
         <!-- DOWNLOADS -->
-        <ng-container class="wm-track-details-download" *ngIf="confOPTIONS$|async as confOPTIONS">
+        <ng-container *ngIf="confOPTIONS$|async as confOPTIONS">
           <ng-container *ngIf="confOPTIONS.download_track_enable === true">
-            <div class="webmapp-title ion-margin-top">{{'Downloads'|wmtrans}}</div>
-            <wm-track-download-urls
-              class="wm-track-details-download-urls"
-              [track]="track"
-              id="webmapp-track-details-download-urls"
-            >
-              <ng-content></ng-content>
-            </wm-track-download-urls>
+            <div class="wm-ugc-category-title ion-margin-top">{{'Downloads'|wmtrans}}</div>
+            <wm-track-download-urls [track]="track"></wm-track-download-urls>
           </ng-container>
         </ng-container>
       </ng-template>
-
+      <!-- EDITiNG BUTTONS -->
       <ng-container *ngIf="enableEditingInline$|async">
         <ion-button
           *ngIf="!(isEditing$|async); else editingButtons"
-          class="wm-track-details-edit-geohub"
+          class="wm-ugc-track-details-edit"
           (click)="this.isEditing$.next(true)"
         >{{'edit'|wmtrans}}</ion-button>
         <ng-template #editingButtons>
           <ion-button
-            class="wm-track-details-edit-geohub"
+            class="wm-ugc-track-details-edit"
             *ngIf="enableEditingInline$|async"
             (click)="save()"
           >{{'save'|wmtrans}}</ion-button>
           <ion-button
-            class="wm-track-details-edit-geohub"
+            class="wm-ugc-track-details-edit"
             *ngIf="enableEditingInline$|async"
             (click)="this.isEditing$.next(false)"
           >{{'cancel'|wmtrans}}</ion-button>
         </ng-template>
       </ng-container>
     </div>
+
+    <webmapp-image-modal
+      *ngIf="(currentImage$|async) as currentImage"
+      [image]="currentImage"
+      [showArrows]="false"
+      [caption]=""
+      (closeEVT)="close()"
+    ></webmapp-image-modal>
 </ng-container>

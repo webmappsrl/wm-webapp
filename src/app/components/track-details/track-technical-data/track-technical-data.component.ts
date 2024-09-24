@@ -1,8 +1,8 @@
 import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 
-import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {ILocaleString} from 'src/app/types/model';
 import {UtilsService} from 'src/app/services/utils.service';
+import { Feature } from 'geojson';
 
 @Component({
   selector: 'webmapp-track-technical-data',
@@ -11,9 +11,9 @@ import {UtilsService} from 'src/app/services/utils.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class TrackTechnicalDataComponent implements OnInit {
-  private _feature: CGeojsonLineStringFeature;
+  private _feature: Feature;
 
-  @Input('feature') set feature(value: CGeojsonLineStringFeature) {
+  @Input('feature') set feature(value: Feature) {
     this._feature = value;
     this.technicalData = this._initializeTechnicalData();
   }

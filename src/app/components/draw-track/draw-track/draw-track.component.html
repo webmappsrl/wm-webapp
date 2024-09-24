@@ -15,7 +15,7 @@
     </ion-item>
     <wm-slope-chart *ngIf="track !=null" [currentTrack]="track"></wm-slope-chart>
     <webmapp-track-technical-data [feature]="track"></webmapp-track-technical-data>
-    <wm-track-download-urls [properties]="track.properties"></wm-track-download-urls>
+    <wm-track-download-urls [track]="track"></wm-track-download-urls>
     <ion-button expand="full" (click)="saveCustomTrack()">{{ 'salva' | wmtrans}}</ion-button>
   </ion-card>
 </ng-container>

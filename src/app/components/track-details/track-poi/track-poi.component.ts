@@ -6,8 +6,8 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
+import { Feature } from 'geojson';
 
-import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {IGeojsonProperties} from 'src/app/types/model';
 
 @Component({
@@ -18,7 +18,7 @@ import {IGeojsonProperties} from 'src/app/types/model';
   encapsulation: ViewEncapsulation.None,
 })
 export class TrackPoiComponent {
-  @Input('track') set feature(track: CGeojsonLineStringFeature) {
+  @Input('track') set feature(track: Feature) {
     this.poi = [];
     this.poiClick.emit(-1);
     if (track != null && track.properties != null && track.properties.related_pois != null) {

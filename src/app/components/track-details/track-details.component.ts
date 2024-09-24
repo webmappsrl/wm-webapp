@@ -10,14 +10,13 @@ import {
 } from '@angular/core';
 import {IonContent, ModalController} from '@ionic/angular';
 
-import {CGeojsonLineStringFeature} from 'src/app/classes/features/cgeojson-line-string-feature';
 import {IGeojsonProperties} from 'src/app/types/model';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
 import {Store} from '@ngrx/store';
 import {confShowEditingInline} from 'wm-core/store/conf/conf.selector';
 import {apiElasticStateLayer} from 'wm-core/store/api/api.selector';
-import {map} from 'rxjs/operators';
+import {Feature} from 'geojson';
 
 @Component({
   selector: 'webmapp-track-details',
@@ -33,7 +32,7 @@ export class TrackDetailsComponent {
     }
   }
 
-  @Input('track') set setTrack(track: CGeojsonLineStringFeature) {
+  @Input('track') set setTrack(track: Feature) {
     if (track != null) {
       this.track = track;
       this._initializeFeature();
@@ -51,9 +50,9 @@ export class TrackDetailsComponent {
   currentLayer$ = this._store.select(apiElasticStateLayer);
   public data: Partial<IGeojsonProperties>;
   enableEditingInline$ = this._store.select(confShowEditingInline);
-  public feature: CGeojsonLineStringFeature;
+  public feature: Feature;
   poiId: number;
-  track: CGeojsonLineStringFeature;
+  track: Feature;
 
   constructor(private _modalController: ModalController, private _store: Store) {}
 

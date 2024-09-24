@@ -10,12 +10,9 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {IonContent, IonSlides} from '@ionic/angular';
-
-import {IGeojsonProperties} from 'src/app/types/model';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {Store} from '@ngrx/store';
 import {confShowEditingInline} from 'wm-core/store/conf/conf.selector';
-import {apiElasticStateLayer} from 'wm-core/store/api/api.selector';
 import {ITrack} from 'wm-core/types/track';
 import {BehaviorSubject, from, Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
@@ -29,16 +26,10 @@ import {Feature} from 'geojson';
   encapsulation: ViewEncapsulation.None,
 })
 export class UgcDetailsComponent {
-  @Input('poi') set setPoi(id: number | 'reset') {
-    if (typeof id === 'number') {
-      this.poiId = id;
-    }
-  }
-
   @Input('track') set setTrack(track: ITrack) {
     if (track != null) {
       this.track = track;
-      this.trackFeature = this.convertItrackToFeature(track);
+      this.trackFeature = this._convertItrackToFeature(track);
     }
   }
 
@@ -53,11 +44,8 @@ export class UgcDetailsComponent {
   confOPTIONS$ = this._store.select(confOPTIONS);
   confTRACKFORMS$: Observable<any[]> = this._store.select(confTRACKFORMS);
   currentImage$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
-  currentLayer$ = this._store.select(apiElasticStateLayer);
-  data: Partial<IGeojsonProperties>;
   enableEditingInline$ = this._store.select(confShowEditingInline);
   isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  poiId: number;
   slideOptions = {
     allowTouchMove: false,
     slidesPerView: 1,
@@ -94,7 +82,7 @@ export class UgcDetailsComponent {
       .subscribe();
   }
 
-  convertItrackToFeature(track: ITrack): Feature {
+  private _convertItrackToFeature(track: ITrack): Feature {
     return {
       type: 'Feature',
       geometry: {
@@ -115,10 +103,6 @@ export class UgcDetailsComponent {
 
   onLocationHover(event: ITrackElevationChartHoverElements | any): void {
     this.trackElevationChartHover.emit(event);
-  }
-
-  save(): void {
-    console.log('SALVA MODIFICHE');
   }
 
   triggerDismiss(): void {

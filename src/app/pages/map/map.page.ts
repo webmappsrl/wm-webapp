@@ -74,7 +74,6 @@ import {
 import {LangService} from 'wm-core/localization/lang.service';
 import {FiltersComponent} from 'wm-core/filters/filters.component';
 import { ModalController } from '@ionic/angular';
-import { LoginComponent } from 'wm-core/login/login.component';
 import { SaveService } from 'wm-core/services/save.service';
 import { ITrack } from 'wm-core/types/track';
 import { isLogged } from 'wm-core/store/auth/auth.selectors';
@@ -314,7 +313,7 @@ export class MapPage implements OnDestroy {
     this.WmMapTrackRelatedPoisDirective.poiPrev();
   }
 
-  printPage() {
+  printPage(): void {
     window.print();
     let element = document.getElementById('print-page');
     element = null;
@@ -353,7 +352,7 @@ export class MapPage implements OnDestroy {
     this.currentCustomTrack$.next(clonedTrack);
   }
 
-  selectDirective(directive: string) {
+  selectDirective(directive: string): void {
     console.log(directive);
   }
 

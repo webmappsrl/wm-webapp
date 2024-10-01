@@ -98,7 +98,7 @@
     [wmMapLayerDataLayerUrls]="dataLayerUrls$|async"
     [wmMapLayerLayer]="currentLayer$|async"
     [wmMapLayerRefresh]="refreshLayer$|async"
-    [wmMapLayerDisableLayers]="(drawTrackEnable$|async)||(!(toggleLayerDirective$|async) && (currentLayer$|async)==null)"
+    [wmMapLayerDisableLayers]="wmMapLayerDisableLayers$|async"
     (colorSelectedFromLayerEVT)="trackColor$.next($event)"
     wmMapPois
     [wmMapInputTyped]="apiSearchInputTyped$|async"
@@ -106,7 +106,7 @@
     [wmMapPoisPois]="pois$|async"
     [wmMapPoisFilters]="poiFilterIdentifiers$|async"
     [WmMapPoisUnselectPoi]="resetSelectedPoi$|async"
-    [wmMapPoisDisableClusterLayer]="(drawTrackEnable$|async)||(!(togglePoisDirective$|async) && (currentLayer$|async)==null)"
+    [wmMapPoisDisableClusterLayer]="wmMapLayerDisableLayers$|async"
     (currentPoiEvt)="setPoi($event)"
     wmMapTrack
     [track]="(isUgcSelected$|async) ? (ugcTrack$|async) : (track$|async)"
@@ -115,12 +115,18 @@
     wmMapTrackRelatedPois
     (related-poi)="setCurrentRelatedPoi($event)"
     (related-poi-next)="currentPoiNextID$.next(+$event)"
-    [wmMapReletedPoisDisableClusterLayer]="(drawTrackEnable$|async)||(!(togglePoisDirective$|async) && (currentLayer$|async)==null)"
+    [wmMapReletedPoisDisableClusterLayer]="wmMapLayerDisableLayers$|async"
     wmMapHitMapCollection
     [wmMapHitMapUrl]="wmMapHitMapUrl$|async"
-    wmUgcTracks
+    wmMapUgcTracks
     [wmMapUgcTracks]="ugcTracks$|async"
     [wmMapUgcTrackDisableClusterLayer]="!(isLogged$|async)"
+    wmMapUgcPois
+    [wmMapUgcPois]="ugcPois$|async"
+    [wmMapUgcPoisDisableLayer]="!(isLogged$|async)"
+    [wmMapUgcPoi]="currentUgcPoiIDToMap$|async"
+    [wmMapUgcUnselectedPoi]="resetSelectedUgcPoi$|async"
+    (currentUgcPoiEvt)="setUgcPoi($event)"
   >
     <wm-filters
       top-right

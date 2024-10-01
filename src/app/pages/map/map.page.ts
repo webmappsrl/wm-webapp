@@ -16,6 +16,7 @@ import {
   countSelectedFilters,
   poisInitFeatureCollection,
   isUgcSelected,
+  getUgcPoisFeatureCollection,
 } from 'wm-core/store/api/api.selector';
 import {
   ChangeDetectionStrategy,
@@ -28,7 +29,7 @@ import {
 import {ActivatedRoute, Router} from '@angular/router';
 import {Feature, FeatureCollection} from 'geojson';
 import {select, Store} from '@ngrx/store';
-import {BehaviorSubject, from, merge, Observable, of, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, from, merge, Observable, of, Subscription} from 'rxjs';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -124,9 +125,12 @@ export class MapPage implements OnDestroy {
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiIDFromHome$ = this._store.select(UICurrentPoiId);
   currentPoiIDToMap$: Observable<number | null>;
+  currentUgcPoiIDToMap$: Observable<number | null>;
   currentPoiNextID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiPrevID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentRelatedPoi$: BehaviorSubject<IGeojsonFeature> =
+    new BehaviorSubject<IGeojsonFeature | null>(null);
+  currentUgcPoi$: BehaviorSubject<IGeojsonFeature> =
     new BehaviorSubject<IGeojsonFeature | null>(null);
   dataLayerUrls$: Observable<IDATALAYER>;
   disableLayers$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -147,34 +151,56 @@ export class MapPage implements OnDestroy {
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   mapPrintDetails$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   mapPrintPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([0, 0, 0, 0]);
-  mergedPoi$: Observable<any> = merge(
-    this.currentPoi$.pipe(
-      distinctUntilChanged(),
-      map(p => {
-        if (p == null) return null;
-        if (this.WmMapTrackRelatedPoisDirective) {
-          this.WmMapTrackRelatedPoisDirective.setPoi = -1;
-        }
-        return p;
-      }),
+  isUgcSelected$: Observable<boolean> = this._store.select(isUgcSelected);
+  mergedPoi$: Observable<any> = combineLatest([
+    merge(
+      this.currentPoi$.pipe(
+        distinctUntilChanged(),
+        map(p => {
+          if (p == null) return null;
+          if (this.WmMapTrackRelatedPoisDirective) {
+            this.WmMapTrackRelatedPoisDirective.setPoi = -1;
+          }
+          return p;
+        }),
+      ),
+      this.currentRelatedPoi$.pipe(
+        distinctUntilChanged(),
+        map(p => {
+          if (p == null) return null;
+          return p;
+        }),
+      ),
+      this.currentUgcPoi$.pipe(
+        distinctUntilChanged(),
+        map(p => {
+          if (p == null) return null;
+          return p;
+        }),
+      )
     ),
-    this.currentRelatedPoi$.pipe(
-      distinctUntilChanged(),
-      map(p => {
-        if (p == null) return null;
-        return p;
-      }),
-    ),
-  ).pipe(
-    tap(poi => {
-      if (poi != null) {
+    this.isUgcSelected$
+  ]).pipe(
+    map(([poi, isUgcSelected]) => {
+      if (poi == null) return null;
+
+      if (isUgcSelected && poi.properties.id !== undefined) {
         this._router.navigate([], {
           relativeTo: this._route,
-          queryParams: {poi: poi.id ?? poi.properties.id},
+          queryParams: { poi: `ugc_${poi.properties.id}`},
           queryParamsHandling: 'merge',
         });
       }
-    }),
+      else if(poi.properties.id !== undefined){
+        this._router.navigate([], {
+          relativeTo: this._route,
+          queryParams: { poi: poi.properties.id },
+          queryParamsHandling: 'merge',
+        });
+      }
+
+      return poi;
+    })
   );
   poiFilterIdentifiers$: Observable<string[]> = this._store.select(poiFilterIdentifiers);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
@@ -182,6 +208,7 @@ export class MapPage implements OnDestroy {
   refreshLayer$: Observable<any>;
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   resetSelectedPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  resetSelectedUgcPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   setCurrentPoiSub$: Subscription = Subscription.EMPTY;
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
@@ -196,11 +223,10 @@ export class MapPage implements OnDestroy {
   wmMapFeatureCollectionOverlay$: BehaviorSubject<any | null> = new BehaviorSubject<any | null>(
     null,
   );
-
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
-  isUgcSelected$: Observable<boolean> = this._store.select(isUgcSelected);
   ugcTracks$: Observable<ITrack[]>  = from(this._saveSvc.getTracks());
-
+  ugcPois$: Observable<FeatureCollection> = this._store.select(getUgcPoisFeatureCollection);
+  wmMapLayerDisableLayers$:Observable<boolean>;
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
@@ -286,14 +312,34 @@ export class MapPage implements OnDestroy {
       map(showMenu => (showMenu ? 'caret-back-outline' : 'caret-forward-outline')),
     );
     this.leftPadding$ = this.showMenu$.pipe(map(showMenu => (showMenu ? menuOpenLeft : 0)));
-    this.currentPoiIDToMap$ = merge(this.currentPoiID$, this.currentPoiIDFromHome$).pipe(
-      map(val => val ?? -1),
+
+    this.currentPoiIDToMap$ = combineLatest([
+      merge(this.currentPoiID$, this.currentPoiIDFromHome$),
+      this.isUgcSelected$
+    ]).pipe(
+      filter(([_, isUgcSelected]) => !isUgcSelected), // Solo se isUgcSelected$ è false
+      map(([val]) => val ?? -1),
       distinctUntilChanged((prev, curr) => +prev === +curr),
     );
-
+    this.currentUgcPoiIDToMap$ = combineLatest([
+      merge(this.currentPoiID$, this.currentPoiIDFromHome$),
+      this.isUgcSelected$
+    ]).pipe(
+      filter(([_, isUgcSelected]) => isUgcSelected), // Solo se isUgcSelected$ è true
+      map(([val]) => {
+        const poiID = val ?? -1;
+        return poiID;
+      }),
+      distinctUntilChanged((prev, curr) => `${prev}` === `${curr}`),
+    );
     this.goToHomeSub$ = this.apiGoToHome$.pipe(skip(1)).subscribe(_ => {
       this.unselectPOI();
     });
+    this.wmMapLayerDisableLayers$ = combineLatest([this.drawTrackEnable$,this.toggleLayerDirective$, this.currentLayer$, this.isUgcSelected$]).pipe(
+      map(([drawTrackEnable, toggleLayerDirective, currentLayer, isUgcSelected]) => {
+        return drawTrackEnable || (!toggleLayerDirective && currentLayer == null) || isUgcSelected;
+      })
+    )
   }
 
   ngOnDestroy(): void {
@@ -381,6 +427,11 @@ export class MapPage implements OnDestroy {
 
   setCurrentPoi(id): void {
     if (id !== this.currentPoiID$.value) {
+      if(id.toString().indexOf('ugc_') >= 0){
+        this._store.dispatch(setUgc({ugcSelected:true}));
+        id = +id.toString().split('_')[1];
+      }
+
       this.currentPoiID$.next(id);
     }
     this._cdr.detectChanges();
@@ -414,7 +465,14 @@ export class MapPage implements OnDestroy {
   }
 
   setPoi(poi: any): void {
+    this.resetSelectedUgcPoi$.next(!this.resetSelectedUgcPoi$.value);
     this.currentPoi$.next(poi);
+  }
+
+  setUgcPoi(poi: any): void {
+    this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
+    this._store.dispatch(setUgc({ugcSelected: true}));
+    this.currentUgcPoi$.next(poi);
   }
 
   setTrackElevationChartHoverElements(elements?: ITrackElevationChartHoverElements): void {
@@ -462,8 +520,10 @@ export class MapPage implements OnDestroy {
   unselectPOI(): void {
     this.currentPoi$.next(null);
     this.currentRelatedPoi$.next(null);
+    this.currentUgcPoi$.next(null);
     this.WmMapTrackRelatedPoisDirective.setPoi = -1;
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
+    this.resetSelectedUgcPoi$.next(!this.resetSelectedUgcPoi$.value);
     this._router.navigate([], {
       relativeTo: this._route,
       queryParams: {poi: undefined},

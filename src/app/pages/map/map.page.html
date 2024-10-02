@@ -109,7 +109,7 @@
     [wmMapPoisDisableClusterLayer]="wmMapLayerDisableLayers$|async"
     (currentPoiEvt)="setPoi($event)"
     wmMapTrack
-    [track]="(isUgcSelected$|async) ? (ugcTrack$|async) : (track$|async)"
+    [track]="(isUgcSelected$|async) ? (ugcTrack$|async|iTrackToFeature) : (track$|async)"
     [trackElevationChartElements]="trackElevationChartHoverElements$|async"
     (trackSelectedFromLayerEVT)="toggleDetails($event)"
     wmMapTrackRelatedPois
@@ -121,6 +121,7 @@
     wmMapUgcTracks
     [wmMapUgcTracks]="ugcTracks$|async"
     [wmMapUgcTrackDisableClusterLayer]="!(isLogged$|async)"
+    (ugcTrackSelectedFromMapEVT)="updateUrlUgc($event)"
     wmMapUgcPois
     [wmMapUgcPois]="ugcPois$|async"
     [wmMapUgcPoisDisableLayer]="!(isLogged$|async)"

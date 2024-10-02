@@ -493,6 +493,7 @@ export class MapPage implements OnDestroy {
   toggleDetails(trackid?): void {
     if (trackid == null) {
       trackid = -1;
+      this._store.dispatch(setUgc({ugcSelected: false}));
     }
     this.updateUrl(trackid);
   }
@@ -556,5 +557,14 @@ export class MapPage implements OnDestroy {
       queryParams: {track: trackid ? trackid : null},
       queryParamsHandling: 'merge',
     });
+  }
+
+  updateUrlUgc(trackKey: string): void {
+    this._store.dispatch(setUgc({ugcSelected:true}));
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams: {track: `ugc:${trackKey}`},
+      queryParamsHandling: 'merge',
+    })
   }
 }

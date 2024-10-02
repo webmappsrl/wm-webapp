@@ -17,6 +17,7 @@ import {
   poisInitFeatureCollection,
   isUgcSelected,
   getUgcPoisFeatureCollection,
+  isUgcHome,
 } from 'wm-core/store/api/api.selector';
 import {
   ChangeDetectionStrategy,
@@ -226,6 +227,7 @@ export class MapPage implements OnDestroy {
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
   ugcTracks$: Observable<ITrack[]>  = from(this._saveSvc.getTracks());
   ugcPois$: Observable<FeatureCollection> = this._store.select(getUgcPoisFeatureCollection);
+  ugcHome$: Observable<boolean> = this._store.select(isUgcHome);
   wmMapLayerDisableLayers$:Observable<boolean>;
   constructor(
     private _route: ActivatedRoute,
@@ -335,9 +337,9 @@ export class MapPage implements OnDestroy {
     this.goToHomeSub$ = this.apiGoToHome$.pipe(skip(1)).subscribe(_ => {
       this.unselectPOI();
     });
-    this.wmMapLayerDisableLayers$ = combineLatest([this.drawTrackEnable$,this.toggleLayerDirective$, this.currentLayer$, this.isUgcSelected$]).pipe(
-      map(([drawTrackEnable, toggleLayerDirective, currentLayer, isUgcSelected]) => {
-        return drawTrackEnable || (!toggleLayerDirective && currentLayer == null) || isUgcSelected;
+    this.wmMapLayerDisableLayers$ = combineLatest([this.drawTrackEnable$,this.toggleLayerDirective$, this.currentLayer$, this.ugcHome$]).pipe(
+      map(([drawTrackEnable, toggleLayerDirective, currentLayer, isUgcHome]) => {
+        return drawTrackEnable || (!toggleLayerDirective && currentLayer == null) || isUgcHome;
       })
     )
   }

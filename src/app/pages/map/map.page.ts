@@ -78,7 +78,7 @@ import {FiltersComponent} from 'wm-core/filters/filters.component';
 import { ModalController } from '@ionic/angular';
 import { SaveService } from 'wm-core/services/save.service';
 import { ITrack } from 'wm-core/types/track';
-import { isLogged } from 'wm-core/store/auth/auth.selectors';
+import { isLogged, syncing } from 'wm-core/store/auth/auth.selectors';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -225,7 +225,11 @@ export class MapPage implements OnDestroy {
     null,
   );
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
-  ugcTracks$: Observable<ITrack[]>  = from(this._saveSvc.getTracks());
+  ugcTracks$: Observable<ITrack[]> = this._store.select(syncing).pipe(
+    skip(1),
+    filter(syncing => syncing === false),
+    switchMap(() => from(this._saveSvc.getTracks()))
+  );
   ugcPois$: Observable<FeatureCollection> = this._store.select(getUgcPoisFeatureCollection);
   ugcHome$: Observable<boolean> = this._store.select(isUgcHome);
   wmMapLayerDisableLayers$:Observable<boolean>;

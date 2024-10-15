@@ -20,7 +20,7 @@ describe('UGC', () => {
       });
   });
 
-  it('Dovrebbe mostrare il pulsante del profilo utente se confAuthEnable è true', () => {
+  it('Should show the user profile button if confAuthEnable is true', () => {
     cy.visit('/');
 
     if (confAuthEnable) {
@@ -30,7 +30,7 @@ describe('UGC', () => {
     }
   });
 
-  describe('Quando confAuthEnable è true e l\'utente è loggato', () => {
+  describe('When confAuthEnable is true and the user is logged in', () => {
     let tracksData = null;  // Variabile per tracce
     let poisData = null;    // Variabile per POI
 
@@ -48,17 +48,17 @@ describe('UGC', () => {
           poisData = interception.response?.body.features || [];
         });
       } else {
-        cy.log('Test saltato perché confAuthEnable è false');
+        cy.log('Test skipped because confAuthEnable is false');
         return;
       }
     });
 
-    it('Dovrebbe mostrare wm-ugc-box', () => {
+    it('Should show wm-ugc-box', () => {
       cy.get('wm-home-page wm-ugc-box').should('exist');
       cy.get('wm-home-page wm-ugc-box').click();
     });
 
-    it('Dovrebbe mostrare correttamente i dati delle tracce', () => {
+    it('Should correctly display track data', () => {
       const trackCount = tracksData.length;
       if (trackCount > 0) {
         cy.get('wm-home-result ion-segment-button[value="tracks"]')
@@ -76,7 +76,7 @@ describe('UGC', () => {
       }
     });
 
-    it('Dovrebbe mostrare correttamente i dati dei POI', () => {
+    it('Should correctly display POI data', () => {
       const poiCount = poisData.length;
       if (poiCount > 0) {
         cy.get('wm-home-result ion-segment-button[value="pois"]')

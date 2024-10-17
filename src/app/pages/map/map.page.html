@@ -141,6 +141,9 @@
       (resetFiltersEvt)="resetFilters()"
       (click)="wmap.wmMapCloseTopRightBtns = 'wm-filters'"
     ></wm-filters>
+    <wm-profile *ngIf="true"
+    top-right
+    ></wm-profile>
     <div
       top-right
       class="top-right-button"
@@ -150,9 +153,6 @@
     >
       {{ (drawTrackEnable$|async)?'esci':'i miei percorsi'|wmtrans}}
     </div>
-    <wm-profile *ngIf="true"
-      top-right
-    ></wm-profile>
   </wm-map>
 </ng-container>
 

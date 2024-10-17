@@ -1,4 +1,3 @@
-import {HttpClient} from '@angular/common/http';
 import GeoJsonToGpx from '@dwayneparton/geojson-to-gpx';
 import {
   ChangeDetectionStrategy,
@@ -14,6 +13,10 @@ import Map from 'ol/Map';
 
 import tokml from 'geojson-to-kml';
 import {BehaviorSubject} from 'rxjs';
+import { CGeojsonLineStringFeature } from 'wm-core/classes/features/cgeojson-line-string-feature';
+import { Feature } from 'ol';
+import { ITrack } from 'wm-core/types/track';
+import { SaveService } from 'wm-core/services/save.service';
 
 @Component({
   selector: 'wm-draw-track',
@@ -32,9 +35,9 @@ export class DrawTrackComponent {
 
   savedTracks$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
   selectedTrackIdx: number = -1;
-  track$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  track$: BehaviorSubject<Feature> = new BehaviorSubject<Feature>(null);
 
-  constructor(private _http: HttpClient) {
+  constructor(private _saveSvc: SaveService) {
     this._initSavedTracks();
   }
 
@@ -89,22 +92,44 @@ export class DrawTrackComponent {
     }
   }
 
-  saveCustomTrack(): void {
-    const savedTracks = this.savedTracks$.value;
+  async saveCustomTrack(): Promise<void> {
+
     if (this.track$.value != null) {
-      if (!this.track$.value.properties.name || this.track$.value.properties.name.trim() === '') {
-        while (this.track$.value.properties.name == '') {
-          this.track$.value.properties.name = prompt(
+      const properties = (this.track$.value as any).properties;
+      if (!properties.name || properties.name.trim() === '') {
+        while (!properties.name) {
+          properties.name = prompt(
             'Per favore, inserisci un nome per il percorso.',
           );
         }
       }
-      if (this.track$.value.properties.name) {
-        savedTracks.push(this.track$.value);
+      if (properties.name) {
+        const geojson:CGeojsonLineStringFeature = Object.assign(new CGeojsonLineStringFeature(), (this.track$.value as any).geometry) ?? null;
+        const trackData = {
+          ...properties,
+          activity: 'hiking',
+          photoKeys: null,
+          photos: [],
+          title: properties.name,
+        }
+        const metadata = {
+          ...geojson.properties,
+          ...{date: new Date(), activity: trackData.activity},
+        };
+        const track: ITrack = Object.assign(
+          {
+            geojson,
+            date: new Date(),
+            metadata,
+          },
+          trackData,
+          {metadata},
+        );
+        const saved = await this._saveSvc.saveTrack(track);
+        console.log(saved);
       }
     }
-    localStorage.setItem('wm-saved-tracks', JSON.stringify(savedTracks));
-    this.savedTracks$.next(savedTracks);
+
     this.track$.next(null);
     this.reloadEvt.emit();
   }

@@ -13,10 +13,12 @@ import Map from 'ol/Map';
 
 import tokml from 'geojson-to-kml';
 import {BehaviorSubject} from 'rxjs';
-import { CGeojsonLineStringFeature } from 'wm-core/classes/features/cgeojson-line-string-feature';
-import { Feature } from 'ol';
-import { ITrack } from 'wm-core/types/track';
-import { SaveService } from 'wm-core/services/save.service';
+import {Feature} from 'geojson';
+import {UgcService} from 'wm-core/services/ugc.service';
+import {environment} from 'src/environments/environment';
+import {confGeohubId} from 'wm-core/store/conf/conf.selector';
+import {Store} from '@ngrx/store';
+import {take} from 'rxjs/operators';
 
 @Component({
   selector: 'wm-draw-track',
@@ -33,11 +35,12 @@ export class DrawTrackComponent {
   @Input() map: Map | any;
   @Output() reloadEvt: EventEmitter<void> = new EventEmitter<void>();
 
+  geohubId$ = this._store.select(confGeohubId);
   savedTracks$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
   selectedTrackIdx: number = -1;
   track$: BehaviorSubject<Feature> = new BehaviorSubject<Feature>(null);
 
-  constructor(private _saveSvc: SaveService) {
+  constructor(private _ugcSvc: UgcService, private _store: Store) {
     this._initSavedTracks();
   }
 
@@ -93,41 +96,41 @@ export class DrawTrackComponent {
   }
 
   async saveCustomTrack(): Promise<void> {
-
     if (this.track$.value != null) {
-      const properties = (this.track$.value as any).properties;
-      if (!properties.name || properties.name.trim() === '') {
-        while (!properties.name) {
-          properties.name = prompt(
-            'Per favore, inserisci un nome per il percorso.',
-          );
+      this.geohubId$.pipe(take(1)).subscribe(async geohubId => {
+        const feature: Feature = this.track$.value;
+        let properties = feature.properties;
+        if (!properties.name || properties.name.trim() === '') {
+          while (!properties.name) {
+            properties.name = prompt('Per favore, inserisci un nome per il percorso.');
+          }
         }
-      }
-      if (properties.name) {
-        const geojson:CGeojsonLineStringFeature = Object.assign(new CGeojsonLineStringFeature(), (this.track$.value as any).geometry) ?? null;
-        const trackData = {
-          ...properties,
-          activity: 'hiking',
-          photoKeys: null,
-          photos: [],
-          title: properties.name,
+        if (properties.name) {
+          properties = {
+            ...properties,
+            activity: 'hiking',
+            photoKeys: null,
+            photos: [],
+            title: properties.name,
+          };
+
+          const metadata = {
+            ...properties,
+            ...{date: new Date(), activity: properties.activity, app_id: geohubId},
+          };
+          properties = {
+            ...properties,
+            app_id: geohubId,
+            metadata: {
+              date: new Date(),
+              activity: properties.activity,
+            },
+          };
+          feature.properties = properties;
+          const saved = await this._ugcSvc.storeUgcTrack(feature);
+          console.log(saved);
         }
-        const metadata = {
-          ...geojson.properties,
-          ...{date: new Date(), activity: trackData.activity},
-        };
-        const track: ITrack = Object.assign(
-          {
-            geojson,
-            date: new Date(),
-            metadata,
-          },
-          trackData,
-          {metadata},
-        );
-        const saved = await this._saveSvc.saveTrack(track);
-        console.log(saved);
-      }
+      });
     }
 
     this.track$.next(null);

@@ -39,12 +39,11 @@
 
       <div class="wm-track-details-title-technical-details">
         <span class="webmapp-title">{{'Dettagli tecnici'|wmtrans}}</span>
-        <webmapp-track-technical-data
+        <wm-tab-detail
           class="wm-track-details-technical-details-data"
-          [feature]="track"
+          [properties]="track.properties"
           id="webmapp-track-details-technical-data"
-        >
-        </webmapp-track-technical-data>
+        ></wm-tab-detail>
       </div>
       <div class="wm-track-details-activities" *ngIf="properties.taxonomy  as taxonomy">
         <ng-container *ngIf="taxonomy?.activity && taxonomy?.activity?.length > 0">

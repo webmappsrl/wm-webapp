@@ -185,11 +185,11 @@
               </ion-card-subtitle>
             </ion-card-header>
             <ion-card-content>
-              <webmapp-track-technical-data
-                [feature]="track"
+              <wm-tab-detail
+                class="wm-track-details-technical-details-data"
+                [properties]="track.properties"
                 id="webmapp-track-details-technical-data"
-              >
-              </webmapp-track-technical-data>
+              ></wm-tab-detail>
             </ion-card-content>
           </ng-container>
         </ion-card>

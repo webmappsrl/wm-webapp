@@ -208,10 +208,6 @@ export class MapPage implements OnDestroy {
     this.dataLayerUrls$ = this.geohubId$.pipe(
       filter(g => g != null),
       map(geohubId => {
-        if (geohubId == 13) {
-          this.enableOverLay$.next(true);
-        }
-
         return {
           low: `https://wmpbf.s3.eu-central-1.amazonaws.com/${geohubId}/{z}/{x}/{y}.pbf`,
           high: `https://wmpbf.s3.eu-central-1.amazonaws.com/${geohubId}/{z}/{x}/{y}.pbf`,
@@ -268,13 +264,13 @@ export class MapPage implements OnDestroy {
     });
   }
 
+  next(): void {
+    this.WmMapTrackRelatedPoisDirective.poiNext();
+  }
+
   ngOnDestroy(): void {
     this.goToHomeSub$.unsubscribe();
     this.setCurrentPoiSub$.unsubscribe();
-  }
-
-  next(): void {
-    this.WmMapTrackRelatedPoisDirective.poiNext();
   }
 
   openPopup(popup: {name: string; html: string}): void {

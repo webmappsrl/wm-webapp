@@ -124,7 +124,6 @@ export class MapPage implements OnDestroy {
   disableLayers$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   drawTrackEnable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   enableDrawTrack$ = this._store.select(confShowDrawTrack);
-  enableOverLay$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   geohubId$ = this._store.select(confGeohubId);
   goToHomeSub$: Subscription = Subscription.EMPTY;
   graphhopperHost$: Observable<string> = of(environment.graphhopperHost);
@@ -264,13 +263,13 @@ export class MapPage implements OnDestroy {
     });
   }
 
-  next(): void {
-    this.WmMapTrackRelatedPoisDirective.poiNext();
-  }
-
   ngOnDestroy(): void {
     this.goToHomeSub$.unsubscribe();
     this.setCurrentPoiSub$.unsubscribe();
+  }
+
+  next(): void {
+    this.WmMapTrackRelatedPoisDirective.poiNext();
   }
 
   openPopup(popup: {name: string; html: string}): void {

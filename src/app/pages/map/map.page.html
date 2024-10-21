@@ -67,7 +67,6 @@
     [wmMapFilters]="apiElasticState$|async"
     [wmMapTranslationCallback]="translationCallback"
     (wmMapOverlayEVT$)="setWmMapFeatureCollection($event)"
-    [wmMapOverlay]="(enableOverLay$|async)"
     [wmMapFeatureCollection]="(wmMapFeatureCollectionOverlay$|async)!= null"
     [wmMapFeatureCollectionOverlay]="wmMapFeatureCollectionOverlay$|async"
     (wmMapStateEvt)="setLoader($event)"

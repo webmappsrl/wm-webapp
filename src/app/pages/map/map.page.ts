@@ -124,7 +124,6 @@ export class MapPage implements OnDestroy {
   disableLayers$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   drawTrackEnable$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   enableDrawTrack$ = this._store.select(confShowDrawTrack);
-  enableOverLay$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   geohubId$ = this._store.select(confGeohubId);
   goToHomeSub$: Subscription = Subscription.EMPTY;
   graphhopperHost$: Observable<string> = of(environment.graphhopperHost);
@@ -208,10 +207,6 @@ export class MapPage implements OnDestroy {
     this.dataLayerUrls$ = this.geohubId$.pipe(
       filter(g => g != null),
       map(geohubId => {
-        if (geohubId == 13) {
-          this.enableOverLay$.next(true);
-        }
-
         return {
           low: `https://wmpbf.s3.eu-central-1.amazonaws.com/${geohubId}/{z}/{x}/{y}.pbf`,
           high: `https://wmpbf.s3.eu-central-1.amazonaws.com/${geohubId}/{z}/{x}/{y}.pbf`,

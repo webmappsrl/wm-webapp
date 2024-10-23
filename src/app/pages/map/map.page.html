@@ -67,8 +67,6 @@
     [wmMapFilters]="apiElasticState$|async"
     [wmMapTranslationCallback]="translationCallback"
     (wmMapOverlayEVT$)="setWmMapFeatureCollection($event)"
-    [wmMapOverlay]="(enableOverLay$|async)"
-    [wmMapOverlayUrl]="'https://geohub.webmapp.it/api/taxonomy/where/geojson/13'"
     [wmMapFeatureCollection]="(wmMapFeatureCollectionOverlay$|async)!= null"
     [wmMapFeatureCollectionOverlay]="wmMapFeatureCollectionOverlay$|async"
     (wmMapStateEvt)="setLoader($event)"
@@ -164,7 +162,6 @@
           wmMapTarget="ol-stamp"
           [wmMapPadding]="mapPrintPadding$|async"
           [wmMapOverlay]="(enableOverLay$|async)"
-          [wmMapOverlayUrl]="'https://geohub.webmapp.it/api/taxonomy/where/geojson/13'"
           (currentCustomTrack)="saveCurrentCustomTrack($event)"
           wmMapTrack
           [track]="track$|async"

@@ -36,6 +36,7 @@
         <i class="icon-outline-arrow-right"></i>
       </button>
     </div>
+    <wm-excerpt *ngIf="poiProperties?.excerpt as excerpt" [excerpt]="excerpt|wmtrans"></wm-excerpt>
   </div>
 
   <wm-gallery

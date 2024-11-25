@@ -5,14 +5,17 @@
         <ion-input [(ngModel)]="track.properties.name"></ion-input>
       </ion-card-title>
     </ion-card-header>
-    <ion-item>
-      <ion-label> {{ 'nome del percorso' | wmtrans }}</ion-label>
+    <wm-form *ngIf="saveDrawTrackAsUgc$|async; else itemName" [confPOIFORMS]="confPOIFORMS$|async" (formGroupEvt)="fg = $event"></wm-form>
+    <ng-template #itemName>
+      <ion-item>
+        <ion-label> {{ 'nome del percorso' | wmtrans }}</ion-label>
       <ion-input
         [(ngModel)]="track.properties.name"
         autofocus
         placeholder="{{ 'nome del percorso' | wmtrans }}"
-      ></ion-input>
-    </ion-item>
+        ></ion-input>
+      </ion-item>
+    </ng-template>
     <wm-slope-chart *ngIf="track !=null" [currentTrack]="track"></wm-slope-chart>
     <wm-tab-detail
       class="wm-track-details-technical-details-data"

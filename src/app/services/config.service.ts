@@ -25,12 +25,11 @@ export class ConfigService {
 
   constructor() {
     const hostname: string = window.location.hostname;
-    console.log(hostToGeohubAppId);
     if (hostname.indexOf('localhost') < 0) {
       const matchedHost = Object.keys(hostToGeohubAppId).find((host) =>
         hostname.includes(host)
       );
-    
+
       if (matchedHost) {
         this._geohubAppId = hostToGeohubAppId[matchedHost];
       } else {

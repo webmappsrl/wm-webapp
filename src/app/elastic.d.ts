@@ -5,7 +5,7 @@ interface IHIT {
   cai_scale: string;
   distance: string;
   feature_image: string | any;
-  id: number;
+  id: number | string;
   layers: number[];
   name: string;
   ref: string;

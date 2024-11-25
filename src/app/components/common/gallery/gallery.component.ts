@@ -106,20 +106,25 @@ export class GalleryComponent {
 
   @HostListener('keydown.ArrowRight', ['$event'])
   public next(): void {
-    const currentIndex =
-      this.currentImage$.value == null ? 0 : this.gallery.indexOf(this.currentImage$.value);
-    const nextIndex = (currentIndex + 1) % this.gallery.length;
-    this.currentImage$.next(this.gallery[nextIndex]);
-    this.slider.slideTo(nextIndex);
+    this._navigateGallery('next');
   }
 
   @HostListener('keydown.ArrowLeft', ['$event'])
   public prev(): void {
+    this._navigateGallery('prev');
+  }
+
+  private _navigateGallery(direction: 'next' | 'prev'): void {
     const currentIndex =
       this.currentImage$.value == null ? 0 : this.gallery.indexOf(this.currentImage$.value);
-    const prevIndex =
-      currentIndex <= 0 ? this.gallery.length - 1 : (currentIndex - 1) % this.gallery.length;
-    this.currentImage$.next(this.gallery[prevIndex]);
-    this.slider.slideTo(prevIndex);
+
+    const newIndex = direction === 'next'
+      ? (currentIndex + 1) % this.gallery.length
+      : currentIndex <= 0
+        ? this.gallery.length - 1
+        : (currentIndex - 1) % this.gallery.length;
+
+    this.currentImage$.next(this.gallery[newIndex]);
+    this.slider.slideTo(newIndex);
   }
 }

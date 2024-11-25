@@ -5,7 +5,6 @@ import {
   HttpInterceptor,
   HttpRequest,
   HttpResponse,
-  HTTP_INTERCEPTORS,
 } from '@angular/common/http';
 import {Injectable, Injector, LOCALE_ID, NgModule} from '@angular/core';
 import {IonicModule, IonicRouteStrategy} from '@ionic/angular';
@@ -23,10 +22,8 @@ import {AppComponent} from './app.component';
 import {MetaComponent} from './meta.component';
 import {UIReducer} from './store/UI/UI.reducer';
 import {tap} from 'rxjs/operators';
-import {createCustomElement} from '@angular/elements';
 import {WmCoreModule} from 'wm-core/wm-core.module';
 import {APP_ID, ENVIRONMENT_CONFIG} from 'wm-core/store/conf/conf.token';
-import { ConfigService } from './services/config.service';
 
 registerLocaleData(localeIt);
 @Injectable()
@@ -67,12 +64,8 @@ export class MyHttpInterceptor implements HttpInterceptor {
   ],
   providers: [
     {provide: ENVIRONMENT_CONFIG, useValue: environment},
+    {provide: APP_ID, useValue: environment.geohubId},
     {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
-    {
-      provide: APP_ID,
-      useFactory: (configService: ConfigService) => configService.geohubAppId,
-      deps: [ConfigService]
-    },
     {provide: LOCALE_ID, useValue: 'it'},
     /*     {
           provide: HTTP_INTERCEPTORS,

@@ -50,38 +50,9 @@
           <div class="webmapp-title">{{'Attività'|wmtrans}}</div>
           <div class="webmapp-walkability">
             <ng-container *ngFor="let item of taxonomy.activity">
-              <div class="webmapp-walkability-box" *ngIf="item.identifier ==='mtb'">
-                <i class="icon-outline-MTB"></i>
-                <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
-              </div>
-              <div class="webmapp-walkability-box" *ngIf="item.identifier ==='hiking'">
-                <i class="icon-fill-trekking"></i>
-                <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
-              </div>
-              <div class="webmapp-walkability-box" *ngIf="item.identifier === 'cycling'">
-                <i class="icon-outline-bike"></i>
-                <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
-              </div>
-              <div class="webmapp-walkability-box" *ngIf="item.identifier === 'running'">
-                <i class="icon-outline-running"></i>
-                <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
-              </div>
-              <div class="webmapp-walkability-box" *ngIf="item.identifier === 'walking'">
-                <i class="icon-outline-walking"></i>
-                <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
-              </div>
-              <div class="webmapp-walkability-box" *ngIf="item.identifier === 'skitouring'">
-                <i class="icon-outline-nordic-walking"></i>
-                <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
-              </div>
-              <div class="webmapp-walkability-box" *ngIf="item.identifier === 'trekking'">
-                <i class="icon-outline-trekking"></i>
-                <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
-              </div>
-              <div class="webmapp-walkability-box" *ngIf="item.identifier === 'horse'">
-                <i class="icon-outline-horse"></i>
-                <span class="webmapp-walkability-label">{{item.identifier|wmtrans}}</span>
-              </div>
+              <wm-track-activity
+                [activity]="item.identifier"
+              ></wm-track-activity>
             </ng-container>
           </div>
         </ng-container>

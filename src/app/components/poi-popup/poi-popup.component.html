@@ -41,9 +41,16 @@
 
   <wm-gallery
     class="row"
-    *ngIf="poiProperties.feature_image !=null || (poiProperties.image_gallery !=null && poiProperties.image_gallery.length> 0)"
+    *ngIf="(enableGallery$|async)"
     [gallery]="poiProperties.image_gallery"
   ></wm-gallery>
+  <ng-container *ngIf="medias$|async as medias">
+    <ion-slides [options]="slideOptions" #slider>
+      <ion-slide *ngFor="let media of medias;let idx = index">
+        <wm-img [src]="media|wmCreateBlob" />
+      </ion-slide>
+    </ion-slides>
+  </ng-container>
   <div class="webmapp-poi-popup-btns">
     <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.address">
       <i class="wm-icn icon-fill-pin"></i>
@@ -99,7 +106,7 @@
     </div>
   </div>
 
-  <div class="webmapp-poi-popup-text" [innerHTML]="poiProperties.description|wmtrans"></div>
+  <div class="webmapp-poi-popup-text" [innerHTML]="(poiProperties.form?.description)|wmtrans"></div>
 
   <ng-container *ngIf="poiProperties?.audio">
     <div class="webmapp-title">{{'Descrizione Audio'|wmtrans}}</div>

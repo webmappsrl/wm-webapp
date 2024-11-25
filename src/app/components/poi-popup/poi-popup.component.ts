@@ -8,13 +8,16 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {Observable} from 'rxjs';
+import {BehaviorSubject, from, Observable} from 'rxjs';
 
 import {IonSlides} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 
 import {IGeojsonProperties} from 'src/app/types/model';
 import {confShowEditingInline} from 'wm-core/store/conf/conf.selector';
+import {Media, MediaProperties, WmFeature} from '@wm-types/feature';
+import {getUgcMediasByIds} from 'wm-core/utils/localForage';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'webmapp-poi-popup',
@@ -50,8 +53,16 @@ export class PoiPopupComponent {
         prop.related_url =
           Object.keys(poi.properties.related_url).length === 0 ? null : poi.properties.related_url;
       }
-
+      if (poi.properties?.photoKeys) {
+        this.medias$ = from(getUgcMediasByIds(poi.properties.photoKeys.map(key => key.toString()))).pipe(
+          map(medias => medias)
+        );
+      }
       this.poiProperties = {...poi.properties, ...prop};
+      this.enableGallery$.next(
+        this.poiProperties?.feature_image != null ||
+          (this.poiProperties?.image_gallery != null && this.poiProperties?.image_gallery?.length > 0)
+      );
     }
   }
 
@@ -62,8 +73,20 @@ export class PoiPopupComponent {
 
   defaultPhotoPath = '/assets/icon/no-photo.svg';
   enableEditingInline$ = this._store.select(confShowEditingInline);
+  enableGallery$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   isEnd$: Observable<boolean>;
+  medias$: Observable<WmFeature<Media, MediaProperties>[]>;
   poiProperties: IGeojsonProperties = null;
+  slideOptions = {
+    allowTouchMove: false,
+    slidesPerView: 1,
+    slidesPerColumn: 1,
+    slidesPerGroup: 1,
+    centeredSlides: true,
+    watchSlidesProgress: true,
+    spaceBetween: 20,
+    loop: true,
+  };
 
   constructor(private _store: Store) {}
 

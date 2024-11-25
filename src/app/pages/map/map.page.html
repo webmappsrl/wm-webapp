@@ -11,8 +11,9 @@
 
   <div class="details-container" [class.details-container-visible]="(showMenu$|async)">
     <webmapp-track-details
+      *ngIf="!(isUgcSelected$|async); else ugcDetails"
       [track]="track$|async"
-      [hidden]="trackid <= 0"
+      [hidden]="+trackid <= 0"
       [poi]="currentPoiIDToMap$|async"
       (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
       (poi-click)="setCurrentRelatedPoi($event)"
@@ -35,7 +36,7 @@
     </webmapp-track-details>
     <webmapp-home
       *ngIf="(drawTrackEnable$|async)===false;else customTrack"
-      [hidden]="trackid > 0"
+      [hidden]="trackid != -1"
       class="webmapp-home"
     >
       <wm-lang-selector
@@ -51,6 +52,17 @@
         (reloadEvt)="reloadCustomTrack()"
       ></wm-draw-track>
     </ng-template>
+    <ng-template #ugcDetails>
+      <wm-ugc-details
+        [track]="ugcTrack$|async"
+        [hidden]="+trackid <= 0"
+        (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
+        (poi-click)="setCurrentRelatedPoi($event)"
+        (dismiss)="toggleDetails()"
+        class="webmapp-track-details"
+      ></wm-ugc-details>
+    </ng-template>
+
   </div>
   <webmapp-poi-popup
     *ngIf="mergedPoi$|async as poi"
@@ -83,7 +95,7 @@
     [wmMapLayerDataLayerUrls]="dataLayerUrls$|async"
     [wmMapLayerLayer]="currentLayer$|async"
     [wmMapLayerRefresh]="refreshLayer$|async"
-    [wmMapLayerDisableLayers]="(drawTrackEnable$|async)||(!(toggleLayerDirective$|async) && (currentLayer$|async)==null)"
+    [wmMapLayerDisableLayers]="wmMapLayerDisableLayers$|async"
     (colorSelectedFromLayerEVT)="trackColor$.next($event)"
     wmMapPois
     [wmMapInputTyped]="apiSearchInputTyped$|async"
@@ -91,18 +103,28 @@
     [wmMapPoisPois]="pois$|async"
     [wmMapPoisFilters]="poiFilterIdentifiers$|async"
     [WmMapPoisUnselectPoi]="resetSelectedPoi$|async"
-    [wmMapPoisDisableClusterLayer]="(drawTrackEnable$|async)||(!(togglePoisDirective$|async) && (currentLayer$|async)==null)"
+    [wmMapPoisDisableClusterLayer]="wmMapLayerDisableLayers$|async"
     (currentPoiEvt)="setPoi($event)"
     wmMapTrack
-    [track]="track$|async"
+    [track]="(isUgcSelected$|async) ? (ugcTrack$|async) : (track$|async)"
     [trackElevationChartElements]="trackElevationChartHoverElements$|async"
     (trackSelectedFromLayerEVT)="toggleDetails($event)"
     wmMapTrackRelatedPois
     (related-poi)="setCurrentRelatedPoi($event)"
     (related-poi-next)="currentPoiNextID$.next(+$event)"
-    [wmMapReletedPoisDisableClusterLayer]="(drawTrackEnable$|async)||(!(togglePoisDirective$|async) && (currentLayer$|async)==null)"
+    [wmMapReletedPoisDisableClusterLayer]="wmMapLayerDisableLayers$|async"
     wmMapHitMapCollection
     [wmMapHitMapUrl]="wmMapHitMapUrl$|async"
+    wmMapUgcTracks
+    [wmMapUgcTracks]="ugcTracks$|async"
+    [wmMapUgcTrackDisableLayer]="wmMapUgcTracksDisableLayers$|async"
+    (ugcTrackSelectedFromMapEVT)="updateUrlUgc($event)"
+    wmMapUgcPois
+    [wmMapUgcPois]="ugcPois$|async"
+    [wmMapUgcPoiDisableClusterLayer]="wmMapUgcTracksDisableLayers$|async"
+    [wmMapUgcPoi]="currentUgcPoiIDToMap$|async"
+    [wmMapUgcUnselectedPoi]="resetSelectedUgcPoi$|async"
+    (currentUgcPoiEvt)="setUgcPoi($event)"
   >
     <wm-filters
       top-right
@@ -116,6 +138,9 @@
       (resetFiltersEvt)="resetFilters()"
       (click)="wmap.wmMapCloseTopRightBtns = 'wm-filters'"
     ></wm-filters>
+    <wm-profile *ngIf="true"
+    top-right
+    ></wm-profile>
     <div
       top-right
       class="top-right-button"

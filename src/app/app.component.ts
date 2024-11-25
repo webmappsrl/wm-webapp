@@ -11,6 +11,7 @@ import wmCorePackage from './shared/wm-core/package.json';
 import mapCorePackage from './shared/map-core/package.json';
 import {environment} from 'src/environments/environment';
 import {IAPP, IWEBAPP} from 'wm-core/types/config';
+import { loadAuths } from 'wm-core/store/auth/auth.actions';
 @Component({
   selector: 'webmapp-app-root',
   templateUrl: 'app.component.html',
@@ -24,6 +25,7 @@ export class AppComponent implements OnInit {
 
   constructor(@Inject(DOCUMENT) private _document: Document, private _storeConf: Store<any>) {
     this._storeConf.dispatch(loadConf());
+    this._storeConf.dispatch(loadAuths());
     this._storeConf.dispatch(query({init: true}));
     this.confTHEMEVariables$.pipe(take(2)).subscribe(css => this._setGlobalCSS(css));
     console.table({

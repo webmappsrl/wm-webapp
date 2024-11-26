@@ -14,7 +14,7 @@ import Map from 'ol/Map';
 import tokml from 'geojson-to-kml';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {LineString} from 'geojson';
-import {confGeohubId, confPOIFORMS} from 'wm-core/store/conf/conf.selector';
+import {confGeohubId, confPOIFORMS, confTRACKFORMS} from 'wm-core/store/conf/conf.selector';
 import {Store} from '@ngrx/store';
 import {catchError, switchMap, take, tap} from 'rxjs/operators';
 import { DeviceService } from 'wm-core/services/device.service';
@@ -24,6 +24,7 @@ import { syncUgc } from 'wm-core/store/auth/auth.actions';
 import { generateUUID, saveUgcTrack } from 'wm-core/utils/localForage';
 import { WmFeature } from '@wm-types/feature';
 import { UntypedFormGroup } from '@angular/forms';
+import { setUgc } from 'wm-core/store/api/api.actions';
 
 @Component({
   selector: 'wm-draw-track',
@@ -39,9 +40,8 @@ export class DrawTrackComponent {
 
   @Input() map: Map | any;
   @Output() reloadEvt: EventEmitter<void> = new EventEmitter<void>();
-  @Output() reloadUgcEvt: EventEmitter<void> = new EventEmitter<void>();
 
-  confPOIFORMS$: Observable<any[]> = this._store.select(confPOIFORMS);
+  confTRACKFORMS$: Observable<any[]> = this._store.select(confTRACKFORMS);
   fg: UntypedFormGroup;
   geohubId$ = this._store.select(confGeohubId);
   saveDrawTrackAsUgc$: Observable<boolean> = this._store.select(saveDrawTrackAsUgc);
@@ -145,9 +145,6 @@ export class DrawTrackComponent {
       this.geohubId$.pipe(
         take(1),
         switchMap(geohubId => {
-          if (this.fg.invalid) {
-            return;
-          }
           const feature: WmFeature<LineString> = this.track$.value;
           let drawTrakproperties = feature.properties;
 
@@ -165,8 +162,9 @@ export class DrawTrackComponent {
         }),
         tap(_ => {
           this.track$.next(null);
+          this.reloadEvt.emit();
           this._store.dispatch(syncUgc());
-          this.reloadUgcEvt.emit();
+          this._store.dispatch(setUgc({ugcSelected: true}));
         }),
         catchError(_ => {
           this._alertCtrl.create({
@@ -181,13 +179,22 @@ export class DrawTrackComponent {
   }
 
   private _saveCustomTrackLocally(): void {
+    const savedTracks = this.savedTracks$.value;
     if (this.track$.value != null) {
-      const savedTracks = this.savedTracks$.value;
-      savedTracks.push(this.track$.value);
-      this.savedTracks$.next(savedTracks);
-      localStorage.setItem('wm-saved-tracks', JSON.stringify(savedTracks));
-      this.track$.next(null);
-      this.reloadEvt.emit();
+      if (!this.track$.value.properties.name || this.track$.value.properties.name.trim() === '') {
+        while (this.track$.value.properties.name == '') {
+          this.track$.value.properties.name = prompt(
+            'Per favore, inserisci un nome per il percorso.',
+          );
+        }
+      }
+      if (this.track$.value.properties.name) {
+        savedTracks.push(this.track$.value);
+      }
     }
+    localStorage.setItem('wm-saved-tracks', JSON.stringify(savedTracks));
+    this.savedTracks$.next(savedTracks);
+    this.track$.next(null);
+    this.reloadEvt.emit();
   }
 }

@@ -5,7 +5,7 @@
         <ion-input [(ngModel)]="track.properties.name"></ion-input>
       </ion-card-title>
     </ion-card-header>
-    <wm-form *ngIf="saveDrawTrackAsUgc$|async; else itemName" [confPOIFORMS]="confPOIFORMS$|async" (formGroupEvt)="fg = $event"></wm-form>
+    <wm-form *ngIf="saveDrawTrackAsUgc$|async; else itemName" [confPOIFORMS]="confTRACKFORMS$|async" (formGroupEvt)="fg = $event"></wm-form>
     <ng-template #itemName>
       <ion-item>
         <ion-label> {{ 'nome del percorso' | wmtrans }}</ion-label>
@@ -23,7 +23,11 @@
       id="webmapp-track-details-technical-data"
     ></wm-tab-detail>
     <wm-track-download-urls [track]="track"></wm-track-download-urls>
-    <ion-button expand="full" (click)="saveCustomTrack()">{{ 'salva' | wmtrans}}</ion-button>
+    <ion-button
+      expand="full"
+      (click)="saveCustomTrack()"
+      [disabled]="(saveDrawTrackAsUgc$|async) && fg?.invalid"
+    >{{ 'salva' | wmtrans}}</ion-button>
   </ion-card>
 </ng-container>
 

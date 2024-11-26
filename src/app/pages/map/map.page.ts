@@ -5,6 +5,10 @@ import {
   togglePoiFilter,
   toggleTrackFilter,
   setUgc,
+  openUgcInHome,
+  resetPoiFilters,
+  resetTrackFilters,
+  setLayer,
 } from 'wm-core/store/api/api.actions';
 import {
   apiSearchInputTyped,
@@ -79,6 +83,8 @@ import { ModalController } from '@ionic/angular';
 import { isLogged, syncing } from 'wm-core/store/auth/auth.selectors';
 import { getUgcTrack, getUgcTracks } from 'wm-core/utils/localForage';
 import { WmFeature } from 'src/app/shared/wm-types/src';
+import { concatMap } from 'rxjs/operators';
+import { ProfileAuthComponent } from 'wm-core/profile/profile-auth/profile-auth.component';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -228,10 +234,24 @@ export class MapPage implements OnDestroy {
     filter(syncing => syncing === false),
     switchMap(() => from(getUgcTracks()))
   );
+  wmHomeEnable$ = combineLatest([
+    this.drawTrackEnable$,
+    this.currentCustomTrack$,
+    this.authEnable$
+  ]).pipe(
+    map(([drawTrackEnabled, hasCustomTrack, isAuth]) => {
+      // return (!isAuth && !drawTrackEnabled) || (isAuth && !(drawTrackEnabled && hasCustomTrack))
+      if (!isAuth) {
+        return !drawTrackEnabled;
+      }
+      return !(drawTrackEnabled && hasCustomTrack);
+    })
+  );
   wmMapFeatureCollectionOverlay$: BehaviorSubject<any | null> = new BehaviorSubject<any | null>(
     null,
   );
   wmMapLayerDisableLayers$:Observable<boolean>;
+  wmMapUgcPoisDisableLayers$:Observable<boolean>;
   wmMapUgcTracksDisableLayers$:Observable<boolean>;
 
   constructor(
@@ -342,7 +362,7 @@ export class MapPage implements OnDestroy {
         return drawTrackEnable || (!toggleLayerDirective && currentLayer == null) || isUgcHome;
       })
     )
-    this.wmMapUgcTracksDisableLayers$ = combineLatest([this.drawTrackEnable$, this.isLogged$]).pipe(
+    this.wmMapUgcPoisDisableLayers$ = combineLatest([this.drawTrackEnable$, this.isLogged$]).pipe(
       map(([drawTrackEnable, isLogged]) => {
         return drawTrackEnable || (!isLogged);
       })
@@ -385,6 +405,7 @@ export class MapPage implements OnDestroy {
   }
 
   reloadCustomTrack(): void {
+    this.currentCustomTrack$.next(null);
     this.reloadCustomTracks$.next(!this.reloadCustomTracks$.value ?? false);
   }
 
@@ -516,8 +537,39 @@ export class MapPage implements OnDestroy {
 
   toggleDrawTrackEnabled(): void {
     const currentValue = this.drawTrackEnable$.value;
-    this.currentCustomTrack$.next(null);
-    this.drawTrackEnable$.next(!currentValue);
+    combineLatest([this.authEnable$, this.isLogged$]).pipe(
+      take(1),
+      switchMap(([authEnabled, isLogged]) => {
+        if (authEnabled) {
+          if(isLogged){
+            this.drawTrackEnable$.next(!currentValue);
+            this.currentCustomTrack$.next(null);
+            this._store.dispatch(setLayer(null));
+            this._store.dispatch(resetPoiFilters());
+            this._store.dispatch(resetTrackFilters());
+            this.toggleDetails();
+            this._store.dispatch(openUgcInHome({ugcHome:!currentValue}));
+            this._store.dispatch(setUgc({ugcSelected:!currentValue}));
+          }
+          else{
+            return from(
+              this._modalCtrl.create({
+                component: ProfileAuthComponent,
+                componentProps: {
+                  slide1: 'assets/images/profile/logged_out_slide_1.svg',
+                  slide2: 'assets/images/profile/logged_out_slide_2.svg',
+                },
+                id: 'wm-profile-auth-modal',
+              })
+            ).pipe(concatMap(modal => from(modal.present())));
+          }
+        }
+        else{
+          this.drawTrackEnable$.next(!currentValue);
+          this.currentCustomTrack$.next(null);
+        }
+      })
+    ).subscribe();
   }
 
   toggleMenu(): void {

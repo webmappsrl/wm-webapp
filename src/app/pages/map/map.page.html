@@ -35,7 +35,7 @@
       </ng-container>
     </webmapp-track-details>
     <webmapp-home
-      *ngIf="(drawTrackEnable$|async)===false;else customTrack"
+      *ngIf="wmHomeEnable$|async;else customTrack"
       [hidden]="trackid != -1"
       class="webmapp-home"
     >
@@ -54,6 +54,7 @@
     </ng-template>
     <ng-template #ugcDetails>
       <wm-ugc-details
+        *ngIf="!(currentCustomTrack$|async)"
         [track]="ugcTrack$|async"
         [hidden]="+trackid <= 0"
         (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
@@ -117,11 +118,11 @@
     [wmMapHitMapUrl]="wmMapHitMapUrl$|async"
     wmMapUgcTracks
     [wmMapUgcTracks]="ugcTracks$|async"
-    [wmMapUgcTrackDisableLayer]="wmMapUgcTracksDisableLayers$|async"
+    [wmMapUgcTrackDisableLayer]="!(isLogged$|async)"
     (ugcTrackSelectedFromMapEVT)="updateUrlUgc($event)"
     wmMapUgcPois
     [wmMapUgcPois]="ugcPois$|async"
-    [wmMapUgcPoiDisableClusterLayer]="wmMapUgcTracksDisableLayers$|async"
+    [wmMapUgcPoiDisableClusterLayer]="wmMapUgcPoisDisableLayers$|async"
     [wmMapUgcPoi]="currentUgcPoiIDToMap$|async"
     [wmMapUgcUnselectedPoi]="resetSelectedUgcPoi$|async"
     (currentUgcPoiEvt)="setUgcPoi($event)"

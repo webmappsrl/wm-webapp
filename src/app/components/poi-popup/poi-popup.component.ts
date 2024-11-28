@@ -54,14 +54,15 @@ export class PoiPopupComponent {
           Object.keys(poi.properties.related_url).length === 0 ? null : poi.properties.related_url;
       }
       if (poi.properties?.photoKeys) {
-        this.medias$ = from(getUgcMediasByIds(poi.properties.photoKeys.map(key => key.toString()))).pipe(
-          map(medias => medias)
-        );
+        this.medias$ = from(
+          getUgcMediasByIds(poi.properties.photoKeys.map(key => key.toString())),
+        ).pipe(map(medias => medias));
       }
       this.poiProperties = {...poi.properties, ...prop};
       this.enableGallery$.next(
         this.poiProperties?.feature_image != null ||
-          (this.poiProperties?.image_gallery != null && this.poiProperties?.image_gallery?.length > 0)
+          (this.poiProperties?.image_gallery != null &&
+            this.poiProperties?.image_gallery?.length > 0),
       );
     }
   }

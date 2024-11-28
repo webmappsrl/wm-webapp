@@ -1,22 +1,24 @@
 <ng-container *ngIf="(authEnable$|async)">
-  <div class="wm-profile-button" [ngClass]="{'logged-in': (isLogged$ | async)}" (click)="profileBtnClick()">
+  <div
+    class="wm-profile-button"
+    [ngClass]="{'logged-in': (isLogged$ | async)}"
+    (click)="profileBtnClick()"
+  >
     <i class="icon-outline-user"></i>
   </div>
 
   <div class="wm-profile-content" *ngIf="(toggle$|async)">
     <ng-container *ngIf="isLogged$|async;">
       <wm-profile-user class="ion-margin-end"></wm-profile-user>
-      <wm-profile-data *ngIf="!(isBrowser$|async)"></wm-profile-data>
-      <wm-profile-records></wm-profile-records>
-        <ion-button
-          class="ion-margin"
-          fill="outline"
-          shape="round"
-          expand="full"
-          color="danger"
-          (click)="logout()"
-        >Logout</ion-button>
+      <ion-button
+        class="ion-margin"
+        fill="outline"
+        shape="round"
+        expand="full"
+        color="danger"
+        (click)="logout()"
+        >{{'Logout'|wmtrans}}</ion-button
+      >
     </ng-container>
   </div>
-
 </ng-container>

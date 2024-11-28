@@ -18,15 +18,20 @@ import {confAUTHEnable} from 'wm-core/store/conf/conf.selector';
 })
 export class ProfileComponent {
   authEnable$: Observable<boolean> = this._store.select(confAUTHEnable);
+  isBrowser$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this._deviceSvc.isBrowser);
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
   toggle$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  isBrowser$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(this._deviceSvc.isBrowser);
 
   constructor(
     private _store: Store,
     private _modalCtrl: ModalController,
     private _deviceSvc: DeviceService,
   ) {}
+
+  logout(): void {
+    this.toggle$.next(false);
+    this._store.dispatch(loadSignOuts());
+  }
 
   profileBtnClick(): void {
     this.isLogged$
@@ -51,10 +56,5 @@ export class ProfileComponent {
         }),
       )
       .subscribe();
-  }
-
-  logout(): void {
-    this.toggle$.next(false);
-    this._store.dispatch(loadSignOuts());
   }
 }

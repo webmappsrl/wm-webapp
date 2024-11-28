@@ -23,8 +23,8 @@ import {MetaComponent} from './meta.component';
 import {UIReducer} from './store/UI/UI.reducer';
 import {tap} from 'rxjs/operators';
 import {WmCoreModule} from 'wm-core/wm-core.module';
-import {APP_ID, ENVIRONMENT_CONFIG} from 'wm-core/store/conf/conf.token';
-
+import {APP_ID, APP_VERSION, ENVIRONMENT_CONFIG} from 'wm-core/store/conf/conf.token';
+import packageJson from 'package.json';
 registerLocaleData(localeIt);
 @Injectable()
 export class MyHttpInterceptor implements HttpInterceptor {
@@ -65,6 +65,10 @@ export class MyHttpInterceptor implements HttpInterceptor {
   providers: [
     {provide: ENVIRONMENT_CONFIG, useValue: environment},
     {provide: APP_ID, useValue: environment.geohubId},
+    {
+      provide: APP_VERSION,
+      useValue: packageJson.version,
+    },
     {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
     {provide: LOCALE_ID, useValue: 'it'},
     /*     {

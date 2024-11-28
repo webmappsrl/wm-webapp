@@ -3,8 +3,8 @@ import {IonicModule} from '@ionic/angular';
 import {NgModule} from '@angular/core';
 import {PipeModule} from 'src/app/pipes/pipe.module';
 import {WMCommonModule} from '../common/wm-common.module';
-import { ProfileComponent } from './profile.component';
-import { WmProfileModule } from "../../shared/wm-core/projects/wm-core/src/profile/profile.module";
+import {ProfileComponent} from './profile.component';
+import {WmProfileModule} from '../../shared/wm-core/projects/wm-core/src/profile/profile.module';
 
 @NgModule({
   declarations: [ProfileComponent],

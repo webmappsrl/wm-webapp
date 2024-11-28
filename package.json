@@ -54,11 +54,12 @@
     "rxjs": "~6.6.0",
     "swiper": "^7.3.1",
     "togpx": "^0.5.4",
-    "@dwayneparton/geojson-to-gpx":"0.0.30",
+    "@dwayneparton/geojson-to-gpx": "0.0.30",
     "tslib": "^2.2.0",
     "zone.js": "~0.13.3",
     "@capacitor/filesystem": "^6.0.0",
     "@capacitor/camera": "^6.0.0",
+    "@capacitor/device": "^6.0.0",
     "@capacitor-community/background-geolocation": "^1.2.19",
     "ts-md5": "^1.2.9",
     "@capacitor/share": "^6.0.0"

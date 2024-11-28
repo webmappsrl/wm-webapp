@@ -4,7 +4,7 @@ import {NgModule} from '@angular/core';
 import {PipeModule} from 'src/app/pipes/pipe.module';
 import {PoiPopupComponent} from './poi-popup.component';
 import {WMCommonModule} from '../common/wm-common.module';
-import {WmCoreModule} from 'wm-core/wm-core.module';
+import {WmCoreModule} from '@wm-core/wm-core.module';
 
 @NgModule({
   declarations: [PoiPopupComponent],

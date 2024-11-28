@@ -1,5 +1,5 @@
 import {createReducer, on} from '@ngrx/store';
-import {ILAYER} from 'wm-core/types/config';
+import {ILAYER} from '@wm-core/types/config';
 import {enabledDrawTrack, setCurrentFilters, setCurrentLayer, setCurrentPoi} from './UI.actions';
 
 export const featureKey = 'UI';

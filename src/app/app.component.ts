@@ -3,15 +3,14 @@ import {Component, Inject, OnInit, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {filter, skip, switchMap, take} from 'rxjs/operators';
-import {query} from 'wm-core/store/api/api.actions';
-import {loadConf} from 'wm-core/store/conf/conf.actions';
-import {confAPP, confTHEMEVariables, confWEBAPP} from 'wm-core/store/conf/conf.selector';
+import {query} from '@wm-core/store/api/api.actions';
+import {loadConf} from '@wm-core/store/conf/conf.actions';
+import {confAPP, confTHEMEVariables, confWEBAPP} from '@wm-core/store/conf/conf.selector';
 import appPackage from 'package.json';
 import wmCorePackage from './shared/wm-core/package.json';
 import mapCorePackage from './shared/map-core/package.json';
-import {environment} from 'src/environments/environment';
-import {IAPP, IWEBAPP} from 'wm-core/types/config';
-import { loadAuths } from 'wm-core/store/auth/auth.actions';
+import {IAPP, IWEBAPP} from '@wm-core/types/config';
+import {loadAuths} from '@wm-core/store/auth/auth.actions';
 @Component({
   selector: 'webmapp-app-root',
   templateUrl: 'app.component.html',

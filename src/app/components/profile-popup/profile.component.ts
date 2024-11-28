@@ -3,11 +3,11 @@ import {ModalController} from '@ionic/angular';
 import {select, Store} from '@ngrx/store';
 import {BehaviorSubject, from, Observable, of} from 'rxjs';
 import {concatMap, switchMap, take} from 'rxjs/operators';
-import {ProfileAuthComponent} from 'wm-core/profile/profile-auth/profile-auth.component';
-import {DeviceService} from 'wm-core/services/device.service';
-import {loadSignOuts} from 'wm-core/store/auth/auth.actions';
-import {isLogged} from 'wm-core/store/auth/auth.selectors';
-import {confAUTHEnable} from 'wm-core/store/conf/conf.selector';
+import {ProfileAuthComponent} from '@wm-core/profile/profile-auth/profile-auth.component';
+import {DeviceService} from '@wm-core/services/device.service';
+import {loadSignOuts} from '@wm-core/store/auth/auth.actions';
+import {isLogged} from '@wm-core/store/auth/auth.selectors';
+import {confAUTHEnable} from '@wm-core/store/conf/conf.selector';
 
 @Component({
   selector: 'wm-profile',

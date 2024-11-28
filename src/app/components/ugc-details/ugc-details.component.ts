@@ -1,4 +1,4 @@
-import {confOPTIONS, confTRACKFORMS} from 'wm-core/store/conf/conf.selector';
+import {confOPTIONS, confTRACKFORMS} from '@wm-core/store/conf/conf.selector';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -12,12 +12,12 @@ import {
 import {IonContent, IonSlides} from '@ionic/angular';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {Store} from '@ngrx/store';
-import {confShowEditingInline} from 'wm-core/store/conf/conf.selector';
+import {confShowEditingInline} from '@wm-core/store/conf/conf.selector';
 import {BehaviorSubject, from, Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {LineString} from 'geojson';
 import {Media, MediaProperties, WmFeature} from '@wm-types/feature';
-import {getUgcMediasByIds} from 'wm-core/utils/localForage';
+import {getUgcMediasByIds} from '@wm-core/utils/localForage';
 
 @Component({
   selector: 'wm-ugc-details',
@@ -31,7 +31,9 @@ export class UgcDetailsComponent {
     if (track != null) {
       this.track = track;
       if (track.properties.photoKeys) {
-        this.medias$ = from(getUgcMediasByIds(track.properties.photoKeys.map(key => key.toString())));
+        this.medias$ = from(
+          getUgcMediasByIds(track.properties.photoKeys.map(key => key.toString())),
+        );
       }
     }
   }

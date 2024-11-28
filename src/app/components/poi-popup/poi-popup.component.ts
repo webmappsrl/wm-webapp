@@ -14,9 +14,9 @@ import {IonSlides} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 
 import {IGeojsonProperties} from 'src/app/types/model';
-import {confShowEditingInline} from 'wm-core/store/conf/conf.selector';
+import {confShowEditingInline} from '@wm-core/store/conf/conf.selector';
 import {Media, MediaProperties, WmFeature} from '@wm-types/feature';
-import {getUgcMediasByIds} from 'wm-core/utils/localForage';
+import {getUgcMediasByIds} from '@wm-core/utils/localForage';
 import {map} from 'rxjs/operators';
 
 @Component({

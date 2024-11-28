@@ -9,7 +9,7 @@ import {
   resetPoiFilters,
   resetTrackFilters,
   setLayer,
-} from 'wm-core/store/api/api.actions';
+} from '@wm-core/store/api/api.actions';
 import {
   apiSearchInputTyped,
   apiElasticState,
@@ -22,7 +22,7 @@ import {
   isUgcSelected,
   getUgcPoisFeatureCollection,
   isUgcHome,
-} from 'wm-core/store/api/api.selector';
+} from '@wm-core/store/api/api.selector';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -49,8 +49,6 @@ import {
 } from 'rxjs/operators';
 import {HomeComponent} from 'src/app/components/home/home.component';
 import {GeohubService} from 'src/app/services/geohub.service';
-import {WmMapTrackRelatedPoisDirective} from 'src/app/shared/map-core/src/directives/track.related-pois.directive';
-import {IDATALAYER} from 'src/app/shared/map-core/src/types/layer';
 
 import {
   confAUTHEnable,
@@ -62,13 +60,13 @@ import {
   confMAPLAYERS,
   confOPTIONS,
   confShowDrawTrack,
-} from 'wm-core/store/conf/conf.selector';
+} from '@wm-core/store/conf/conf.selector';
 
-import {IGeojsonFeature} from 'wm-core/types/model';
+import {IGeojsonFeature} from '@wm-core/types/model';
 import {UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {environment} from 'src/environments/environment';
-import {WmLoadingService} from 'wm-core/services/loading.service';
+import {WmLoadingService} from '@wm-core/services/loading.service';
 import {
   Filter,
   IHOME,
@@ -76,16 +74,18 @@ import {
   IOPTIONS,
   SelectFilterOption,
   SliderFilter,
-} from 'wm-core/types/config';
-import {LangService} from 'wm-core/localization/lang.service';
-import {FiltersComponent} from 'wm-core/filters/filters.component';
+} from '@wm-core/types/config';
+import {LangService} from '@wm-core/localization/lang.service';
+import {FiltersComponent} from '@wm-core/filters/filters.component';
 import {ModalController} from '@ionic/angular';
-import {isLogged, syncing} from 'wm-core/store/auth/auth.selectors';
-import {getUgcTrack, getUgcTracks} from 'wm-core/utils/localForage';
+import {isLogged, syncing} from '@wm-core/store/auth/auth.selectors';
+import {getUgcTrack, getUgcTracks} from '@wm-core/utils/localForage';
 import {WmFeature} from 'src/app/shared/wm-types/src';
 import {concatMap} from 'rxjs/operators';
-import {ProfileAuthComponent} from 'wm-core/profile/profile-auth/profile-auth.component';
-import {hitMapFeatureCollection} from 'src/app/shared/map-core/src/store/map-core.selector';
+import {ProfileAuthComponent} from '@wm-core/profile/profile-auth/profile-auth.component';
+import {IDATALAYER} from '@map-core/types/layer';
+import {WmMapTrackRelatedPoisDirective} from '@map-core/directives';
+import {hitMapFeatureCollection} from '@map-core/store/map-core.selector';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];

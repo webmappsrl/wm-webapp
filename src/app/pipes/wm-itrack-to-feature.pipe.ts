@@ -1,12 +1,11 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { Feature } from 'geojson';
-import { ITrack } from 'wm-core/types/track';
+import {Pipe, PipeTransform} from '@angular/core';
+import {Feature} from 'geojson';
+import {ITrack} from '@wm-core/types/track';
 
 @Pipe({
-  name: 'iTrackToFeature'
+  name: 'iTrackToFeature',
 })
 export class WmITrackToFeaturePipe implements PipeTransform {
-
   transform(track: ITrack): Feature | null {
     if (!track) return null;
 

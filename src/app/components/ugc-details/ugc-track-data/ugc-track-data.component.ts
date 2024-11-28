@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from "@angular/core";
-import { LineString } from "geojson";
-import { BehaviorSubject } from "rxjs";
-import { WmFeature } from "src/app/shared/wm-types/src";
-import { GeoutilsService } from "wm-core/services/geoutils.service";
+import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
+import {GeoutilsService} from '@wm-core/services/geoutils.service';
+import {LineString} from 'geojson';
+import {BehaviorSubject} from 'rxjs';
+import {WmFeature} from 'src/app/shared/wm-types/src';
 
 @Component({
   selector: 'wm-ugc-track-data',
@@ -26,7 +26,5 @@ export class UgcTrackDataComponent {
   topSpeed$: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(null);
   trackLength$: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(null);
 
-  constructor(
-    private _geoutilsSvc: GeoutilsService,
-  ) {}
+  constructor(private _geoutilsSvc: GeoutilsService) {}
 }

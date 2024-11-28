@@ -17,9 +17,9 @@ import {
   setLayer,
   togglePoiFilter,
   toggleTrackFilterByIdentifier,
-} from 'wm-core/store/api/api.actions';
-import {showResult} from 'wm-core/store/api/api.selector';
-import {confAPP, confHOME, confPROJECT, confOPTIONS} from 'wm-core/store/conf/conf.selector';
+} from '@wm-core/store/api/api.actions';
+import {showResult} from '@wm-core/store/api/api.selector';
+import {confAPP, confHOME, confPROJECT, confOPTIONS} from '@wm-core/store/conf/conf.selector';
 import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
 import {SearchComponent} from './search/search.component';
 import {
@@ -30,8 +30,8 @@ import {
   IOPTIONS,
   IPOITYPEFILTERBOX,
   ISLUGBOX,
-} from 'wm-core/types/config';
-import {WmInnerHtmlComponent} from 'wm-core/inner-html/inner-html.component';
+} from '@wm-core/types/config';
+import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
 @Component({
   selector: 'webmapp-home',
   templateUrl: './home.component.html',

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {environment} from 'src/environments/environment';
-import { hostToGeohubAppId } from 'wm-core/store/api/api.service';
+import {hostToGeohubAppId} from '@wm-core/store/api/api.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -26,9 +26,7 @@ export class ConfigService {
   constructor() {
     const hostname: string = window.location.hostname;
     if (hostname.indexOf('localhost') < 0) {
-      const matchedHost = Object.keys(hostToGeohubAppId).find((host) =>
-        hostname.includes(host)
-      );
+      const matchedHost = Object.keys(hostToGeohubAppId).find(host => hostname.includes(host));
 
       if (matchedHost) {
         this._geohubAppId = hostToGeohubAppId[matchedHost];

@@ -22,8 +22,8 @@ import {AppComponent} from './app.component';
 import {MetaComponent} from './meta.component';
 import {UIReducer} from './store/UI/UI.reducer';
 import {tap} from 'rxjs/operators';
-import {WmCoreModule} from 'wm-core/wm-core.module';
-import {APP_ID, APP_VERSION, ENVIRONMENT_CONFIG} from 'wm-core/store/conf/conf.token';
+import {WmCoreModule} from '@wm-core/wm-core.module';
+import {APP_ID, APP_VERSION, ENVIRONMENT_CONFIG} from '@wm-core/store/conf/conf.token';
 import packageJson from 'package.json';
 registerLocaleData(localeIt);
 @Injectable()

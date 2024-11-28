@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {WmMapModule} from '@map-core/map-core.module';
 
-import {WmMapModule} from './map-core/src/map-core.module';
 const components = [];
 @NgModule({
   declarations: components,

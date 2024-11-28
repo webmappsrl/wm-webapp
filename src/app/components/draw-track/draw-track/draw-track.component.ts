@@ -14,17 +14,17 @@ import Map from 'ol/Map';
 import tokml from 'geojson-to-kml';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {LineString} from 'geojson';
-import {confGeohubId, confPOIFORMS, confTRACKFORMS} from 'wm-core/store/conf/conf.selector';
+import {confGeohubId, confPOIFORMS, confTRACKFORMS} from '@wm-core/store/conf/conf.selector';
 import {Store} from '@ngrx/store';
 import {catchError, switchMap, take, tap} from 'rxjs/operators';
-import { DeviceService } from 'wm-core/services/device.service';
-import { AlertController } from '@ionic/angular';
-import { saveDrawTrackAsUgc } from 'wm-core/store/auth/auth.selectors';
-import { syncUgc } from 'wm-core/store/auth/auth.actions';
-import { generateUUID, saveUgcTrack } from 'wm-core/utils/localForage';
-import { WmFeature } from '@wm-types/feature';
-import { UntypedFormGroup } from '@angular/forms';
-import { setUgc } from 'wm-core/store/api/api.actions';
+import {DeviceService} from '@wm-core/services/device.service';
+import {AlertController} from '@ionic/angular';
+import {saveDrawTrackAsUgc} from '@wm-core/store/auth/auth.selectors';
+import {syncUgc} from '@wm-core/store/auth/auth.actions';
+import {generateUUID, saveUgcTrack} from '@wm-core/utils/localForage';
+import {WmFeature} from '@wm-types/feature';
+import {UntypedFormGroup} from '@angular/forms';
+import {setUgc} from '@wm-core/store/api/api.actions';
 
 @Component({
   selector: 'wm-draw-track',
@@ -109,9 +109,7 @@ export class DrawTrackComponent {
   }
 
   saveCustomTrack(): void {
-    this.saveDrawTrackAsUgc$.pipe(
-      take(1)
-    ).subscribe(saveAsUgc => {
+    this.saveDrawTrackAsUgc$.pipe(take(1)).subscribe(saveAsUgc => {
       if (saveAsUgc) {
         this._saveCustomTrackAsUgc();
       } else {
@@ -142,39 +140,43 @@ export class DrawTrackComponent {
 
   private _saveCustomTrackAsUgc(): void {
     if (this.track$.value != null) {
-      this.geohubId$.pipe(
-        take(1),
-        switchMap(geohubId => {
-          const feature: WmFeature<LineString> = this.track$.value;
-          let drawTrakproperties = feature.properties;
+      this.geohubId$
+        .pipe(
+          take(1),
+          switchMap(geohubId => {
+            const feature: WmFeature<LineString> = this.track$.value;
+            let drawTrakproperties = feature.properties;
 
-          const properties = {
-            drawTrackProperties: drawTrakproperties,
-            name: this.fg.value.title,
-            form: this.fg.value,
-            uuid: generateUUID(),
-            device: {os: 'web'},
-            app_id: `${geohubId}`,
-          };
+            const properties = {
+              drawTrackProperties: drawTrakproperties,
+              name: this.fg.value.title,
+              form: this.fg.value,
+              uuid: generateUUID(),
+              device: {os: 'web'},
+              app_id: `${geohubId}`,
+            };
 
-          feature.properties = properties;
-          return saveUgcTrack(feature)
-        }),
-        tap(_ => {
-          this.track$.next(null);
-          this.reloadEvt.emit();
-          this._store.dispatch(syncUgc());
-          this._store.dispatch(setUgc({ugcSelected: true}));
-        }),
-        catchError(_ => {
-          this._alertCtrl.create({
-            header: 'Errore',
-            message: 'Si è verificato un errore durante il salvataggio del percorso.',
-            buttons: ['OK']
-          }).then(alert => alert.present());
-          return([]);
-        })
-      ).subscribe();
+            feature.properties = properties;
+            return saveUgcTrack(feature);
+          }),
+          tap(_ => {
+            this.track$.next(null);
+            this.reloadEvt.emit();
+            this._store.dispatch(syncUgc());
+            this._store.dispatch(setUgc({ugcSelected: true}));
+          }),
+          catchError(_ => {
+            this._alertCtrl
+              .create({
+                header: 'Errore',
+                message: 'Si è verificato un errore durante il salvataggio del percorso.',
+                buttons: ['OK'],
+              })
+              .then(alert => alert.present());
+            return [];
+          }),
+        )
+        .subscribe();
     }
   }
 

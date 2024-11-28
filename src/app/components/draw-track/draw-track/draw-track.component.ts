@@ -20,11 +20,10 @@ import {catchError, switchMap, take, tap} from 'rxjs/operators';
 import {DeviceService} from '@wm-core/services/device.service';
 import {AlertController} from '@ionic/angular';
 import {saveDrawTrackAsUgc} from '@wm-core/store/auth/auth.selectors';
-import {syncUgc} from '@wm-core/store/auth/auth.actions';
 import {generateUUID, saveUgcTrack} from '@wm-core/utils/localForage';
 import {WmFeature} from '@wm-types/feature';
 import {UntypedFormGroup} from '@angular/forms';
-import {setUgc} from '@wm-core/store/api/api.actions';
+import {setUgc, syncUgc} from '@wm-core/store/api/api.actions';
 
 @Component({
   selector: 'wm-draw-track',

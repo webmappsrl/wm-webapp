@@ -22,6 +22,7 @@ import {
   isUgcSelected,
   getUgcPoisFeatureCollection,
   isUgcHome,
+  syncing,
 } from '@wm-core/store/api/api.selector';
 import {
   ChangeDetectionStrategy,
@@ -78,7 +79,7 @@ import {
 import {LangService} from '@wm-core/localization/lang.service';
 import {FiltersComponent} from '@wm-core/filters/filters.component';
 import {ModalController} from '@ionic/angular';
-import {isLogged, syncing} from '@wm-core/store/auth/auth.selectors';
+import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {getUgcTrack, getUgcTracks} from '@wm-core/utils/localForage';
 import {WmFeature} from 'src/app/shared/wm-types/src';
 import {concatMap} from 'rxjs/operators';

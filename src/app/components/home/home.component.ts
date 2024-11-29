@@ -10,7 +10,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {debounceTime, filter, skip, take, withLatestFrom} from 'rxjs/operators';
+import {debounceTime, filter, take, withLatestFrom} from 'rxjs/operators';
 import {
   inputTyped,
   resetTrackFilters,
@@ -32,6 +32,8 @@ import {
   ISLUGBOX,
 } from '@wm-core/types/config';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
+import {openUgc, selectUgcTrack} from '@wm-core/store/ugc/ugc.actions';
+import {opened} from '@wm-core/store/ugc/ugc.selector';
 @Component({
   selector: 'webmapp-home',
   templateUrl: './home.component.html',
@@ -47,6 +49,7 @@ export class HomeComponent implements AfterContentInit {
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   popup$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   showResult$ = this._store.select(showResult);
+  ugcOpened$ = this._store.select(opened);
 
   constructor(
     private _store: Store,
@@ -176,11 +179,18 @@ export class HomeComponent implements AfterContentInit {
   }
 
   setTrack(id: string | number): void {
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: {track: id ? id : null},
-      queryParamsHandling: 'merge',
+    this.ugcOpened$.pipe(take(1)).subscribe(ugcOpened => {
+      const queryParams = ugcOpened ? {ugc_track: id ? +id : null} : {track: id ? +id : null};
+      this._router.navigate([], {
+        relativeTo: this._route,
+        queryParams,
+        queryParamsHandling: 'merge',
+      });
     });
+  }
+
+  setUgc(): void {
+    this._store.dispatch(openUgc());
   }
 
   togglePoiFilter(filterIdentifier: string, idx?: number): void {

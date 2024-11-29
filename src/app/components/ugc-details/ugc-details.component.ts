@@ -18,7 +18,8 @@ import {tap} from 'rxjs/operators';
 import {LineString} from 'geojson';
 import {Media, MediaProperties, WmFeature} from '@wm-types/feature';
 import {getUgcMediasByIds} from '@wm-core/utils/localForage';
-
+import {ActivatedRoute, Router} from '@angular/router';
+import {Location} from '@angular/common';
 @Component({
   selector: 'wm-ugc-details',
   templateUrl: './ugc-details.component.html',
@@ -64,7 +65,12 @@ export class UgcDetailsComponent {
   };
   track: WmFeature<LineString>;
 
-  constructor(private _store: Store) {}
+  constructor(
+    private _store: Store,
+    private _router: Router,
+    private _route: ActivatedRoute,
+    private _location: Location,
+  ) {}
 
   @HostListener('document:keydown.Escape', ['$event'])
   public close(): void {
@@ -95,7 +101,21 @@ export class UgcDetailsComponent {
     this.trackElevationChartHover.emit(event);
   }
 
+  removeUgcTrackFromUrl(): void {
+    const queryParams = {...this._route.snapshot.queryParams}; // Copia dei parametri esistenti
+
+    queryParams['ugc_track'] = undefined;
+
+    // Forza l'aggiornamento dell'URL
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams, // Parametri aggiornati
+      queryParamsHandling: 'merge',
+    });
+  }
+
   triggerDismiss(): void {
+    this.removeUgcTrackFromUrl();
     this.dismiss.emit();
   }
 }

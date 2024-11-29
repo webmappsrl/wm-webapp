@@ -14,7 +14,7 @@ import Map from 'ol/Map';
 import tokml from 'geojson-to-kml';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {LineString} from 'geojson';
-import {confGeohubId, confPOIFORMS, confTRACKFORMS} from '@wm-core/store/conf/conf.selector';
+import {confGeohubId, confTRACKFORMS} from '@wm-core/store/conf/conf.selector';
 import {Store} from '@ngrx/store';
 import {catchError, switchMap, take, tap} from 'rxjs/operators';
 import {DeviceService} from '@wm-core/services/device.service';
@@ -23,7 +23,6 @@ import {saveDrawTrackAsUgc} from '@wm-core/store/auth/auth.selectors';
 import {generateUUID, saveUgcTrack} from '@wm-core/utils/localForage';
 import {WmFeature} from '@wm-types/feature';
 import {UntypedFormGroup} from '@angular/forms';
-import {setUgc, syncUgc} from '@wm-core/store/api/api.actions';
 
 @Component({
   selector: 'wm-draw-track',
@@ -161,8 +160,6 @@ export class DrawTrackComponent {
           tap(_ => {
             this.track$.next(null);
             this.reloadEvt.emit();
-            this._store.dispatch(syncUgc());
-            this._store.dispatch(setUgc({ugcSelected: true}));
           }),
           catchError(_ => {
             this._alertCtrl

@@ -4,8 +4,6 @@ import {
   loadPois,
   togglePoiFilter,
   toggleTrackFilter,
-  setUgc,
-  openUgcInHome,
   resetPoiFilters,
   resetTrackFilters,
   setLayer,
@@ -19,10 +17,6 @@ import {
   apiGoToHome,
   countSelectedFilters,
   poisInitFeatureCollection,
-  isUgcSelected,
-  getUgcPoisFeatureCollection,
-  isUgcHome,
-  syncing,
 } from '@wm-core/store/api/api.selector';
 import {
   ChangeDetectionStrategy,
@@ -47,6 +41,7 @@ import {
   switchMap,
   tap,
   take,
+  shareReplay,
 } from 'rxjs/operators';
 import {HomeComponent} from 'src/app/components/home/home.component';
 import {GeohubService} from 'src/app/services/geohub.service';
@@ -87,6 +82,7 @@ import {ProfileAuthComponent} from '@wm-core/profile/profile-auth/profile-auth.c
 import {IDATALAYER} from '@map-core/types/layer';
 import {WmMapTrackRelatedPoisDirective} from '@map-core/directives';
 import {hitMapFeatureCollection} from '@map-core/store/map-core.selector';
+import {opened, ugcPoisFeatures, ugcTracksFeatures} from '@wm-core/store/ugc/ugc.selector';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -103,10 +99,12 @@ const maxWidth = 600;
 export class MapPage implements OnDestroy {
   private _confMAPLAYERS$: Observable<ILAYER[]> = this._store.select(confMAPLAYERS);
 
-  readonly track$: Observable<Feature>;
+  readonly track$: Observable<WmFeature<LineString>>;
   readonly trackColor$: BehaviorSubject<string> = new BehaviorSubject<string>('#caaf15');
   readonly trackid$: Observable<number | string>;
+  readonly ugcOpened$: Observable<boolean> = this._store.select(opened);
   readonly ugcTrack$: Observable<WmFeature<LineString> | null>;
+  readonly ugcTrackId$: Observable<number | string>;
 
   @ViewChild(WmMapTrackRelatedPoisDirective)
   WmMapTrackRelatedPoisDirective: WmMapTrackRelatedPoisDirective;
@@ -150,7 +148,6 @@ export class MapPage implements OnDestroy {
   goToHomeSub$: Subscription = Subscription.EMPTY;
   graphhopperHost$: Observable<string> = of(environment.graphhopperHost);
   isLogged$: Observable<boolean> = this._store.pipe(select(isLogged));
-  isUgcSelected$: Observable<boolean> = this._store.select(isUgcSelected);
   langs$ = this._store.select(confLANGUAGES).pipe(
     tap(l => {
       if (l && l.default) {
@@ -189,18 +186,11 @@ export class MapPage implements OnDestroy {
         }),
       ),
     ),
-    this.isUgcSelected$,
   ]).pipe(
-    map(([poi, isUgcSelected]) => {
+    map(([poi]) => {
       if (poi == null) return null;
 
-      if (isUgcSelected && poi.properties.id !== undefined) {
-        this._router.navigate([], {
-          relativeTo: this._route,
-          queryParams: {poi: `ugc_${poi.properties.id}`},
-          queryParamsHandling: 'merge',
-        });
-      } else if (poi.properties.id !== undefined) {
+      if (poi.properties.id !== undefined) {
         this._router.navigate([], {
           relativeTo: this._route,
           queryParams: {poi: poi.properties.id},
@@ -230,13 +220,8 @@ export class MapPage implements OnDestroy {
     if (value == null) return '';
     return this._langService.instant(value);
   };
-  ugcHome$: Observable<boolean> = this._store.select(isUgcHome);
-  ugcPois$: Observable<WmFeature<Point>[]> = this._store.select(getUgcPoisFeatureCollection);
-  ugcTracks$: Observable<WmFeature<LineString>[]> = this._store.select(syncing).pipe(
-    skip(1),
-    filter(syncing => syncing === false),
-    switchMap(() => from(getUgcTracks())),
-  );
+  ugcPois$: Observable<WmFeature<Point>[]> = this._store.select(ugcPoisFeatures);
+  ugcTracks$: Observable<WmFeature<LineString>[]> = this._store.select(ugcTracksFeatures);
   wmHomeEnable$ = combineLatest([
     this.drawTrackEnable$,
     this.currentCustomTrack$,
@@ -294,20 +279,21 @@ export class MapPage implements OnDestroy {
       .subscribe(params => {
         this.setCurrentPoi(params.poi);
       });
-
-    this.trackid$ = this._route.queryParams.pipe(
+    const queryParams$ = this._route.queryParams.pipe(shareReplay(1));
+    this.ugcTrackId$ = queryParams$.pipe(
+      map(params => params.ugc_track || null),
+      startWith(null),
+    );
+    this.trackid$ = queryParams$.pipe(
       filter(params => params != null && params.track != null),
-      tap(params => {
-        if (params.track.indexOf('ugc') > -1) this._store.dispatch(setUgc({ugcSelected: true}));
-      }),
       map(params => params.track),
       startWith(-1),
     );
+
     this.track$ = this.trackid$.pipe(
       distinctUntilChanged((prev, curr) => {
         return prev === curr;
       }),
-      filter(t => t.toString().indexOf('ugc') < 0),
       switchMap(trackid => {
         return +trackid > -1 ? from(this._geohubService.getEcTrack(+trackid)) : of(null);
       }),
@@ -321,14 +307,9 @@ export class MapPage implements OnDestroy {
       }),
       share(),
     );
-    this.ugcTrack$ = this.trackid$.pipe(
-      distinctUntilChanged((prev, curr) => {
-        return prev === curr;
-      }),
-      filter(t => t == -1 || t.toString().indexOf('ugc') > -1),
-      switchMap(trackid => {
-        const ugcTrackid = trackid.toString().split('_')[1];
-        return trackid != -1 ? from(getUgcTrack(ugcTrackid)) : of(null);
+    this.ugcTrack$ = this.ugcTrackId$.pipe(
+      switchMap(ugcTrackid => {
+        return ugcTrackid != null ? from(getUgcTrack(`${ugcTrackid}`)) : of(null);
       }),
     );
 
@@ -339,17 +320,13 @@ export class MapPage implements OnDestroy {
 
     this.currentPoiIDToMap$ = combineLatest([
       merge(this.currentPoiID$, this.currentPoiIDFromHome$),
-      this.isUgcSelected$,
     ]).pipe(
-      filter(([_, isUgcSelected]) => !isUgcSelected), // Solo se isUgcSelected$ è false
       map(([val]) => val ?? -1),
       distinctUntilChanged((prev, curr) => +prev === +curr),
     );
     this.currentUgcPoiIDToMap$ = combineLatest([
       merge(this.currentPoiID$, this.currentPoiIDFromHome$),
-      this.isUgcSelected$,
     ]).pipe(
-      filter(([_, isUgcSelected]) => isUgcSelected), // Solo se isUgcSelected$ è true
       map(([val]) => {
         const poiID = val ?? -1;
         return poiID;
@@ -363,10 +340,9 @@ export class MapPage implements OnDestroy {
       this.drawTrackEnable$,
       this.toggleLayerDirective$,
       this.currentLayer$,
-      this.ugcHome$,
     ]).pipe(
-      map(([drawTrackEnable, toggleLayerDirective, currentLayer, isUgcHome]) => {
-        return drawTrackEnable || (!toggleLayerDirective && currentLayer == null) || isUgcHome;
+      map(([drawTrackEnable, toggleLayerDirective, currentLayer]) => {
+        return drawTrackEnable || (!toggleLayerDirective && currentLayer == null);
       }),
     );
     this.wmMapUgcPoisDisableLayers$ = combineLatest([this.drawTrackEnable$, this.isLogged$]).pipe(
@@ -462,11 +438,6 @@ export class MapPage implements OnDestroy {
 
   setCurrentPoi(id): void {
     if (id !== this.currentPoiID$.value) {
-      if (id && id.toString().indexOf('ugc_') >= 0) {
-        this._store.dispatch(setUgc({ugcSelected: true}));
-        id = +id.toString().split('_')[1];
-      }
-
       this.currentPoiID$.next(id);
     }
     this._cdr.detectChanges();
@@ -512,7 +483,6 @@ export class MapPage implements OnDestroy {
 
   setUgcPoi(poi: any): void {
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
-    this._store.dispatch(setUgc({ugcSelected: true}));
     this.currentUgcPoi$.next(poi);
   }
 
@@ -526,7 +496,6 @@ export class MapPage implements OnDestroy {
   toggleDetails(trackid?): void {
     if (trackid == null) {
       trackid = -1;
-      this._store.dispatch(setUgc({ugcSelected: false}));
     }
     this.updateUrl(trackid);
   }
@@ -556,8 +525,6 @@ export class MapPage implements OnDestroy {
               this._store.dispatch(resetPoiFilters());
               this._store.dispatch(resetTrackFilters());
               this.toggleDetails();
-              this._store.dispatch(openUgcInHome({ugcHome: !currentValue}));
-              this._store.dispatch(setUgc({ugcSelected: !currentValue}));
             } else {
               return from(
                 this._modalCtrl.create({
@@ -619,15 +586,6 @@ export class MapPage implements OnDestroy {
     this._router.navigate([], {
       relativeTo: this._route,
       queryParams: {track: trackid ? trackid : null},
-      queryParamsHandling: 'merge',
-    });
-  }
-
-  updateUrlUgc(trackid: string): void {
-    this._store.dispatch(setUgc({ugcSelected: true}));
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: {track: `ugc_${trackid}`},
       queryParamsHandling: 'merge',
     });
   }

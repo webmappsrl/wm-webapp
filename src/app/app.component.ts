@@ -1,8 +1,9 @@
+import {activableUgc} from '@wm-core/store/ugc/ugc.selector';
 import {DOCUMENT} from '@angular/common';
 import {Component, Inject, OnInit, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
-import {filter, skip, switchMap, take} from 'rxjs/operators';
+import {interval, Observable, of} from 'rxjs';
+import {debounceTime, filter, skip, switchMap, take, takeUntil} from 'rxjs/operators';
 import {query} from '@wm-core/store/api/api.actions';
 import {loadConf} from '@wm-core/store/conf/conf.actions';
 import {confAPP, confTHEMEVariables, confWEBAPP} from '@wm-core/store/conf/conf.selector';
@@ -11,6 +12,7 @@ import wmCorePackage from './shared/wm-core/package.json';
 import mapCorePackage from './shared/map-core/package.json';
 import {IAPP, IWEBAPP} from '@wm-core/types/config';
 import {loadAuths} from '@wm-core/store/auth/auth.actions';
+import {syncUgc} from '@wm-core/store/ugc/ugc.actions';
 @Component({
   selector: 'webmapp-app-root',
   templateUrl: 'app.component.html',
@@ -18,14 +20,15 @@ import {loadAuths} from '@wm-core/store/auth/auth.actions';
   encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent implements OnInit {
-  confAPP$: Observable<any> = this._storeConf.select(confAPP);
-  confTHEMEVariables$: Observable<any> = this._storeConf.select(confTHEMEVariables);
-  confWEBAPP$: Observable<any> = this._storeConf.select(confWEBAPP);
+  activableUgc$: Observable<boolean> = this._store.select(activableUgc);
+  confAPP$: Observable<any> = this._store.select(confAPP);
+  confTHEMEVariables$: Observable<any> = this._store.select(confTHEMEVariables);
+  confWEBAPP$: Observable<any> = this._store.select(confWEBAPP);
 
-  constructor(@Inject(DOCUMENT) private _document: Document, private _storeConf: Store<any>) {
-    this._storeConf.dispatch(loadConf());
-    this._storeConf.dispatch(loadAuths());
-    this._storeConf.dispatch(query({init: true}));
+  constructor(@Inject(DOCUMENT) private _document: Document, private _store: Store<any>) {
+    this._store.dispatch(loadConf());
+    this._store.dispatch(loadAuths());
+    this._store.dispatch(query({init: true}));
     this.confTHEMEVariables$.pipe(take(2)).subscribe(css => this._setGlobalCSS(css));
     console.table({
       'app': appPackage.version,
@@ -45,6 +48,16 @@ export class AppComponent implements OnInit {
       .subscribe((conf: IAPP) => {
         this.setSplashScreenImage(conf);
         this.hideSplashScreen();
+      });
+    this.activableUgc$
+      .pipe(
+        filter(activable => activable),
+        switchMap(() =>
+          interval(2000).pipe(takeUntil(this.activableUgc$.pipe(filter(activable => !activable)))),
+        ),
+      )
+      .subscribe(() => {
+        this._store.dispatch(syncUgc()); // Dispatch dell'azione
       });
   }
 

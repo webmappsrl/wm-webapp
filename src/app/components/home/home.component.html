@@ -25,8 +25,10 @@
         (resetFiltersEVT)="goToHome()"
         (removeLayerEVT)="removeLayer($event)"
       ></wm-status-filter>
-      <wm-home-layer></wm-home-layer>
-      <wm-home-ugc></wm-home-ugc>
+      <wm-home-ugc *ngIf="(ugcOpened$|async);else layerView"></wm-home-ugc>
+      <ng-template #layerView>
+        <wm-home-layer></wm-home-layer>
+      </ng-template>
       <wm-home-result (trackEVT)="setTrack($event)" (poiEVT)="setPoi($event)"></wm-home-result>
     </ng-container>
 
@@ -36,6 +38,7 @@
         (externalUrlBoxEVT)="openExternalUrl($event)"
         (tracksBoxEVT)="setTrack($event)"
         (layerBoxEVT)="setLayer($event[0], $event[1])"
+        (ugcBoxEvt)="setUgc()"
       ></wm-home-page>
     </ng-template>
   </ng-template>

@@ -11,7 +11,7 @@
 
   <div class="details-container" [class.details-container-visible]="(showMenu$|async)">
     <webmapp-track-details
-      *ngIf="!(isUgcSelected$|async); else ugcDetails"
+      *ngIf="!(ugcTrack$|async) as track; else ugcDetails"
       [track]="track$|async"
       [hidden]="+trackid <= 0"
       [poi]="currentPoiIDToMap$|async"
@@ -36,7 +36,7 @@
     </webmapp-track-details>
     <webmapp-home
       *ngIf="wmHomeEnable$|async;else customTrack"
-      [hidden]="trackid != -1"
+      [hidden]="trackid != -1|| (ugcTrack$|async) != null"
       class="webmapp-home"
     >
       <wm-lang-selector
@@ -54,12 +54,9 @@
     </ng-template>
     <ng-template #ugcDetails>
       <wm-ugc-details
-        *ngIf="!(currentCustomTrack$|async)"
         [track]="ugcTrack$|async"
-        [hidden]="+trackid <= 0"
         (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
         (poi-click)="setCurrentRelatedPoi($event)"
-        (dismiss)="toggleDetails()"
         class="webmapp-track-details"
       ></wm-ugc-details>
     </ng-template>
@@ -106,7 +103,7 @@
     [wmMapPoisDisableClusterLayer]="wmMapLayerDisableLayers$|async"
     (currentPoiEvt)="setPoi($event)"
     wmMapTrack
-    [track]="(isUgcSelected$|async) ? (ugcTrack$|async) : (track$|async)"
+    [track]="(track$|async)||(ugcTrack$|async)"
     [trackElevationChartElements]="trackElevationChartHoverElements$|async"
     (trackSelectedFromLayerEVT)="toggleDetails($event)"
     wmMapTrackRelatedPois

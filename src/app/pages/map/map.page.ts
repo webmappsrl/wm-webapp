@@ -45,6 +45,7 @@ import {
 } from 'rxjs/operators';
 import {HomeComponent} from 'src/app/components/home/home.component';
 import {GeohubService} from 'src/app/services/geohub.service';
+import {openUgc} from '@wm-core/store/ugc/ugc.actions';
 
 import {
   confAUTHEnable,
@@ -495,7 +496,11 @@ export class MapPage implements OnDestroy {
   }
 
   toggleDetails(trackid?): void {
-    this.updateUrl(trackid);
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams: {ugc_track: undefined, track: trackid},
+      queryParamsHandling: 'merge',
+    });
   }
 
   toggleDirective(data: {type: 'layers' | 'pois'; toggle: boolean}): void {
@@ -581,7 +586,13 @@ export class MapPage implements OnDestroy {
   }
 
   updateUgcTrack($event): void {
-    this.ugcTrackID$.next($event);
+    this._store.dispatch(openUgc());
+    this.homeCmp.setTrack($event);
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams: {track: undefined, ugc_track: $event},
+      queryParamsHandling: 'merge',
+    });
   }
 
   updateUrl(trackid: number): void {

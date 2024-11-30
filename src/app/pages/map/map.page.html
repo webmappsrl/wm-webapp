@@ -8,7 +8,7 @@
   <ion-icon [attr.name]="caretOutLine$|async"></ion-icon>
 </button>
 <div class="details-container" [class.details-container-visible]="(showMenu$|async)">
-  <ng-container *ngIf="track$|async as track; else home">
+  <ng-container *ngIf="track$|async as track;">
     <webmapp-track-details
       *ngIf="(ecTrack$|async) as ecTrack;"
       [track]="ecTrack"
@@ -41,14 +41,16 @@
     ></wm-ugc-details>
   </ng-container>
 
-  <ng-template #home>
-    <webmapp-home *ngIf="wmHomeEnable$|async;else customTrack" class="webmapp-home">
-      <wm-lang-selector
-        [langs]="(langs$|async)?.available"
-        [defaultLang]="(langs$|async)?.default"
-      ></wm-lang-selector>
-    </webmapp-home>
-  </ng-template>
+  <webmapp-home
+    *ngIf="wmHomeEnable$|async;else customTrack"
+    class="webmapp-home"
+    [hidden]="(track$|async) !=null"
+  >
+    <wm-lang-selector
+      [langs]="(langs$|async)?.available"
+      [defaultLang]="(langs$|async)?.default"
+    ></wm-lang-selector>
+  </webmapp-home>
   <ng-template #customTrack>
     <wm-draw-track
       *ngIf="(wmap.map$|async) as map"

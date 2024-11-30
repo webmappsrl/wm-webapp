@@ -15,7 +15,7 @@
       [poi]="currentPoiIDToMap$|async"
       (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
       (poi-click)="setCurrentRelatedPoi($event)"
-      (dismiss)="toggleDetails()"
+      (dismiss)="updateEcTrack()"
       class="webmapp-track-details"
     >
       <ng-container *ngIf="(confOPTIONS$|async) as opt">
@@ -104,7 +104,7 @@
   wmMapTrack
   [track]="track$|async"
   [trackElevationChartElements]="trackElevationChartHoverElements$|async"
-  (trackSelectedFromLayerEVT)="toggleDetails($event)"
+  (trackSelectedFromLayerEVT)="updateEcTrack($event)"
   wmMapTrackRelatedPois
   (related-poi)="setCurrentRelatedPoi($event)"
   (related-poi-next)="currentPoiNextID$.next(+$event)"
@@ -181,7 +181,7 @@
           wmMapTrack
           [track]="ecTrack$|async"
           [trackElevationChartElements]="trackElevationChartHoverElements$|async"
-          (trackSelectedFromLayerEVT)="toggleDetails($event)"
+          (trackSelectedFromLayerEVT)="updateEcTrack($event)"
           wmMapTrackRelatedPois
           (related-poi-click)="setCurrentRelatedPoi($event)"
         >

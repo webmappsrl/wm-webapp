@@ -415,10 +415,6 @@ export class MapPage implements OnDestroy {
     console.log(directive);
   }
 
-  selectTrack(trackid: any = null): void {
-    this.updateUrl(trackid);
-  }
-
   selectedLayer(layer: any): void {
     this.homeCmp.setLayer(layer);
   }
@@ -495,14 +491,6 @@ export class MapPage implements OnDestroy {
     this.wmMapFeatureCollectionOverlay$.next(overlay);
   }
 
-  toggleDetails(trackid?): void {
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: {ugc_track: undefined, track: trackid},
-      queryParamsHandling: 'merge',
-    });
-  }
-
   toggleDirective(data: {type: 'layers' | 'pois'; toggle: boolean}): void {
     switch (data.type) {
       case 'layers':
@@ -527,7 +515,7 @@ export class MapPage implements OnDestroy {
               this._store.dispatch(setLayer(null));
               this._store.dispatch(resetPoiFilters());
               this._store.dispatch(resetTrackFilters());
-              this.toggleDetails();
+              this.updateEcTrack();
             } else {
               return from(
                 this._modalCtrl.create({
@@ -568,6 +556,14 @@ export class MapPage implements OnDestroy {
     });
   }
 
+  updateEcTrack(track = undefined): void {
+    this._router.navigate([], {
+      relativeTo: this._route,
+      queryParams: {ugc_track: undefined, track},
+      queryParamsHandling: 'merge',
+    });
+  }
+
   updateLastFilterType(filter: 'tracks' | 'pois'): void {
     this._store.dispatch(setLastFilterType({filter}));
   }
@@ -585,20 +581,12 @@ export class MapPage implements OnDestroy {
     }
   }
 
-  updateUgcTrack($event): void {
+  updateUgcTrack(ugc_track = undefined): void {
     this._store.dispatch(openUgc());
-    this.homeCmp.setTrack($event);
+    this.homeCmp.setTrack(ugc_track);
     this._router.navigate([], {
       relativeTo: this._route,
-      queryParams: {track: undefined, ugc_track: $event},
-      queryParamsHandling: 'merge',
-    });
-  }
-
-  updateUrl(trackid: number): void {
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams: {track: trackid ? trackid : null},
+      queryParams: {track: undefined, ugc_track},
       queryParamsHandling: 'merge',
     });
   }

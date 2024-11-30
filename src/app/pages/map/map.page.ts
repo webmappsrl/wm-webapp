@@ -305,7 +305,6 @@ export class MapPage implements OnDestroy {
           this.poiIDs$.next([]);
         }
       }),
-      share(),
     );
     this.ugcTrack$ = this.ugcTrackID$.pipe(
       switchMap(ugcTrackID$ => {
@@ -314,10 +313,10 @@ export class MapPage implements OnDestroy {
     );
     this.track$ = combineLatest([this.ecTrack$, this.ugcTrack$]).pipe(
       map(([ecTrack, ugcTrack]) => (ugcTrack != null ? ugcTrack : ecTrack)),
+      tap(track => console.log('Track:', track)), // Verifica i valori combinati
       distinctUntilChanged(),
       share(),
     );
-
     this.caretOutLine$ = this.showMenu$.pipe(
       map(showMenu => (showMenu ? 'caret-back-outline' : 'caret-forward-outline')),
     );

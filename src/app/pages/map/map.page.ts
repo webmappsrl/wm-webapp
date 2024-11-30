@@ -99,12 +99,17 @@ const maxWidth = 600;
 export class MapPage implements OnDestroy {
   private _confMAPLAYERS$: Observable<ILAYER[]> = this._store.select(confMAPLAYERS);
 
-  readonly track$: Observable<WmFeature<LineString>>;
+  readonly ecTrack$: Observable<WmFeature<LineString> | null>;
+  readonly ecTrackID$: BehaviorSubject<number | string> = new BehaviorSubject<number | string>(
+    null,
+  );
+  readonly track$: Observable<WmFeature<LineString> | null>;
   readonly trackColor$: BehaviorSubject<string> = new BehaviorSubject<string>('#caaf15');
-  readonly trackid$: Observable<number | string>;
   readonly ugcOpened$: Observable<boolean> = this._store.select(opened);
   readonly ugcTrack$: Observable<WmFeature<LineString> | null>;
-  readonly ugcTrackId$: Observable<number | string>;
+  readonly ugcTrackID$: BehaviorSubject<number | string> = new BehaviorSubject<number | string>(
+    null,
+  );
 
   @ViewChild(WmMapTrackRelatedPoisDirective)
   WmMapTrackRelatedPoisDirective: WmMapTrackRelatedPoisDirective;
@@ -280,22 +285,17 @@ export class MapPage implements OnDestroy {
         this.setCurrentPoi(params.poi);
       });
     const queryParams$ = this._route.queryParams.pipe(shareReplay(1));
-    this.ugcTrackId$ = queryParams$.pipe(
-      map(params => params.ugc_track || null),
-      startWith(null),
-    );
-    this.trackid$ = queryParams$.pipe(
-      filter(params => params != null && params.track != null),
-      map(params => params.track),
-      startWith(-1),
-    );
+    queryParams$.subscribe(params => {
+      this.ugcTrackID$.next(params.ugc_track || null);
+      this.ecTrackID$.next(params.track || null);
+    });
 
-    this.track$ = this.trackid$.pipe(
+    this.ecTrack$ = this.ecTrackID$.pipe(
       distinctUntilChanged((prev, curr) => {
         return prev === curr;
       }),
       switchMap(trackid => {
-        return +trackid > -1 ? from(this._geohubService.getEcTrack(+trackid)) : of(null);
+        return trackid != null ? from(this._geohubService.getEcTrack(+trackid)) : of(null);
       }),
       tap(track => {
         if (track != null) {
@@ -307,10 +307,15 @@ export class MapPage implements OnDestroy {
       }),
       share(),
     );
-    this.ugcTrack$ = this.ugcTrackId$.pipe(
-      switchMap(ugcTrackid => {
-        return ugcTrackid != null ? from(getUgcTrack(`${ugcTrackid}`)) : of(null);
+    this.ugcTrack$ = this.ugcTrackID$.pipe(
+      switchMap(ugcTrackID$ => {
+        return ugcTrackID$ != null ? from(getUgcTrack(`${ugcTrackID$}`)) : of(null);
       }),
+    );
+    this.track$ = combineLatest([this.ecTrack$, this.ugcTrack$]).pipe(
+      map(([ecTrack, ugcTrack]) => (ugcTrack != null ? ugcTrack : ecTrack)),
+      distinctUntilChanged(),
+      share(),
     );
 
     this.caretOutLine$ = this.showMenu$.pipe(
@@ -413,7 +418,7 @@ export class MapPage implements OnDestroy {
     console.log(directive);
   }
 
-  selectTrack(trackid: any = -1): void {
+  selectTrack(trackid: any = null): void {
     this.updateUrl(trackid);
   }
 
@@ -494,9 +499,6 @@ export class MapPage implements OnDestroy {
   }
 
   toggleDetails(trackid?): void {
-    if (trackid == null) {
-      trackid = -1;
-    }
     this.updateUrl(trackid);
   }
 
@@ -580,6 +582,10 @@ export class MapPage implements OnDestroy {
     } else {
       this._store.dispatch(toggleTrackFilter({filter}));
     }
+  }
+
+  updateUgcTrack($event): void {
+    this.ugcTrackID$.next($event);
   }
 
   updateUrl(trackid: number): void {

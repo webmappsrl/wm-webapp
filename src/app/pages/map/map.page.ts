@@ -307,13 +307,10 @@ export class MapPage implements OnDestroy {
       }),
     );
     this.ugcTrack$ = this.ugcTrackID$.pipe(
-      switchMap(ugcTrackID$ => {
-        return ugcTrackID$ != null ? from(getUgcTrack(`${ugcTrackID$}`)) : of(null);
-      }),
+      switchMap(ugcTrackID$ => from(getUgcTrack(`${ugcTrackID$}`))),
     );
     this.track$ = combineLatest([this.ecTrack$, this.ugcTrack$]).pipe(
-      map(([ecTrack, ugcTrack]) => (ugcTrack != null ? ugcTrack : ecTrack)),
-      tap(track => console.log('Track:', track)), // Verifica i valori combinati
+      map(([ecTrack, ugcTrack]) => ugcTrack ?? ecTrack),
       distinctUntilChanged(),
       share(),
     );

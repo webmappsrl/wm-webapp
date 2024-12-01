@@ -11,7 +11,7 @@ import {debounceTime} from 'rxjs/operators';
 
 import {Store} from '@ngrx/store';
 import {ApiRootState} from '@wm-core/store/features/ec/ec.reducer';
-import {inputTyped} from '@wm-core/store/features/ec/ec.actions';
+import {inputTyped} from '@wm-core/store/user-activity/user-activity.action';
 @Component({
   selector: 'webmapp-search',
   templateUrl: './search.component.html',

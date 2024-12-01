@@ -12,7 +12,6 @@ import {Store} from '@ngrx/store';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {debounceTime, filter, map, take, withLatestFrom} from 'rxjs/operators';
 import {
-  inputTyped,
   resetTrackFilters,
   setLayer,
   togglePoiFilter,
@@ -32,8 +31,9 @@ import {
   ISLUGBOX,
 } from '@wm-core/types/config';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
-import {openUgc} from '@wm-core/store/features/ugc/ugc.actions';
-import {countUgcAll, opened} from '@wm-core/store/features/ugc/ugc.selector';
+import {countUgcAll, ugc} from '@wm-core/store/features/ugc/ugc.selector';
+import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
+import {inputTyped, openUgc} from '@wm-core/store/user-activity/user-activity.action';
 @Component({
   selector: 'webmapp-home',
   templateUrl: './home.component.html',
@@ -52,7 +52,7 @@ export class HomeComponent implements AfterContentInit {
   countUgcAll$: Observable<number> = this._store.select(countUgcAll);
   popup$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   showResult$ = this._store.select(showResult);
-  ugcOpened$ = this._store.select(opened);
+  ugcOpened$ = this._store.select(ugcOpened);
 
   constructor(
     private _store: Store,

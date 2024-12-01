@@ -2,7 +2,7 @@ import {activableUgc} from '@wm-core/store/features/ugc/ugc.selector';
 import {DOCUMENT} from '@angular/common';
 import {Component, Inject, OnInit, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
-import {interval, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {filter, skip, switchMap, take, takeUntil} from 'rxjs/operators';
 import {queryEc} from '@wm-core/store/features/ec/ec.actions';
 import {loadConf} from '@wm-core/store/conf/conf.actions';
@@ -12,7 +12,6 @@ import wmCorePackage from './shared/wm-core/package.json';
 import mapCorePackage from './shared/map-core/package.json';
 import {IAPP, IWEBAPP} from '@wm-core/types/config';
 import {loadAuths} from '@wm-core/store/auth/auth.actions';
-import {syncUgc} from '@wm-core/store/features/ugc/ugc.actions';
 @Component({
   selector: 'webmapp-app-root',
   templateUrl: 'app.component.html',
@@ -48,16 +47,6 @@ export class AppComponent implements OnInit {
       .subscribe((conf: IAPP) => {
         this.setSplashScreenImage(conf);
         this.hideSplashScreen();
-      });
-    this.activableUgc$
-      .pipe(
-        filter(activable => activable),
-        switchMap(() =>
-          interval(2000).pipe(takeUntil(this.activableUgc$.pipe(filter(activable => !activable)))),
-        ),
-      )
-      .subscribe(() => {
-        this._store.dispatch(syncUgc()); // Dispatch dell'azione
       });
   }
 

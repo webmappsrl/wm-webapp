@@ -9,7 +9,6 @@ import {
   loadEcPois,
 } from '@wm-core/store/features/ec/ec.actions';
 import {
-  apiSearchInputTyped,
   apiElasticState,
   apiElasticStateLayer,
   poiFilterIdentifiers,
@@ -45,7 +44,6 @@ import {
 } from 'rxjs/operators';
 import {HomeComponent} from 'src/app/components/home/home.component';
 import {GeohubService} from 'src/app/services/geohub.service';
-import {openUgc} from '@wm-core/store/features/ugc/ugc.actions';
 
 import {
   confAUTHEnable,
@@ -82,7 +80,9 @@ import {ProfileAuthComponent} from '@wm-core/profile/profile-auth/profile-auth.c
 import {IDATALAYER} from '@map-core/types/layer';
 import {WmMapTrackRelatedPoisDirective} from '@map-core/directives';
 import {hitMapFeatureCollection} from '@map-core/store/map-core.selector';
-import {opened, ugcPoisFeatures, ugcTracksFeatures} from '@wm-core/store/features/ugc/ugc.selector';
+import {ugcPoisFeatures, ugcTracksFeatures} from '@wm-core/store/features/ugc/ugc.selector';
+import {inputTyped, ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
+import {openUgc} from '@wm-core/store/user-activity/user-activity.action';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -105,7 +105,7 @@ export class MapPage implements OnDestroy {
   );
   readonly track$: Observable<WmFeature<LineString> | null>;
   readonly trackColor$: BehaviorSubject<string> = new BehaviorSubject<string>('#caaf15');
-  readonly ugcOpened$: Observable<boolean> = this._store.select(opened);
+  readonly ugcOpened$: Observable<boolean> = this._store.select(ugcOpened);
   readonly ugcTrack$: Observable<WmFeature<LineString> | null>;
   readonly ugcTrackID$: BehaviorSubject<number | string> = new BehaviorSubject<number | string>(
     null,
@@ -118,7 +118,7 @@ export class MapPage implements OnDestroy {
 
   apiElasticState$: Observable<any> = this._store.select(apiElasticState);
   apiGoToHome$: Observable<boolean> = this._store.select(apiGoToHome);
-  apiSearchInputTyped$: Observable<string> = this._store.select(apiSearchInputTyped);
+  apiSearchInputTyped$: Observable<string> = this._store.select(inputTyped);
   authEnable$: Observable<boolean> = this._store.select(confAUTHEnable);
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);

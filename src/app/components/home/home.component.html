@@ -8,7 +8,7 @@
   </ng-container>
 
   <webmapp-search
-    *ngIf="(confOPTIONS$|async).show_searchbar"
+    *ngIf="(confOPTIONS$|async).show_searchbar && !(ugcOpened$|async)"
     #searchCmp
     [initSearch]="''"
     (words)="setSearch($event)"
@@ -22,6 +22,7 @@
   <ng-template #mainContent>
     <ng-container *ngIf="showResult$|async; else home">
       <wm-status-filter
+        [countAll]="countAll$|async"
         (resetFiltersEVT)="goToHome()"
         (removeLayerEVT)="removeLayer($event)"
       ></wm-status-filter>

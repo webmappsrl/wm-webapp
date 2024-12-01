@@ -9,8 +9,8 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ModalController, NavController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {debounceTime, filter, take, withLatestFrom} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {debounceTime, filter, map, take, withLatestFrom} from 'rxjs/operators';
 import {
   inputTyped,
   resetTrackFilters,
@@ -18,7 +18,7 @@ import {
   togglePoiFilter,
   toggleTrackFilterByIdentifier,
 } from '@wm-core/store/api/api.actions';
-import {showResult} from '@wm-core/store/api/api.selector';
+import {countAll, showResult} from '@wm-core/store/api/api.selector';
 import {confAPP, confHOME, confPROJECT, confOPTIONS} from '@wm-core/store/conf/conf.selector';
 import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
 import {SearchComponent} from './search/search.component';
@@ -32,8 +32,8 @@ import {
   ISLUGBOX,
 } from '@wm-core/types/config';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
-import {openUgc, selectUgcTrack} from '@wm-core/store/ugc/ugc.actions';
-import {opened} from '@wm-core/store/ugc/ugc.selector';
+import {openUgc} from '@wm-core/store/ugc/ugc.actions';
+import {countUgcAll, opened} from '@wm-core/store/ugc/ugc.selector';
 @Component({
   selector: 'webmapp-home',
   templateUrl: './home.component.html',
@@ -47,6 +47,9 @@ export class HomeComponent implements AfterContentInit {
   confAPP$: Observable<IAPP> = this._store.select(confAPP);
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
+  countAll$: Observable<number>;
+  countEcAll$: Observable<number> = this._store.select(countAll);
+  countUgcAll$: Observable<number> = this._store.select(countUgcAll);
   popup$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   showResult$ = this._store.select(showResult);
   ugcOpened$ = this._store.select(opened);
@@ -58,7 +61,11 @@ export class HomeComponent implements AfterContentInit {
     private _modalCtrl: ModalController,
     private _navCtrl: NavController,
     public sanitizer: DomSanitizer,
-  ) {}
+  ) {
+    this.countAll$ = combineLatest([this.countEcAll$, this.countUgcAll$, this.ugcOpened$]).pipe(
+      map(([ec, ugc, ugcOpened]) => (ugcOpened ? ugc : ec)),
+    );
+  }
 
   ngAfterContentInit(): void {
     this.confHOME$

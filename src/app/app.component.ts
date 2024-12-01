@@ -1,10 +1,10 @@
-import {activableUgc} from '@wm-core/store/ugc/ugc.selector';
+import {activableUgc} from '@wm-core/store/features/ugc/ugc.selector';
 import {DOCUMENT} from '@angular/common';
 import {Component, Inject, OnInit, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
-import {interval, Observable, of} from 'rxjs';
-import {debounceTime, filter, skip, switchMap, take, takeUntil} from 'rxjs/operators';
-import {query} from '@wm-core/store/api/api.actions';
+import {interval, Observable} from 'rxjs';
+import {filter, skip, switchMap, take, takeUntil} from 'rxjs/operators';
+import {queryEc} from '@wm-core/store/features/ec/ec.actions';
 import {loadConf} from '@wm-core/store/conf/conf.actions';
 import {confAPP, confTHEMEVariables, confWEBAPP} from '@wm-core/store/conf/conf.selector';
 import appPackage from 'package.json';
@@ -12,7 +12,7 @@ import wmCorePackage from './shared/wm-core/package.json';
 import mapCorePackage from './shared/map-core/package.json';
 import {IAPP, IWEBAPP} from '@wm-core/types/config';
 import {loadAuths} from '@wm-core/store/auth/auth.actions';
-import {syncUgc} from '@wm-core/store/ugc/ugc.actions';
+import {syncUgc} from '@wm-core/store/features/ugc/ugc.actions';
 @Component({
   selector: 'webmapp-app-root',
   templateUrl: 'app.component.html',
@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
   constructor(@Inject(DOCUMENT) private _document: Document, private _store: Store<any>) {
     this._store.dispatch(loadConf());
     this._store.dispatch(loadAuths());
-    this._store.dispatch(query({init: true}));
+    this._store.dispatch(queryEc({init: true}));
     this.confTHEMEVariables$.pipe(take(2)).subscribe(css => this._setGlobalCSS(css));
     console.table({
       'app': appPackage.version,

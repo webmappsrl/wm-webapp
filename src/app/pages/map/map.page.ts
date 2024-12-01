@@ -1,23 +1,23 @@
 import {
   setLastFilterType,
   updateTrackFilter,
-  loadPois,
   togglePoiFilter,
   toggleTrackFilter,
   resetPoiFilters,
   resetTrackFilters,
   setLayer,
-} from '@wm-core/store/api/api.actions';
+  loadEcPois,
+} from '@wm-core/store/features/ec/ec.actions';
 import {
   apiSearchInputTyped,
   apiElasticState,
   apiElasticStateLayer,
   poiFilterIdentifiers,
-  pois,
+  ecPois,
   apiGoToHome,
   countSelectedFilters,
   poisInitFeatureCollection,
-} from '@wm-core/store/api/api.selector';
+} from '@wm-core/store/features/ec/ec.selector';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -45,7 +45,7 @@ import {
 } from 'rxjs/operators';
 import {HomeComponent} from 'src/app/components/home/home.component';
 import {GeohubService} from 'src/app/services/geohub.service';
-import {openUgc} from '@wm-core/store/ugc/ugc.actions';
+import {openUgc} from '@wm-core/store/features/ugc/ugc.actions';
 
 import {
   confAUTHEnable,
@@ -75,14 +75,14 @@ import {LangService} from '@wm-core/localization/lang.service';
 import {FiltersComponent} from '@wm-core/filters/filters.component';
 import {ModalController} from '@ionic/angular';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
-import {getUgcTrack, getUgcTracks} from '@wm-core/utils/localForage';
+import {getUgcTrack} from '@wm-core/utils/localForage';
 import {WmFeature} from 'src/app/shared/wm-types/src';
 import {concatMap} from 'rxjs/operators';
 import {ProfileAuthComponent} from '@wm-core/profile/profile-auth/profile-auth.component';
 import {IDATALAYER} from '@map-core/types/layer';
 import {WmMapTrackRelatedPoisDirective} from '@map-core/directives';
 import {hitMapFeatureCollection} from '@map-core/store/map-core.selector';
-import {opened, ugcPoisFeatures, ugcTracksFeatures} from '@wm-core/store/ugc/ugc.selector';
+import {opened, ugcPoisFeatures, ugcTracksFeatures} from '@wm-core/store/features/ugc/ugc.selector';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -126,7 +126,7 @@ export class MapPage implements OnDestroy {
   confMap$: Observable<any> = this._store.select(confMAP).pipe(
     tap(c => {
       if (c != null && c.pois != null && c.pois.apppoisApiLayer == true) {
-        this._store.dispatch(loadPois());
+        this._store.dispatch(loadEcPois());
       }
     }),
   );
@@ -211,7 +211,7 @@ export class MapPage implements OnDestroy {
   overlayFeatureCollections$ = this._store.select(hitMapFeatureCollection);
   poiFilterIdentifiers$: Observable<string[]> = this._store.select(poiFilterIdentifiers);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
-  pois$: Observable<FeatureCollection> = this._store.select(pois);
+  pois$: Observable<FeatureCollection> = this._store.select(ecPois);
   refreshLayer$: Observable<any>;
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   resetSelectedPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);

@@ -10,8 +10,8 @@ import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {debounceTime} from 'rxjs/operators';
 
 import {Store} from '@ngrx/store';
-import {ApiRootState} from '@wm-core/store/api/api.reducer';
-import {inputTyped} from '@wm-core/store/api/api.actions';
+import {ApiRootState} from '@wm-core/store/features/ec/ec.reducer';
+import {inputTyped} from '@wm-core/store/features/ec/ec.actions';
 @Component({
   selector: 'webmapp-search',
   templateUrl: './search.component.html',

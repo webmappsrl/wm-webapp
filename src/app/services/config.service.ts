@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {environment} from 'src/environments/environment';
-import {hostToGeohubAppId} from '@wm-core/store/api/api.service';
+import {hostToGeohubAppId} from '@wm-core/store/features/ec/ec.service';
 @Injectable({
   providedIn: 'root',
 })

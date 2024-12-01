@@ -15,7 +15,7 @@ import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-c
 import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
 import {Store} from '@ngrx/store';
 import {confShowEditingInline} from '@wm-core/store/conf/conf.selector';
-import {apiElasticStateLayer} from '@wm-core/store/api/api.selector';
+import {apiElasticStateLayer} from '@wm-core/store/features/ec/ec.selector';
 import {Feature} from 'geojson';
 
 @Component({

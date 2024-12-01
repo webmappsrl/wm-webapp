@@ -17,7 +17,7 @@ import {
   togglePoiFilter,
   toggleTrackFilterByIdentifier,
 } from '@wm-core/store/features/ec/ec.actions';
-import {countAll, showResult} from '@wm-core/store/features/ec/ec.selector';
+import {countEcAll, showResult} from '@wm-core/store/features/ec/ec.selector';
 import {confAPP, confHOME, confPROJECT, confOPTIONS} from '@wm-core/store/conf/conf.selector';
 import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
 import {SearchComponent} from './search/search.component';
@@ -33,7 +33,7 @@ import {
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
 import {countUgcAll, ugc} from '@wm-core/store/features/ugc/ugc.selector';
 import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
-import {inputTyped, openUgc} from '@wm-core/store/user-activity/user-activity.action';
+import {closeUgc, inputTyped, openUgc} from '@wm-core/store/user-activity/user-activity.action';
 @Component({
   selector: 'webmapp-home',
   templateUrl: './home.component.html',
@@ -48,7 +48,7 @@ export class HomeComponent implements AfterContentInit {
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   countAll$: Observable<number>;
-  countEcAll$: Observable<number> = this._store.select(countAll);
+  countEcAll$: Observable<number> = this._store.select(countEcAll);
   countUgcAll$: Observable<number> = this._store.select(countUgcAll);
   popup$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   showResult$ = this._store.select(showResult);
@@ -172,6 +172,7 @@ export class HomeComponent implements AfterContentInit {
         queryParamsHandling: 'merge',
       });
     }
+    this._store.dispatch(closeUgc());
   }
 
   setPoi(currentPoi: any): void {

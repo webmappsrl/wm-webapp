@@ -59,7 +59,6 @@ import {
   confShowDrawTrack,
 } from '@wm-core/store/conf/conf.selector';
 
-import {IGeojsonFeature} from '@wm-core/types/model';
 import {UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {environment} from 'src/environments/environment';
@@ -134,15 +133,17 @@ export class MapPage implements OnDestroy {
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   currentLayer$ = this._store.select(apiElasticStateLayer);
-  currentPoi$: BehaviorSubject<IGeojsonFeature> = new BehaviorSubject<IGeojsonFeature | null>(null);
+  currentPoi$: BehaviorSubject<WmFeature<Point>> = new BehaviorSubject<WmFeature<Point> | null>(
+    null,
+  );
   currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiIDFromHome$ = this._store.select(UICurrentPoiId);
   currentPoiIDToMap$: Observable<number | null>;
   currentPoiNextID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiPrevID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
-  currentRelatedPoi$: BehaviorSubject<IGeojsonFeature> =
-    new BehaviorSubject<IGeojsonFeature | null>(null);
-  currentUgcPoi$: BehaviorSubject<IGeojsonFeature> = new BehaviorSubject<IGeojsonFeature | null>(
+  currentRelatedPoi$: BehaviorSubject<WmFeature<Point>> =
+    new BehaviorSubject<WmFeature<Point> | null>(null);
+  currentUgcPoi$: BehaviorSubject<WmFeature<Point>> = new BehaviorSubject<WmFeature<Point> | null>(
     null,
   );
   currentUgcPoiIDToMap$: Observable<number | null>;
@@ -441,10 +442,10 @@ export class MapPage implements OnDestroy {
     this._cdr.detectChanges();
   }
 
-  setCurrentRelatedPoi(poi: IGeojsonFeature | null | number): void {
+  setCurrentRelatedPoi(poi: WmFeature<Point> | null | number): void {
     if (poi != null && poi != -1) {
-      this.currentRelatedPoi$.next(poi as IGeojsonFeature);
-      this.WmMapTrackRelatedPoisDirective.setPoi = (poi as any).id as number;
+      this.currentRelatedPoi$.next(poi as WmFeature<Point>);
+      this.WmMapTrackRelatedPoisDirective.setPoi = (poi as WmFeature<Point>).id as number;
     }
   }
 
@@ -479,7 +480,7 @@ export class MapPage implements OnDestroy {
     }
   }
 
-  setUgcPoi(poi: any): void {
+  setUgcPoi(poi: WmFeature<Point>): void {
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
     this.currentUgcPoi$.next(poi);
   }

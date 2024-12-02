@@ -4,7 +4,6 @@ import {
   togglePoiFilter,
   toggleTrackFilter,
   resetPoiFilters,
-  resetTrackFilters,
   setLayer,
   loadEcPois,
 } from '@wm-core/store/features/ec/ec.actions';
@@ -26,7 +25,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Feature, FeatureCollection, LineString, Point} from 'geojson';
+import {FeatureCollection, LineString, Point} from 'geojson';
 import {select, Store} from '@ngrx/store';
 import {BehaviorSubject, combineLatest, from, merge, Observable, of, Subscription} from 'rxjs';
 import {
@@ -82,7 +81,7 @@ import {WmMapTrackRelatedPoisDirective} from '@map-core/directives';
 import {hitMapFeatureCollection} from '@map-core/store/map-core.selector';
 import {ugcPoisFeatures, ugcTracksFeatures} from '@wm-core/store/features/ugc/ugc.selector';
 import {inputTyped, ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
-import {openUgc} from '@wm-core/store/user-activity/user-activity.action';
+import {openUgc, resetTrackFilters} from '@wm-core/store/user-activity/user-activity.action';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];

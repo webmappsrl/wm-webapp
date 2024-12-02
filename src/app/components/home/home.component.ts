@@ -12,7 +12,6 @@ import {Store} from '@ngrx/store';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {debounceTime, filter, map, take, withLatestFrom} from 'rxjs/operators';
 import {
-  resetTrackFilters,
   setLayer,
   togglePoiFilter,
   toggleTrackFilterByIdentifier,
@@ -33,7 +32,12 @@ import {
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
 import {countUgcAll, ugc} from '@wm-core/store/features/ugc/ugc.selector';
 import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
-import {closeUgc, inputTyped, openUgc} from '@wm-core/store/user-activity/user-activity.action';
+import {
+  closeUgc,
+  inputTyped,
+  openUgc,
+  resetTrackFilters,
+} from '@wm-core/store/user-activity/user-activity.action';
 @Component({
   selector: 'webmapp-home',
   templateUrl: './home.component.html',

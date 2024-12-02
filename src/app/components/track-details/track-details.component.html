@@ -50,9 +50,7 @@
           <div class="webmapp-title">{{'Attività'|wmtrans}}</div>
           <div class="webmapp-walkability">
             <ng-container *ngFor="let item of taxonomy.activity">
-              <wm-track-activity
-                [activity]="item.identifier"
-              ></wm-track-activity>
+              <wm-track-activity [activity]="item.identifier"></wm-track-activity>
             </ng-container>
           </div>
         </ng-container>
@@ -88,7 +86,7 @@
           <webmapp-track-poi
             [track]="track"
             [poi]="poiId"
-            (poi-click)="poiClick.emit($event)"
+            (poi-click)="poiClick.emit($event.properties.id)"
           ></webmapp-track-poi>
         </div>
       </ng-container>

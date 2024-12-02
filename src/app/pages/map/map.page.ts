@@ -78,10 +78,11 @@ import {ProfileAuthComponent} from '@wm-core/profile/profile-auth/profile-auth.c
 import {IDATALAYER} from '@map-core/types/layer';
 import {WmMapTrackRelatedPoisDirective} from '@map-core/directives';
 import {hitMapFeatureCollection} from '@map-core/store/map-core.selector';
-import {ugcPoisFeatures, ugcTracksFeatures} from '@wm-core/store/features/ugc/ugc.selector';
+import {ugcPoiFeatures, ugcTracksFeatures} from '@wm-core/store/features/ugc/ugc.selector';
 import {inputTyped, ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
 import {openUgc, resetTrackFilters} from '@wm-core/store/user-activity/user-activity.action';
 import {WmMapComponent} from '@map-core/components';
+import {extentFromLonLat} from '@map-core/utils';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -227,7 +228,7 @@ export class MapPage implements OnDestroy {
     if (value == null) return '';
     return this._langService.instant(value);
   };
-  ugcPois$: Observable<WmFeature<Point>[]> = this._store.select(ugcPoisFeatures);
+  ugcPois$: Observable<WmFeature<Point>[]> = this._store.select(ugcPoiFeatures);
   ugcTracks$: Observable<WmFeature<LineString>[]> = this._store.select(ugcTracksFeatures);
   wmHomeEnable$ = combineLatest([
     this.drawTrackEnable$,
@@ -560,6 +561,9 @@ export class MapPage implements OnDestroy {
   }
 
   updateEcTrack(track = undefined): void {
+    this.currentLayer$.pipe(take(1)).subscribe(layer => {
+      this.mapCmp.fitView(extentFromLonLat(layer.bbox), {duration: 1000});
+    });
     this._router.navigate([], {
       relativeTo: this._route,
       queryParams: {ugc_track: undefined, track},

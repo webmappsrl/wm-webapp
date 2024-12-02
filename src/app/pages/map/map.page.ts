@@ -9,12 +9,12 @@ import {
 } from '@wm-core/store/features/ec/ec.actions';
 import {
   apiElasticState,
-  apiElasticStateLayer,
+  ecLayer,
   poiFilterIdentifiers,
-  ecPois,
   apiGoToHome,
   countSelectedFilters,
-  poisInitFeatureCollection,
+  allEcPois,
+  ecPois,
 } from '@wm-core/store/features/ec/ec.selector';
 import {
   ChangeDetectionStrategy,
@@ -35,7 +35,6 @@ import {
   map,
   share,
   skip,
-  startWith,
   switchMap,
   tap,
   take,
@@ -131,7 +130,7 @@ export class MapPage implements OnDestroy {
   );
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
-  currentLayer$ = this._store.select(apiElasticStateLayer);
+  currentLayer$ = this._store.select(ecLayer);
   currentPoi$: BehaviorSubject<WmFeature<Point>> = new BehaviorSubject<WmFeature<Point> | null>(
     null,
   );
@@ -210,7 +209,7 @@ export class MapPage implements OnDestroy {
   overlayFeatureCollections$ = this._store.select(hitMapFeatureCollection);
   poiFilterIdentifiers$: Observable<string[]> = this._store.select(poiFilterIdentifiers);
   poiIDs$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([]);
-  pois$: Observable<FeatureCollection> = this._store.select(ecPois);
+  pois$: Observable<WmFeature<Point>[]> = this._store.select(ecPois);
   refreshLayer$: Observable<any>;
   reloadCustomTracks$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   resetSelectedPoi$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -274,7 +273,7 @@ export class MapPage implements OnDestroy {
       }),
     );
     this.setCurrentPoiSub$ = this._store
-      .select(poisInitFeatureCollection)
+      .select(allEcPois)
       .pipe(
         filter(p => p != null),
         tap(() => this._loadingSvc.close('Loading pois...')),
@@ -442,9 +441,10 @@ export class MapPage implements OnDestroy {
   }
 
   setCurrentRelatedPoi(poi: WmFeature<Point> | null | number): void {
-    if (poi != null && poi != -1) {
+    if (poi != null) {
       this.currentRelatedPoi$.next(poi as WmFeature<Point>);
-      this.WmMapTrackRelatedPoisDirective.setPoi = (poi as WmFeature<Point>).id as number;
+      this.WmMapTrackRelatedPoisDirective.setPoi = (poi as WmFeature<Point>).properties
+        .id as number;
     }
   }
 

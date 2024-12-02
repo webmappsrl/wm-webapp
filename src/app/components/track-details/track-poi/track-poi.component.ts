@@ -6,9 +6,8 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import { Feature } from 'geojson';
-
-import {IGeojsonProperties} from 'src/app/types/model';
+import {WmFeature} from '@wm-types/feature';
+import {LineString, Point} from 'geojson';
 
 @Component({
   selector: 'webmapp-track-poi',
@@ -18,11 +17,11 @@ import {IGeojsonProperties} from 'src/app/types/model';
   encapsulation: ViewEncapsulation.None,
 })
 export class TrackPoiComponent {
-  @Input('track') set feature(track: Feature) {
-    this.poi = [];
-    this.poiClick.emit(-1);
+  @Input('track') set feature(track: WmFeature<LineString>) {
+    this.pois = [];
+    this.poiClick.emit(null);
     if (track != null && track.properties != null && track.properties.related_pois != null) {
-      this.poi = track.properties.related_pois.map(relatedPoi => {
+      this.pois = track.properties.related_pois.map(relatedPoi => {
         const properties = relatedPoi.properties;
         if (properties.related_url != null) {
           delete properties.related_url[''];
@@ -35,23 +34,25 @@ export class TrackPoiComponent {
         properties.address = [properties.addr_locality, properties.addr_street]
           .filter(f => f != null)
           .join(', ');
-        return properties;
+        relatedPoi.properties = properties;
+        return relatedPoi;
       });
     }
   }
 
   @Input('poi') set setPoi(id: number) {
-    const newCurrentPoi = this.poi.find(p => p.id === id);
+    const newCurrentPoi = this.pois.find(p => p.id === id);
     this.currentPoi = newCurrentPoi;
   }
 
-  @Output('poi-click') poiClick: EventEmitter<any> = new EventEmitter<any>();
+  @Output('poi-click') poiClick: EventEmitter<WmFeature<Point> | null> =
+    new EventEmitter<WmFeature<Point> | null>();
 
-  currentPoi: IGeojsonProperties = null;
+  currentPoi: WmFeature<Point> = null;
   defaultPhotoPath = '/assets/icon/no-photo.svg';
-  poi: IGeojsonProperties[] = [];
+  pois: WmFeature<Point>[] = [];
 
-  selectPoi(poi: IGeojsonProperties) {
+  selectPoi(poi: WmFeature<Point>) {
     this.currentPoi = poi;
     this.poiClick.emit(poi);
   }

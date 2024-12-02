@@ -15,8 +15,9 @@ import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-c
 import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
 import {Store} from '@ngrx/store';
 import {confShowEditingInline} from '@wm-core/store/conf/conf.selector';
-import {apiElasticStateLayer} from '@wm-core/store/features/ec/ec.selector';
-import {Feature} from 'geojson';
+import {ecLayer} from '@wm-core/store/features/ec/ec.selector';
+import {Feature, LineString} from 'geojson';
+import {WmFeature} from '@wm-types/feature';
 
 @Component({
   selector: 'webmapp-track-details',
@@ -32,7 +33,7 @@ export class TrackDetailsComponent {
     }
   }
 
-  @Input('track') set setTrack(track: Feature) {
+  @Input('track') set setTrack(track: WmFeature<LineString>) {
     if (track != null) {
       this.track = track;
       this._initializeFeature();
@@ -47,12 +48,12 @@ export class TrackDetailsComponent {
   @ViewChild('content') content: IonContent;
 
   confOPTIONS$ = this._store.select(confOPTIONS);
-  currentLayer$ = this._store.select(apiElasticStateLayer);
-  public data: Partial<IGeojsonProperties>;
+  currentLayer$ = this._store.select(ecLayer);
+  public data: Partial<WmFeature<LineString>>;
   enableEditingInline$ = this._store.select(confShowEditingInline);
   public feature: Feature;
   poiId: number;
-  track: Feature;
+  track: WmFeature<LineString>;
 
   constructor(private _modalController: ModalController, private _store: Store) {}
 
@@ -66,7 +67,7 @@ export class TrackDetailsComponent {
         component: ModalGalleryComponent,
         cssClass: 'modal-gallery-class',
         componentProps: {
-          gallery: [this.data.featureImage],
+          gallery: [this.data.properties.featureImage],
         },
       })
       .then(modal => {

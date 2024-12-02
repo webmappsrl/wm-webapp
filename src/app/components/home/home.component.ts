@@ -38,6 +38,8 @@ import {
   openUgc,
   resetTrackFilters,
 } from '@wm-core/store/user-activity/user-activity.action';
+import {WmFeature} from '@wm-types/feature';
+import {Point} from 'geojson';
 @Component({
   selector: 'webmapp-home',
   templateUrl: './home.component.html',
@@ -179,7 +181,7 @@ export class HomeComponent implements AfterContentInit {
     this._store.dispatch(closeUgc());
   }
 
-  setPoi(currentPoi: any): void {
+  setPoi(currentPoi: WmFeature<Point>): void {
     this._store.dispatch(setCurrentPoi({currentPoi: null}));
     setTimeout(() => {
       this._store.dispatch(setCurrentPoi({currentPoi: currentPoi}));

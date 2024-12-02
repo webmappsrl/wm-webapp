@@ -1,12 +1,14 @@
 import {createReducer, on} from '@ngrx/store';
 import {ILAYER} from '@wm-core/types/config';
+import {WmFeature} from '@wm-types/feature';
+import {Point} from 'geojson';
 import {enabledDrawTrack, setCurrentFilters, setCurrentLayer, setCurrentPoi} from './UI.actions';
 
 export const featureKey = 'UI';
 export interface IUIRootState {
   [featureKey]: {
     currentLayer?: ILAYER;
-    currentPoi?: any;
+    currentPoi?: WmFeature<Point>;
     currentFilters?: any[];
   } | null;
 }

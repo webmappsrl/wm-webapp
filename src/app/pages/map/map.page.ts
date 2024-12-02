@@ -81,6 +81,7 @@ import {hitMapFeatureCollection} from '@map-core/store/map-core.selector';
 import {ugcPoisFeatures, ugcTracksFeatures} from '@wm-core/store/features/ugc/ugc.selector';
 import {inputTyped, ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
 import {openUgc, resetTrackFilters} from '@wm-core/store/user-activity/user-activity.action';
+import {WmMapComponent} from '@map-core/components';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -113,6 +114,7 @@ export class MapPage implements OnDestroy {
   WmMapTrackRelatedPoisDirective: WmMapTrackRelatedPoisDirective;
   @ViewChild('filterCmp') filterCmp: FiltersComponent;
   @ViewChild(HomeComponent) homeCmp: HomeComponent;
+  @ViewChild(WmMapComponent) mapCmp: WmMapComponent;
 
   apiElasticState$: Observable<any> = this._store.select(apiElasticState);
   apiGoToHome$: Observable<boolean> = this._store.select(apiGoToHome);
@@ -336,6 +338,7 @@ export class MapPage implements OnDestroy {
     );
     this.goToHomeSub$ = this.apiGoToHome$.pipe(skip(1)).subscribe(_ => {
       this.unselectPOI();
+      this.mapCmp.resetView();
     });
     this.wmMapLayerDisableLayers$ = combineLatest([
       this.drawTrackEnable$,

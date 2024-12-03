@@ -245,11 +245,12 @@ export class MapPage implements OnDestroy {
       return !(drawTrackEnabled && hasCustomTrack);
     }),
   );
+  wmMapEcPoisDisableLayer$: Observable<boolean>;
+  wmMapEcTracksDisableLayer$: Observable<boolean>;
   wmMapFeatureCollectionOverlay$: BehaviorSubject<any | null> = new BehaviorSubject<any | null>(
     null,
   );
   wmMapHitMapUrl$: Observable<string | null> = this.confMap$.pipe(map(conf => conf?.hitMapUrl));
-  wmMapLayerDisableLayers$: Observable<boolean>;
   wmMapUgcDisableLayers$: Observable<boolean>;
 
   constructor(
@@ -342,13 +343,21 @@ export class MapPage implements OnDestroy {
       this.unselectPOI();
       this.mapCmp.resetView();
     });
-    this.wmMapLayerDisableLayers$ = combineLatest([
+    this.wmMapEcTracksDisableLayer$ = combineLatest([
       this.drawTrackEnable$,
       this.toggleLayerDirective$,
       this.currentLayer$,
     ]).pipe(
       map(([drawTrackEnable, toggleLayerDirective, currentLayer]) => {
         return drawTrackEnable || (!toggleLayerDirective && currentLayer == null);
+      }),
+    );
+    this.wmMapEcPoisDisableLayer$ = combineLatest([
+      this.drawTrackEnable$,
+      this.togglePoisDirective$,
+    ]).pipe(
+      map(([drawTrackEnable, togglePoiDirective]) => {
+        return drawTrackEnable || !togglePoiDirective;
       }),
     );
 

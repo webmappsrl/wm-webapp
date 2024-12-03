@@ -1,4 +1,3 @@
-import {activableUgc} from '@wm-core/store/features/ugc/ugc.selector';
 import {DOCUMENT} from '@angular/common';
 import {Component, Inject, OnInit, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
@@ -19,7 +18,6 @@ import {loadAuths} from '@wm-core/store/auth/auth.actions';
   encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent implements OnInit {
-  activableUgc$: Observable<boolean> = this._store.select(activableUgc);
   confAPP$: Observable<any> = this._store.select(confAPP);
   confTHEMEVariables$: Observable<any> = this._store.select(confTHEMEVariables);
   confWEBAPP$: Observable<any> = this._store.select(confWEBAPP);

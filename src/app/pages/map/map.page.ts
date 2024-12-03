@@ -490,6 +490,14 @@ export class MapPage implements OnDestroy {
       this.homeCmp.setLayer(null);
     } catch (_) {}
     this.wmMapFeatureCollectionOverlay$.next(overlay);
+    this.overlayFeatureCollections$.pipe(take(1)).subscribe(feature => {
+      if (overlay['featureType'] != null && feature[overlay['featureType']] != null) {
+        this.wmMapFeatureCollectionOverlay$.next({
+          ...overlay,
+          ...{url: feature[overlay['featureType']]},
+        });
+      }
+    });
   }
 
   toggleDirective(data: {type: 'layers' | 'pois' | 'ugc'; toggle: boolean}): void {

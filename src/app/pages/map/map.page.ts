@@ -39,6 +39,7 @@ import {
   tap,
   take,
   shareReplay,
+  startWith,
 } from 'rxjs/operators';
 import {HomeComponent} from 'src/app/components/home/home.component';
 import {GeohubService} from 'src/app/services/geohub.service';
@@ -222,6 +223,7 @@ export class MapPage implements OnDestroy {
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   toggleLayerDirective$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   togglePoisDirective$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  toggleUgcDirective$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
     new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
   translationCallback: (any) => string = value => {
@@ -248,8 +250,7 @@ export class MapPage implements OnDestroy {
   );
   wmMapHitMapUrl$: Observable<string | null> = this.confMap$.pipe(map(conf => conf?.hitMapUrl));
   wmMapLayerDisableLayers$: Observable<boolean>;
-  wmMapUgcPoisDisableLayers$: Observable<boolean>;
-  wmMapUgcTracksDisableLayers$: Observable<boolean>;
+  wmMapUgcDisableLayers$: Observable<boolean>;
 
   constructor(
     private _route: ActivatedRoute,
@@ -350,11 +351,11 @@ export class MapPage implements OnDestroy {
         return drawTrackEnable || (!toggleLayerDirective && currentLayer == null);
       }),
     );
-    this.wmMapUgcPoisDisableLayers$ = combineLatest([this.drawTrackEnable$, this.isLogged$]).pipe(
-      map(([drawTrackEnable, isLogged]) => {
-        return drawTrackEnable || !isLogged;
-      }),
-    );
+
+    this.wmMapUgcDisableLayers$ = combineLatest([
+      this.isLogged$.pipe(startWith(false)),
+      this.toggleUgcDirective$.pipe(startWith(true)),
+    ]).pipe(map(([isLogged, toggleUgcDirective]) => !(isLogged && toggleUgcDirective)));
   }
 
   ngOnDestroy(): void {
@@ -412,10 +413,6 @@ export class MapPage implements OnDestroy {
   saveCurrentCustomTrack(track: any): void {
     const clonedTrack = JSON.parse(JSON.stringify(track));
     this.currentCustomTrack$.next(clonedTrack);
-  }
-
-  selectDirective(directive: string): void {
-    console.log(directive);
   }
 
   selectedLayer(layer: any): void {
@@ -495,7 +492,7 @@ export class MapPage implements OnDestroy {
     this.wmMapFeatureCollectionOverlay$.next(overlay);
   }
 
-  toggleDirective(data: {type: 'layers' | 'pois'; toggle: boolean}): void {
+  toggleDirective(data: {type: 'layers' | 'pois' | 'ugc'; toggle: boolean}): void {
     switch (data.type) {
       case 'layers':
         this.toggleLayerDirective$.next(data.toggle);
@@ -503,6 +500,8 @@ export class MapPage implements OnDestroy {
       case 'pois':
         this.togglePoisDirective$.next(data.toggle);
         break;
+      case 'ugc':
+        this.toggleUgcDirective$.next(data.toggle);
     }
   }
 

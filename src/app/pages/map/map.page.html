@@ -112,10 +112,10 @@
   wmMapHitMapCollection
   [wmMapHitMapUrl]="wmMapHitMapUrl$|async"
   [wmMapUgcTracks]="ugcTracks$|async"
-  [wmMapUgcTrackDisableLayer]="!(isLogged$|async)"
+  [wmMapUgcTrackDisableLayer]="wmMapUgcDisableLayers$|async"
   (ugcTrackSelectedFromMapEVT)="updateUgcTrack($event)"
   [wmMapUgcPois]="ugcPois$|async"
-  [wmMapUgcPoiDisableClusterLayer]="wmMapUgcPoisDisableLayers$|async"
+  [wmMapUgcPoiDisableClusterLayer]="wmMapUgcDisableLayers$|async"
   [wmMapUgcPoi]="currentUgcPoiIDToMap$|async"
   [wmMapUgcUnselectedPoi]="resetSelectedUgcPoi$|async"
   (currentUgcPoiEvt)="setUgcPoi($event)"

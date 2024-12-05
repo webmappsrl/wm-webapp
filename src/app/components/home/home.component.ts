@@ -18,8 +18,6 @@ import {
 } from '@wm-core/store/features/ec/ec.actions';
 import {countEcAll, showResult} from '@wm-core/store/features/ec/ec.selector';
 import {confAPP, confHOME, confPROJECT, confOPTIONS} from '@wm-core/store/conf/conf.selector';
-import {setCurrentPoi} from 'src/app/store/UI/UI.actions';
-import {SearchComponent} from './search/search.component';
 import {
   IAPP,
   IHOME,
@@ -30,15 +28,17 @@ import {
   ISLUGBOX,
 } from '@wm-core/types/config';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
-import {countUgcAll, ugc} from '@wm-core/store/features/ugc/ugc.selector';
+import {countUgcAll} from '@wm-core/store/features/ugc/ugc.selector';
 import {ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
 import {
   closeUgc,
   inputTyped,
   openUgc,
   resetTrackFilters,
+  setCurrentPoi,
 } from '@wm-core/store/user-activity/user-activity.action';
 import {WmFeature} from '@wm-types/feature';
+import {WmSearchBarComponent} from '@wm-core/search-bar/search-bar.component';
 import {Point} from 'geojson';
 @Component({
   selector: 'webmapp-home',
@@ -48,7 +48,7 @@ import {Point} from 'geojson';
   encapsulation: ViewEncapsulation.None,
 })
 export class HomeComponent implements AfterContentInit {
-  @ViewChild('searchCmp') searchCmp: SearchComponent;
+  @ViewChild('searchCmp') searchCmp: WmSearchBarComponent;
 
   confAPP$: Observable<IAPP> = this._store.select(confAPP);
   confHOME$: Observable<IHOME[]> = this._store.select(confHOME);

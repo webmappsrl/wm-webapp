@@ -20,7 +20,6 @@ import {environment} from 'src/environments/environment';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {MetaComponent} from './meta.component';
-import {UIReducer} from './store/UI/UI.reducer';
 import {tap} from 'rxjs/operators';
 import {WmCoreModule} from '@wm-core/wm-core.module';
 import {APP_ID, APP_VERSION, ENVIRONMENT_CONFIG} from '@wm-core/store/conf/conf.token';
@@ -50,12 +49,7 @@ export class MyHttpInterceptor implements HttpInterceptor {
     HttpClientModule,
     AppRoutingModule,
     WmCoreModule,
-    StoreModule.forRoot(
-      {
-        UI: UIReducer,
-      },
-      {},
-    ),
+    StoreModule.forRoot(),
     EffectsModule.forRoot(),
     StoreDevtoolsModule.instrument({
       maxAge: 25,

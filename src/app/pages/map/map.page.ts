@@ -25,7 +25,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {FeatureCollection, LineString, Point} from 'geojson';
+import {LineString, Point} from 'geojson';
 import {select, Store} from '@ngrx/store';
 import {BehaviorSubject, combineLatest, from, merge, Observable, of, Subscription} from 'rxjs';
 import {
@@ -56,7 +56,6 @@ import {
   confShowDrawTrack,
 } from '@wm-core/store/conf/conf.selector';
 
-import {UICurrentPoiId} from 'src/app/store/UI/UI.selector';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {environment} from 'src/environments/environment';
 import {WmLoadingService} from '@wm-core/services/loading.service';
@@ -80,7 +79,11 @@ import {IDATALAYER} from '@map-core/types/layer';
 import {WmMapTrackRelatedPoisDirective} from '@map-core/directives';
 import {hitMapFeatureCollection} from '@map-core/store/map-core.selector';
 import {ugcPoiFeatures, ugcTracksFeatures} from '@wm-core/store/features/ugc/ugc.selector';
-import {inputTyped, ugcOpened} from '@wm-core/store/user-activity/user-activity.selector';
+import {
+  inputTyped,
+  ugcOpened,
+  UICurrentPoiId,
+} from '@wm-core/store/user-activity/user-activity.selector';
 import {openUgc, resetTrackFilters} from '@wm-core/store/user-activity/user-activity.action';
 import {WmMapComponent} from '@map-core/components';
 import {extentFromLonLat} from '@map-core/utils';

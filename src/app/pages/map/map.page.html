@@ -39,16 +39,16 @@
     class="webmapp-track-details"
   ></wm-ugc-details>
 
-  <webmapp-home
+  <wm-home
     *ngIf="wmHomeEnable$|async;else customTrack"
-    class="webmapp-home"
+    class="wm-home"
     [hidden]="(track$|async) !=null"
   >
     <wm-lang-selector
       [langs]="(langs$|async)?.available"
       [defaultLang]="(langs$|async)?.default"
     ></wm-lang-selector>
-  </webmapp-home>
+  </wm-home>
   <ng-template #customTrack>
     <wm-draw-track
       *ngIf="(wmap.map$|async) as map"

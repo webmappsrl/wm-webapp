@@ -41,7 +41,6 @@ import {
   shareReplay,
   startWith,
 } from 'rxjs/operators';
-import {HomeComponent} from 'src/app/components/home/home.component';
 import {GeohubService} from 'src/app/services/geohub.service';
 
 import {
@@ -87,6 +86,7 @@ import {
 import {openUgc, resetTrackFilters} from '@wm-core/store/user-activity/user-activity.action';
 import {WmMapComponent} from '@map-core/components';
 import {extentFromLonLat} from '@map-core/utils';
+import {WmHomeComponent} from '@wm-core/home/home.component';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -118,7 +118,7 @@ export class MapPage implements OnDestroy {
   @ViewChild(WmMapTrackRelatedPoisDirective)
   WmMapTrackRelatedPoisDirective: WmMapTrackRelatedPoisDirective;
   @ViewChild('filterCmp') filterCmp: FiltersComponent;
-  @ViewChild(HomeComponent) homeCmp: HomeComponent;
+  @ViewChild(WmHomeComponent) homeCmp: WmHomeComponent;
   @ViewChild(WmMapComponent) mapCmp: WmMapComponent;
 
   apiElasticState$: Observable<any> = this._store.select(apiElasticState);

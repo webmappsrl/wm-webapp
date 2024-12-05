@@ -7,13 +7,13 @@
     </ion-item>
   </ng-container>
 
-  <webmapp-search
+  <wm-searchbar
     *ngIf="(confOPTIONS$|async).show_searchbar && !(ugcOpened$|async)"
     #searchCmp
     [initSearch]="''"
     (words)="setSearch($event)"
   >
-  </webmapp-search>
+  </wm-searchbar>
 
   <ng-container *ngIf="(popup$|async) as popup; else mainContent">
     <wm-inner-component-html [html]="popup.html" [enableDismiss]="false"></wm-inner-component-html>

@@ -6,6 +6,7 @@ import {
   resetPoiFilters,
   setLayer,
   loadEcPois,
+  currentEcTrackId,
 } from '@wm-core/store/features/ec/ec.actions';
 import {
   apiElasticState,
@@ -15,6 +16,7 @@ import {
   countSelectedFilters,
   allEcPois,
   ecPois,
+  currentEcTrack,
 } from '@wm-core/store/features/ec/ec.selector';
 import {
   ChangeDetectionStrategy,
@@ -77,7 +79,11 @@ import {ProfileAuthComponent} from '@wm-core/profile/profile-auth/profile-auth.c
 import {IDATALAYER} from '@map-core/types/layer';
 import {WmMapTrackRelatedPoisDirective} from '@map-core/directives';
 import {hitMapFeatureCollection} from '@map-core/store/map-core.selector';
-import {ugcPoiFeatures, ugcTracksFeatures} from '@wm-core/store/features/ugc/ugc.selector';
+import {
+  currentUgcTrack,
+  ugcPoiFeatures,
+  ugcTracksFeatures,
+} from '@wm-core/store/features/ugc/ugc.selector';
 import {
   inputTyped,
   ugcOpened,
@@ -87,6 +93,7 @@ import {openUgc, resetTrackFilters} from '@wm-core/store/user-activity/user-acti
 import {WmMapComponent} from '@map-core/components';
 import {extentFromLonLat} from '@map-core/utils';
 import {WmHomeComponent} from '@wm-core/home/home.component';
+import {currentUgcTrackId} from '@wm-core/store/features/ugc/ugc.actions';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -294,17 +301,11 @@ export class MapPage implements OnDestroy {
       });
     const queryParams$ = this._route.queryParams.pipe(shareReplay(1));
     queryParams$.subscribe(params => {
-      this.ugcTrackID$.next(params.ugc_track || null);
-      this.ecTrackID$.next(params.track || null);
+      this._store.dispatch(currentEcTrackId({currentEcTrackId: params.track || null}));
+      this._store.dispatch(currentUgcTrackId({currentUgcTrackId: params.ugc_track || null}));
     });
 
-    this.ecTrack$ = this.ecTrackID$.pipe(
-      distinctUntilChanged((prev, curr) => {
-        return prev === curr;
-      }),
-      switchMap(trackid => {
-        return trackid != null ? from(this._geohubService.getEcTrack(+trackid)) : of(null);
-      }),
+    this.ecTrack$ = this._store.select(currentEcTrack).pipe(
       tap(track => {
         if (track != null) {
           const poiIDs = (track.properties?.related_pois || []).map(poi => poi.properties.id);
@@ -314,9 +315,7 @@ export class MapPage implements OnDestroy {
         }
       }),
     );
-    this.ugcTrack$ = this.ugcTrackID$.pipe(
-      switchMap(ugcTrackID$ => from(getUgcTrack(`${ugcTrackID$}`))),
-    );
+    this.ugcTrack$ = this._store.select(currentUgcTrack);
     this.track$ = combineLatest([this.ecTrack$, this.ugcTrack$]).pipe(
       map(([ecTrack, ugcTrack]) => ugcTrack ?? ecTrack),
       distinctUntilChanged(),

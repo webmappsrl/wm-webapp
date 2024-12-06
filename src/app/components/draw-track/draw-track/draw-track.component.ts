@@ -12,19 +12,19 @@ import GeoJSON from 'ol/format/GeoJSON';
 import Map from 'ol/Map';
 
 import tokml from 'geojson-to-kml';
-import {BehaviorSubject, EMPTY, Observable} from 'rxjs';
+import {BehaviorSubject, EMPTY, from, Observable} from 'rxjs';
 import {LineString} from 'geojson';
 import {confGeohubId, confTRACKFORMS} from '@wm-core/store/conf/conf.selector';
 import {Store} from '@ngrx/store';
-import {catchError, switchMap, take, tap} from 'rxjs/operators';
+import {catchError, switchMap, take, map} from 'rxjs/operators';
 import {DeviceService} from '@wm-core/services/device.service';
 import {AlertController} from '@ionic/angular';
 import {saveDrawTrackAsUgc} from '@wm-core/store/auth/auth.selectors';
 import {generateUUID, saveUgcTrack} from '@wm-core/utils/localForage';
 import {WmFeature} from '@wm-types/feature';
 import {UntypedFormGroup} from '@angular/forms';
-import { syncUgcTracks } from '@wm-core/store/features/ugc/ugc.actions';
-import { LangService } from '@wm-core/localization/lang.service';
+import {syncUgcTracks} from '@wm-core/store/features/ugc/ugc.actions';
+import {LangService} from '@wm-core/localization/lang.service';
 
 @Component({
   selector: 'wm-draw-track',
@@ -144,23 +144,27 @@ export class DrawTrackComponent {
       this.geohubId$
         .pipe(
           take(1),
-          switchMap(async geohubId => {
-            const feature: WmFeature<LineString> = this.track$.value;
-            let drawTrakproperties = feature.properties;
+          switchMap(geohubId =>
+            from(this._deviceSvc.getInfo()).pipe(
+              map(device => {
+                const feature: WmFeature<LineString> = this.track$.value;
+                let drawTrakproperties = feature.properties;
 
-            const device = await this._deviceSvc.getInfo();
-            const properties = {
-              drawTrackProperties: drawTrakproperties,
-              name: this.fg.value.title,
-              form: this.fg.value,
-              uuid: generateUUID(),
-              app_id: `${geohubId}`,
-              device,
-            };
+                const properties = {
+                  drawTrackProperties: drawTrakproperties,
+                  name: this.fg.value.title,
+                  form: this.fg.value,
+                  uuid: generateUUID(),
+                  app_id: `${geohubId}`,
+                  device,
+                };
 
-            feature.properties = properties;
-            return saveUgcTrack(feature);
-          }),
+                feature.properties = properties;
+                return feature;
+              })
+            )
+          ),
+          switchMap(feature => saveUgcTrack(feature)),
           switchMap(_ => {
             this.track$.next(null);
             this.reloadEvt.emit();

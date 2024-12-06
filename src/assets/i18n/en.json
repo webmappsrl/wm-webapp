@@ -69,5 +69,9 @@
   "Collegamenti esterni": "External links",
   "Filtri": "Filters",
   "where": "Places",
-  "Spiacenti non ci sono risultati con questi criteri di ricerca.": "Sorry, there are no results with these search criteria"
+  "Spiacenti non ci sono risultati con questi criteri di ricerca.": "Sorry, there are no results with these search criteria",
+  "Inserisci il nuovo nome:": "Insert the new name:",
+  "Si è verificato un errore durante il salvataggio del percorso. Riprova!": "An error occurred while saving the track. Try again!",
+  "Il percorso è stato salvato correttamente!": "The track has been saved correctly!",
+  "Per favore, inserisci un nome per il percorso.": "Please insert a name for the track."
 }

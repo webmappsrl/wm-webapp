@@ -12,17 +12,19 @@ import GeoJSON from 'ol/format/GeoJSON';
 import Map from 'ol/Map';
 
 import tokml from 'geojson-to-kml';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, EMPTY, from, Observable} from 'rxjs';
 import {LineString} from 'geojson';
 import {confGeohubId, confTRACKFORMS} from '@wm-core/store/conf/conf.selector';
 import {Store} from '@ngrx/store';
-import {catchError, switchMap, take, tap} from 'rxjs/operators';
+import {catchError, switchMap, take, map} from 'rxjs/operators';
 import {DeviceService} from '@wm-core/services/device.service';
 import {AlertController} from '@ionic/angular';
 import {saveDrawTrackAsUgc} from '@wm-core/store/auth/auth.selectors';
 import {generateUUID, saveUgcTrack} from '@wm-core/utils/localForage';
 import {WmFeature} from '@wm-types/feature';
 import {UntypedFormGroup} from '@angular/forms';
+import {syncUgcTracks} from '@wm-core/store/features/ugc/ugc.actions';
+import {LangService} from '@wm-core/localization/lang.service';
 
 @Component({
   selector: 'wm-draw-track',
@@ -51,6 +53,7 @@ export class DrawTrackComponent {
     private _store: Store,
     private _deviceSvc: DeviceService,
     private _alertCtrl: AlertController,
+    private _langSvc: LangService,
   ) {
     this._initSavedTracks();
   }
@@ -99,7 +102,7 @@ export class DrawTrackComponent {
   }
 
   editCustomTrackName(savedTrack: any): void {
-    const newName = prompt('Inserisci il nuovo nome:', savedTrack.properties.name);
+    const newName = prompt(`${this._langSvc.instant('Inserisci il nuovo nome')}:`, savedTrack?.properties?.name);
     if (newName) {
       savedTrack.properties.name = newName;
       this.saveCustomTrack();
@@ -141,38 +144,49 @@ export class DrawTrackComponent {
       this.geohubId$
         .pipe(
           take(1),
-          switchMap(geohubId => {
-            const feature: WmFeature<LineString> = this.track$.value;
-            let drawTrakproperties = feature.properties;
+          switchMap(geohubId =>
+            from(this._deviceSvc.getInfo()).pipe(
+              map(device => {
+                const feature: WmFeature<LineString> = this.track$.value;
+                const drawTrackProperties = feature?.properties;
 
-            const properties = {
-              drawTrackProperties: drawTrakproperties,
-              name: this.fg.value.title,
-              form: this.fg.value,
-              uuid: generateUUID(),
-              device: {os: 'web'},
-              app_id: `${geohubId}`,
-            };
+                const properties = {
+                  name: this.fg.value.title,
+                  form: this.fg.value,
+                  uuid: generateUUID(),
+                  app_id: `${geohubId}`,
+                  drawTrackProperties,
+                  device,
+                };
 
-            feature.properties = properties;
-            return saveUgcTrack(feature);
-          }),
-          tap(_ => {
+                feature.properties = properties;
+                return feature;
+              })
+            )
+          ),
+          switchMap(feature => saveUgcTrack(feature)),
+          switchMap(_ => {
             this.track$.next(null);
             this.reloadEvt.emit();
+            return this._alertCtrl
+              .create({
+                message: `${this._langSvc.instant('Il percorso è stato salvato correttamente')}!`,
+                buttons: ['OK'],
+              })
           }),
+          switchMap(alert => alert.present()),
           catchError(_ => {
             this._alertCtrl
               .create({
-                header: 'Errore',
-                message: 'Si è verificato un errore durante il salvataggio del percorso.',
+                header: this._langSvc.instant('Errore'),
+                message: `${this._langSvc.instant('Si è verificato un errore durante il salvataggio del percorso. Riprova')}!`,
                 buttons: ['OK'],
               })
               .then(alert => alert.present());
-            return [];
+            return EMPTY;
           }),
         )
-        .subscribe();
+        .subscribe(() => this._store.dispatch(syncUgcTracks()));
     }
   }
 
@@ -182,7 +196,7 @@ export class DrawTrackComponent {
       if (!this.track$.value.properties.name || this.track$.value.properties.name.trim() === '') {
         while (this.track$.value.properties.name == '') {
           this.track$.value.properties.name = prompt(
-            'Per favore, inserisci un nome per il percorso.',
+            `${this._langSvc.instant('Per favore, inserisci un nome per il percorso')}.`,
           );
         }
       }

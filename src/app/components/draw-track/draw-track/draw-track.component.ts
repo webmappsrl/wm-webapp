@@ -102,7 +102,7 @@ export class DrawTrackComponent {
   }
 
   editCustomTrackName(savedTrack: any): void {
-    const newName = prompt(this._langSvc.instant('Inserisci il nuovo nome:'), savedTrack.properties.name);
+    const newName = prompt(`${this._langSvc.instant('Inserisci il nuovo nome')}:`, savedTrack?.properties?.name);
     if (newName) {
       savedTrack.properties.name = newName;
       this.saveCustomTrack();
@@ -148,14 +148,14 @@ export class DrawTrackComponent {
             from(this._deviceSvc.getInfo()).pipe(
               map(device => {
                 const feature: WmFeature<LineString> = this.track$.value;
-                let drawTrakproperties = feature.properties;
+                const drawTrackProperties = feature?.properties;
 
                 const properties = {
-                  drawTrackProperties: drawTrakproperties,
                   name: this.fg.value.title,
                   form: this.fg.value,
                   uuid: generateUUID(),
                   app_id: `${geohubId}`,
+                  drawTrackProperties,
                   device,
                 };
 
@@ -170,7 +170,7 @@ export class DrawTrackComponent {
             this.reloadEvt.emit();
             return this._alertCtrl
               .create({
-                message: this._langSvc.instant('Il percorso è stato salvato correttamente!'),
+                message: `${this._langSvc.instant('Il percorso è stato salvato correttamente')}!`,
                 buttons: ['OK'],
               })
           }),
@@ -178,8 +178,8 @@ export class DrawTrackComponent {
           catchError(_ => {
             this._alertCtrl
               .create({
-                header: 'Errore',
-                message: this._langSvc.instant('Si è verificato un errore durante il salvataggio del percorso. Riprova!'),
+                header: this._langSvc.instant('Errore'),
+                message: `${this._langSvc.instant('Si è verificato un errore durante il salvataggio del percorso. Riprova')}!`,
                 buttons: ['OK'],
               })
               .then(alert => alert.present());
@@ -196,7 +196,7 @@ export class DrawTrackComponent {
       if (!this.track$.value.properties.name || this.track$.value.properties.name.trim() === '') {
         while (this.track$.value.properties.name == '') {
           this.track$.value.properties.name = prompt(
-            this._langSvc.instant('Per favore, inserisci un nome per il percorso.'),
+            `${this._langSvc.instant('Per favore, inserisci un nome per il percorso')}.`,
           );
         }
       }

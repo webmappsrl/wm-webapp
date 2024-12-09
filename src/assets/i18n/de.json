@@ -69,9 +69,10 @@
   "Collegamenti esterni": "Externe Links",
   "Filtri": "Filter",
   "where": "Orte",
-  "Spiacenti non ci sono risultati con questi criteri di ricerca.": "Leider gibt es keine Ergebnisse mit diesen Suchkriterien",
-  "Inserisci il nuovo nome:": "Bitte geben Sie einen Namen ein:",
-  "Si è verificato un errore durante il salvataggio del percorso. Riprova!": "An error occurred while saving the track. Try again!",
-  "Il percorso è stato salvato correttamente!": "The track has been saved correctly!",
-  "Per favore, inserisci un nome per il percorso.": "Please insert a name for the track."
+  "Spiacenti non ci sono risultati con questi criteri di ricerca": "Leider gibt es keine Ergebnisse mit diesen Suchkriterien",
+  "Inserisci il nuovo nome": "Bitte geben Sie einen Namen ein",
+  "Si è verificato un errore durante il salvataggio del percorso. Riprova": "Beim Speichern der Strecke ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut",
+  "Il percorso è stato salvato correttamente": "Die Strecke wurde erfolgreich gespeichert",
+  "Per favore, inserisci un nome per il percorso": "Bitte geben Sie einen Namen für die Strecke ein",
+  "Errore": "Fehler"
 }

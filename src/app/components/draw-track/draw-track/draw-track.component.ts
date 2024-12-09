@@ -21,7 +21,7 @@ import {DeviceService} from '@wm-core/services/device.service';
 import {AlertController} from '@ionic/angular';
 import {saveDrawTrackAsUgc} from '@wm-core/store/auth/auth.selectors';
 import {generateUUID, saveUgcTrack} from '@wm-core/utils/localForage';
-import {WmFeature} from '@wm-types/feature';
+import {WmFeature, WmProperties} from '@wm-types/feature';
 import {UntypedFormGroup} from '@angular/forms';
 import {syncUgcTracks} from '@wm-core/store/features/ugc/ugc.actions';
 import {LangService} from '@wm-core/localization/lang.service';
@@ -149,12 +149,14 @@ export class DrawTrackComponent {
               map(device => {
                 const feature: WmFeature<LineString> = this.track$.value;
                 const drawTrackProperties = feature?.properties;
-
-                const properties = {
+                const dateNow = new Date();
+                const properties: WmProperties = {
                   name: this.fg.value.title,
                   form: this.fg.value,
                   uuid: generateUUID(),
                   app_id: `${geohubId}`,
+                  createdAt: dateNow,
+                  updatedAt: dateNow,
                   drawTrackProperties,
                   device,
                 };

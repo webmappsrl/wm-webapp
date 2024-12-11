@@ -1,6 +1,5 @@
 import {currentEcTrackId, loadEcPois} from '@wm-core/store/features/ec/ec.actions';
 import {
-  poiFilterIdentifiers,
   countSelectedFilters,
   allEcPois,
   ecPois,
@@ -74,6 +73,7 @@ import {
   ecLayer,
   inputTyped,
   mapFilters,
+  poiFilterIdentifiers,
   ugcOpened,
   UICurrentPoiId,
 } from '@wm-core/store/user-activity/user-activity.selector';

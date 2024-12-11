@@ -3,7 +3,7 @@ import {Component, Inject, OnInit, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {filter, skip, switchMap, take, takeUntil} from 'rxjs/operators';
-import {queryEc} from '@wm-core/store/features/ec/ec.actions';
+import {ecTracks} from '@wm-core/store/features/ec/ec.actions';
 import {loadConf} from '@wm-core/store/conf/conf.actions';
 import {confAPP, confTHEMEVariables, confWEBAPP} from '@wm-core/store/conf/conf.selector';
 import appPackage from 'package.json';
@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
   constructor(@Inject(DOCUMENT) private _document: Document, private _store: Store<any>) {
     this._store.dispatch(loadConf());
     this._store.dispatch(loadAuths());
-    this._store.dispatch(queryEc({init: true}));
+    this._store.dispatch(ecTracks({init: true}));
     this.confTHEMEVariables$.pipe(take(2)).subscribe(css => this._setGlobalCSS(css));
     console.table({
       'app': appPackage.version,

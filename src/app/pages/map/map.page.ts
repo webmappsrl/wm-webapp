@@ -1,18 +1,6 @@
+import {currentEcTrackId, loadEcPois} from '@wm-core/store/features/ec/ec.actions';
 import {
-  setLastFilterType,
-  updateTrackFilter,
-  togglePoiFilter,
-  toggleTrackFilter,
-  resetPoiFilters,
-  setLayer,
-  loadEcPois,
-  currentEcTrackId,
-} from '@wm-core/store/features/ec/ec.actions';
-import {
-  apiElasticState,
-  ecLayer,
   poiFilterIdentifiers,
-  apiGoToHome,
   countSelectedFilters,
   allEcPois,
   ecPois,
@@ -36,7 +24,6 @@ import {
   filter,
   map,
   share,
-  skip,
   switchMap,
   tap,
   take,
@@ -72,7 +59,6 @@ import {LangService} from '@wm-core/localization/lang.service';
 import {FiltersComponent} from '@wm-core/filters/filters.component';
 import {ModalController} from '@ionic/angular';
 import {isLogged} from '@wm-core/store/auth/auth.selectors';
-import {getUgcTrack} from '@wm-core/utils/localForage';
 import {WmFeature} from 'src/app/shared/wm-types/src';
 import {concatMap} from 'rxjs/operators';
 import {ProfileAuthComponent} from '@wm-core/profile/profile-auth/profile-auth.component';
@@ -85,15 +71,28 @@ import {
   ugcTracksFeatures,
 } from '@wm-core/store/features/ugc/ugc.selector';
 import {
+  ecLayer,
   inputTyped,
+  mapFilters,
   ugcOpened,
   UICurrentPoiId,
 } from '@wm-core/store/user-activity/user-activity.selector';
-import {openUgc, resetTrackFilters} from '@wm-core/store/user-activity/user-activity.action';
+import {
+  goToHome,
+  openUgc,
+  resetPoiFilters,
+  resetTrackFilters,
+  setLastFilterType,
+  setLayer,
+  togglePoiFilter,
+  toggleTrackFilter,
+  updateTrackFilter,
+} from '@wm-core/store/user-activity/user-activity.action';
 import {WmMapComponent} from '@map-core/components';
 import {extentFromLonLat} from '@map-core/utils';
 import {WmHomeComponent} from '@wm-core/home/home.component';
 import {currentUgcTrackId} from '@wm-core/store/features/ugc/ugc.actions';
+import {Actions, ofType} from '@ngrx/effects';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -128,8 +127,7 @@ export class MapPage implements OnDestroy {
   @ViewChild(WmHomeComponent) homeCmp: WmHomeComponent;
   @ViewChild(WmMapComponent) mapCmp: WmMapComponent;
 
-  apiElasticState$: Observable<any> = this._store.select(apiElasticState);
-  apiGoToHome$: Observable<boolean> = this._store.select(apiGoToHome);
+  apiElasticState$: Observable<any> = this._store.select(mapFilters);
   apiSearchInputTyped$: Observable<string> = this._store.select(inputTyped);
   authEnable$: Observable<boolean> = this._store.select(confAUTHEnable);
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
@@ -272,6 +270,7 @@ export class MapPage implements OnDestroy {
     private _langService: LangService,
     private _loadingSvc: WmLoadingService,
     private _modalCtrl: ModalController,
+    private _actions$: Actions,
   ) {
     this.refreshLayer$ = this._store.select(countSelectedFilters);
     if (window.innerWidth < maxWidth) {
@@ -316,6 +315,7 @@ export class MapPage implements OnDestroy {
       }),
     );
     this.ugcTrack$ = this._store.select(currentUgcTrack);
+
     this.track$ = combineLatest([this.ecTrack$, this.ugcTrack$]).pipe(
       map(([ecTrack, ugcTrack]) => ugcTrack ?? ecTrack),
       distinctUntilChanged(),
@@ -341,10 +341,11 @@ export class MapPage implements OnDestroy {
       }),
       distinctUntilChanged((prev, curr) => `${prev}` === `${curr}`),
     );
-    this.goToHomeSub$ = this.apiGoToHome$.pipe(skip(1)).subscribe(_ => {
+    this._actions$.pipe(ofType(goToHome)).subscribe(() => {
       this.unselectPOI();
       this.mapCmp.resetView();
     });
+
     this.wmMapEcTracksDisableLayer$ = combineLatest([
       this.drawTrackEnable$,
       this.toggleLayerDirective$,
@@ -418,7 +419,8 @@ export class MapPage implements OnDestroy {
   }
 
   resetFilters(): void {
-    this.homeCmp.goToHome();
+    this._store.dispatch(goToHome());
+    // this.homeCmp.goToHome();
   }
 
   saveCurrentCustomTrack(track: any): void {

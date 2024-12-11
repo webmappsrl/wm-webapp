@@ -10,14 +10,13 @@ import {
 } from '@angular/core';
 import {IonContent, ModalController} from '@ionic/angular';
 
-import {IGeojsonProperties} from 'src/app/types/model';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
 import {Store} from '@ngrx/store';
 import {confShowEditingInline} from '@wm-core/store/conf/conf.selector';
-import {ecLayer} from '@wm-core/store/features/ec/ec.selector';
 import {Feature, LineString} from 'geojson';
 import {WmFeature} from '@wm-types/feature';
+import {ecLayer} from '@wm-core/store/user-activity/user-activity.selector';
 
 @Component({
   selector: 'webmapp-track-details',

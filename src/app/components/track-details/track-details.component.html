@@ -86,7 +86,7 @@
           <webmapp-track-poi
             [track]="track"
             [poi]="poiId"
-            (poi-click)="poiClick.emit($event.properties.id)"
+            (poi-click)="poiClick.emit($event?.properties?.id??null)"
           ></webmapp-track-poi>
         </div>
       </ng-container>

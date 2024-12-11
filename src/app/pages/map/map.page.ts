@@ -206,11 +206,17 @@ export class MapPage implements OnDestroy {
   ]).pipe(
     map(([poi]) => {
       if (poi == null) return null;
+      let id = null;
+      if (typeof poi === 'number') {
+        id = poi;
+      } else {
+        id = poi.properties.id;
+      }
 
-      if (poi.properties.id !== undefined) {
+      if (id !== undefined) {
         this._router.navigate([], {
           relativeTo: this._route,
-          queryParams: {poi: poi.properties.id},
+          queryParams: {poi: id},
           queryParamsHandling: 'merge',
         });
       }
@@ -457,8 +463,13 @@ export class MapPage implements OnDestroy {
   setCurrentRelatedPoi(poi: WmFeature<Point> | null | number): void {
     if (poi != null) {
       this.currentRelatedPoi$.next(poi as WmFeature<Point>);
-      this.WmMapTrackRelatedPoisDirective.setPoi = (poi as WmFeature<Point>).properties
-        .id as number;
+      let id = null;
+      if (typeof poi === 'number') {
+        id = poi;
+      } else if (poi != null) {
+        id = (poi as WmFeature<Point>).properties.id as number;
+      }
+      this.WmMapTrackRelatedPoisDirective.setPoi = id;
     }
   }
 

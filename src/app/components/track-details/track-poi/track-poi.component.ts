@@ -22,19 +22,19 @@ export class TrackPoiComponent {
     this.poiClick.emit(null);
     if (track != null && track.properties != null && track.properties.related_pois != null) {
       this.pois = track.properties.related_pois.map(relatedPoi => {
-        const properties = relatedPoi.properties;
+        const properties = {...relatedPoi.properties};
+
         if (properties.related_url != null) {
-          delete properties.related_url[''];
+          const updatedRelatedUrl = {...properties.related_url};
+          delete updatedRelatedUrl[''];
           properties.related_url =
-            Object.keys(properties.related_url).length === 0
-              ? null
-              : properties.related_url || undefined;
+            Object.keys(updatedRelatedUrl).length === 0 ? null : updatedRelatedUrl || undefined;
         }
 
         properties.address = [properties.addr_locality, properties.addr_street]
           .filter(f => f != null)
           .join(', ');
-        relatedPoi.properties = properties;
+        relatedPoi = {...relatedPoi, properties};
         return relatedPoi;
       });
     }

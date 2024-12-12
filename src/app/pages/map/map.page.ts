@@ -551,6 +551,7 @@ export class MapPage implements OnDestroy {
               this._store.dispatch(resetPoiFilters());
               this._store.dispatch(resetTrackFilters());
               this.updateEcTrack();
+              return of(null);
             } else {
               return from(
                 this._modalCtrl.create({
@@ -566,6 +567,7 @@ export class MapPage implements OnDestroy {
           } else {
             this.drawTrackEnable$.next(!currentValue);
             this.currentCustomTrack$.next(null);
+            return of(null);
           }
         }),
       )

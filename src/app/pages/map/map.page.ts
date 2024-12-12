@@ -1,9 +1,9 @@
 import {currentEcTrackId, loadEcPois} from '@wm-core/store/features/ec/ec.actions';
 import {
   countSelectedFilters,
-  allEcPois,
   ecPois,
   currentEcTrack,
+  allEcpoiFeatures,
 } from '@wm-core/store/features/ec/ec.selector';
 import {
   ChangeDetectionStrategy,
@@ -293,7 +293,7 @@ export class MapPage implements OnDestroy {
       }),
     );
     this.setCurrentPoiSub$ = this._store
-      .select(allEcPois)
+      .select(allEcpoiFeatures)
       .pipe(
         filter(p => p != null),
         tap(() => this._loadingSvc.close('Loading pois...')),

@@ -10,14 +10,16 @@ import {
 } from '@angular/core';
 import {BehaviorSubject, from, Observable} from 'rxjs';
 
-import {IonSlides} from '@ionic/angular';
+import {AlertController, IonSlides} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 
-import {IGeojsonProperties} from 'src/app/types/model';
 import {confShowEditingInline} from '@wm-core/store/conf/conf.selector';
-import {Media, MediaProperties, WmFeature} from '@wm-types/feature';
+import {Media, MediaProperties, WmFeature, WmProperties} from '@wm-types/feature';
 import {getUgcMediasByIds} from '@wm-core/utils/localForage';
-import {map} from 'rxjs/operators';
+import {map, switchMap} from 'rxjs/operators';
+import {LangService} from '@wm-core/localization/lang.service';
+import {Point} from 'geojson';
+import {deleteUgcPoi} from '@wm-core/store/features/ugc/ugc.actions';
 
 @Component({
   selector: 'webmapp-poi-popup',
@@ -29,6 +31,7 @@ import {map} from 'rxjs/operators';
 export class PoiPopupComponent {
   @Input('poi') set setPoi(poi: any) {
     if (poi != null && poi.properties != null) {
+      this.poi = poi;
       const prop: {[key: string]: any} = {};
       try {
         prop.address =
@@ -77,7 +80,8 @@ export class PoiPopupComponent {
   enableGallery$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   isEnd$: Observable<boolean>;
   medias$: Observable<WmFeature<Media, MediaProperties>[]>;
-  poiProperties: IGeojsonProperties = null;
+  poi: WmFeature<Point> = null;
+  poiProperties: WmProperties = null;
   slideOptions = {
     allowTouchMove: false,
     slidesPerView: 1,
@@ -89,7 +93,7 @@ export class PoiPopupComponent {
     loop: true,
   };
 
-  constructor(private _store: Store) {}
+  constructor(private _store: Store, private _alertCtrl: AlertController, private _langSvc: LangService) {}
 
   @HostListener('document:keydown.ArrowLeft', ['$event'])
   handleArrowLeft(): void {
@@ -104,6 +108,24 @@ export class PoiPopupComponent {
   @HostListener('document:keydown.Escape', ['$event'])
   handleEscape(): void {
     this.closeEVT.emit();
+  }
+
+  deleteUgcPoi(): void {
+    from(this._alertCtrl.create({
+      message: this._langSvc.instant('Sei sicuro di voler eliminare questo POI? L\'operazione è irreversibile.'),
+      buttons: [
+        {text: this._langSvc.instant('Annulla'), role: 'cancel'},
+        {
+          text: this._langSvc.instant('Elimina'),
+          handler: () => {
+            this._store.dispatch(deleteUgcPoi({poi:this.poi}));
+            this.closeEVT.emit();
+          }
+        }
+      ],
+    })).pipe(
+      switchMap(alert => alert.present()),
+    ).subscribe();
   }
 
   openGeohub(): void {

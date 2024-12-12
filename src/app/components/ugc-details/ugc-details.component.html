@@ -74,7 +74,7 @@
     <ng-container *ngIf="enableEditingInline$|async">
       <ion-button
         *ngIf="!(isEditing$|async); else editingButtons"
-        class="wm-ugc-track-details-edit"
+        class="wm-ugc-track-button"
         (click)="this.isEditing$.next(true)"
         >{{'edit'|wmtrans}}</ion-button
       >
@@ -91,6 +91,13 @@
           >{{'cancel'|wmtrans}}</ion-button
         >
       </ng-template>
+      <ion-button
+        *ngIf="!(isEditing$|async); else editingButtons"
+        class="wm-ugc-track-button"
+        color="danger"
+        (click)="deleteTrack()"
+        >{{'delete'|wmtrans}}</ion-button
+      >
     </ng-container>
   </div>
 

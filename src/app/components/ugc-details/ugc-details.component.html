@@ -45,14 +45,11 @@
           [description]="track?.properties?.description | wmtrans"
         ></webmapp-track-description>
       </ng-container>
-      <div
-        *ngIf="medias$|async as medias"
-        class="wm-ugc-track-media-content"
-      >
+      <div *ngIf="medias$|async as medias" class="wm-ugc-track-media-content">
         <div class="wm-ugc-category-title ion-margin-top">{{"Media" | wmtrans}}</div>
         <ion-slides [options]="slideOptions" #slider>
           <ion-slide *ngFor="let media of medias;let idx = index">
-            <wm-img [src]="media|wmCreateBlob"/>
+            <wm-img [src]="media|wmCreateBlob" />
           </ion-slide>
         </ion-slides>
         <ng-container *ngIf="track?.properties?.photos?.length > 1">
@@ -72,12 +69,19 @@
       </ng-container>
     </ng-template>
     <ng-container *ngIf="enableEditingInline$|async">
-      <ion-button
-        *ngIf="!(isEditing$|async); else editingButtons"
-        class="wm-ugc-track-button"
-        (click)="this.isEditing$.next(true)"
-        >{{'edit'|wmtrans}}</ion-button
-      >
+      <ng-container *ngIf="!(isEditing$|async); else editingButtons">
+        <ion-button
+          class="wm-ugc-track-button"
+          (click)="this.isEditing$.next(true)"
+          >{{'edit'|wmtrans}}</ion-button
+        >
+        <ion-button
+          class="wm-ugc-track-button"
+          color="danger"
+          (click)="deleteTrack()"
+          >{{'delete'|wmtrans}}</ion-button
+        >
+      </ng-container>
       <ng-template #editingButtons>
         <ion-button
           class="wm-ugc-track-details-edit"
@@ -91,13 +95,6 @@
           >{{'cancel'|wmtrans}}</ion-button
         >
       </ng-template>
-      <ion-button
-        *ngIf="!(isEditing$|async); else editingButtons"
-        class="wm-ugc-track-button"
-        color="danger"
-        (click)="deleteTrack()"
-        >{{'delete'|wmtrans}}</ion-button
-      >
     </ng-container>
   </div>
 

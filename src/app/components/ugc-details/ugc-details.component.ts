@@ -9,7 +9,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {IonContent, IonSlides} from '@ionic/angular';
+import {AlertController, IonContent, IonSlides} from '@ionic/angular';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {Store} from '@ngrx/store';
 import {confShowEditingInline} from '@wm-core/store/conf/conf.selector';
@@ -19,7 +19,9 @@ import {LineString} from 'geojson';
 import {Media, MediaProperties, WmFeature} from '@wm-types/feature';
 import {getUgcMediasByIds} from '@wm-core/utils/localForage';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Location} from '@angular/common';
+import {LangService} from '@wm-core/localization/lang.service';
+import {deleteUgcTrack} from '@wm-core/store/features/ugc/ugc.actions';
+
 @Component({
   selector: 'wm-ugc-details',
   templateUrl: './ugc-details.component.html',
@@ -69,7 +71,8 @@ export class UgcDetailsComponent {
     private _store: Store,
     private _router: Router,
     private _route: ActivatedRoute,
-    private _location: Location,
+    private _alertCtlr: AlertController,
+    private _langSvc: LangService,
   ) {}
 
   @HostListener('document:keydown.Escape', ['$event'])
@@ -91,6 +94,19 @@ export class UgcDetailsComponent {
     from(this.slider.getActiveIndex())
       .pipe(tap(index => this.currentImage$.next(this.track.properties.photos[index - 1].photoURL)))
       .subscribe();
+  }
+
+  deleteTrack(): void {
+    from(this._alertCtlr.create({
+      message: this._langSvc.instant('Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.'),
+      buttons: [
+        {text: this._langSvc.instant('Annulla'), role: 'cancel'},
+        {text: this._langSvc.instant('Elimina'), handler: () => this._store.dispatch(deleteUgcTrack({track: this.track}))},
+        ],
+      }),
+    ).subscribe(
+      alert => alert.present(),
+    );
   }
 
   enableEditing(): void {

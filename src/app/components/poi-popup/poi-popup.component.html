@@ -112,7 +112,16 @@
     <div class="webmapp-title">{{'Descrizione Audio'|wmtrans}}</div>
     <webmapp-track-audio [audio]="poiProperties?.audio"></webmapp-track-audio>
   </ng-container>
-  <ion-button class="edit" *ngIf="enableEditingInline$|async" (click)="openGeohub()">
-    edit geohub</ion-button
+  <ion-button
+    class="edit"
+    color="danger"
+    *ngIf="poiProperties?.uuid; else editGeohub"
+    (click)="deleteUgcPoi()"
+    >delete</ion-button
   >
+  <ng-template #editGeohub>
+    <ion-button class="edit" *ngIf="enableEditingInline$|async" (click)="openGeohub()">
+      edit geohub</ion-button
+    >
+  </ng-template>
 </ng-container>

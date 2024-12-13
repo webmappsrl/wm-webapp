@@ -1,127 +1,122 @@
 <ng-container *ngIf="poiProperties!= null">
-  <div class="row">
-    <button class="webmapp-poi-popup-close" (click)="closeEVT.emit()">
-      <i class="icon-outline-close"></i>
-    </button>
-  </div>
-  <ng-container
-    *ngIf="poiProperties.taxonomy && poiProperties.taxonomy.poi_types as poiTypes;else poiType"
-    ><ng-container *ngFor="let poiType of poiTypes">
-      <div class="row category" *ngIf="poiType" [innerHTML]="poiType.name|wmtrans"></div>
+  <wm-form *ngIf="isEditing$|async; else viewData" [confPOIFORMS]="confPOIFORMS$|async" [init]="poi?.properties?.form"
+    (formGroupEvt)="fg = $event"></wm-form>
+  <ng-template #viewData>
+    <div class="row">
+      <button class="webmapp-poi-popup-close" (click)="closeEVT.emit()">
+        <i class="icon-outline-close"></i>
+      </button>
+    </div>
+    <ng-container
+      *ngIf="poiProperties.taxonomy && poiProperties.taxonomy.poi_types as poiTypes;else poiType"><ng-container
+        *ngFor="let poiType of poiTypes">
+        <div class="row category" *ngIf="poiType" [innerHTML]="poiType.name|wmtrans"></div>
+      </ng-container>
     </ng-container>
-  </ng-container>
-  <ng-template #poiType>
-    <div
-      class="row category"
-      *ngIf="poiProperties.taxonomy && poiProperties.taxonomy.poi_type as poiType"
-      [innerHTML]="poiType.name|wmtrans"
-    ></div>
-  </ng-template>
-  <div class="row">
-    <div class="title">
-      <button
-        class="webmapp-poi-popup-left circle"
-        *ngIf="poiProperties.related"
-        (click)="prevEVT.emit()"
-      >
-        <i class="icon-outline-arrow-left"></i>
-      </button>
-      <p class="webmapp-poi-popup-title">{{poiProperties.name|wmtrans}}</p>
+    <ng-template #poiType>
+      <div class="row category" *ngIf="poiProperties.taxonomy && poiProperties.taxonomy.poi_type as poiType"
+        [innerHTML]="poiType.name|wmtrans"></div>
+    </ng-template>
+    <div class="row">
+      <div class="title">
+        <button class="webmapp-poi-popup-left circle" *ngIf="poiProperties.related" (click)="prevEVT.emit()">
+          <i class="icon-outline-arrow-left"></i>
+        </button>
+        <p class="webmapp-poi-popup-title">{{poiProperties.name|wmtrans}}</p>
 
-      <button
-        class="webmapp-poi-popup-right circle"
-        (click)="nextEVT.emit()"
-        *ngIf="poiProperties.related"
-      >
-        <i class="icon-outline-arrow-right"></i>
-      </button>
+        <button class="webmapp-poi-popup-right circle" (click)="nextEVT.emit()" *ngIf="poiProperties.related">
+          <i class="icon-outline-arrow-right"></i>
+        </button>
+      </div>
+      <wm-excerpt *ngIf="poiProperties?.excerpt as excerpt" [excerpt]="excerpt|wmtrans"></wm-excerpt>
     </div>
-    <wm-excerpt *ngIf="poiProperties?.excerpt as excerpt" [excerpt]="excerpt|wmtrans"></wm-excerpt>
-  </div>
 
-  <wm-gallery
-    class="row"
-    *ngIf="(enableGallery$|async)"
-    [gallery]="poiProperties.image_gallery"
-  ></wm-gallery>
-  <ng-container *ngIf="medias$|async as medias">
-    <ion-slides [options]="slideOptions" #slider>
-      <ion-slide *ngFor="let media of medias;let idx = index">
-        <wm-img [src]="media|wmCreateBlob" />
-      </ion-slide>
-    </ion-slides>
-  </ng-container>
-  <div class="webmapp-poi-popup-btns">
-    <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.address">
-      <i class="wm-icn icon-fill-pin"></i>
-      <a
-        href="https://www.google.com/maps?daddr={{poiProperties.address_link}}&navigate=yes"
-        target="_blank"
-      >
-        {{poiProperties.address}}
-      </a>
-    </div>
-    <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.ele">
-      <i class="wm-icn icon-outline-plus"></i>
-      <p>
-        <a> {{poiProperties.ele}} {{'metri'|wmtrans}} </a>
-      </p>
-    </div>
-    <ng-container *ngIf="poiProperties.contact_phone|toArray as arrayOfPhones">
-      <div
-        class="webmapp-poi-popup-btn webmapp-poi-popup-phone"
-        *ngFor="let cphone of arrayOfPhones"
-        target="_blank"
-      >
-        <i class="wm-icn icon-fill-phone"></i>
+    <wm-gallery class="row" *ngIf="(enableGallery$|async)" [gallery]="poiProperties.image_gallery"></wm-gallery>
+    <ng-container *ngIf="medias$|async as medias">
+      <ion-slides [options]="slideOptions" #slider>
+        <ion-slide *ngFor="let media of medias;let idx = index">
+          <wm-img [src]="media|wmCreateBlob" />
+        </ion-slide>
+      </ion-slides>
+    </ng-container>
+    <div class="webmapp-poi-popup-btns">
+      <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.address">
+        <i class="wm-icn icon-fill-pin"></i>
+        <a href="https://www.google.com/maps?daddr={{poiProperties.address_link}}&navigate=yes" target="_blank">
+          {{poiProperties.address}}
+        </a>
+      </div>
+      <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.ele">
+        <i class="wm-icn icon-outline-plus"></i>
         <p>
-          <a href="tel:{{cphone}}">
-            {{cphone}}
-          </a>
+          <a> {{poiProperties.ele}} {{'metri'|wmtrans}} </a>
         </p>
       </div>
+      <ng-container *ngIf="poiProperties.contact_phone|toArray as arrayOfPhones">
+        <div class="webmapp-poi-popup-btn webmapp-poi-popup-phone" *ngFor="let cphone of arrayOfPhones" target="_blank">
+          <i class="wm-icn icon-fill-phone"></i>
+          <p>
+            <a href="tel:{{cphone}}">
+              {{cphone}}
+            </a>
+          </p>
+        </div>
+      </ng-container>
+      <div class="webmapp-poi-popup-btn webmapp-poi-popup-mail" *ngIf="poiProperties.contact_email" target="_blank">
+        <i class="wm-icn icon-fill-mail"></i>
+        <a [href]="'mailto:' + poiProperties.contact_email">
+          {{poiProperties.contact_email}}
+        </a>
+      </div>
+      <div class="webmapp-poi-popup-btn webmapp-poi-popup-urls" *ngIf="poiProperties.related_url != null">
+        <i class="wm-icn icon-fill-globe"></i>
+        <webmapp-related-urls [relatedUrls]="poiProperties.related_url"></webmapp-related-urls>
+      </div>
+      <div *ngIf="poiProperties.osm_url as osm">
+        <ion-icon class="wm-icn icon-link" slot="start"> </ion-icon>
+        <a class="webmapp-track-download-urls-item-label" [href]="osm" target="_blank">
+          {{ "Vedi su OpenStreetMap" | wmtrans }}
+        </a>
+      </div>
+    </div>
+
+    <div class="webmapp-poi-popup-text" *ngIf="poi.properties.uuid==null"
+      [innerHTML]="(poiProperties.form?.description)|wmtrans"></div>
+
+    <ng-container *ngIf="poiProperties?.audio">
+      <div class="webmapp-title">{{'Descrizione Audio'|wmtrans}}</div>
+      <webmapp-track-audio [audio]="poiProperties?.audio"></webmapp-track-audio>
     </ng-container>
-    <div
-      class="webmapp-poi-popup-btn webmapp-poi-popup-mail"
-      *ngIf="poiProperties.contact_email"
-      target="_blank"
-    >
-      <i class="wm-icn icon-fill-mail"></i>
-      <a [href]="'mailto:' + poiProperties.contact_email">
-        {{poiProperties.contact_email}}
-      </a>
-    </div>
-    <div
-      class="webmapp-poi-popup-btn webmapp-poi-popup-urls"
-      *ngIf="poiProperties.related_url != null"
-    >
-      <i class="wm-icn icon-fill-globe"></i>
-      <webmapp-related-urls [relatedUrls]="poiProperties.related_url"></webmapp-related-urls>
-    </div>
-    <div *ngIf="poiProperties.osm_url as osm">
-      <ion-icon class="wm-icn icon-link" slot="start"> </ion-icon>
-      <a class="webmapp-track-download-urls-item-label" [href]="osm" target="_blank">
-        {{ "Vedi su OpenStreetMap" | wmtrans }}
-      </a>
-    </div>
-  </div>
+    <ng-container *ngIf="poiProperties?.uuid">
+      <div *ngIf="poi?.properties?.form">
 
-  <div class="webmapp-poi-popup-text" [innerHTML]="(poiProperties.form?.description)|wmtrans"></div>
+        <wm-form class="readonly-form" [disabled]="true" [confPOIFORMS]="confPOIFORMS$|async"
+          [init]="poi?.properties?.form" (formGroupEvt)="fg = $event"></wm-form>
+      </div>
 
-  <ng-container *ngIf="poiProperties?.audio">
-    <div class="webmapp-title">{{'Descrizione Audio'|wmtrans}}</div>
-    <webmapp-track-audio [audio]="poiProperties?.audio"></webmapp-track-audio>
-  </ng-container>
-  <ion-button
-    class="edit"
-    color="danger"
-    *ngIf="poiProperties?.uuid; else editGeohub"
-    (click)="deleteUgcPoi()"
-    >delete</ion-button
-  >
-  <ng-template #editGeohub>
-    <ion-button class="edit" *ngIf="enableEditingInline$|async" (click)="openGeohub()">
-      edit geohub</ion-button
-    >
+    </ng-container>
+
   </ng-template>
+
+  <div class="edit-container">
+    <ng-container *ngIf="poiProperties?.uuid; else editGeohub">
+      <ng-container *ngIf="!(isEditing$|async); else editingButtons">
+        <ion-button class="edit" (click)="isEditing$.next(true)" *ngIf="enableEditingInline$|async">{{"edit" |
+          wmtrans}}</ion-button>
+        <ion-button color="danger" (click)="deleteUgcPoi()" *ngIf="enableEditingInline$|async">{{"delete" |
+          wmtrans}}</ion-button>
+      </ng-container>
+      <ng-template #editingButtons>
+        <ion-button [disabled]="!fg.dirty || !fg.valid" (click)="updatePoi()"
+          *ngIf="enableEditingInline$|async">{{"save" |
+          wmtrans}}</ion-button>
+        <ion-button (click)="isEditing$.next(false)" *ngIf="enableEditingInline$|async">{{"cancel" |
+          wmtrans}}</ion-button>
+      </ng-template>
+    </ng-container>
+    <ng-template #editGeohub>
+      <ion-button class="edit" *ngIf="enableEditingInline$|async" (click)="openGeohub()">
+        {{"edit geohub" | wmtrans}}</ion-button>
+    </ng-template>
+  </div>
 </ng-container>

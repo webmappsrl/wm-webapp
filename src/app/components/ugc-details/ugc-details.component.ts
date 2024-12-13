@@ -20,7 +20,8 @@ import {Media, MediaProperties, WmFeature} from '@wm-types/feature';
 import {getUgcMediasByIds} from '@wm-core/utils/localForage';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LangService} from '@wm-core/localization/lang.service';
-import {deleteUgcTrack} from '@wm-core/store/features/ugc/ugc.actions';
+import {deleteUgcTrack, updateUgcTrack} from '@wm-core/store/features/ugc/ugc.actions';
+import {UntypedFormGroup} from '@angular/forms';
 
 @Component({
   selector: 'wm-ugc-details',
@@ -53,6 +54,7 @@ export class UgcDetailsComponent {
   confTRACKFORMS$: Observable<any[]> = this._store.select(confTRACKFORMS);
   currentImage$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
   enableEditingInline$ = this._store.select(confShowEditingInline);
+  fg: UntypedFormGroup;
   isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   medias$: Observable<WmFeature<Media, MediaProperties>[]>;
   slideOptions = {
@@ -97,16 +99,20 @@ export class UgcDetailsComponent {
   }
 
   deleteTrack(): void {
-    from(this._alertCtlr.create({
-      message: this._langSvc.instant('Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.'),
-      buttons: [
-        {text: this._langSvc.instant('Annulla'), role: 'cancel'},
-        {text: this._langSvc.instant('Elimina'), handler: () => this._store.dispatch(deleteUgcTrack({track: this.track}))},
+    from(
+      this._alertCtlr.create({
+        message: this._langSvc.instant(
+          'Sicuro di voler eliminare questa traccia? La rimozione è irreversibile.',
+        ),
+        buttons: [
+          {text: this._langSvc.instant('Annulla'), role: 'cancel'},
+          {
+            text: this._langSvc.instant('Elimina'),
+            handler: () => this._store.dispatch(deleteUgcTrack({track: this.track})),
+          },
         ],
       }),
-    ).subscribe(
-      alert => alert.present(),
-    );
+    ).subscribe(alert => alert.present());
   }
 
   enableEditing(): void {
@@ -133,5 +139,22 @@ export class UgcDetailsComponent {
   triggerDismiss(): void {
     this.removeUgcTrackFromUrl();
     this.dismiss.emit();
+  }
+
+  updateTrack(): void {
+    if (this.fg.valid) {
+      const track: WmFeature<LineString> = {
+        ...this.track,
+        properties: {
+          ...this.track?.properties,
+          name: this.fg.value.title,
+          form: this.fg.value,
+          updatedAt: new Date(),
+        },
+      };
+
+      this._store.dispatch(updateUgcTrack({track}));
+      this.isEditing$.next(false);
+    }
   }
 }

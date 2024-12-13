@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   HostListener,
@@ -13,13 +14,14 @@ import {BehaviorSubject, from, Observable} from 'rxjs';
 import {AlertController, IonSlides} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 
-import {confShowEditingInline} from '@wm-core/store/conf/conf.selector';
+import {confPOIFORMS, confShowEditingInline} from '@wm-core/store/conf/conf.selector';
 import {Media, MediaProperties, WmFeature, WmProperties} from '@wm-types/feature';
 import {getUgcMediasByIds} from '@wm-core/utils/localForage';
-import {map, switchMap} from 'rxjs/operators';
+import {map, switchMap, take} from 'rxjs/operators';
 import {LangService} from '@wm-core/localization/lang.service';
 import {Point} from 'geojson';
-import {deleteUgcPoi} from '@wm-core/store/features/ugc/ugc.actions';
+import {deleteUgcPoi, updateUgcPoi} from '@wm-core/store/features/ugc/ugc.actions';
+import {UntypedFormGroup} from '@angular/forms';
 
 @Component({
   selector: 'webmapp-poi-popup',
@@ -75,9 +77,12 @@ export class PoiPopupComponent {
   @Output() prevEVT: EventEmitter<void> = new EventEmitter<void>();
   @ViewChild('gallery') slider: IonSlides;
 
+  confPOIFORMS$: Observable<any[]> = this._store.select(confPOIFORMS);
   defaultPhotoPath = '/assets/icon/no-photo.svg';
   enableEditingInline$ = this._store.select(confShowEditingInline);
   enableGallery$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  fg: UntypedFormGroup;
+  isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   isEnd$: Observable<boolean>;
   medias$: Observable<WmFeature<Media, MediaProperties>[]>;
   poi: WmFeature<Point> = null;
@@ -93,7 +98,12 @@ export class PoiPopupComponent {
     loop: true,
   };
 
-  constructor(private _store: Store, private _alertCtrl: AlertController, private _langSvc: LangService) {}
+  constructor(
+    private _store: Store,
+    private _alertCtrl: AlertController,
+    private _langSvc: LangService,
+    private _cdr: ChangeDetectorRef,
+  ) {}
 
   @HostListener('document:keydown.ArrowLeft', ['$event'])
   handleArrowLeft(): void {
@@ -111,21 +121,28 @@ export class PoiPopupComponent {
   }
 
   deleteUgcPoi(): void {
-    from(this._alertCtrl.create({
-      message: this._langSvc.instant('Sei sicuro di voler eliminare questo POI? L\'operazione è irreversibile.'),
-      buttons: [
-        {text: this._langSvc.instant('Annulla'), role: 'cancel'},
-        {
-          text: this._langSvc.instant('Elimina'),
-          handler: () => {
-            this._store.dispatch(deleteUgcPoi({poi:this.poi}));
-            this.closeEVT.emit();
-          }
-        }
-      ],
-    })).pipe(
-      switchMap(alert => alert.present()),
-    ).subscribe();
+    from(
+      this._alertCtrl.create({
+        message: this._langSvc.instant(
+          "Sei sicuro di voler eliminare questo POI? L'operazione è irreversibile.",
+        ),
+        buttons: [
+          {text: this._langSvc.instant('Annulla'), role: 'cancel'},
+          {
+            text: this._langSvc.instant('Elimina'),
+            handler: () => {
+              this._store.dispatch(deleteUgcPoi({poi: this.poi}));
+              this.closeEVT.emit();
+            },
+          },
+        ],
+      }),
+    )
+      .pipe(
+        switchMap(alert => alert.present()),
+        take(1),
+      )
+      .subscribe();
   }
 
   openGeohub(): void {
@@ -133,6 +150,26 @@ export class PoiPopupComponent {
     if (id != null) {
       const url = `https://geohub.webmapp.it/resources/ec-pois/${id}/edit?viaResource&viaResourceId&viaRelationship`;
       window.open(url, '_blank').focus();
+    }
+  }
+
+  updatePoi(): void {
+    if (this.fg.valid) {
+      const poi: WmFeature<Point> = {
+        ...this.poi,
+        properties: {
+          ...this.poi?.properties,
+          name: this.fg.value.title,
+          form: this.fg.value,
+          updatedAt: new Date(),
+        },
+      };
+
+      this._store.dispatch(updateUgcPoi({poi}));
+      this.isEditing$.next(false);
+      this.poi = poi;
+      this.poiProperties = {...poi.properties} as any;
+      this._cdr.detectChanges();
     }
   }
 }

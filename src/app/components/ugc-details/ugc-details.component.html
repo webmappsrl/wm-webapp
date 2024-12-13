@@ -22,7 +22,8 @@
     <wm-form
       *ngIf="isEditing$|async; else viewData"
       [confPOIFORMS]="confTRACKFORMS$|async"
-      [init]="track"
+      [init]="track?.properties?.form"
+      (formGroupEvt)="fg = $event"
     ></wm-form>
 
     <ng-template #viewData>
@@ -71,7 +72,6 @@
     <ng-container *ngIf="enableEditingInline$|async">
       <ng-container *ngIf="!(isEditing$|async); else editingButtons">
         <ion-button
-          *ngIf="false"
           class="wm-ugc-track-button"
           (click)="this.isEditing$.next(true)"
           >{{'edit'|wmtrans}}</ion-button
@@ -85,12 +85,13 @@
       </ng-container>
       <ng-template #editingButtons>
         <ion-button
-          class="wm-ugc-track-details-edit"
+          class="wm-ugc-track-button"
+          (click)="updateTrack()"
           *ngIf="enableEditingInline$|async"
           >{{'save'|wmtrans}}</ion-button
         >
         <ion-button
-          class="wm-ugc-track-details-edit"
+          class="wm-ugc-track-button"
           *ngIf="enableEditingInline$|async"
           (click)="this.isEditing$.next(false)"
           >{{'cancel'|wmtrans}}</ion-button

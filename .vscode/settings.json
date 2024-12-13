@@ -176,5 +176,7 @@
       "caption": "Private Abstract Methods",
       "memberTypes": ["privateAbstractMethods"]
     }
-  ]
+  ],
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

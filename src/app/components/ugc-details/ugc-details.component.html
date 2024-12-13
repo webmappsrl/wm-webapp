@@ -71,6 +71,7 @@
     <ng-container *ngIf="enableEditingInline$|async">
       <ng-container *ngIf="!(isEditing$|async); else editingButtons">
         <ion-button
+          *ngIf="false"
           class="wm-ugc-track-button"
           (click)="this.isEditing$.next(true)"
           >{{'edit'|wmtrans}}</ion-button

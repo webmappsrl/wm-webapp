@@ -1,4 +1,3 @@
-<ion-progress-bar type="indeterminate" color="primary" *ngIf="(loading$|async)"></ion-progress-bar>
 <button
   class="webmapp-menubtn"
   [class.webmapp-menubtn-opened]="(showMenu$|async)"
@@ -132,6 +131,7 @@
     (click)="wmap.wmMapCloseTopRightBtns = 'wm-filters'"
   ></wm-filters>
   <wm-profile top-right></wm-profile>
+
   <div
     top-right
     class="top-right-button"
@@ -141,6 +141,12 @@
   >
     {{ (drawTrackEnable$|async)?'esci':'i miei percorsi'|wmtrans}}
   </div>
+  <ion-progress-bar
+    bottom
+    type="indeterminate"
+    color="primary"
+    *ngIf="(loading$|async)"
+  ></ion-progress-bar>
 </wm-map>
 
 <ion-modal

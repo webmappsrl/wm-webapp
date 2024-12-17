@@ -1,9 +1,10 @@
-import {currentEcTrackId, loadEcPois} from '@wm-core/store/features/ec/ec.actions';
+import {loadEcPois} from '@wm-core/store/features/ec/ec.actions';
 import {
   countSelectedFilters,
   ecPois,
   currentEcTrack,
   allEcpoiFeatures,
+  currentEcRelatedPoi,
 } from '@wm-core/store/features/ec/ec.selector';
 import {
   ChangeDetectionStrategy,
@@ -13,7 +14,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {LineString, Point} from 'geojson';
 import {select, Store} from '@ngrx/store';
 import {BehaviorSubject, combineLatest, from, merge, Observable, of, Subscription} from 'rxjs';
@@ -22,14 +23,11 @@ import {
   distinctUntilChanged,
   filter,
   map,
-  share,
   switchMap,
   tap,
   take,
-  shareReplay,
   startWith,
 } from 'rxjs/operators';
-import {GeohubService} from 'src/app/services/geohub.service';
 
 import {
   confAUTHEnable,
@@ -45,7 +43,6 @@ import {
 
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {environment} from 'src/environments/environment';
-import {WmLoadingService} from '@wm-core/services/loading.service';
 import {
   Filter,
   IHOME,
@@ -158,8 +155,7 @@ export class MapPage implements OnDestroy {
   currentPoiIDToMap$: Observable<number | null>;
   currentPoiNextID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiPrevID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
-  currentRelatedPoi$: BehaviorSubject<WmFeature<Point>> =
-    new BehaviorSubject<WmFeature<Point> | null>(null);
+  currentRelatedPoi$ = this._store.select(currentEcRelatedPoi);
   currentUgcPoiIDToMap$: Observable<number | null>;
   dataLayerUrls$: Observable<IDATALAYER>;
   disableLayers$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -273,10 +269,10 @@ export class MapPage implements OnDestroy {
     private _actions$: Actions,
     private _urlHandlerSvc: UrlHandlerService,
   ) {
-    this.refreshLayer$ = this._store.select(countSelectedFilters);
-    this.ugcPoi$.subscribe(poi => {
+    this.currentRelatedPoi$.subscribe(poi => {
       console.log(poi);
     });
+    this.refreshLayer$ = this._store.select(countSelectedFilters);
     if (window.innerWidth < maxWidth) {
       this.mapPadding$.next([initPadding[0], initPadding[1], initPadding[2], menuCloseLeft]);
       this.resizeEVT.next(!this.resizeEVT.value);
@@ -447,31 +443,29 @@ export class MapPage implements OnDestroy {
     this._cdr.detectChanges();
   }
 
-  setCurrentRelatedPoi(poi: WmFeature<Point> | null | number): void {
-    if (poi != null) {
-      this.currentRelatedPoi$.next(poi as WmFeature<Point>);
-      let id = null;
-      if (typeof poi === 'number') {
-        id = poi;
-      } else if (poi != null) {
-        id = (poi as WmFeature<Point>).properties.id as number;
-      }
+  setCurrentRelatedPoi(id: number): void {
+    if (typeof id === 'number') {
+      this._urlHandlerSvc.updateURL({ec_related_poi: id});
       this.WmMapTrackRelatedPoisDirective.setPoi = id;
     }
   }
 
   setLoader(event: string): void {
     switch (event) {
-      case 'rendering:layer_start':
       case 'rendering:pois_start':
-        this._store.dispatch(startLoader());
+        this._store.dispatch(startLoader({identifier: 'pois'}));
+        break;
+      case 'rendering:layer_start':
+        this._store.dispatch(startLoader({identifier: 'layer'}));
         break;
       case 'rendering:layer_done':
+        this._store.dispatch(stopLoader({identifier: 'layer'}));
+        break;
       case 'rendering:pois_done':
-        this._store.dispatch(stopLoader());
+        this._store.dispatch(stopLoader({identifier: 'pois'}));
         break;
       default:
-        this._store.dispatch(stopLoader());
+      //  this._store.dispatch(stopLoader());
     }
   }
 
@@ -564,11 +558,10 @@ export class MapPage implements OnDestroy {
 
   unselectPOI(): void {
     this.currentPoi$.next(null);
-    this.currentRelatedPoi$.next(null);
     this.WmMapTrackRelatedPoisDirective.setPoi = -1;
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
     this.resetSelectedUgcPoi$.next(!this.resetSelectedUgcPoi$.value);
-    this._urlHandlerSvc.updateURL({poi: undefined, ugc_poi: undefined});
+    this._urlHandlerSvc.updateURL({poi: undefined, ugc_poi: undefined, ec_related_poi: undefined});
   }
 
   updateEcTrack(track = undefined): void {

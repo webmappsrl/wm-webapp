@@ -73,6 +73,7 @@ import {
 import {
   ecLayer,
   inputTyped,
+  loading,
   mapFilters,
   poiFilterIdentifiers,
   ugcOpened,
@@ -85,6 +86,8 @@ import {
   resetTrackFilters,
   setLastFilterType,
   setLayer,
+  startLoader,
+  stopLoader,
   togglePoiFilter,
   toggleTrackFilter,
   updateTrackFilter,
@@ -174,6 +177,7 @@ export class MapPage implements OnDestroy {
     }),
   );
   leftPadding$: Observable<number>;
+  loading$: Observable<boolean> = this._store.select(loading);
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   mapPrintDetails$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   mapPrintPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>([0, 0, 0, 0]);
@@ -265,7 +269,6 @@ export class MapPage implements OnDestroy {
     private _cdr: ChangeDetectorRef,
     private _store: Store,
     private _langService: LangService,
-    private _loadingSvc: WmLoadingService,
     private _modalCtrl: ModalController,
     private _actions$: Actions,
     private _urlHandlerSvc: UrlHandlerService,
@@ -291,7 +294,6 @@ export class MapPage implements OnDestroy {
       .select(allEcpoiFeatures)
       .pipe(
         filter(p => p != null),
-        tap(() => this._loadingSvc.close('Loading pois...')),
         switchMap(_ => this._route.queryParams),
         filter(params => params != null),
         debounceTime(500),
@@ -459,22 +461,17 @@ export class MapPage implements OnDestroy {
   }
 
   setLoader(event: string): void {
-    console.log(event);
     switch (event) {
       case 'rendering:layer_start':
-        this._loadingSvc.show('Rendering Layer');
+      case 'rendering:pois_start':
+        this._store.dispatch(startLoader());
         break;
       case 'rendering:layer_done':
-        this._loadingSvc.close('Rendering Layer');
-        break;
-      case 'rendering:pois_start':
-        this._loadingSvc.show('Rendering Pois');
-        break;
       case 'rendering:pois_done':
-        this._loadingSvc.close('Rendering Pois');
+        this._store.dispatch(stopLoader());
         break;
       default:
-        this._loadingSvc.close();
+        this._store.dispatch(stopLoader());
     }
   }
 

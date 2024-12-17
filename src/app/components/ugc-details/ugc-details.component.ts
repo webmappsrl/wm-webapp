@@ -22,6 +22,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {LangService} from '@wm-core/localization/lang.service';
 import {deleteUgcTrack, updateUgcTrack} from '@wm-core/store/features/ugc/ugc.actions';
 import {UntypedFormGroup} from '@angular/forms';
+import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 
 @Component({
   selector: 'wm-ugc-details',
@@ -75,6 +76,7 @@ export class UgcDetailsComponent {
     private _route: ActivatedRoute,
     private _alertCtlr: AlertController,
     private _langSvc: LangService,
+    private _urlHandlerSvc: UrlHandlerService,
   ) {}
 
   @HostListener('document:keydown.Escape', ['$event'])
@@ -124,16 +126,7 @@ export class UgcDetailsComponent {
   }
 
   removeUgcTrackFromUrl(): void {
-    const queryParams = {...this._route.snapshot.queryParams}; // Copia dei parametri esistenti
-
-    queryParams['ugc_track'] = undefined;
-
-    // Forza l'aggiornamento dell'URL
-    this._router.navigate([], {
-      relativeTo: this._route,
-      queryParams, // Parametri aggiornati
-      queryParamsHandling: 'merge',
-    });
+    this._urlHandlerSvc.updateURL({ugc_track: undefined});
   }
 
   triggerDismiss(): void {

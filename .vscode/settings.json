@@ -1,5 +1,14 @@
 {
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "prettier.singleQuote": true,
   "prettier.configPath": ".prettierrc",
+  "tsco.addPublicModifierIfMissing": false,
+  "tsco.addRegionCaptionToRegionEnd": false,
+  "tsco.organizeOnSave": true,
+  "tsco.groupPropertiesWithDecorators": true,
+  "tsco.useRegions": false,
+  "tsco.addMemberCountInRegionName": false,
   "tsco.memberOrder": [
     {
       "caption": "Properties",
@@ -176,7 +185,5 @@
       "caption": "Private Abstract Methods",
       "memberTypes": ["privateAbstractMethods"]
     }
-  ],
-  "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  ]
 }

@@ -6,9 +6,10 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
+import {Store} from '@ngrx/store';
 import {WmFeature} from '@wm-types/feature';
 import {LineString, Point} from 'geojson';
-
+import {currentEcRelatedPoiId} from '@wm-core/store/features/ec/ec.selector';
 @Component({
   selector: 'webmapp-track-poi',
   templateUrl: './track-poi.component.html',
@@ -49,8 +50,11 @@ export class TrackPoiComponent {
     new EventEmitter<WmFeature<Point> | null>();
 
   currentPoi: WmFeature<Point> = null;
+  currentRelatedEcPid$ = this._store.select(currentEcRelatedPoiId);
   defaultPhotoPath = '/assets/icon/no-photo.svg';
   pois: WmFeature<Point>[] = [];
+
+  constructor(private _store: Store) {}
 
   selectPoi(poi: WmFeature<Point>) {
     this.currentPoi = poi;

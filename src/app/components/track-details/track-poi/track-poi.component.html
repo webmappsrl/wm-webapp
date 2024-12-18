@@ -2,7 +2,7 @@
   <div
     class="webmapp-track-poi-item"
     (click)="selectPoi(poi)"
-    [ngClass]="{'selected': currentPoi != null &&poi.properties.id == currentPoi.properties.id}"
+    [ngClass]="{'selected': (currentRelatedEcPid$|async) != null &&poi.properties.id == (currentRelatedEcPid$|async)}"
   >
     <ng-container *ngIf="poi.properties as properties">
       <ng-container *ngIf="properties.feature_image !=null as featureImage;else svgTemplate">

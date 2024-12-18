@@ -69,35 +69,31 @@
         </ng-container>
       </ng-container>
     </ng-template>
-    <ng-container *ngIf="enableEditingInline$|async">
-      <ng-container *ngIf="!(isEditing$|async); else editingButtons">
-        <ion-button
-          class="wm-ugc-track-button"
-          (click)="this.isEditing$.next(true)"
-          >{{'edit'|wmtrans}}</ion-button
-        >
-        <ion-button
-          class="wm-ugc-track-button"
-          color="danger"
-          (click)="deleteTrack()"
-          >{{'delete'|wmtrans}}</ion-button
-        >
-      </ng-container>
-      <ng-template #editingButtons>
-        <ion-button
-          class="wm-ugc-track-button"
-          (click)="updateTrack()"
-          *ngIf="enableEditingInline$|async"
-          >{{'save'|wmtrans}}</ion-button
-        >
-        <ion-button
-          class="wm-ugc-track-button"
-          *ngIf="enableEditingInline$|async"
-          (click)="this.isEditing$.next(false)"
-          >{{'cancel'|wmtrans}}</ion-button
-        >
-      </ng-template>
+    <ng-container *ngIf="!(isEditing$|async); else editingButtons">
+      <ion-button
+        class="wm-ugc-track-button"
+        (click)="this.isEditing$.next(true)"
+        >{{'edit'|wmtrans}}</ion-button
+      >
+      <ion-button
+        class="wm-ugc-track-button"
+        color="danger"
+        (click)="deleteTrack()"
+        >{{'delete'|wmtrans}}</ion-button
+      >
     </ng-container>
+    <ng-template #editingButtons>
+      <ion-button
+        class="wm-ugc-track-button"
+        (click)="updateTrack()"
+        >{{'save'|wmtrans}}</ion-button
+      >
+      <ion-button
+        class="wm-ugc-track-button"
+        (click)="this.isEditing$.next(false)"
+        >{{'cancel'|wmtrans}}</ion-button
+      >
+    </ng-template>
   </div>
 
   <webmapp-image-modal

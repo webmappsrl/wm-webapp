@@ -12,7 +12,6 @@ import {
 import {AlertController, IonContent, IonSlides} from '@ionic/angular';
 import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {Store} from '@ngrx/store';
-import {confShowEditingInline} from '@wm-core/store/conf/conf.selector';
 import {BehaviorSubject, from, Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {LineString} from 'geojson';
@@ -54,7 +53,6 @@ export class UgcDetailsComponent {
   confOPTIONS$ = this._store.select(confOPTIONS);
   confTRACKFORMS$: Observable<any[]> = this._store.select(confTRACKFORMS);
   currentImage$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
-  enableEditingInline$ = this._store.select(confShowEditingInline);
   fg: UntypedFormGroup;
   isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   medias$: Observable<WmFeature<Media, MediaProperties>[]>;

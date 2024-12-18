@@ -116,7 +116,7 @@ export class MapPage implements OnDestroy {
   readonly ecTrackID$: BehaviorSubject<number | string> = new BehaviorSubject<number | string>(
     null,
   );
-  readonly track$: Observable<WmFeature<LineString> | null>;
+  readonly track$ = this._store.select(track);
   readonly trackColor$: BehaviorSubject<string> = new BehaviorSubject<string>('#caaf15');
   readonly ugcOpened$: Observable<boolean> = this._store.select(ugcOpened);
   readonly ugcPoi$: Observable<WmFeature<Point> | null> = this._store.select(currentUgcPoi);
@@ -308,7 +308,6 @@ export class MapPage implements OnDestroy {
       }),
     );
 
-    this.track$ = this._store.select(track);
     this.caretOutLine$ = this.showMenu$.pipe(
       map(showMenu => (showMenu ? 'caret-back-outline' : 'caret-forward-outline')),
     );

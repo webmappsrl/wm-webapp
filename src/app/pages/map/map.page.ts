@@ -1,4 +1,5 @@
 import {loadEcPois} from '@wm-core/store/features/ec/ec.actions';
+import {currentEcPoiId} from '@wm-core/store/features/ec/ec.selector';
 import {
   countSelectedFilters,
   ecPois,
@@ -75,7 +76,6 @@ import {
   mapFilters,
   poiFilterIdentifiers,
   ugcOpened,
-  UICurrentPoiId,
 } from '@wm-core/store/user-activity/user-activity.selector';
 import {
   goToHome,
@@ -95,7 +95,7 @@ import {extentFromLonLat} from '@map-core/utils';
 import {WmHomeComponent} from '@wm-core/home/home.component';
 import {Actions, ofType} from '@ngrx/effects';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
-import {track} from '@wm-core/store/features/features.selector';
+import {poi, track} from '@wm-core/store/features/features.selector';
 import {currentUgcPoiId} from '@wm-core/store/features/ugc/ugc.selector';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
@@ -148,13 +148,9 @@ export class MapPage implements OnDestroy {
   );
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   currentCustomTrack$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  currentEcPoiId$ = this._store.select(currentEcPoiId);
   currentLayer$ = this._store.select(ecLayer);
-  currentPoi$: BehaviorSubject<WmFeature<Point>> = new BehaviorSubject<WmFeature<Point> | null>(
-    null,
-  );
-  currentPoiID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
-  currentPoiIDFromHome$ = this._store.select(UICurrentPoiId);
-  currentPoiIDToMap$: Observable<number | null>;
+  currentPoi$ = this._store.select(poi);
   currentPoiNextID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiPrevID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentRelatedPoi$ = this._store.select(currentEcRelatedPoi);
@@ -192,13 +188,7 @@ export class MapPage implements OnDestroy {
           return p;
         }),
       ),
-      this.currentRelatedPoi$.pipe(
-        distinctUntilChanged(),
-        map(p => {
-          if (p == null) return null;
-          return p;
-        }),
-      ),
+      this.currentRelatedPoi$.pipe(distinctUntilChanged()),
       this.ugcPoi$.pipe(
         distinctUntilChanged(),
         map(p => {
@@ -272,6 +262,9 @@ export class MapPage implements OnDestroy {
     private _actions$: Actions,
     private _urlHandlerSvc: UrlHandlerService,
   ) {
+    this.currentPoi$.subscribe(poi => {
+      console.log(poi);
+    });
     this.refreshLayer$ = this._store.select(countSelectedFilters);
     if (window.innerWidth < maxWidth) {
       this.mapPadding$.next([initPadding[0], initPadding[1], initPadding[2], menuCloseLeft]);
@@ -314,12 +307,6 @@ export class MapPage implements OnDestroy {
     );
     this.leftPadding$ = this.showMenu$.pipe(map(showMenu => (showMenu ? menuOpenLeft : 0)));
 
-    this.currentPoiIDToMap$ = combineLatest([
-      merge(this.currentPoiID$, this.currentPoiIDFromHome$),
-    ]).pipe(
-      map(([val]) => val ?? -1),
-      distinctUntilChanged((prev, curr) => +prev === +curr),
-    );
     this.currentUgcPoiIDToMap$ = this._store.select(currentUgcPoiId);
     this._actions$.pipe(ofType(goToHome)).subscribe(() => {
       this.unselectPOI();
@@ -428,9 +415,7 @@ export class MapPage implements OnDestroy {
   }
 
   setCurrentPoi(id): void {
-    if (id !== this.currentPoiID$.value) {
-      this.currentPoiID$.next(id);
-    }
+    this._urlHandlerSvc.updateURL({poi: id});
     this._cdr.detectChanges();
   }
 
@@ -467,7 +452,6 @@ export class MapPage implements OnDestroy {
 
   setPoi(poi: WmFeature<Point>): void {
     this.resetSelectedUgcPoi$.next(!this.resetSelectedUgcPoi$.value);
-    this.currentPoi$.next(poi);
     const id = poi?.properties?.id ?? null;
     this._urlHandlerSvc.updateURL({poi: id ? +id : undefined});
   }
@@ -555,7 +539,6 @@ export class MapPage implements OnDestroy {
   }
 
   unselectPOI(): void {
-    this.currentPoi$.next(null);
     this.WmMapTrackRelatedPoisDirective.setPoi = -1;
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
     this.resetSelectedUgcPoi$.next(!this.resetSelectedUgcPoi$.value);

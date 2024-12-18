@@ -11,7 +11,7 @@
   <webmapp-track-details
     *ngIf="(ecTrack$|async) as ecTrack;"
     [track]="ecTrack"
-    [poi]="currentPoiIDToMap$|async"
+    [poi]="currentEcPoiId$|async"
     (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
     (poi-click)="setCurrentRelatedPoi($event)"
     (dismiss)="updateEcTrack()"
@@ -59,7 +59,7 @@
   </ng-template>
 </div>
 <webmapp-poi-popup
-  *ngIf="mergedPoi$|async as poi"
+  *ngIf="currentPoi$|async as poi"
   [poi]="poi"
   (closeEVT)="unselectPOI()"
   (nextEVT)="next()"
@@ -93,7 +93,7 @@
   (colorSelectedFromLayerEVT)="trackColor$.next($event)"
   wmMapPois
   [wmMapInputTyped]="apiSearchInputTyped$|async"
-  [wmMapPoisPoi]="currentPoiIDToMap$|async"
+  [wmMapPoisPoi]=" currentEcPoiId$|async"
   [wmMapPoisPois]="pois$|async"
   [wmMapPoisFilters]="poiFilterIdentifiers$|async"
   [WmMapPoisUnselectPoi]="resetSelectedPoi$|async"

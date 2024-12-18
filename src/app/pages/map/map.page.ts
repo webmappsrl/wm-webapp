@@ -5,6 +5,7 @@ import {
   currentEcTrack,
   allEcpoiFeatures,
   currentEcRelatedPoi,
+  currentEcRelatedPoiId,
 } from '@wm-core/store/features/ec/ec.selector';
 import {
   ChangeDetectionStrategy,
@@ -156,6 +157,7 @@ export class MapPage implements OnDestroy {
   currentPoiNextID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentPoiPrevID$: BehaviorSubject<number> = new BehaviorSubject<number>(-1);
   currentRelatedPoi$ = this._store.select(currentEcRelatedPoi);
+  currentRelatedPoiID$ = this._store.select(currentEcRelatedPoiId);
   currentUgcPoiIDToMap$: Observable<number | null>;
   dataLayerUrls$: Observable<IDATALAYER>;
   disableLayers$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -269,9 +271,6 @@ export class MapPage implements OnDestroy {
     private _actions$: Actions,
     private _urlHandlerSvc: UrlHandlerService,
   ) {
-    this.currentRelatedPoi$.subscribe(poi => {
-      console.log(poi);
-    });
     this.refreshLayer$ = this._store.select(countSelectedFilters);
     if (window.innerWidth < maxWidth) {
       this.mapPadding$.next([initPadding[0], initPadding[1], initPadding[2], menuCloseLeft]);

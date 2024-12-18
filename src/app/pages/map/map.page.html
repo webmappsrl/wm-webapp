@@ -104,6 +104,7 @@
   [trackElevationChartElements]="trackElevationChartHoverElements$|async"
   (trackSelectedFromLayerEVT)="updateEcTrack($event)"
   wmMapTrackRelatedPois
+  [related-current-ec-poi-id]="currentRelatedPoiID$|async"
   (related-poi)="setCurrentRelatedPoi($event)"
   (related-poi-next)="currentPoiNextID$.next(+$event)"
   [wmMapReletedPoisDisableClusterLayer]="wmMapEcPoisDisableLayer$|async"

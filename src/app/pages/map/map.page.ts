@@ -443,10 +443,15 @@ export class MapPage implements OnDestroy {
     this._cdr.detectChanges();
   }
 
-  setCurrentRelatedPoi(id: number): void {
-    if (typeof id === 'number') {
+  setCurrentRelatedPoi(feature: number | WmFeature<Point> | null): void {
+    if (feature == null) {
+      return;
+    } else if (typeof feature === 'number') {
+      this._urlHandlerSvc.updateURL({ec_related_poi: feature});
+      this.WmMapTrackRelatedPoisDirective.setPoi = feature;
+    } else if (feature.properties != null && feature.properties.id != null) {
+      const id = feature.properties.id;
       this._urlHandlerSvc.updateURL({ec_related_poi: id});
-      this.WmMapTrackRelatedPoisDirective.setPoi = id;
     }
   }
 

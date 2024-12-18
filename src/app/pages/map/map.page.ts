@@ -96,6 +96,7 @@ import {WmHomeComponent} from '@wm-core/home/home.component';
 import {Actions, ofType} from '@ngrx/effects';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {track} from '@wm-core/store/features/features.selector';
+import {currentUgcPoiId} from '@wm-core/store/features/ugc/ugc.selector';
 const menuOpenLeft = 400;
 const menuCloseLeft = 0;
 const initPadding = [100, 100, 100, menuOpenLeft];
@@ -319,15 +320,7 @@ export class MapPage implements OnDestroy {
       map(([val]) => val ?? -1),
       distinctUntilChanged((prev, curr) => +prev === +curr),
     );
-    this.currentUgcPoiIDToMap$ = combineLatest([
-      merge(this.currentPoiID$, this.currentPoiIDFromHome$),
-    ]).pipe(
-      map(([val]) => {
-        const poiID = val ?? -1;
-        return poiID;
-      }),
-      distinctUntilChanged((prev, curr) => `${prev}` === `${curr}`),
-    );
+    this.currentUgcPoiIDToMap$ = this._store.select(currentUgcPoiId);
     this._actions$.pipe(ofType(goToHome)).subscribe(() => {
       this.unselectPOI();
       this.mapCmp.resetView();
@@ -486,6 +479,8 @@ export class MapPage implements OnDestroy {
   }
 
   setUgcPoi(poi: WmFeature<Point>): void {
+    const id = poi?.properties?.id ?? null;
+    this._urlHandlerSvc.updateURL({ugc_poi: id ? +id : undefined});
     this.resetSelectedPoi$.next(!this.resetSelectedPoi$.value);
   }
 

@@ -151,11 +151,7 @@
           (click)="updatePoi()"
           >{{"save" | wmtrans}}</ion-button
         >
-        <ion-button
-          (click)="isEditing$.next(false)"
-          *ngIf="enableEditingInline$|async"
-          >{{"cancel" |wmtrans}}</ion-button
-        >
+        <ion-button (click)="isEditing$.next(false)">{{"cancel" |wmtrans}}</ion-button>
       </ng-template>
     </ng-container>
     <ng-template #editGeohub>

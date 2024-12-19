@@ -262,9 +262,6 @@ export class MapPage implements OnDestroy {
     private _actions$: Actions,
     private _urlHandlerSvc: UrlHandlerService,
   ) {
-    this.currentPoi$.subscribe(poi => {
-      console.log(poi);
-    });
     this.refreshLayer$ = this._store.select(countSelectedFilters);
     if (window.innerWidth < maxWidth) {
       this.mapPadding$.next([initPadding[0], initPadding[1], initPadding[2], menuCloseLeft]);

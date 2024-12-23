@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   HostListener,
@@ -8,13 +9,19 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {Observable} from 'rxjs';
+import {BehaviorSubject, from, Observable} from 'rxjs';
 
-import {IonSlides} from '@ionic/angular';
+import {AlertController, IonSlides} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 
-import {IGeojsonProperties} from 'src/app/types/model';
-import {confShowEditingInline} from 'wm-core/store/conf/conf.selector';
+import {confPOIFORMS, confShowEditingInline} from '@wm-core/store/conf/conf.selector';
+import {Media, MediaProperties, WmFeature, WmProperties} from '@wm-types/feature';
+import {getUgcMediasByIds} from '@wm-core/utils/localForage';
+import {map, switchMap, take} from 'rxjs/operators';
+import {LangService} from '@wm-core/localization/lang.service';
+import {Point} from 'geojson';
+import {deleteUgcPoi, updateUgcPoi} from '@wm-core/store/features/ugc/ugc.actions';
+import {UntypedFormGroup} from '@angular/forms';
 
 @Component({
   selector: 'webmapp-poi-popup',
@@ -26,6 +33,7 @@ import {confShowEditingInline} from 'wm-core/store/conf/conf.selector';
 export class PoiPopupComponent {
   @Input('poi') set setPoi(poi: any) {
     if (poi != null && poi.properties != null) {
+      this.poi = poi;
       const prop: {[key: string]: any} = {};
       try {
         prop.address =
@@ -50,8 +58,17 @@ export class PoiPopupComponent {
         prop.related_url =
           Object.keys(poi.properties.related_url).length === 0 ? null : poi.properties.related_url;
       }
-
+      if (poi.properties?.photoKeys) {
+        this.medias$ = from(
+          getUgcMediasByIds(poi.properties.photoKeys.map(key => key.toString())),
+        ).pipe(map(medias => medias));
+      }
       this.poiProperties = {...poi.properties, ...prop};
+      this.enableGallery$.next(
+        this.poiProperties?.feature_image != null ||
+          (this.poiProperties?.image_gallery != null &&
+            this.poiProperties?.image_gallery?.length > 0),
+      );
     }
   }
 
@@ -60,12 +77,33 @@ export class PoiPopupComponent {
   @Output() prevEVT: EventEmitter<void> = new EventEmitter<void>();
   @ViewChild('gallery') slider: IonSlides;
 
+  confPOIFORMS$: Observable<any[]> = this._store.select(confPOIFORMS);
   defaultPhotoPath = '/assets/icon/no-photo.svg';
   enableEditingInline$ = this._store.select(confShowEditingInline);
+  enableGallery$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  fg: UntypedFormGroup;
+  isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   isEnd$: Observable<boolean>;
-  poiProperties: IGeojsonProperties = null;
+  medias$: Observable<WmFeature<Media, MediaProperties>[]>;
+  poi: WmFeature<Point> = null;
+  poiProperties: WmProperties = null;
+  slideOptions = {
+    allowTouchMove: false,
+    slidesPerView: 1,
+    slidesPerColumn: 1,
+    slidesPerGroup: 1,
+    centeredSlides: true,
+    watchSlidesProgress: true,
+    spaceBetween: 20,
+    loop: true,
+  };
 
-  constructor(private _store: Store) {}
+  constructor(
+    private _store: Store,
+    private _alertCtrl: AlertController,
+    private _langSvc: LangService,
+    private _cdr: ChangeDetectorRef,
+  ) {}
 
   @HostListener('document:keydown.ArrowLeft', ['$event'])
   handleArrowLeft(): void {
@@ -82,11 +120,56 @@ export class PoiPopupComponent {
     this.closeEVT.emit();
   }
 
+  deleteUgcPoi(): void {
+    from(
+      this._alertCtrl.create({
+        message: this._langSvc.instant(
+          "Sei sicuro di voler eliminare questo POI? L'operazione è irreversibile.",
+        ),
+        buttons: [
+          {text: this._langSvc.instant('Annulla'), role: 'cancel'},
+          {
+            text: this._langSvc.instant('Elimina'),
+            handler: () => {
+              this._store.dispatch(deleteUgcPoi({poi: this.poi}));
+              this.closeEVT.emit();
+            },
+          },
+        ],
+      }),
+    )
+      .pipe(
+        switchMap(alert => alert.present()),
+        take(1),
+      )
+      .subscribe();
+  }
+
   openGeohub(): void {
     const id = this.poiProperties != null && this.poiProperties.id;
     if (id != null) {
       const url = `https://geohub.webmapp.it/resources/ec-pois/${id}/edit?viaResource&viaResourceId&viaRelationship`;
       window.open(url, '_blank').focus();
+    }
+  }
+
+  updatePoi(): void {
+    if (this.fg.valid) {
+      const poi: WmFeature<Point> = {
+        ...this.poi,
+        properties: {
+          ...this.poi?.properties,
+          name: this.fg.value.title,
+          form: this.fg.value,
+          updatedAt: new Date(),
+        },
+      };
+
+      this._store.dispatch(updateUgcPoi({poi}));
+      this.isEditing$.next(false);
+      this.poi = poi;
+      this.poiProperties = {...poi.properties} as any;
+      this._cdr.detectChanges();
     }
   }
 }

@@ -20,6 +20,20 @@ webmapp-poi-popup {
   align-content: stretch;
   align-items: stretch;
 
+  ion-slides {
+    margin-top: 16px !important;
+    margin-bottom: 16px !important;
+    width: -webkit-fill-available !important;
+    position: relative;
+    background-color: white !important;
+    ion-slide {
+      max-height: 300px;
+      overflow: hidden;
+      border-radius: 15px;
+      position: relative;
+    }
+  }
+
   .row {
     -webkit-order: 0;
     -ms-flex-order: 0;
@@ -98,7 +112,19 @@ webmapp-poi-popup {
       margin: unset;
     }
   }
-
+  .readonly-form {
+    ion-card {
+      ion-card-subtitle {
+        color: black;
+        font-weight: bold;
+        line-height: 2;
+        font-size: var(--wm-font-x-lg);
+      }
+      ion-label {
+        font-size: var(--wm-font-lg);
+      }
+    }
+  }
   .webmapp-poi-popup-btns {
     display: flex;
     flex-direction: column;
@@ -145,11 +171,16 @@ webmapp-poi-popup {
     z-index: 9999;
   }
 
-  .edit {
+  .edit-container {
     position: absolute;
+    display: flex;
+    flex-direction: column;
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 3px;
+
+    ion-button {
+      margin: 3px;
+    }
   }
 }

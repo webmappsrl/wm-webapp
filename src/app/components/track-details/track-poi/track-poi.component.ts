@@ -6,10 +6,10 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import { Feature } from 'geojson';
-
-import {IGeojsonProperties} from 'src/app/types/model';
-
+import {Store} from '@ngrx/store';
+import {WmFeature} from '@wm-types/feature';
+import {LineString, Point} from 'geojson';
+import {currentEcRelatedPoiId} from '@wm-core/store/features/ec/ec.selector';
 @Component({
   selector: 'webmapp-track-poi',
   templateUrl: './track-poi.component.html',
@@ -18,40 +18,45 @@ import {IGeojsonProperties} from 'src/app/types/model';
   encapsulation: ViewEncapsulation.None,
 })
 export class TrackPoiComponent {
-  @Input('track') set feature(track: Feature) {
-    this.poi = [];
-    this.poiClick.emit(-1);
+  @Input('track') set feature(track: WmFeature<LineString>) {
+    this.pois = [];
+    this.poiClick.emit(null);
     if (track != null && track.properties != null && track.properties.related_pois != null) {
-      this.poi = track.properties.related_pois.map(relatedPoi => {
-        const properties = relatedPoi.properties;
+      this.pois = track.properties.related_pois.map(relatedPoi => {
+        const properties = {...relatedPoi.properties};
+
         if (properties.related_url != null) {
-          delete properties.related_url[''];
+          const updatedRelatedUrl = {...properties.related_url};
+          delete updatedRelatedUrl[''];
           properties.related_url =
-            Object.keys(properties.related_url).length === 0
-              ? null
-              : properties.related_url || undefined;
+            Object.keys(updatedRelatedUrl).length === 0 ? null : updatedRelatedUrl || undefined;
         }
 
         properties.address = [properties.addr_locality, properties.addr_street]
           .filter(f => f != null)
           .join(', ');
-        return properties;
+        relatedPoi = {...relatedPoi, properties};
+        return relatedPoi;
       });
     }
   }
 
   @Input('poi') set setPoi(id: number) {
-    const newCurrentPoi = this.poi.find(p => p.id === id);
+    const newCurrentPoi = this.pois.find(p => p.id === id);
     this.currentPoi = newCurrentPoi;
   }
 
-  @Output('poi-click') poiClick: EventEmitter<any> = new EventEmitter<any>();
+  @Output('poi-click') poiClick: EventEmitter<WmFeature<Point> | null> =
+    new EventEmitter<WmFeature<Point> | null>();
 
-  currentPoi: IGeojsonProperties = null;
+  currentPoi: WmFeature<Point> = null;
+  currentRelatedEcPid$ = this._store.select(currentEcRelatedPoiId);
   defaultPhotoPath = '/assets/icon/no-photo.svg';
-  poi: IGeojsonProperties[] = [];
+  pois: WmFeature<Point>[] = [];
 
-  selectPoi(poi: IGeojsonProperties) {
+  constructor(private _store: Store) {}
+
+  selectPoi(poi: WmFeature<Point>) {
     this.currentPoi = poi;
     this.poiClick.emit(poi);
   }

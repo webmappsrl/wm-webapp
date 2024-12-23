@@ -64,5 +64,10 @@
   "running": "Corsa",
   "cycling": "In bicicletta",
   "poi_type": "Punti di interesse",
-  "where": "Luoghi"
+  "where": "Luoghi",
+  "Inserisci il nuovo nome": "Inserisci il nuovo nome",
+  "Si è verificato un errore durante il salvataggio del percorso. Riprova": "Si è verificato un errore durante il salvataggio del percorso. Riprova",
+  "Il percorso è stato salvato correttamente": "Il percorso è stato salvato correttamente",
+  "Per favore, inserisci un nome per il percorso": "Per favore, inserisci un nome per il percorso",
+  "Errore": "Errore"
 }

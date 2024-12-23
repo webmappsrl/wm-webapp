@@ -1,0 +1,34 @@
+<ng-container *ngIf="activity">
+  <div class="webmapp-walkability-box" *ngIf="activity ==='mtb'">
+    <i class="icon-outline-MTB"></i>
+    <span class="webmapp-walkability-label">{{activity|wmtrans}}</span>
+  </div>
+  <div class="webmapp-walkability-box" *ngIf="activity ==='hiking'">
+    <i class="icon-fill-trekking"></i>
+    <span class="webmapp-walkability-label">{{activity|wmtrans}}</span>
+  </div>
+  <div class="webmapp-walkability-box" *ngIf="activity === 'cycling'">
+    <i class="icon-outline-bike"></i>
+    <span class="webmapp-walkability-label">{{activity|wmtrans}}</span>
+  </div>
+  <div class="webmapp-walkability-box" *ngIf="activity === 'running'">
+    <i class="icon-outline-running"></i>
+    <span class="webmapp-walkability-label">{{activity|wmtrans}}</span>
+  </div>
+  <div class="webmapp-walkability-box" *ngIf="activity === 'walking'">
+    <i class="icon-outline-walking"></i>
+    <span class="webmapp-walkability-label">{{activity|wmtrans}}</span>
+  </div>
+  <div class="webmapp-walkability-box" *ngIf="activity === 'skitouring'">
+    <i class="icon-outline-nordic-walking"></i>
+    <span class="webmapp-walkability-label">{{activity|wmtrans}}</span>
+  </div>
+  <div class="webmapp-walkability-box" *ngIf="activity === 'trekking'">
+    <i class="icon-outline-trekking"></i>
+    <span class="webmapp-walkability-label">{{activity|wmtrans}}</span>
+  </div>
+  <div class="webmapp-walkability-box" *ngIf="activity === 'horse'">
+    <i class="icon-outline-horse"></i>
+    <span class="webmapp-walkability-label">{{activity|wmtrans}}</span>
+  </div>
+</ng-container>

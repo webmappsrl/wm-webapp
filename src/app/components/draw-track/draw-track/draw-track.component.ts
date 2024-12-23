@@ -1,4 +1,3 @@
-import {HttpClient} from '@angular/common/http';
 import GeoJsonToGpx from '@dwayneparton/geojson-to-gpx';
 import {
   ChangeDetectionStrategy,
@@ -13,7 +12,19 @@ import GeoJSON from 'ol/format/GeoJSON';
 import Map from 'ol/Map';
 
 import tokml from 'geojson-to-kml';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, EMPTY, from, Observable} from 'rxjs';
+import {LineString} from 'geojson';
+import {confGeohubId, confTRACKFORMS} from '@wm-core/store/conf/conf.selector';
+import {Store} from '@ngrx/store';
+import {catchError, switchMap, take, map} from 'rxjs/operators';
+import {DeviceService} from '@wm-core/services/device.service';
+import {AlertController} from '@ionic/angular';
+import {saveDrawTrackAsUgc} from '@wm-core/store/auth/auth.selectors';
+import {generateUUID, saveUgcTrack} from '@wm-core/utils/localForage';
+import {WmFeature, WmProperties} from '@wm-types/feature';
+import {UntypedFormGroup} from '@angular/forms';
+import {syncUgcTracks} from '@wm-core/store/features/ugc/ugc.actions';
+import {LangService} from '@wm-core/localization/lang.service';
 
 @Component({
   selector: 'wm-draw-track',
@@ -30,11 +41,20 @@ export class DrawTrackComponent {
   @Input() map: Map | any;
   @Output() reloadEvt: EventEmitter<void> = new EventEmitter<void>();
 
+  confTRACKFORMS$: Observable<any[]> = this._store.select(confTRACKFORMS);
+  fg: UntypedFormGroup;
+  geohubId$ = this._store.select(confGeohubId);
+  saveDrawTrackAsUgc$: Observable<boolean> = this._store.select(saveDrawTrackAsUgc);
   savedTracks$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
   selectedTrackIdx: number = -1;
-  track$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  track$: BehaviorSubject<WmFeature<LineString>> = new BehaviorSubject<WmFeature<LineString>>(null);
 
-  constructor(private _http: HttpClient) {
+  constructor(
+    private _store: Store,
+    private _deviceSvc: DeviceService,
+    private _alertCtrl: AlertController,
+    private _langSvc: LangService,
+  ) {
     this._initSavedTracks();
   }
 
@@ -82,7 +102,7 @@ export class DrawTrackComponent {
   }
 
   editCustomTrackName(savedTrack: any): void {
-    const newName = prompt('Inserisci il nuovo nome:', savedTrack.properties.name);
+    const newName = prompt(`${this._langSvc.instant('Inserisci il nuovo nome')}:`, savedTrack?.properties?.name);
     if (newName) {
       savedTrack.properties.name = newName;
       this.saveCustomTrack();
@@ -90,23 +110,13 @@ export class DrawTrackComponent {
   }
 
   saveCustomTrack(): void {
-    const savedTracks = this.savedTracks$.value;
-    if (this.track$.value != null) {
-      if (!this.track$.value.properties.name || this.track$.value.properties.name.trim() === '') {
-        while (this.track$.value.properties.name == '') {
-          this.track$.value.properties.name = prompt(
-            'Per favore, inserisci un nome per il percorso.',
-          );
-        }
+    this.saveDrawTrackAsUgc$.pipe(take(1)).subscribe(saveAsUgc => {
+      if (saveAsUgc) {
+        this._saveCustomTrackAsUgc();
+      } else {
+        this._saveCustomTrackLocally();
       }
-      if (this.track$.value.properties.name) {
-        savedTracks.push(this.track$.value);
-      }
-    }
-    localStorage.setItem('wm-saved-tracks', JSON.stringify(savedTracks));
-    this.savedTracks$.next(savedTracks);
-    this.track$.next(null);
-    this.reloadEvt.emit();
+    });
   }
 
   private _downloadFile(name, body): void {
@@ -127,5 +137,78 @@ export class DrawTrackComponent {
     if (localSavedTracks != null) {
       this.savedTracks$.next(localSavedTracks);
     }
+  }
+
+  private _saveCustomTrackAsUgc(): void {
+    if (this.track$.value != null) {
+      this.geohubId$
+        .pipe(
+          take(1),
+          switchMap(geohubId =>
+            from(this._deviceSvc.getInfo()).pipe(
+              map(device => {
+                const feature: WmFeature<LineString> = this.track$.value;
+                const drawTrackProperties = feature?.properties;
+                const dateNow = new Date();
+                const properties: WmProperties = {
+                  name: this.fg.value.title,
+                  form: this.fg.value,
+                  uuid: generateUUID(),
+                  app_id: `${geohubId}`,
+                  createdAt: dateNow,
+                  updatedAt: dateNow,
+                  drawTrackProperties,
+                  device,
+                };
+
+                feature.properties = properties;
+                return feature;
+              })
+            )
+          ),
+          switchMap(feature => saveUgcTrack(feature)),
+          switchMap(_ => {
+            this.track$.next(null);
+            this.reloadEvt.emit();
+            return this._alertCtrl
+              .create({
+                message: `${this._langSvc.instant('Il percorso è stato salvato correttamente')}!`,
+                buttons: ['OK'],
+              })
+          }),
+          switchMap(alert => alert.present()),
+          catchError(_ => {
+            this._alertCtrl
+              .create({
+                header: this._langSvc.instant('Errore'),
+                message: `${this._langSvc.instant('Si è verificato un errore durante il salvataggio del percorso. Riprova')}!`,
+                buttons: ['OK'],
+              })
+              .then(alert => alert.present());
+            return EMPTY;
+          }),
+        )
+        .subscribe(() => this._store.dispatch(syncUgcTracks()));
+    }
+  }
+
+  private _saveCustomTrackLocally(): void {
+    const savedTracks = this.savedTracks$.value;
+    if (this.track$.value != null) {
+      if (!this.track$.value.properties.name || this.track$.value.properties.name.trim() === '') {
+        while (this.track$.value.properties.name == '') {
+          this.track$.value.properties.name = prompt(
+            `${this._langSvc.instant('Per favore, inserisci un nome per il percorso')}.`,
+          );
+        }
+      }
+      if (this.track$.value.properties.name) {
+        savedTracks.push(this.track$.value);
+      }
+    }
+    localStorage.setItem('wm-saved-tracks', JSON.stringify(savedTracks));
+    this.savedTracks$.next(savedTracks);
+    this.track$.next(null);
+    this.reloadEvt.emit();
   }
 }

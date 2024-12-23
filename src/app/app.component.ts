@@ -2,15 +2,15 @@ import {DOCUMENT} from '@angular/common';
 import {Component, Inject, OnInit, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
-import {filter, skip, switchMap, take} from 'rxjs/operators';
-import {query} from 'wm-core/store/api/api.actions';
-import {loadConf} from 'wm-core/store/conf/conf.actions';
-import {confAPP, confTHEMEVariables, confWEBAPP} from 'wm-core/store/conf/conf.selector';
+import {filter, skip, switchMap, take, takeUntil} from 'rxjs/operators';
+import {ecTracks} from '@wm-core/store/features/ec/ec.actions';
+import {loadConf} from '@wm-core/store/conf/conf.actions';
+import {confAPP, confTHEMEVariables, confWEBAPP} from '@wm-core/store/conf/conf.selector';
 import appPackage from 'package.json';
 import wmCorePackage from './shared/wm-core/package.json';
 import mapCorePackage from './shared/map-core/package.json';
-import {environment} from 'src/environments/environment';
-import {IAPP, IWEBAPP} from 'wm-core/types/config';
+import {IAPP, IWEBAPP} from '@wm-core/types/config';
+import {loadAuths} from '@wm-core/store/auth/auth.actions';
 @Component({
   selector: 'webmapp-app-root',
   templateUrl: 'app.component.html',
@@ -18,13 +18,14 @@ import {IAPP, IWEBAPP} from 'wm-core/types/config';
   encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent implements OnInit {
-  confAPP$: Observable<any> = this._storeConf.select(confAPP);
-  confTHEMEVariables$: Observable<any> = this._storeConf.select(confTHEMEVariables);
-  confWEBAPP$: Observable<any> = this._storeConf.select(confWEBAPP);
+  confAPP$: Observable<any> = this._store.select(confAPP);
+  confTHEMEVariables$: Observable<any> = this._store.select(confTHEMEVariables);
+  confWEBAPP$: Observable<any> = this._store.select(confWEBAPP);
 
-  constructor(@Inject(DOCUMENT) private _document: Document, private _storeConf: Store<any>) {
-    this._storeConf.dispatch(loadConf());
-    this._storeConf.dispatch(query({init: true}));
+  constructor(@Inject(DOCUMENT) private _document: Document, private _store: Store<any>) {
+    this._store.dispatch(loadConf());
+    this._store.dispatch(loadAuths());
+    this._store.dispatch(ecTracks({init: true}));
     this.confTHEMEVariables$.pipe(take(2)).subscribe(css => this._setGlobalCSS(css));
     console.table({
       'app': appPackage.version,

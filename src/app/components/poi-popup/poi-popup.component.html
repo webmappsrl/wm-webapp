@@ -54,13 +54,12 @@
       *ngIf="(enableGallery$|async)"
       [gallery]="poiProperties.image_gallery"
     ></wm-gallery>
-    <ng-container *ngIf="medias$|async as medias">
-      <ion-slides [options]="slideOptions" #slider>
-        <ion-slide *ngFor="let media of medias;let idx = index">
-          <wm-img [src]="media|wmCreateBlob" />
-        </ion-slide>
-      </ion-slides>
-    </ng-container>
+    <wm-ugc-medias
+      *ngIf="medias$|async as medias"
+      [medias]="medias"
+      [showArrows]="true"
+    ></wm-ugc-medias>
+
     <div class="webmapp-poi-popup-btns">
       <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.address">
         <i class="wm-icn icon-fill-pin"></i>

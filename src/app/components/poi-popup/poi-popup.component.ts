@@ -34,6 +34,7 @@ export class PoiPopupComponent {
   @Input('poi') set setPoi(poi: any) {
     if (poi != null && poi.properties != null) {
       this.poi = poi;
+      this.medias$ = undefined;
       const prop: {[key: string]: any} = {};
       try {
         prop.address =

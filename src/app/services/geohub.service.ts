@@ -4,7 +4,7 @@ import {ConfigService} from './config.service';
 import {Injectable} from '@angular/core';
 import {environment} from 'src/environments/environment';
 import {map} from 'rxjs/operators';
-import { HttpHeaders } from '@angular/common/http';
+import {HttpHeaders} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -34,9 +34,10 @@ export class GeohubService {
       return cacheResult;
     }
     if (id > -1) {
+      const appId = this._configService.geohubAppId;
       const headers = new HttpHeaders({
-        'api-version': 'v2' ,// Aggiungi l'header con la versione dell'API
-        'app-id': `${environment.geohubId}` // Aggiungi l'header con l'id dell'app
+        'api-version': 'v2', // Aggiungi l'header con la versione dell'API
+        'app-id': `${appId}`, // Aggiungi l'header con l'id dell'app
       });
       const result = await this._communicationService
         .get(`${environment.awsApi}/tracks/${id}.json`)

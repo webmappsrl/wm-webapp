@@ -1,18 +1,22 @@
-<ng-container *ngIf="track$|async as track;else customTrackList">
+<ng-container *ngIf="currentCustomTrack$|async as track;else customTrackList">
   <ion-card class="current-custom-track">
     <ion-card-header>
       <ion-card-title>
         <ion-input [(ngModel)]="track.properties.name"></ion-input>
       </ion-card-title>
     </ion-card-header>
-    <wm-form *ngIf="saveDrawTrackAsUgc$|async; else itemName" [confPOIFORMS]="confTRACKFORMS$|async" (formGroupEvt)="fg = $event"></wm-form>
+    <wm-form
+      *ngIf="saveDrawTrackAsUgc$|async; else itemName"
+      [confPOIFORMS]="confTRACKFORMS$|async"
+      (formGroupEvt)="fg = $event"
+    ></wm-form>
     <ng-template #itemName>
       <ion-item>
         <ion-label> {{ 'nome del percorso' | wmtrans }}</ion-label>
-      <ion-input
-        [(ngModel)]="track.properties.name"
-        autofocus
-        placeholder="{{ 'nome del percorso' | wmtrans }}"
+        <ion-input
+          [(ngModel)]="track.properties.name"
+          autofocus
+          placeholder="{{ 'nome del percorso' | wmtrans }}"
         ></ion-input>
       </ion-item>
     </ng-template>
@@ -27,7 +31,8 @@
       expand="full"
       (click)="saveCustomTrack()"
       [disabled]="(saveDrawTrackAsUgc$|async) && fg?.invalid"
-    >{{ 'salva' | wmtrans}}</ion-button>
+      >{{ 'salva' | wmtrans}}</ion-button
+    >
   </ion-card>
 </ng-container>
 

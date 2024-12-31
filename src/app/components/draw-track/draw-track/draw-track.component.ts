@@ -3,13 +3,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input,
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-
-import GeoJSON from 'ol/format/GeoJSON';
-import Map from 'ol/Map';
 
 import tokml from 'geojson-to-kml';
 import {BehaviorSubject, EMPTY, from, Observable} from 'rxjs';
@@ -25,6 +21,7 @@ import {WmFeature, WmProperties} from '@wm-types/feature';
 import {UntypedFormGroup} from '@angular/forms';
 import {syncUgcTracks} from '@wm-core/store/features/ugc/ugc.actions';
 import {LangService} from '@wm-core/localization/lang.service';
+import {currentCustomTrack} from '@wm-core/store/features/ugc/ugc.selector';
 
 @Component({
   selector: 'wm-draw-track',
@@ -34,14 +31,11 @@ import {LangService} from '@wm-core/localization/lang.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class DrawTrackComponent {
-  @Input() set track(t: any) {
-    this.track$.next(t);
-  }
-
-  @Input() map: Map | any;
+  @Output() centerCustomTrackEvt: EventEmitter<void> = new EventEmitter<void>();
   @Output() reloadEvt: EventEmitter<void> = new EventEmitter<void>();
 
   confTRACKFORMS$: Observable<any[]> = this._store.select(confTRACKFORMS);
+  currentCustomTrack$: Observable<any> = this._store.select(currentCustomTrack);
   fg: UntypedFormGroup;
   geohubId$ = this._store.select(confGeohubId);
   saveDrawTrackAsUgc$: Observable<boolean> = this._store.select(saveDrawTrackAsUgc);
@@ -59,13 +53,7 @@ export class DrawTrackComponent {
   }
 
   centerCustomTrack(feature: any): void {
-    const polygon = new GeoJSON({
-      featureProjection: 'EPSG:3857',
-    }).readFeature(feature.geometry);
-    this.map.getView().fit(polygon.getGeometry().getExtent(), {
-      duration: 500,
-      maxZoom: this.map.getView().getZoom(),
-    });
+    this.centerCustomTrackEvt.emit();
   }
 
   deleteCustomTrack(id: number): void {
@@ -102,7 +90,10 @@ export class DrawTrackComponent {
   }
 
   editCustomTrackName(savedTrack: any): void {
-    const newName = prompt(`${this._langSvc.instant('Inserisci il nuovo nome')}:`, savedTrack?.properties?.name);
+    const newName = prompt(
+      `${this._langSvc.instant('Inserisci il nuovo nome')}:`,
+      savedTrack?.properties?.name,
+    );
     if (newName) {
       savedTrack.properties.name = newName;
       this.saveCustomTrack();
@@ -163,25 +154,26 @@ export class DrawTrackComponent {
 
                 feature.properties = properties;
                 return feature;
-              })
-            )
+              }),
+            ),
           ),
           switchMap(feature => saveUgcTrack(feature)),
           switchMap(_ => {
             this.track$.next(null);
             this.reloadEvt.emit();
-            return this._alertCtrl
-              .create({
-                message: `${this._langSvc.instant('Il percorso è stato salvato correttamente')}!`,
-                buttons: ['OK'],
-              })
+            return this._alertCtrl.create({
+              message: `${this._langSvc.instant('Il percorso è stato salvato correttamente')}!`,
+              buttons: ['OK'],
+            });
           }),
           switchMap(alert => alert.present()),
           catchError(_ => {
             this._alertCtrl
               .create({
                 header: this._langSvc.instant('Errore'),
-                message: `${this._langSvc.instant('Si è verificato un errore durante il salvataggio del percorso. Riprova')}!`,
+                message: `${this._langSvc.instant(
+                  'Si è verificato un errore durante il salvataggio del percorso. Riprova',
+                )}!`,
                 buttons: ['OK'],
               })
               .then(alert => alert.present());

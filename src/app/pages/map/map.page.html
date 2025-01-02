@@ -40,6 +40,7 @@
   ></wm-ugc-details>
 
   <wm-home
+    #home
     *ngIf="wmHomeEnable$|async;else customTrack"
     class="wm-home"
     [hidden]="(track$|async) !=null"
@@ -60,4 +61,4 @@
   (nextEVT)="next()"
   (prevEVT)="prev()"
 ></webmapp-poi-popup>
-<wm-geobox-map> </wm-geobox-map>
+<wm-geobox-map (openPopupEVT)="openPopup($event)"> </wm-geobox-map>

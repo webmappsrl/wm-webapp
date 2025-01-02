@@ -24,6 +24,7 @@ import {currentCustomTrack as currentCustomTrackAction} from '@wm-core/store/fea
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {poi, track} from '@wm-core/store/features/features.selector';
 import {homeOpened} from '@wm-core/store/user-activity/user-activity.selector';
+import {WmHomeComponent} from '@wm-core/home/home.component';
 const menuOpenLeft = 400;
 const initPadding = [100, 100, 100, menuOpenLeft];
 const initMenuOpened = true;
@@ -36,6 +37,8 @@ const initMenuOpened = true;
   providers: [LangService],
 })
 export class MapPage {
+  @ViewChild(WmHomeComponent) homeCmp: WmHomeComponent;
+
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   currentEcPoiId$ = this._store.select(currentEcPoiId);
@@ -70,6 +73,10 @@ export class MapPage {
   }
 
   next(): void {}
+
+  openPopup(popup: any): void {
+    this.homeCmp.popup$.next(popup);
+  }
 
   prev(): void {}
 

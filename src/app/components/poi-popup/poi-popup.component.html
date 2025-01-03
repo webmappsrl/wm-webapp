@@ -118,7 +118,7 @@
     <div
       class="webmapp-poi-popup-text"
       *ngIf="poi.properties.uuid==null"
-      [innerHTML]="(poiProperties.form?.description)|wmtrans"
+      [innerHTML]="(poiProperties.description|| poiProperties.form?.description)|wmtrans"
     ></div>
 
     <ng-container *ngIf="poiProperties?.audio">

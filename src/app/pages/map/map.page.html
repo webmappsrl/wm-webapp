@@ -8,10 +8,8 @@
   <ion-icon [attr.name]="caretOutLine$|async"></ion-icon>
 </button>
 <div class="details-container" [class.details-container-visible]="(showMenu$|async)">
-  <webmapp-track-details
+  <wm-track-properties
     *ngIf="(ecTrack$|async) as ecTrack;"
-    [track]="ecTrack"
-    [poi]="currentEcPoiId$|async"
     (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
     (poi-click)="setCurrentRelatedPoi($event)"
     (dismiss)="updateEcTrack()"
@@ -30,7 +28,7 @@
         </ion-label>
       </ion-item>
     </ng-container>
-  </webmapp-track-details>
+  </wm-track-properties>
   <wm-ugc-details
     *ngIf="(ugcTrack$|async) as ugcTrack"
     [track]="ugcTrack"

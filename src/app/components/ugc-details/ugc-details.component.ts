@@ -10,7 +10,6 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {AlertController, IonContent, IonSlides} from '@ionic/angular';
-import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, from, Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
@@ -22,6 +21,7 @@ import {LangService} from '@wm-core/localization/lang.service';
 import {deleteUgcTrack, updateUgcTrack} from '@wm-core/store/features/ugc/ugc.actions';
 import {UntypedFormGroup} from '@angular/forms';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
+import {WmSlopeChartComponent} from '@wm-core/slope-chart/slope-chart.component';
 
 @Component({
   selector: 'wm-ugc-details',
@@ -45,8 +45,8 @@ export class UgcDetailsComponent {
   @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
   @Output('trackElevationChartHover')
-  trackElevationChartHover: EventEmitter<ITrackElevationChartHoverElements> =
-    new EventEmitter<ITrackElevationChartHoverElements>();
+  trackElevationChartHover: EventEmitter<WmSlopeChartComponent> =
+    new EventEmitter<WmSlopeChartComponent>();
   @ViewChild('content') content: IonContent;
   @ViewChild('slider') slider: IonSlides;
 
@@ -119,7 +119,7 @@ export class UgcDetailsComponent {
     this.isEditing$;
   }
 
-  onLocationHover(event: ITrackElevationChartHoverElements | any): void {
+  onLocationHover(event: WmSlopeChartComponent | any): void {
     this.trackElevationChartHover.emit(event);
   }
 

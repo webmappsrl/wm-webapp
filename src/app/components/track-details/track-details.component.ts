@@ -10,13 +10,13 @@ import {
 } from '@angular/core';
 import {IonContent, ModalController} from '@ionic/angular';
 
-import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {ModalGalleryComponent} from './modal-gallery/modal-gallery.component';
 import {Store} from '@ngrx/store';
 import {confShowEditingInline} from '@wm-core/store/conf/conf.selector';
 import {Feature, LineString} from 'geojson';
 import {WmFeature} from '@wm-types/feature';
 import {ecLayer} from '@wm-core/store/user-activity/user-activity.selector';
+import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 
 @Component({
   selector: 'webmapp-track-details',
@@ -42,8 +42,8 @@ export class TrackDetailsComponent {
   @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
   @Output('trackElevationChartHover')
-  trackElevationChartHover: EventEmitter<ITrackElevationChartHoverElements> =
-    new EventEmitter<ITrackElevationChartHoverElements>();
+  trackElevationChartHover: EventEmitter<WmSlopeChartHoverElements> =
+    new EventEmitter<WmSlopeChartHoverElements>();
   @ViewChild('content') content: IonContent;
 
   confOPTIONS$ = this._store.select(confOPTIONS);
@@ -56,7 +56,7 @@ export class TrackDetailsComponent {
 
   constructor(private _modalController: ModalController, private _store: Store) {}
 
-  onLocationHover(event: ITrackElevationChartHoverElements | any) {
+  onLocationHover(event: WmSlopeChartHoverElements | any) {
     this.trackElevationChartHover.emit(event);
   }
 

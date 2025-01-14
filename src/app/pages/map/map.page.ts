@@ -46,6 +46,8 @@ export class MapPage {
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
   confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
   currentEcPoiId$ = this._store.select(currentEcPoiId);
+  currentTrack$ = this._store.select(track);
+  currentUgcPoiProperties$ = this._store.select(currentUgcPoiProperties);
   ecTrack$: Observable<WmFeature<LineString> | null> = this._store.select(currentEcTrack);
   geohubId$ = this._store.select(confGeohubId);
   langs$ = this._store.select(confLANGUAGES).pipe(
@@ -60,12 +62,11 @@ export class MapPage {
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showDrawTrackButton$: Observable<boolean> = this._store.select(confShowDrawTrack);
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
-  currentTrack$ = this._store.select(track);
   trackElevationChartHoverElements$: BehaviorSubject<WmSlopeChartHoverElements | null> =
     new BehaviorSubject<WmSlopeChartHoverElements | null>(null);
   ugcTrack$: Observable<WmFeature<LineString> | null> = this._store.select(currentUgcTrack);
   wmHomeEnable$ = this._store.select(homeOpened);
-  currentUgcPoiProperties$ = this._store.select(currentUgcPoiProperties);
+
   constructor(
     private _store: Store,
     private _langService: LangService,

@@ -54,11 +54,7 @@
       *ngIf="(enableGallery$|async)"
       [gallery]="poiProperties.image_gallery"
     ></wm-gallery>
-    <wm-ugc-medias
-      *ngIf="medias$|async as medias"
-      [medias]="medias"
-      [showArrows]="true"
-    ></wm-ugc-medias>
+    <wm-ugc-medias [showArrows]="true"></wm-ugc-medias>
 
     <div class="webmapp-poi-popup-btns">
       <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.address">

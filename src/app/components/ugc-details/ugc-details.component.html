@@ -48,7 +48,7 @@
       </ng-container>
       <div *ngIf="medias$|async as medias" class="wm-ugc-track-media-content">
         <div class="wm-ugc-category-title ion-margin-top">{{"Media" | wmtrans}}</div>
-        <wm-ugc-medias [medias]="medias" [showArrows]="true"></wm-ugc-medias>
+        <wm-ugc-medias [showArrows]="true"></wm-ugc-medias>
       </div>
       <ng-container *ngIf="confOPTIONS$|async as confOPTIONS">
         <ng-container *ngIf="confOPTIONS.download_track_enable === true">

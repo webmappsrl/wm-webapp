@@ -29,19 +29,19 @@
       </ion-item>
     </ng-container>
   </wm-track-properties>
-  <wm-ugc-details
+
+  <wm-ugc-track-properties
     *ngIf="(ugcTrack$|async) as ugcTrack"
     [track]="ugcTrack"
     (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
     (poi-click)="setCurrentRelatedPoi($event)"
-    class="webmapp-track-details"
-  ></wm-ugc-details>
+  ></wm-ugc-track-properties>
 
   <wm-home
     #home
     *ngIf="wmHomeEnable$|async;else customTrack"
     class="wm-home"
-    [hidden]="(track$|async) !=null"
+    [hidden]="(currentTrack$|async) !=null"
   >
     <wm-lang-selector
       [langs]="(langs$|async)?.available"

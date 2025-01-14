@@ -17,7 +17,11 @@ import {
 import {IOPTIONS} from '@wm-core/types/config';
 import {LangService} from '@wm-core/localization/lang.service';
 import {WmFeature} from 'src/app/shared/wm-types/src';
-import {currentCustomTrack, currentUgcTrack} from '@wm-core/store/features/ugc/ugc.selector';
+import {
+  currentCustomTrack,
+  currentUgcPoiProperties,
+  currentUgcTrack,
+} from '@wm-core/store/features/ugc/ugc.selector';
 import {currentCustomTrack as currentCustomTrackAction} from '@wm-core/store/features/ugc/ugc.actions';
 
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
@@ -56,12 +60,12 @@ export class MapPage {
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   showDrawTrackButton$: Observable<boolean> = this._store.select(confShowDrawTrack);
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
-  track$ = this._store.select(track);
+  currentTrack$ = this._store.select(track);
   trackElevationChartHoverElements$: BehaviorSubject<WmSlopeChartHoverElements | null> =
     new BehaviorSubject<WmSlopeChartHoverElements | null>(null);
   ugcTrack$: Observable<WmFeature<LineString> | null> = this._store.select(currentUgcTrack);
   wmHomeEnable$ = this._store.select(homeOpened);
-
+  currentUgcPoiProperties$ = this._store.select(currentUgcPoiProperties);
   constructor(
     private _store: Store,
     private _langService: LangService,

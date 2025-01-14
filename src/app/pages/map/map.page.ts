@@ -14,7 +14,6 @@ import {
   confShowDrawTrack,
 } from '@wm-core/store/conf/conf.selector';
 
-import {ITrackElevationChartHoverElements} from 'src/app/types/track-elevation-chart';
 import {IOPTIONS} from '@wm-core/types/config';
 import {LangService} from '@wm-core/localization/lang.service';
 import {WmFeature} from 'src/app/shared/wm-types/src';
@@ -25,6 +24,7 @@ import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {poi, track} from '@wm-core/store/features/features.selector';
 import {homeOpened} from '@wm-core/store/user-activity/user-activity.selector';
 import {WmHomeComponent} from '@wm-core/home/home.component';
+import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 const menuOpenLeft = 400;
 const initPadding = [100, 100, 100, menuOpenLeft];
 const initMenuOpened = true;
@@ -57,8 +57,8 @@ export class MapPage {
   showDrawTrackButton$: Observable<boolean> = this._store.select(confShowDrawTrack);
   showMenu$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(initMenuOpened);
   track$ = this._store.select(track);
-  trackElevationChartHoverElements$: BehaviorSubject<ITrackElevationChartHoverElements | null> =
-    new BehaviorSubject<ITrackElevationChartHoverElements | null>(null);
+  trackElevationChartHoverElements$: BehaviorSubject<WmSlopeChartHoverElements | null> =
+    new BehaviorSubject<WmSlopeChartHoverElements | null>(null);
   ugcTrack$: Observable<WmFeature<LineString> | null> = this._store.select(currentUgcTrack);
   wmHomeEnable$ = this._store.select(homeOpened);
 
@@ -95,7 +95,7 @@ export class MapPage {
     }
   }
 
-  setTrackElevationChartHoverElements(elements?: ITrackElevationChartHoverElements): void {
+  setTrackElevationChartHoverElements(elements?: WmSlopeChartHoverElements): void {
     if (elements != null) {
       this.trackElevationChartHoverElements$.next(elements);
     }

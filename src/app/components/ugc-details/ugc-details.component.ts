@@ -22,6 +22,7 @@ import {deleteUgcTrack, updateUgcTrack} from '@wm-core/store/features/ugc/ugc.ac
 import {UntypedFormGroup} from '@angular/forms';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {WmSlopeChartComponent} from '@wm-core/slope-chart/slope-chart.component';
+import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 
 @Component({
   selector: 'wm-ugc-details',
@@ -45,8 +46,8 @@ export class UgcDetailsComponent {
   @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
   @Output('trackElevationChartHover')
-  trackElevationChartHover: EventEmitter<WmSlopeChartComponent> =
-    new EventEmitter<WmSlopeChartComponent>();
+  trackElevationChartHover: EventEmitter<WmSlopeChartHoverElements> =
+    new EventEmitter<WmSlopeChartHoverElements>();
   @ViewChild('content') content: IonContent;
   @ViewChild('slider') slider: IonSlides;
 

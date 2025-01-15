@@ -49,11 +49,12 @@
       ></wm-excerpt>
     </div>
 
-    <wm-gallery
+    <wm-tab-image-gallery
       class="row"
       *ngIf="(enableGallery$|async)"
-      [gallery]="poiProperties.image_gallery"
-    ></wm-gallery>
+      [imageGallery]="poiProperties.image_gallery"
+      [showArrows]="true"
+    ></wm-tab-image-gallery>
     <wm-ugc-medias [showArrows]="true"></wm-ugc-medias>
 
     <div class="webmapp-poi-popup-btns">

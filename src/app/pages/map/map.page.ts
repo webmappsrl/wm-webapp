@@ -4,7 +4,7 @@ import {ChangeDetectionStrategy, Component, ViewChild, ViewEncapsulation} from '
 import {LineString, Point} from 'geojson';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {map, take, tap} from 'rxjs/operators';
 
 import {
   confAUTHEnable,
@@ -12,6 +12,7 @@ import {
   confLANGUAGES,
   confOPTIONS,
   confShowDrawTrack,
+  confShowEditingInline,
 } from '@wm-core/store/conf/conf.selector';
 
 import {IOPTIONS} from '@wm-core/types/config';
@@ -49,6 +50,7 @@ export class MapPage {
   currentTrack$ = this._store.select(track);
   currentUgcPoiProperties$ = this._store.select(currentUgcPoiProperties);
   ecTrack$: Observable<WmFeature<LineString> | null> = this._store.select(currentEcTrack);
+  enableEditingInline$: Observable<boolean> = this._store.select(confShowEditingInline);
   geohubId$ = this._store.select(confGeohubId);
   langs$ = this._store.select(confLANGUAGES).pipe(
     tap(l => {
@@ -78,6 +80,16 @@ export class MapPage {
   }
 
   next(): void {}
+
+  openGeohub(): void {
+    this.ecTrack$.pipe(take(1)).subscribe(track => {
+      const id = track && track.properties && track.properties.id;
+      if (id != null) {
+        const url = `https://geohub.webmapp.it/resources/ec-tracks/${id}/edit?viaResource&viaResourceId&viaRelationship`;
+        window.open(url, '_blank').focus();
+      }
+    });
+  }
 
   openPopup(popup: any): void {
     this.homeCmp.popup$.next(popup);

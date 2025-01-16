@@ -26,6 +26,15 @@
         </ion-label>
       </ion-item>
     </ng-container>
+    <ion-button
+      class="wm-edit-geohub"
+      expand="block"
+      *ngIf="enableEditingInline$|async"
+      (click)="openGeohub()"
+      bottom
+    >
+      {{'edit geohub'|wmtrans}}
+    </ion-button>
   </wm-track-properties>
 
   <wm-ugc-track-properties

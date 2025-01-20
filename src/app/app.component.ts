@@ -12,6 +12,8 @@ import mapCorePackage from './shared/map-core/package.json';
 import {IAPP, IWEBAPP} from '@wm-core/types/config';
 import {loadAuths} from '@wm-core/store/auth/auth.actions';
 import {leftPadding, padding} from '@map-core/store/map-core.actions';
+import {DeviceService} from '@wm-core/services/device.service';
+import {setIsMobile} from '@wm-core/store/user-activity/user-activity.action';
 @Component({
   selector: 'webmapp-app-root',
   templateUrl: 'app.component.html',
@@ -23,12 +25,17 @@ export class AppComponent implements OnInit {
   confTHEMEVariables$: Observable<any> = this._store.select(confTHEMEVariables);
   confWEBAPP$: Observable<any> = this._store.select(confWEBAPP);
 
-  constructor(@Inject(DOCUMENT) private _document: Document, private _store: Store<any>) {
+  constructor(
+    @Inject(DOCUMENT) private _document: Document,
+    private _store: Store<any>,
+    private _deviceSvc: DeviceService,
+  ) {
     this._store.dispatch(loadConf());
     this._store.dispatch(loadAuths());
     this._store.dispatch(ecTracks({init: true}));
     this._store.dispatch(padding({padding: [100, 100, 100, 100]}));
     this._store.dispatch(leftPadding({leftPadding: 400}));
+    this._store.dispatch(setIsMobile({isMobile: this._deviceSvc.isMobile}));
     this.confTHEMEVariables$.pipe(take(2)).subscribe(css => this._setGlobalCSS(css));
     console.table({
       'app': appPackage.version,

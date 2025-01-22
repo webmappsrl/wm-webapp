@@ -131,76 +131,81 @@ export class DrawTrackComponent {
   }
 
   private _saveCustomTrackAsUgc(): void {
-    if (this.track$.value != null) {
-      this.geohubId$
-        .pipe(
-          take(1),
-          switchMap(geohubId =>
-            from(this._deviceSvc.getInfo()).pipe(
-              map(device => {
-                const feature: WmFeature<LineString> = this.track$.value;
-                const drawTrackProperties = feature?.properties;
-                const dateNow = new Date();
-                const properties: WmProperties = {
-                  name: this.fg.value.title,
-                  form: this.fg.value,
-                  uuid: generateUUID(),
-                  app_id: `${geohubId}`,
-                  createdAt: dateNow,
-                  updatedAt: dateNow,
-                  drawTrackProperties,
-                  device,
-                };
+    this.geohubId$
+      .pipe(
+        take(1),
+        switchMap(geohubId =>
+          this.currentCustomTrack$.pipe(
+            take(1),
+            switchMap(customTrack =>
+              from(this._deviceSvc.getInfo()).pipe(
+                map(device => {
+                  const feature: WmFeature<LineString> = {...customTrack};
+                  const drawTrackProperties = feature?.properties;
+                  const dateNow = new Date();
+                  const properties: WmProperties = {
+                    name: this.fg.value.title,
+                    form: this.fg.value,
+                    uuid: generateUUID(),
+                    app_id: `${geohubId}`,
+                    createdAt: dateNow,
+                    updatedAt: dateNow,
+                    drawTrackProperties,
+                    device,
+                  };
 
-                feature.properties = properties;
-                return feature;
-              }),
+                  feature.properties = properties;
+                  return feature;
+                }),
+              ),
             ),
           ),
-          switchMap(feature => saveUgcTrack(feature)),
-          switchMap(_ => {
-            this.track$.next(null);
-            this.reloadEvt.emit();
-            return this._alertCtrl.create({
-              message: `${this._langSvc.instant('Il percorso è stato salvato correttamente')}!`,
+        ),
+        switchMap(feature => saveUgcTrack(feature)),
+        switchMap(_ => {
+          this.track$.next(null);
+          this.reloadEvt.emit();
+          return this._alertCtrl.create({
+            message: `${this._langSvc.instant('Il percorso è stato salvato correttamente')}!`,
+            buttons: ['OK'],
+          });
+        }),
+        switchMap(alert => alert.present()),
+        catchError(_ => {
+          this._alertCtrl
+            .create({
+              header: this._langSvc.instant('Errore'),
+              message: `${this._langSvc.instant(
+                'Si è verificato un errore durante il salvataggio del percorso. Riprova',
+              )}!`,
               buttons: ['OK'],
-            });
-          }),
-          switchMap(alert => alert.present()),
-          catchError(_ => {
-            this._alertCtrl
-              .create({
-                header: this._langSvc.instant('Errore'),
-                message: `${this._langSvc.instant(
-                  'Si è verificato un errore durante il salvataggio del percorso. Riprova',
-                )}!`,
-                buttons: ['OK'],
-              })
-              .then(alert => alert.present());
-            return EMPTY;
-          }),
-        )
-        .subscribe(() => this._store.dispatch(syncUgcTracks()));
-    }
+            })
+            .then(alert => alert.present());
+          return EMPTY;
+        }),
+      )
+      .subscribe(() => this._store.dispatch(syncUgcTracks()));
   }
 
   private _saveCustomTrackLocally(): void {
     const savedTracks = this.savedTracks$.value;
-    if (this.track$.value != null) {
-      if (!this.track$.value.properties.name || this.track$.value.properties.name.trim() === '') {
-        while (this.track$.value.properties.name == '') {
-          this.track$.value.properties.name = prompt(
-            `${this._langSvc.instant('Per favore, inserisci un nome per il percorso')}.`,
-          );
+    this.currentCustomTrack$.pipe(take(1)).subscribe(customTrack => {
+      if (customTrack != null) {
+        if (!customTrack.properties.name || customTrack.properties.name.trim() === '') {
+          while (customTrack.properties.name == '') {
+            customTrack.properties.name = prompt(
+              `${this._langSvc.instant('Per favore, inserisci un nome per il percorso')}.`,
+            );
+          }
+        }
+        if (customTrack.properties.name) {
+          savedTracks.push(customTrack);
         }
       }
-      if (this.track$.value.properties.name) {
-        savedTracks.push(this.track$.value);
-      }
-    }
-    localStorage.setItem('wm-saved-tracks', JSON.stringify(savedTracks));
-    this.savedTracks$.next(savedTracks);
-    this.track$.next(null);
-    this.reloadEvt.emit();
+      localStorage.setItem('wm-saved-tracks', JSON.stringify(savedTracks));
+      this.savedTracks$.next(savedTracks);
+      this.track$.next(null);
+      this.reloadEvt.emit();
+    });
   }
 }

@@ -9,10 +9,8 @@ import {NgModule} from '@angular/core';
 import {PipeModule} from 'src/app/pipes/pipe.module';
 import {PoiPopupModule} from 'src/app/components/poi-popup/poi-popup.module';
 import {SharedModule} from 'src/app/shared/shared.module';
-import {TrackDetailsModule} from 'src/app/components/track-details/track-details.module';
 import {MapPage} from './map.page';
 import {ProfileModule} from 'src/app/components/profile-popup/profile.module';
-import {UgcDetailsModule} from 'src/app/components/ugc-details/ugc-details.module';
 
 @NgModule({
   imports: [
@@ -21,8 +19,6 @@ import {UgcDetailsModule} from 'src/app/components/ugc-details/ugc-details.modul
     IonicModule,
     MapPageRoutingModule,
     PipeModule,
-    TrackDetailsModule,
-    UgcDetailsModule,
     PoiPopupModule,
     ProfileModule,
     SharedModule,

@@ -12,6 +12,7 @@ import mapCorePackage from './shared/map-core/package.json';
 import {IAPP, IWEBAPP} from '@wm-core/types/config';
 import {loadAuths} from '@wm-core/store/auth/auth.actions';
 import {leftPadding, padding} from '@map-core/store/map-core.actions';
+import {syncUgc} from '@wm-core/store/features/ugc/ugc.actions';
 @Component({
   selector: 'webmapp-app-root',
   templateUrl: 'app.component.html',
@@ -29,6 +30,7 @@ export class AppComponent implements OnInit {
     this._store.dispatch(ecTracks({init: true}));
     this._store.dispatch(padding({padding: [100, 100, 100, 100]}));
     this._store.dispatch(leftPadding({leftPadding: 400}));
+    this._store.dispatch(syncUgc());
     this.confTHEMEVariables$.pipe(take(2)).subscribe(css => this._setGlobalCSS(css));
     console.table({
       'app': appPackage.version,

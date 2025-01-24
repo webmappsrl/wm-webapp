@@ -22,6 +22,7 @@ import {UntypedFormGroup} from '@angular/forms';
 import {syncUgcTracks} from '@wm-core/store/features/ugc/ugc.actions';
 import {LangService} from '@wm-core/localization/lang.service';
 import {currentCustomTrack} from '@wm-core/store/features/ugc/ugc.selector';
+import {UgcService} from '@wm-core/store/features/ugc/ugc.service';
 
 @Component({
   selector: 'wm-draw-track',
@@ -34,12 +35,12 @@ export class DrawTrackComponent {
   @Output() centerCustomTrackEvt: EventEmitter<void> = new EventEmitter<void>();
   @Output() reloadEvt: EventEmitter<void> = new EventEmitter<void>();
 
+  appID$ = this._store.select(confGeohubId);
   confTRACKFORMS$: Observable<any[]> = this._store.select(confTRACKFORMS);
-  currentCustomTrack$: Observable<any> = this._store.select(currentCustomTrack);
+  currentCustomTrack$: Observable<WmFeature<LineString>> = this._store.select(currentCustomTrack);
   fg: UntypedFormGroup;
-  geohubId$ = this._store.select(confGeohubId);
+  name: string = '';
   saveDrawTrackAsUgc$: Observable<boolean> = this._store.select(saveDrawTrackAsUgc);
-  savedTracks$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
   selectedTrackIdx: number = -1;
   track$: BehaviorSubject<WmFeature<LineString>> = new BehaviorSubject<WmFeature<LineString>>(null);
 
@@ -48,18 +49,14 @@ export class DrawTrackComponent {
     private _deviceSvc: DeviceService,
     private _alertCtrl: AlertController,
     private _langSvc: LangService,
-  ) {
-    this._initSavedTracks();
-  }
+    private _ugcSvc: UgcService,
+  ) {}
 
   centerCustomTrack(feature: any): void {
     this.centerCustomTrackEvt.emit();
   }
 
   deleteCustomTrack(id: number): void {
-    const savedTracks = this.savedTracks$.value;
-    savedTracks.splice(id, 1);
-    this.savedTracks$.next(savedTracks);
     this.saveCustomTrack();
   }
 
@@ -101,13 +98,7 @@ export class DrawTrackComponent {
   }
 
   saveCustomTrack(): void {
-    this.saveDrawTrackAsUgc$.pipe(take(1)).subscribe(saveAsUgc => {
-      if (saveAsUgc) {
-        this._saveCustomTrackAsUgc();
-      } else {
-        this._saveCustomTrackLocally();
-      }
-    });
+    this._saveCustomTrackAsUgc();
   }
 
   private _downloadFile(name, body): void {
@@ -122,16 +113,8 @@ export class DrawTrackComponent {
     document.body.removeChild(element);
   }
 
-  private _initSavedTracks(): void {
-    const stringedLocalSavedTracks = localStorage.getItem('wm-saved-tracks');
-    const localSavedTracks = JSON.parse(stringedLocalSavedTracks);
-    if (localSavedTracks != null) {
-      this.savedTracks$.next(localSavedTracks);
-    }
-  }
-
   private _saveCustomTrackAsUgc(): void {
-    this.geohubId$
+    this.appID$
       .pipe(
         take(1),
         switchMap(geohubId =>
@@ -143,9 +126,17 @@ export class DrawTrackComponent {
                   const feature: WmFeature<LineString> = {...customTrack};
                   const drawTrackProperties = feature?.properties;
                   const dateNow = new Date();
+                  const value = this.fg ? this.fg.value : undefined;
+                  let name = value?.title ?? this.name;
+                  while (name == null || name == '') {
+                    name = prompt(
+                      `${this._langSvc.instant('Inserisci il nome del percorso')}:`,
+                      this.name,
+                    );
+                  }
                   const properties: WmProperties = {
-                    name: this.fg.value.title,
-                    form: this.fg.value,
+                    name,
+                    form: value ?? undefined,
                     uuid: generateUUID(),
                     app_id: `${geohubId}`,
                     createdAt: dateNow,
@@ -184,28 +175,6 @@ export class DrawTrackComponent {
           return EMPTY;
         }),
       )
-      .subscribe(() => this._store.dispatch(syncUgcTracks()));
-  }
-
-  private _saveCustomTrackLocally(): void {
-    const savedTracks = this.savedTracks$.value;
-    this.currentCustomTrack$.pipe(take(1)).subscribe(customTrack => {
-      if (customTrack != null) {
-        if (!customTrack.properties.name || customTrack.properties.name.trim() === '') {
-          while (customTrack.properties.name == '') {
-            customTrack.properties.name = prompt(
-              `${this._langSvc.instant('Per favore, inserisci un nome per il percorso')}.`,
-            );
-          }
-        }
-        if (customTrack.properties.name) {
-          savedTracks.push(customTrack);
-        }
-      }
-      localStorage.setItem('wm-saved-tracks', JSON.stringify(savedTracks));
-      this.savedTracks$.next(savedTracks);
-      this.track$.next(null);
-      this.reloadEvt.emit();
-    });
+      .subscribe(() => this._ugcSvc.syncUgc());
   }
 }

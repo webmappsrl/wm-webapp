@@ -18,7 +18,7 @@ import {Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
 import {confPOIFORMS, confShowEditingInline} from '@wm-core/store/conf/conf.selector';
 import {deleteUgcPoi, updateUgcPoi} from '@wm-core/store/features/ugc/ugc.actions';
-import {Media, MediaProperties, WmFeature, WmProperties} from '@wm-types/feature';
+import {Media, WmFeature, WmProperties} from '@wm-types/feature';
 import {switchMap, take} from 'rxjs/operators';
 
 @Component({
@@ -37,7 +37,7 @@ export class PoiPopupComponent {
   public fg: UntypedFormGroup;
   isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   isEnd$: Observable<boolean>;
-  medias$: Observable<WmFeature<Media, MediaProperties>[]>;
+  medias$: Observable<Media[]>;
   @Output() public nextEVT: EventEmitter<void> = new EventEmitter<void>();
   public poi: WmFeature<Point> = null;
   public poiProperties: WmProperties = null;

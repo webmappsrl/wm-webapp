@@ -7,13 +7,11 @@ import {PipeModule} from 'src/app/pipes/pipe.module';
 import {SwiperModule} from 'swiper/angular';
 import {WMCommonModule} from '../common/wm-common.module';
 import {WmCoreModule} from 'src/app/shared/wm-core/projects/wm-core/src/wm-core.module';
-import {UgcDetailsComponent} from './ugc-details.component';
 import {UgcTrackDataComponent} from './ugc-track-data/ugc-track-data.component';
 import {TrackDetailsModule} from '../track-details/track-details.module';
 
 @NgModule({
-  declarations: [UgcDetailsComponent, UgcTrackDataComponent],
-  exports: [UgcDetailsComponent],
+  declarations: [UgcTrackDataComponent],
   imports: [
     CommonModule,
     WMCommonModule,

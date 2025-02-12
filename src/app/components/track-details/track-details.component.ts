@@ -41,7 +41,7 @@ export class TrackDetailsComponent {
 
   @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
   @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
-  @Output('trackElevationChartHover')
+  @Output()
   trackElevationChartHover: EventEmitter<WmSlopeChartHoverElements> =
     new EventEmitter<WmSlopeChartHoverElements>();
   @ViewChild('content') content: IonContent;

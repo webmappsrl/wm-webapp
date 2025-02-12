@@ -112,7 +112,7 @@ export class MapPage {
     }
   }
 
-  setTrackElevationChartHoverElements(elements?: WmSlopeChartHoverElements): void {
+  setTrackElevationChartHoverElements(elements: WmSlopeChartHoverElements): void {
     if (elements != null) {
       this.trackElevationChartHoverElements$.next(elements);
     }

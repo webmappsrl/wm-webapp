@@ -1,4 +1,6 @@
-import {confOPTIONS, confTRACKFORMS} from '@wm-core/store/conf/conf.selector';
+import {LineString} from 'geojson';
+import {BehaviorSubject, Observable, from} from 'rxjs';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -9,20 +11,18 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import {UntypedFormGroup} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
 import {AlertController, IonContent, IonSlides} from '@ionic/angular';
 import {Store} from '@ngrx/store';
-import {BehaviorSubject, from, Observable} from 'rxjs';
-import {tap} from 'rxjs/operators';
-import {LineString} from 'geojson';
-import {Media, MediaProperties, WmFeature} from '@wm-types/feature';
-import {getUgcMediasByIds} from '@wm-core/utils/localForage';
-import {ActivatedRoute, Router} from '@angular/router';
 import {LangService} from '@wm-core/localization/lang.service';
-import {deleteUgcTrack, updateUgcTrack} from '@wm-core/store/features/ugc/ugc.actions';
-import {UntypedFormGroup} from '@angular/forms';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {WmSlopeChartComponent} from '@wm-core/slope-chart/slope-chart.component';
+import {confOPTIONS, confTRACKFORMS} from '@wm-core/store/conf/conf.selector';
+import {deleteUgcTrack, updateUgcTrack} from '@wm-core/store/features/ugc/ugc.actions';
+import {Media, MediaProperties, WmFeature} from '@wm-types/feature';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
+import {tap} from 'rxjs/operators';
 
 @Component({
   selector: 'wm-ugc-details',
@@ -32,32 +32,16 @@ import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
   encapsulation: ViewEncapsulation.None,
 })
 export class UgcDetailsComponent {
-  @Input('track') set setTrack(track: WmFeature<LineString>) {
-    if (track != null) {
-      this.track = track;
-      if (track.properties.photoKeys) {
-        this.medias$ = from(
-          getUgcMediasByIds(track.properties.photoKeys.map(key => key.toString())),
-        );
-      }
-    }
-  }
-
-  @Output('dismiss') dismiss: EventEmitter<any> = new EventEmitter<any>();
-  @Output('poi-click') poiClick: EventEmitter<number> = new EventEmitter<number>();
-  @Output('trackElevationChartHover')
-  trackElevationChartHover: EventEmitter<WmSlopeChartHoverElements> =
-    new EventEmitter<WmSlopeChartHoverElements>();
-  @ViewChild('content') content: IonContent;
-  @ViewChild('slider') slider: IonSlides;
-
   confOPTIONS$ = this._store.select(confOPTIONS);
   confTRACKFORMS$: Observable<any[]> = this._store.select(confTRACKFORMS);
+  @ViewChild('content') public content: IonContent;
   currentImage$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
-  fg: UntypedFormGroup;
+  @Output('dismiss') public dismiss: EventEmitter<any> = new EventEmitter<any>();
+  public fg: UntypedFormGroup;
   isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   medias$: Observable<WmFeature<Media, MediaProperties>[]>;
-  slideOptions = {
+  @Output('poi-click') public poiClick: EventEmitter<number> = new EventEmitter<number>();
+  public slideOptions = {
     allowTouchMove: false,
     slidesPerView: 1,
     slidesPerColumn: 1,
@@ -67,7 +51,11 @@ export class UgcDetailsComponent {
     spaceBetween: 20,
     loop: true,
   };
-  track: WmFeature<LineString>;
+  @ViewChild('slider') public slider: IonSlides;
+  public track: WmFeature<LineString>;
+  @Output('trackElevationChartHover')
+  public trackElevationChartHover: EventEmitter<WmSlopeChartHoverElements> =
+    new EventEmitter<WmSlopeChartHoverElements>();
 
   constructor(
     private _store: Store,
@@ -78,25 +66,21 @@ export class UgcDetailsComponent {
     private _urlHandlerSvc: UrlHandlerService,
   ) {}
 
-  @HostListener('document:keydown.Escape', ['$event'])
-  public close(): void {
-    this.currentImage$.next(null);
-  }
-
-  @HostListener('keydown.ArrowRight', ['$event'])
-  public next(): void {
-    this.slider.slideNext();
-  }
-
-  @HostListener('keydown.ArrowLeft', ['$event'])
-  public prev(): void {
-    this.slider.slidePrev();
+  @Input('track') public set setTrack(track: WmFeature<LineString>) {
+    if (track != null) {
+      this.track = track;
+    }
   }
 
   clickPhoto(): void {
     from(this.slider.getActiveIndex())
       .pipe(tap(index => this.currentImage$.next(this.track.properties.photos[index - 1].photoURL)))
       .subscribe();
+  }
+
+  @HostListener('document:keydown.Escape', ['$event'])
+  public close(): void {
+    this.currentImage$.next(null);
   }
 
   deleteTrack(): void {
@@ -120,8 +104,18 @@ export class UgcDetailsComponent {
     this.isEditing$;
   }
 
+  @HostListener('keydown.ArrowRight', ['$event'])
+  public next(): void {
+    this.slider.slideNext();
+  }
+
   onLocationHover(event: WmSlopeChartComponent | any): void {
     this.trackElevationChartHover.emit(event);
+  }
+
+  @HostListener('keydown.ArrowLeft', ['$event'])
+  public prev(): void {
+    this.slider.slidePrev();
   }
 
   removeUgcTrackFromUrl(): void {

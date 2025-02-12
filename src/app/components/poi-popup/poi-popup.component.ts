@@ -1,3 +1,6 @@
+import {Point} from 'geojson';
+import {BehaviorSubject, Observable, from} from 'rxjs';
+
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -9,19 +12,14 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {BehaviorSubject, from, Observable} from 'rxjs';
-
+import {UntypedFormGroup} from '@angular/forms';
 import {AlertController, IonSlides} from '@ionic/angular';
 import {Store} from '@ngrx/store';
-
-import {confPOIFORMS, confShowEditingInline} from '@wm-core/store/conf/conf.selector';
-import {Media, MediaProperties, WmFeature, WmProperties} from '@wm-types/feature';
-import {getUgcMediasByIds} from '@wm-core/utils/localForage';
-import {map, switchMap, take} from 'rxjs/operators';
 import {LangService} from '@wm-core/localization/lang.service';
-import {Point} from 'geojson';
+import {confPOIFORMS, confShowEditingInline} from '@wm-core/store/conf/conf.selector';
 import {deleteUgcPoi, updateUgcPoi} from '@wm-core/store/features/ugc/ugc.actions';
-import {UntypedFormGroup} from '@angular/forms';
+import {Media, MediaProperties, WmFeature, WmProperties} from '@wm-types/feature';
+import {switchMap, take} from 'rxjs/operators';
 
 @Component({
   selector: 'webmapp-poi-popup',
@@ -31,7 +29,39 @@ import {UntypedFormGroup} from '@angular/forms';
   encapsulation: ViewEncapsulation.None,
 })
 export class PoiPopupComponent {
-  @Input('poi') set setPoi(poi: any) {
+  @Output() closeEVT: EventEmitter<void> = new EventEmitter<void>();
+  confPOIFORMS$: Observable<any[]> = this._store.select(confPOIFORMS);
+  public defaultPhotoPath = '/assets/icon/no-photo.svg';
+  enableEditingInline$ = this._store.select(confShowEditingInline);
+  enableGallery$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public fg: UntypedFormGroup;
+  isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  isEnd$: Observable<boolean>;
+  medias$: Observable<WmFeature<Media, MediaProperties>[]>;
+  @Output() public nextEVT: EventEmitter<void> = new EventEmitter<void>();
+  public poi: WmFeature<Point> = null;
+  public poiProperties: WmProperties = null;
+  @Output() public prevEVT: EventEmitter<void> = new EventEmitter<void>();
+  public slideOptions = {
+    allowTouchMove: false,
+    slidesPerView: 1,
+    slidesPerColumn: 1,
+    slidesPerGroup: 1,
+    centeredSlides: true,
+    watchSlidesProgress: true,
+    spaceBetween: 20,
+    loop: true,
+  };
+  @ViewChild('gallery') public slider: IonSlides;
+
+  constructor(
+    private _store: Store,
+    private _alertCtrl: AlertController,
+    private _langSvc: LangService,
+    private _cdr: ChangeDetectorRef,
+  ) {}
+
+  @Input('poi') public set setPoi(poi: any) {
     if (poi != null && poi.properties != null) {
       this.poi = poi;
       this.medias$ = undefined;
@@ -59,11 +89,7 @@ export class PoiPopupComponent {
         prop.related_url =
           Object.keys(poi.properties.related_url).length === 0 ? null : poi.properties.related_url;
       }
-      if (poi.properties?.photoKeys) {
-        this.medias$ = from(
-          getUgcMediasByIds(poi.properties.photoKeys.map(key => key.toString())),
-        ).pipe(map(medias => medias));
-      }
+
       this.poiProperties = {...poi.properties, ...prop};
       this.enableGallery$.next(
         this.poiProperties?.feature_image != null ||
@@ -71,54 +97,6 @@ export class PoiPopupComponent {
             this.poiProperties?.image_gallery?.length > 0),
       );
     }
-  }
-
-  @Output() closeEVT: EventEmitter<void> = new EventEmitter<void>();
-  @Output() nextEVT: EventEmitter<void> = new EventEmitter<void>();
-  @Output() prevEVT: EventEmitter<void> = new EventEmitter<void>();
-  @ViewChild('gallery') slider: IonSlides;
-
-  confPOIFORMS$: Observable<any[]> = this._store.select(confPOIFORMS);
-  defaultPhotoPath = '/assets/icon/no-photo.svg';
-  enableEditingInline$ = this._store.select(confShowEditingInline);
-  enableGallery$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  fg: UntypedFormGroup;
-  isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  isEnd$: Observable<boolean>;
-  medias$: Observable<WmFeature<Media, MediaProperties>[]>;
-  poi: WmFeature<Point> = null;
-  poiProperties: WmProperties = null;
-  slideOptions = {
-    allowTouchMove: false,
-    slidesPerView: 1,
-    slidesPerColumn: 1,
-    slidesPerGroup: 1,
-    centeredSlides: true,
-    watchSlidesProgress: true,
-    spaceBetween: 20,
-    loop: true,
-  };
-
-  constructor(
-    private _store: Store,
-    private _alertCtrl: AlertController,
-    private _langSvc: LangService,
-    private _cdr: ChangeDetectorRef,
-  ) {}
-
-  @HostListener('document:keydown.ArrowLeft', ['$event'])
-  handleArrowLeft(): void {
-    this.prevEVT.emit();
-  }
-
-  @HostListener('document:keydown.ArrowRight', ['$event'])
-  handleArrowRight(): void {
-    this.nextEVT.emit();
-  }
-
-  @HostListener('document:keydown.Escape', ['$event'])
-  handleEscape(): void {
-    this.closeEVT.emit();
   }
 
   deleteUgcPoi(): void {
@@ -144,6 +122,21 @@ export class PoiPopupComponent {
         take(1),
       )
       .subscribe();
+  }
+
+  @HostListener('document:keydown.ArrowLeft', ['$event'])
+  handleArrowLeft(): void {
+    this.prevEVT.emit();
+  }
+
+  @HostListener('document:keydown.ArrowRight', ['$event'])
+  handleArrowRight(): void {
+    this.nextEVT.emit();
+  }
+
+  @HostListener('document:keydown.Escape', ['$event'])
+  handleEscape(): void {
+    this.closeEVT.emit();
   }
 
   openGeohub(): void {

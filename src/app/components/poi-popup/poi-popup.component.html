@@ -60,7 +60,7 @@
       <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.address">
         <i class="wm-icn icon-fill-pin"></i>
         <a
-          href="https://www.google.com/maps?daddr={{poiProperties.address_link}}&navigate=yes"
+          href="https://www.google.com/maps?daddr={{poiProperties?.address_link != ''?poiProperties?.address_link:poiProperties?.address}}}&navigate=yes"
           target="_blank"
         >
           {{poiProperties.address}}

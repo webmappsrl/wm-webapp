@@ -13,6 +13,7 @@
     "deploy-webcomponent": "ng build --configuration production --output-hashing=none --output-path=web-component",
     "surge-sardegna": "ionic build --prod && surge --project ./www --domain http://32.webmapp.surge.sh/",
     "surge-sardegna-dev": "ionic build --prod && surge --project ./www --domain http://32.dev-webmapp.surge.sh/",
+    "surge-carg": "ionic build --prod && surge --project ./www --domain http://55.webmapp.surge.sh/",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
     "e2e": "concurrently \"npm run start\" \"wait-on http-get://localhost:4200 && npm run cy:run\" --kill-others --success first",

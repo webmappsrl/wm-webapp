@@ -1,5 +1,5 @@
 import {FeatureCollection} from 'geojson';
-import { environment } from 'src/environments/environment';
+import {environment} from 'src/environments/environment';
 
 /**
  * Clears the test state.
@@ -20,7 +20,7 @@ export function e2eLogin(
   email: string = Cypress.env('email'),
   password: string = Cypress.env('password'),
 ): Cypress.Chainable {
-  const apiLogin = `${environment.api}/api/auth/login`;
+  const apiLogin = `${environment.origin}/api/auth/login`;
   cy.intercept('POST', apiLogin).as('loginRequest');
   cy.get('.wm-profile-button').click();
   cy.get('.wm-profile-logged-out-login-button').click();

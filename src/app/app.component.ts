@@ -25,6 +25,7 @@ export class AppComponent implements OnInit {
   confWEBAPP$: Observable<any> = this._store.select(confWEBAPP);
 
   constructor(@Inject(DOCUMENT) private _document: Document, private _store: Store<any>) {
+    console.log('appcomponent');
     this._store.dispatch(loadConf());
     this._store.dispatch(loadAuths());
     this._store.dispatch(ecTracks({init: true}));

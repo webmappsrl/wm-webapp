@@ -6,7 +6,7 @@ import {
   HttpRequest,
   HttpResponse,
 } from '@angular/common/http';
-import {Injectable, Injector, LOCALE_ID, NgModule} from '@angular/core';
+import {Injectable, LOCALE_ID, NgModule} from '@angular/core';
 import {IonicModule, IonicRouteStrategy} from '@ionic/angular';
 
 import {registerLocaleData} from '@angular/common';
@@ -22,8 +22,9 @@ import {AppComponent} from './app.component';
 import {MetaComponent} from './meta.component';
 import {tap} from 'rxjs/operators';
 import {WmCoreModule} from '@wm-core/wm-core.module';
-import {APP_ID, APP_VERSION, ENVIRONMENT_CONFIG} from '@wm-core/store/conf/conf.token';
+import {APP_VERSION} from '@wm-core/store/conf/conf.token';
 import packageJson from 'package.json';
+import {EnvironmentService} from '@wm-core/services/environment.service';
 registerLocaleData(localeIt);
 @Injectable()
 export class MyHttpInterceptor implements HttpInterceptor {
@@ -57,8 +58,6 @@ export class MyHttpInterceptor implements HttpInterceptor {
     }),
   ],
   providers: [
-    {provide: ENVIRONMENT_CONFIG, useValue: environment},
-    {provide: APP_ID, useValue: environment.geohubId},
     {
       provide: APP_VERSION,
       useValue: packageJson.version,
@@ -74,9 +73,7 @@ export class MyHttpInterceptor implements HttpInterceptor {
   bootstrap: [ScriptComponent, AppComponent, MetaComponent],
 })
 export class AppModule {
-  constructor(injector: Injector) {
-    // TODO: VA SCOMMENTATO SOLO SE SI FA UN WEB COMPONENT
-    //  const webAppElement = createCustomElement(AppComponent, {injector});
-    //  customElements.define('webmapp-app-root', webAppElement);
+  constructor(private _environmentSvc: EnvironmentService) {
+    this._environmentSvc.init(environment);
   }
 }

@@ -5,7 +5,12 @@ import {Observable} from 'rxjs';
 import {filter, skip, switchMap, take, takeUntil} from 'rxjs/operators';
 import {ecTracks} from '@wm-core/store/features/ec/ec.actions';
 import {loadConf} from '@wm-core/store/conf/conf.actions';
-import {confAPP, confTHEMEVariables, confWEBAPP} from '@wm-core/store/conf/conf.selector';
+import {
+  confAPP,
+  confPRIVACY,
+  confTHEMEVariables,
+  confWEBAPP,
+} from '@wm-core/store/conf/conf.selector';
 import appPackage from 'package.json';
 import wmCorePackage from './shared/wm-core/package.json';
 import mapCorePackage from './shared/map-core/package.json';
@@ -13,6 +18,8 @@ import {IAPP, IWEBAPP} from '@wm-core/types/config';
 import {loadAuths} from '@wm-core/store/auth/auth.actions';
 import {leftPadding, padding} from '@map-core/store/map-core.actions';
 import {syncUgc} from '@wm-core/store/features/ugc/ugc.actions';
+import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
+import {ModalController} from '@ionic/angular';
 @Component({
   selector: 'webmapp-app-root',
   templateUrl: 'app.component.html',
@@ -23,8 +30,12 @@ export class AppComponent implements OnInit {
   confAPP$: Observable<any> = this._store.select(confAPP);
   confTHEMEVariables$: Observable<any> = this._store.select(confTHEMEVariables);
   confWEBAPP$: Observable<any> = this._store.select(confWEBAPP);
-
-  constructor(@Inject(DOCUMENT) private _document: Document, private _store: Store<any>) {
+  private _confPRIVACY$: Observable<any> = this._store.select(confPRIVACY);
+  constructor(
+    @Inject(DOCUMENT) private _document: Document,
+    private _store: Store<any>,
+    private _modalCtrl: ModalController,
+  ) {
     this._store.dispatch(loadConf());
     this._store.dispatch(loadAuths());
     this._store.dispatch(ecTracks({init: true}));
@@ -32,6 +43,37 @@ export class AppComponent implements OnInit {
     this._store.dispatch(leftPadding({leftPadding: 400}));
     this._store.dispatch(syncUgc());
     this.confTHEMEVariables$.pipe(take(2)).subscribe(css => this._setGlobalCSS(css));
+    const privacyAccepted = localStorage.getItem('privacy-accepted');
+    if (!privacyAccepted) {
+      this._confPRIVACY$
+        .pipe(
+          filter(f => f != null),
+          take(1),
+          switchMap(privacy => {
+            const appendText = `<bold>Chiudendo questo popup dichiaro di accettare termini e condizioni</bold>`;
+            const html = Object.keys(privacy.html).reduce((acc, key) => {
+              acc[key] = privacy.html[key] + appendText;
+              return acc;
+            }, {} as Record<string, string>);
+            return this._modalCtrl.create({
+              component: WmInnerHtmlComponent,
+              componentProps: {
+                html,
+              },
+              swipeToClose: true,
+              mode: 'ios',
+            });
+          }),
+          switchMap(modal => {
+            modal.present();
+            return modal.onWillDismiss();
+          }),
+        )
+        .subscribe(dis => {
+          localStorage.setItem('privacy-accepted', 'true');
+        });
+    }
+
     console.table({
       'app': appPackage.version,
       'map-core': mapCorePackage.version,

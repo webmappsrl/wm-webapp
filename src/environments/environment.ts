@@ -8,9 +8,6 @@ export const environment: Environment = {
   production: false,
   appId: 3,
   shardName: 'geohub',
-  //graphhopperHost: 'https://graphhopper.sviluppo.lunet.it/',
-  //api: 'http://127.0.0.1:8000',
-  //elasticApi: 'http://localhost:3000/v2/search',
   shards: {
     geohub: {
       origin: 'https://geohub.webmapp.it',
@@ -47,7 +44,7 @@ export const environment: Environment = {
       appId: 53,
     },
     'maps.parcoforestecasentinesi.it': {
-      shardName: 'gehub',
+      shardName: 'geohub',
       appId: 49,
     },
     'maps.parcopan.org': {

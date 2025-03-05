@@ -40,7 +40,7 @@ export const environment: Environment = {
       appId: 53,
     },
     'maps.parcoforestecasentinesi.it': {
-      shardName: 'gehub',
+      shardName: 'geohub',
       appId: 49,
     },
     'maps.parcopan.org': {

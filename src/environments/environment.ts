@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  appId: 55,
-  shardName: 'carg',
+  appId: 3,
+  shardName: 'geohub',
   //graphhopperHost: 'https://graphhopper.sviluppo.lunet.it/',
   //api: 'http://127.0.0.1:8000',
   //elasticApi: 'http://localhost:3000/v2/search',

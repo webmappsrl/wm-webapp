@@ -2,7 +2,9 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-export const environment = {
+import {Environment} from '@wm-types/environment';
+
+export const environment: Environment = {
   production: false,
   appId: 3,
   shardName: 'geohub',
@@ -35,7 +37,7 @@ export const environment = {
       awsApi: 'https://wmfe.s3.eu-central-1.amazonaws.com/geohub',
     },
   },
-  redirect: {
+  redirects: {
     'sentieri.caiparma.it': {
       shardName: 'geohub',
       appId: 33,

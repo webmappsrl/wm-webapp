@@ -1,5 +1,9 @@
-export const environment = {
+import {Environment} from '@wm-types/environment';
+
+export const environment: Environment = {
   production: true,
+  appId: 3,
+  shardName: 'geohub',
   shards: {
     geohub: {
       origin: 'https://geohub.webmapp.it',
@@ -26,7 +30,7 @@ export const environment = {
       awsApi: 'https://wmfe.s3.eu-central-1.amazonaws.com/geohub',
     },
   },
-  redirect: {
+  redirects: {
     'sentieri.caiparma.it': {
       shardName: 'geohub',
       appId: 33,

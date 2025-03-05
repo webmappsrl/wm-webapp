@@ -4,14 +4,8 @@
 
 export const environment = {
   production: false,
-  geohubId: 1,
-  origin: 'https://camminiditalia.maphub.it',
-  cargApi: 'https://carg.webmapp.it',
-  geohubApi: 'https://geohub.webmapp.it',
-  elasticApi: 'https://elastic-json.webmapp.it/v2/search',
-  graphhopperHost: 'https://graphhopper.webmapp.it/',
-  awsApi: 'https://wmfe.s3.eu-central-1.amazonaws.com/',
-  shardName: 'camminiditalia',
+  appId: 55,
+  shardName: 'carg',
   //graphhopperHost: 'https://graphhopper.sviluppo.lunet.it/',
   //api: 'http://127.0.0.1:8000',
   //elasticApi: 'http://localhost:3000/v2/search',
@@ -33,6 +27,12 @@ export const environment = {
       elasticApi: 'https://elastic-json.webmapp.it/v2/search',
       graphhopperHost: 'https://graphhopper.webmapp.it/',
       awsApi: 'https://wmfe.s3.eu-central-1.amazonaws.com/camminiditalia',
+    },
+    carg: {
+      origin: 'https://carg.webmapp.it',
+      elasticApi: 'https://elastic-json.webmapp.it/v2/search',
+      graphhopperHost: 'https://graphhopper.webmapp.it/',
+      awsApi: 'https://wmfe.s3.eu-central-1.amazonaws.com/geohub',
     },
   },
   redirect: {
@@ -71,6 +71,10 @@ export const environment = {
     'fiemaps.eu': {
       shardName: 'geohub',
       appId: 29,
+    },
+    'maps.sentierodeiducati.it': {
+      shardName: 'geohub',
+      appId: 60,
     },
   },
 };

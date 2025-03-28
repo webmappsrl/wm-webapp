@@ -6,8 +6,8 @@ import {Environment} from '@wm-types/environment';
 
 export const environment: Environment = {
   production: false,
-  appId: 1,
-  shardName: 'camminiditalia',
+  appId: 3,
+  shardName: 'geohub',
   shards: {
     geohub: {
       origin: 'https://geohub.webmapp.it',

@@ -22,7 +22,7 @@ import {AppComponent} from './app.component';
 import {MetaComponent} from './meta.component';
 import {tap} from 'rxjs/operators';
 import {WmCoreModule} from '@wm-core/wm-core.module';
-import {APP_VERSION} from '@wm-core/store/conf/conf.token';
+import {APP_TRANSLATION, APP_VERSION} from '@wm-core/store/conf/conf.token';
 import packageJson from 'package.json';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 registerLocaleData(localeIt);
@@ -63,6 +63,7 @@ export class MyHttpInterceptor implements HttpInterceptor {
       useValue: packageJson.version,
     },
     {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
+    {provide: APP_TRANSLATION, useValue: {}},
     {provide: LOCALE_ID, useValue: 'it'},
     /*     {
           provide: HTTP_INTERCEPTORS,

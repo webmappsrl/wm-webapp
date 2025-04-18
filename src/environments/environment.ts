@@ -6,7 +6,7 @@ import {Environment} from '@wm-types/environment';
 
 export const environment: Environment = {
   production: false,
-  appId: 17,
+  appId: 3,
   shardName: 'geohub',
   shards: {
     geohub: {
@@ -27,7 +27,7 @@ export const environment: Environment = {
       graphhopperHost: 'https://graphhopper.webmapp.it/',
       awsApi: 'https://wmfe.s3.eu-central-1.amazonaws.com/camminiditalia',
     },
-    'camminiditalia-dev': {
+    camminiditaliadev: {
       origin: 'https://camminiditalia.dev.maphub.it',
       elasticApi: 'https://camminiditalia.dev.maphub.it/api/v2/elasticsearch',
       graphhopperHost: 'https://graphhopper.webmapp.it/',

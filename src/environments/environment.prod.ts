@@ -27,7 +27,7 @@ export const environment: Environment = {
       origin: 'https://camminiditalia.dev.maphub.it',
       elasticApi: 'https://camminiditalia.dev.maphub.it/api/v2/elasticsearch',
       graphhopperHost: 'https://graphhopper.webmapp.it/',
-      awsApi: 'https://wmfe.s3.eu-central-1.amazonaws.com/camminiditalia-dev',
+      awsApi: 'https://wmfe.s3.eu-central-1.amazonaws.com/camminiditaliadev',
     },
     carg: {
       origin: 'https://carg.webmapp.it',

@@ -4,10 +4,9 @@ import {ChangeDetectionStrategy, Component, ViewChild, ViewEncapsulation} from '
 import {LineString, Point} from 'geojson';
 import {Store} from '@ngrx/store';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {map, take, tap} from 'rxjs/operators';
+import {map, take} from 'rxjs/operators';
 
 import {
-  confAUTHEnable,
   confGeohubId,
   confLANGUAGES,
   confOPTIONS,
@@ -16,13 +15,8 @@ import {
 } from '@wm-core/store/conf/conf.selector';
 
 import {IOPTIONS} from '@wm-core/types/config';
-import {LangService} from '@wm-core/localization/lang.service';
 import {WmFeature} from 'src/app/shared/wm-types/src';
-import {
-  currentCustomTrack,
-  currentUgcPoiProperties,
-  currentUgcTrack,
-} from '@wm-core/store/features/ugc/ugc.selector';
+import {currentUgcPoiProperties, currentUgcTrack} from '@wm-core/store/features/ugc/ugc.selector';
 import {currentCustomTrack as currentCustomTrackAction} from '@wm-core/store/features/ugc/ugc.actions';
 
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
@@ -39,7 +33,6 @@ const initMenuOpened = true;
   styleUrls: ['./map.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  providers: [LangService],
 })
 export class MapPage {
   @ViewChild(WmHomeComponent) homeCmp: WmHomeComponent;
@@ -52,13 +45,8 @@ export class MapPage {
   ecTrack$: Observable<WmFeature<LineString> | null> = this._store.select(currentEcTrack);
   enableEditingInline$: Observable<boolean> = this._store.select(confShowEditingInline);
   geohubId$ = this._store.select(confGeohubId);
-  langs$ = this._store.select(confLANGUAGES).pipe(
-    tap(l => {
-      if (l && l.default) {
-        this._langService.initLang(l.default);
-      }
-    }),
-  );
+  langs$ = this._store.select(confLANGUAGES);
+
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   poi$ = this._store.select(poi);
   resizeEVT: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -69,11 +57,7 @@ export class MapPage {
   ugcTrack$: Observable<WmFeature<LineString> | null> = this._store.select(currentUgcTrack);
   wmHomeEnable$ = this._store.select(homeOpened);
 
-  constructor(
-    private _store: Store,
-    private _langService: LangService,
-    private _urlHandlerSvc: UrlHandlerService,
-  ) {
+  constructor(private _store: Store, private _urlHandlerSvc: UrlHandlerService) {
     this.caretOutLine$ = this.showMenu$.pipe(
       map(showMenu => (showMenu ? 'caret-back-outline' : 'caret-forward-outline')),
     );

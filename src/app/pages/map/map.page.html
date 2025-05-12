@@ -50,10 +50,7 @@
     class="wm-home"
     [hidden]="(currentTrack$|async) !=null"
   >
-    <wm-lang-selector
-      [langs]="(langs$|async)?.available"
-      [defaultLang]="(langs$|async)?.default"
-    ></wm-lang-selector>
+    <wm-lang-selector></wm-lang-selector>
   </wm-home>
   <ng-template #customTrack>
     <wm-draw-track (reloadEvt)="reloadCustomTrack()"></wm-draw-track>

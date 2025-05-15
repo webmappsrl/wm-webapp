@@ -43,10 +43,12 @@
           <i class="icon-outline-arrow-right"></i>
         </button>
       </div>
-      <wm-excerpt
-        *ngIf="poiProperties?.excerpt as excerpt"
-        [excerpt]="excerpt|wmtrans"
-      ></wm-excerpt>
+      <wm-inner-component-html
+        class="wm-excerpt"
+        *ngIf="properties?.excerpt as excerpt"
+        [html]="excerpt|wmtrans"
+      >
+      </wm-inner-component-html>
     </div>
 
     <wm-tab-image-gallery

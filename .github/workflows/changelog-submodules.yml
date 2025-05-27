@@ -1,0 +1,59 @@
+name: Generate Changelog for Submodule Updates
+
+on:
+  push:
+    branches:
+      - develop # cambia se usi un altro branch
+
+jobs:
+  submodule-changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+          fetch-depth: 0
+
+      - name: Set Git user
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Detect submodule changes and generate changelog commits
+        run: |
+          set -e
+          BASE_PATH="src/app/shared"
+          SUBMODULES=("map-core" "wm-core" "wm-types")
+          PREV_COMMIT=$(git rev-parse HEAD~1)
+          CURR_COMMIT=$(git rev-parse HEAD)
+
+          for NAME in "${SUBMODULES[@]}"; do
+            SUBMODULE_PATH="${BASE_PATH}/${NAME}"
+
+            OLD_COMMIT=$(git ls-tree "$PREV_COMMIT" "$SUBMODULE_PATH" | awk '{print $3}')
+            NEW_COMMIT=$(git ls-tree "$CURR_COMMIT" "$SUBMODULE_PATH" | awk '{print $3}')
+
+            if [[ "$OLD_COMMIT" != "$NEW_COMMIT" && -n "$OLD_COMMIT" && -n "$NEW_COMMIT" ]]; then
+              echo "📦 Submodule $NAME updated: $OLD_COMMIT → $NEW_COMMIT"
+
+              cd "$SUBMODULE_PATH"
+              CHANGELOG=$(git log --pretty=format:"- %s%n%b" "$OLD_COMMIT..$NEW_COMMIT" || echo "")
+              cd - > /dev/null
+
+              if [[ -n "$CHANGELOG" ]]; then
+                git commit --allow-empty -m "chore($NAME): changelog for bump to ${NEW_COMMIT:0:7}" -m "$CHANGELOG"
+              else
+                echo "ℹ️ Nessun changelog rilevante per $NAME"
+              fi
+            else
+              echo "✔️ Nessun cambiamento in $NAME"
+            fi
+          done
+
+          if [[ -n "$(git diff --cached)" || "$(git log -1 --pretty=%B)" == chore* ]]; then
+            git push
+          else
+            echo "✅ Nessun commit vuoto necessario"
+          fi

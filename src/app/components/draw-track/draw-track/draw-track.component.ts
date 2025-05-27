@@ -49,7 +49,6 @@ export class DrawTrackComponent {
     private _deviceSvc: DeviceService,
     private _alertCtrl: AlertController,
     private _langSvc: LangService,
-    private _ugcSvc: UgcService,
   ) {}
 
   centerCustomTrack(feature: any): void {
@@ -175,6 +174,6 @@ export class DrawTrackComponent {
           return EMPTY;
         }),
       )
-      .subscribe(() => this._ugcSvc.syncUgc());
+      .subscribe(() => this._store.dispatch(syncUgcTracks()));
   }
 }

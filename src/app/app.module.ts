@@ -25,6 +25,7 @@ import {WmCoreModule} from '@wm-core/wm-core.module';
 import {APP_TRANSLATION, APP_VERSION} from '@wm-core/store/conf/conf.token';
 import packageJson from 'package.json';
 import {EnvironmentService} from '@wm-core/services/environment.service';
+import {initializeConsoleOverride} from '@wm-core/utils/console-override';
 registerLocaleData(localeIt);
 @Injectable()
 export class MyHttpInterceptor implements HttpInterceptor {
@@ -76,5 +77,6 @@ export class MyHttpInterceptor implements HttpInterceptor {
 export class AppModule {
   constructor(private _environmentSvc: EnvironmentService) {
     this._environmentSvc.init(environment);
+    initializeConsoleOverride(environment);
   }
 }

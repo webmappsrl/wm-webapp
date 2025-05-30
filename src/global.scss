@@ -33,7 +33,7 @@
 @import url(./app/theme/fonts.scss);
 .ol-zoom {
   top: unset;
-  left: unset;
+  left: unset !important;
   z-index: 10000;
 
   &,

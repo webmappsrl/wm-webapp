@@ -130,7 +130,6 @@
           [disabled]="true"
           [confPOIFORMS]="confPOIFORMS$|async"
           [init]="poi?.properties?.form"
-          (formGroupEvt)="fg = $event"
         ></wm-form>
       </div>
     </ng-container>
@@ -139,7 +138,7 @@
   <div class="edit-container">
     <ng-container *ngIf="poiProperties?.uuid; else editGeohub">
       <ng-container *ngIf="!(isEditing$|async); else editingButtons">
-        <ion-button class="edit" (click)="isEditing$.next(true)"> {{"edit" |wmtrans}}</ion-button>
+        <ion-button class="edit" (click)="editUgcPoi()"> {{"edit" |wmtrans}}</ion-button>
         <ion-button color="danger" (click)="deleteUgcPoi()"> {{"delete" | wmtrans}}</ion-button>
       </ng-container>
       <ng-template #editingButtons>
@@ -148,7 +147,7 @@
           (click)="updatePoi()"
           >{{"save" | wmtrans}}</ion-button
         >
-        <ion-button (click)="isEditing$.next(false)">{{"cancel" |wmtrans}}</ion-button>
+        <ion-button (click)="cancelEditUgcPoi()">{{"cancel" | wmtrans}}</ion-button>
       </ng-template>
     </ng-container>
     <ng-template #editGeohub>

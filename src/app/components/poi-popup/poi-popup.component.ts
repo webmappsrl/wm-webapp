@@ -20,6 +20,8 @@ import {confPOIFORMS, confShowEditingInline} from '@wm-core/store/conf/conf.sele
 import {deleteUgcPoi, updateUgcPoi} from '@wm-core/store/features/ugc/ugc.actions';
 import {Media, WmFeature, WmProperties} from '@wm-types/feature';
 import {switchMap, take} from 'rxjs/operators';
+import {startEditUgcPoi, stopEditUgcPoi} from '@wm-core/store/user-activity/user-activity.action';
+import {currentUgcPoiDrawnGeometry} from '@wm-core/store/features/ugc/ugc.selector';
 
 @Component({
   selector: 'webmapp-poi-popup',
@@ -31,6 +33,7 @@ import {switchMap, take} from 'rxjs/operators';
 export class PoiPopupComponent {
   @Output() closeEVT: EventEmitter<void> = new EventEmitter<void>();
   confPOIFORMS$: Observable<any[]> = this._store.select(confPOIFORMS);
+  currentUgcPoiDrawnGeometry$: Observable<Point> = this._store.select(currentUgcPoiDrawnGeometry);
   public defaultPhotoPath = '/assets/icon/no-photo.svg';
   enableEditingInline$ = this._store.select(confShowEditingInline);
   enableGallery$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -99,6 +102,16 @@ export class PoiPopupComponent {
     }
   }
 
+  editUgcPoi(): void {
+    this.isEditing$.next(true);
+    this._store.dispatch(startEditUgcPoi({ugcPoi: this.poi}));
+  }
+
+  cancelEditUgcPoi(): void {
+    this.isEditing$.next(false);
+    this._store.dispatch(stopEditUgcPoi());
+  }
+
   deleteUgcPoi(): void {
     from(
       this._alertCtrl.create({
@@ -153,13 +166,14 @@ export class PoiPopupComponent {
         ...this.poi,
         properties: {
           ...this.poi?.properties,
-          name: this.fg.value.title,
+          name: this.fg.value?.title,
           form: this.fg.value,
           updatedAt: new Date(),
         },
       };
 
       this._store.dispatch(updateUgcPoi({poi}));
+      this._store.dispatch(stopEditUgcPoi());
       this.isEditing$.next(false);
       this.poi = poi;
       this.poiProperties = {...poi.properties} as any;

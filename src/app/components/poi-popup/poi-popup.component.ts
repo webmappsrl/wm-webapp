@@ -162,25 +162,22 @@ export class PoiPopupComponent {
 
   updatePoi(): void {
     if (this.fg.valid) {
-      this.currentUgcPoiDrawnGeometry$.pipe(take(1)).subscribe(geometry => {
-        const poi: WmFeature<Point> = {
-          ...this.poi,
-          geometry: geometry ?? this.poi?.geometry,
-          properties: {
-            ...this.poi?.properties,
-            name: this.fg.value?.title,
-            form: this.fg.value,
-            updatedAt: new Date(),
-          },
-        };
+      const poi: WmFeature<Point> = {
+        ...this.poi,
+        properties: {
+          ...this.poi?.properties,
+          name: this.fg.value?.title,
+          form: this.fg.value,
+          updatedAt: new Date(),
+        },
+      };
 
-        this._store.dispatch(updateUgcPoi({poi}));
-        this._store.dispatch(stopEditUgcPoi());
-        this.isEditing$.next(false);
-        this.poi = poi;
-        this.poiProperties = {...poi.properties} as any;
-        this._cdr.detectChanges();
-      });
+      this._store.dispatch(updateUgcPoi({poi}));
+      this._store.dispatch(stopEditUgcPoi());
+      this.isEditing$.next(false);
+      this.poi = poi;
+      this.poiProperties = {...poi.properties} as any;
+      this._cdr.detectChanges();
     }
   }
 }

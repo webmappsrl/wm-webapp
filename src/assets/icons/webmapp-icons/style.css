@@ -43,10 +43,11 @@
 
 @font-face {
   font-family: 'wm';
-  src: url('fonts/wm.eot?9d6ynt');
-  src: url('fonts/wm.eot?9d6ynt#iefix') format('embedded-opentype'),
-    url('fonts/wm.ttf?9d6ynt') format('truetype'), url('fonts/wm.woff?9d6ynt') format('woff'),
-    url('fonts/wm.svg?9d6ynt#wm') format('svg');
+  src:  url('fonts/wm.eot?jqcblt');
+  src:  url('fonts/wm.eot?jqcblt#iefix') format('embedded-opentype'),
+    url('fonts/wm.ttf?jqcblt') format('truetype'),
+    url('fonts/wm.woff?jqcblt') format('woff'),
+    url('fonts/wm.svg?jqcblt#wm') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -3720,4 +3721,22 @@ ion-title {
 }
 .icon-xbox:before {
   content: '\f30c';
+}
+.icon-swimming:before {
+  content: '\eb53';
+}
+.icon-wheelchair:before {
+  content: '\eb54';
+}
+.icon-binoculars:before {
+  content: '\eb55';
+}
+.icon-maki_restaurant:before {
+  content: '\eb56';
+}
+.icon-temples:before {
+  content: '\eb57';
+}
+.icon-wm_train:before {
+  content: '\eb58';
 }

@@ -20,7 +20,7 @@ import {confPOIFORMS, confShowEditingInline} from '@wm-core/store/conf/conf.sele
 import {deleteUgcPoi, updateUgcPoi} from '@wm-core/store/features/ugc/ugc.actions';
 import {Media, WmFeature, WmProperties} from '@wm-types/feature';
 import {switchMap, take} from 'rxjs/operators';
-import {startEditUgcPoi, stopEditUgcPoi} from '@wm-core/store/user-activity/user-activity.action';
+import {startDrawUgcPoi, stopDrawUgcPoi} from '@wm-core/store/user-activity/user-activity.action';
 import {currentUgcPoiDrawnGeometry} from '@wm-core/store/features/ugc/ugc.selector';
 
 @Component({
@@ -104,12 +104,12 @@ export class PoiPopupComponent {
 
   editUgcPoi(): void {
     this.isEditing$.next(true);
-    this._store.dispatch(startEditUgcPoi({ugcPoi: this.poi}));
+    this._store.dispatch(startDrawUgcPoi({ugcPoi: this.poi}));
   }
 
   cancelEditUgcPoi(): void {
     this.isEditing$.next(false);
-    this._store.dispatch(stopEditUgcPoi());
+    this._store.dispatch(stopDrawUgcPoi());
   }
 
   deleteUgcPoi(): void {
@@ -173,7 +173,7 @@ export class PoiPopupComponent {
       };
 
       this._store.dispatch(updateUgcPoi({poi}));
-      this._store.dispatch(stopEditUgcPoi());
+      this._store.dispatch(stopDrawUgcPoi());
       this.isEditing$.next(false);
       this.poi = poi;
       this.poiProperties = {...poi.properties} as any;

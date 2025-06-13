@@ -46,14 +46,14 @@
 
   <wm-home
     #home
-    *ngIf="wmHomeEnable$|async;else customTrack"
+    *ngIf="wmHomeEnable$|async;else drawUgc"
     class="wm-home"
     [hidden]="(currentTrack$|async) !=null"
   >
     <wm-lang-selector></wm-lang-selector>
   </wm-home>
-  <ng-template #customTrack>
-    <wm-draw-track (reloadEvt)="reloadCustomTrack()"></wm-draw-track>
+  <ng-template #drawUgc>
+    <wm-draw-ugc></wm-draw-ugc>
   </ng-template>
 </div>
 <webmapp-poi-popup

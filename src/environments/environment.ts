@@ -27,6 +27,12 @@ export const environment: Environment = {
       graphhopperHost: 'https://graphhopper.webmapp.it/',
       awsApi: 'https://wmfe.s3.eu-central-1.amazonaws.com/geohub',
     },
+    osm2caidev: {
+      origin: 'https://osm2cai2.dev.maphub.it/',
+      elasticApi: 'https://osm2cai2.dev.maphub.it/api/v2/elasticsearch',
+      graphhopperHost: 'https://graphhopper.webmapp.it/',
+      awsApi: 'https://wmfe.s3.eu-central-1.amazonaws.com/osm2cai2dev',
+    },
     camminiditalia: {
       origin: 'https://camminiditalia.maphub.it',
       elasticApi: 'https://camminiditalia.maphub.it/api/v2/elasticsearch',

@@ -49,7 +49,7 @@ export const environment: Environment = {
       origin: 'https://carg.geosciences-ir.it',
       elasticApi: 'https://carg.geosciences-ir.it/api/v2/elasticsearch',
       graphhopperHost: 'https://graphhopper.webmapp.it/',
-      awsApi: 'https://carg-app.s3.eu-south-1.amazonaws.com/wmfe/carg',
+      awsApi: 'https://carg.geosciences-ir.it/storage/wmfe/carg',
     },
     cargdev: {
       origin: 'https://carg.maphub.it',

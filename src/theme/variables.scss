@@ -86,6 +86,30 @@
   --wm-font-family-content: 'Inter';
 
   --wm-color-greybackground: #f2f2f2;
+
+  /** ion primary **/
+  --ion-color-primary: var(--wm-color-primary); //#3880ff;
+  --ion-color-primary-rgb: var(--wm-color-primary-rgb); //56, 128, 255;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: var(--wm-color-primary); //#3171e0;
+  --ion-color-primary-tint: var(--wm-color-primary); //#4c8dff;
+
+  /** ion secondary **/
+  --ion-color-secondary: var(--wm-color-secondary); //#3dc2ff;
+  --ion-color-secondary-rgb: var(--wm-color-secondary-rgb); //61, 194, 255;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #ffefcc; //#36abe0;
+  --ion-color-secondary-tint: var(--wm-color-secondary); //#50c8ff;
+
+  /** ion tertiary **/
+  --ion-color-tertiary: var(--wm-color-tertiary); //#5260ff;
+  --ion-color-tertiary-rgb: var(--wm-color-tertiary-rgb); //82, 96, 255;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: var(--wm-color-tertiary); //#4854e0;
+  --ion-color-tertiary-tint: var(--wm-color-tertiary); //#6370ff;
 }
 
 // @media (prefers-color-scheme: dark) {

@@ -74,5 +74,6 @@
   "Si è verificato un errore durante il salvataggio del percorso. Riprova": "Se ha producido un error al guardar el track. Inténtalo de nuevo",
   "Il percorso è stato salvato correttamente": "El track se ha guardado correctamente",
   "Per favore, inserisci un nome per el track": "Por favor, introduce un nombre para el track",
-  "Errore": "Error"
+  "Errore": "Error",
+  "Clicca sulla mappa per avviare la creazione di un POI": "Haz clic en el mapa para iniciar la creación de un POI"
 }

@@ -8,7 +8,6 @@ import {map, take} from 'rxjs/operators';
 
 import {
   confGeohubId,
-  confLANGUAGES,
   confOPTIONS,
   confShowDrawTrack,
   confShowEditingInline,
@@ -45,7 +44,6 @@ export class MapPage {
   ecTrack$: Observable<WmFeature<LineString> | null> = this._store.select(currentEcTrack);
   enableEditingInline$: Observable<boolean> = this._store.select(confShowEditingInline);
   geohubId$ = this._store.select(confGeohubId);
-  langs$ = this._store.select(confLANGUAGES);
 
   mapPadding$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(initPadding);
   poi$ = this._store.select(poi);

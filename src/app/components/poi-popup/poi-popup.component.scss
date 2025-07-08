@@ -49,6 +49,7 @@ webmapp-poi-popup {
     align-content: stretch;
     align-items: center;
     width: 100%;
+    padding-bottom: 10px;
 
     .webmapp-poi-popup-left,
     .webmapp-poi-popup-right {
@@ -160,7 +161,6 @@ webmapp-poi-popup {
   }
 
   .edit-container {
-    position: absolute;
     display: flex;
     flex-direction: column;
     bottom: 0;

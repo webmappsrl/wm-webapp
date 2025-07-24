@@ -5,5 +5,6 @@ export default defineConfig({
     baseUrl: 'http://localhost:8100',
     defaultCommandTimeout: 5000,
     testIsolation: false,
+    video: true,
   },
 });

@@ -1,6 +1,7 @@
+<!-- TODO: Utilizzare poi-properties.component per uniformare ad app -->
 <ng-container *ngIf="poiProperties!= null">
   <ng-container *ngIf="isEditing$|async; else viewData">
-    <wm-form 
+    <wm-form
       [confPOIFORMS]="confPOIFORMS$|async"
       [init]="poi?.properties?.form"
       (formGroupEvt)="fg = $event"
@@ -32,7 +33,7 @@
       ></div>
     </ng-template>
     <div class="title">
-      <button 
+      <button
         class="webmapp-poi-popup-left circle"
         *ngIf="poiProperties.related"
         (click)="prevEVT.emit()"
@@ -52,6 +53,7 @@
     <ion-content>
       <div class="row">
         <wm-inner-component-html
+          [enableDismiss]="false"
           class="wm-excerpt"
           *ngIf="poiProperties?.excerpt as excerpt"
           [html]="excerpt|wmtrans"
@@ -106,7 +108,7 @@
             {{poiProperties.contact_email}}
           </a>
         </div>
-        <div 
+        <div
           class="webmapp-poi-popup-btn webmapp-poi-popup-urls"
           *ngIf="poiProperties.related_url != null"
         >

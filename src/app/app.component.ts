@@ -20,6 +20,7 @@ import {leftPadding, padding} from '@map-core/store/map-core.actions';
 import {syncUgc} from '@wm-core/store/features/ugc/ugc.actions';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
 import {ModalController} from '@ionic/angular';
+import {loadIcons} from '@wm-core/store/icons/icons.actions';
 @Component({
   selector: 'webmapp-app-root',
   templateUrl: 'app.component.html',
@@ -38,6 +39,7 @@ export class AppComponent implements OnInit {
   ) {
     this._store.dispatch(loadConf());
     this._store.dispatch(loadAuths());
+    this._store.dispatch(loadIcons());
     this._store.dispatch(ecTracks({init: true}));
     this._store.dispatch(padding({padding: [100, 100, 100, 100]}));
     this._store.dispatch(leftPadding({leftPadding: 400}));

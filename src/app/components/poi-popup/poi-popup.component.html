@@ -7,11 +7,14 @@
       (formGroupEvt)="fg = $event"
     ></wm-form>
     <div class="edit-container">
-      <ion-button [disabled]="!fg.dirty || !fg.valid" (click)="updatePoi()">{{"save" | wmtrans}}</ion-button>
+      <ion-button
+        [disabled]="!fg.dirty || !fg.valid"
+        (click)="updatePoi()"
+        >{{"save" | wmtrans}}</ion-button
+      >
       <ion-button (click)="cancelEditUgcPoi()">{{"cancel" | wmtrans}}</ion-button>
     </div>
   </ng-container>
-
 
   <ng-template #viewData>
     <div class="row">
@@ -133,16 +136,14 @@
         <div class="webmapp-title">{{'Descrizione Audio'|wmtrans}}</div>
         <webmapp-track-audio [audio]="poiProperties?.audio"></webmapp-track-audio>
       </ng-container>
-      <ng-container *ngIf="poiProperties?.uuid">
-        <div *ngIf="poi?.properties?.form">
-          <wm-form
-            class="readonly-form"
-            [disabled]="true"
-            [confPOIFORMS]="confPOIFORMS$|async"
-            [init]="poi?.properties?.form"
-          ></wm-form>
-        </div>
-      </ng-container>
+      <div *ngIf="poiProperties?.form">
+        <wm-form
+          class="readonly-form"
+          [disabled]="true"
+          [confPOIFORMS]="confPOIFORMS$|async"
+          [init]="poi?.properties?.form"
+        ></wm-form>
+      </div>
       <div class="edit-container">
         <ng-container *ngIf="poiProperties?.uuid; else editGeohub">
           <ion-button class="edit" (click)="editUgcPoi()"> {{"edit" |wmtrans}}</ion-button>

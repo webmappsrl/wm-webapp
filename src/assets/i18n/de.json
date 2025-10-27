@@ -75,5 +75,27 @@
   "Il percorso è stato salvato correttamente": "Die Strecke wurde erfolgreich gespeichert",
   "Per favore, inserisci un nome per il percorso": "Bitte geben Sie einen Namen für die Strecke ein",
   "Errore": "Fehler",
-  "Clicca sulla mappa per avviare la creazione di un POI": "Klicken Sie auf die Karte, um einen POI zu erstellen"
+  "Clicca sulla mappa per avviare la creazione di un POI": "Klicken Sie auf die Karte, um einen POI zu erstellen",
+  "privacy": {
+    "agree": {
+      "title": "Datenverarbeitung",
+      "message": "Ich stimme der Veröffentlichung meiner Daten zu",
+      "read_privacy": "Datenschutzerklärung zur Datenverarbeitung lesen",
+      "accept": "Akzeptieren",
+      "reject": "Ablehnen",
+      "confirm": {
+        "title": "Änderung bestätigen",
+        "accept_message": "Sind Sie sicher, dass Sie der Datenverarbeitung zustimmen möchten?",
+        "reject_message": "Sind Sie sicher, dass Sie die Datenverarbeitung ablehnen möchten?",
+        "yes": "Ja, bestätigen",
+        "no": "Abbrechen"
+      },
+      "final_confirm": {
+        "title": "Änderung abgeschlossen",
+        "accept_message": "Die Einwilligung zur Datenverarbeitung wurde erfolgreich akzeptiert.",
+        "reject_message": "Die Einwilligung zur Datenverarbeitung wurde erfolgreich abgelehnt.",
+        "ok": "OK"
+      }
+    }
+  }
 }

@@ -75,5 +75,27 @@
   "Il percorso è stato salvato correttamente": "O track foi salvo corretamente",
   "Per favore, inserisci un nome per el track": "Por favor, insira um nome para o track",
   "Errore": "Erro",
-  "Clicca sulla mappa per avviare la creazione di un POI": "Clique no mapa para iniciar a criação de um POI"
+  "Clicca sulla mappa per avviare la creazione di un POI": "Clique no mapa para iniciar a criação de um POI",
+  "privacy": {
+    "agree": {
+      "title": "Tratamento de dados",
+      "message": "Consento que meus dados sejam publicados",
+      "read_privacy": "Ler política de privacidade sobre o tratamento de dados",
+      "accept": "Aceitar",
+      "reject": "Rejeitar",
+      "confirm": {
+        "title": "Confirmar modificação",
+        "accept_message": "Tem certeza de que deseja aceitar o tratamento de dados?",
+        "reject_message": "Tem certeza de que deseja rejeitar o tratamento de dados?",
+        "yes": "Sim, confirmar",
+        "no": "Cancelar"
+      },
+      "final_confirm": {
+        "title": "Modificação concluída",
+        "accept_message": "O consentimento para o tratamento de dados foi aceito com sucesso.",
+        "reject_message": "O consentimento para o tratamento de dados foi rejeitado com sucesso.",
+        "ok": "OK"
+      }
+    }
+  }
 }

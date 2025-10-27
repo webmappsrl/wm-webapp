@@ -75,5 +75,27 @@
   "Il percorso è stato salvato correttamente": "The track has been saved correctly",
   "Per favore, inserisci un nome per il percorso": "Please insert a name for the track",
   "Errore": "Error",
-  "Clicca sulla mappa per avviare la creazione di un POI": "Click on the map to start creating a POI"
+  "Clicca sulla mappa per avviare la creazione di un POI": "Click on the map to start creating a POI",
+  "privacy": {
+    "agree": {
+      "title": "Data processing",
+      "message": "I consent to my data being published",
+      "read_privacy": "Read privacy policy on data processing",
+      "accept": "Accept",
+      "reject": "Reject",
+      "confirm": {
+        "title": "Confirm modification",
+        "accept_message": "Are you sure you want to accept data processing?",
+        "reject_message": "Are you sure you want to reject data processing?",
+        "yes": "Yes, confirm",
+        "no": "Cancel"
+      },
+      "final_confirm": {
+        "title": "Modification completed",
+        "accept_message": "Consent to data processing has been successfully accepted.",
+        "reject_message": "Consent to data processing has been successfully rejected.",
+        "ok": "OK"
+      }
+    }
+  }
 }

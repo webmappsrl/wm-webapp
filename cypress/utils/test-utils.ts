@@ -54,17 +54,17 @@ export const confURL = `${environment.shards.geohub.awsApi}/conf/52.json`;
 export const elasticUrl = `${environment.shards.geohub.elasticApi}`;
 export const data = {
   layers: {
-    ecTrack: 'Tracks test e2e',
-    ecPoi: 'Poi test e2e',
-    ecTracksEdge: 'Edge Layer Test e2e',
+    ecTrack: {title: 'Tracks test e2e', id: 504},
+    ecPoi: {title: 'Poi test e2e', id: 506},
+    ecTracksEdge: {title: 'Edge Layer Test e2e', id: 593},
   },
   tracks: {
-    exampleOne: 'Track example one',
-    exampleTwo: 'Track example two',
-    exampleTwoRelatedPoi: 'related poi example',
-    exampleFirstEdge: 'Track Edge Example 01',
+    exampleOne: {title: 'Track example one', id: 86095},
+    exampleTwo: {title: 'Track example two', id: 86094},
+    exampleTwoRelatedPoi: {title: 'related poi example', id: 42514},
+    exampleFirstEdge: {title: 'Track Edge Example 01', id: 88585},
   },
   pois: {
-    exampleOne: 'Poi example one',
+    exampleOne: {title: 'Poi example one', id: 42346},
   },
 };

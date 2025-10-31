@@ -17,6 +17,12 @@ webmapp-map-page {
     box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2);
     border-radius: 4px;
   }
+  wm-inner-component-html {
+    padding: 0;
+  }
+  .wm-home-header-container {
+    padding-top: 0;
+  }
   .layer-button {
     display: flex;
     flex-direction: row;

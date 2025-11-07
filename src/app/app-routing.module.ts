@@ -3,12 +3,13 @@ import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
 
 const routes: Routes = [
   {
-    path: 'map',
+    path: '',
     loadChildren: () => import('./pages/map/map.module').then(m => m.MapPageModule),
+    pathMatch: 'full',
   },
   {
-    path: '',
-    redirectTo: 'map',
+    path: '**',
+    redirectTo: '',
     pathMatch: 'full',
   },
 ];

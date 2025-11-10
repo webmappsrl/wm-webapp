@@ -192,7 +192,6 @@ wm-status-filter ion-grid ion-row > ion-col:first-child {
 wm-status-filter ion-grid ion-row ion-col span {
   padding: 4px 8px;
   min-width: 24px;
-  max-width: 50px;
   height: 26px;
   background: #fffaf2;
   border: 1px solid var(--wm-color-primary);

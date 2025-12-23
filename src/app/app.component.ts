@@ -14,7 +14,8 @@ import {
 import appPackage from 'package.json';
 import wmCorePackage from './shared/wm-core/package.json';
 import mapCorePackage from './shared/map-core/package.json';
-import {IAPP, IWEBAPP} from '@wm-core/types/config';
+import {IWEBAPP} from '@wm-core/types/config';
+import {APP} from '@wm-types/config';
 import {loadAuths} from '@wm-core/store/auth/auth.actions';
 import {leftPadding, padding} from '@map-core/store/map-core.actions';
 import {syncUgc} from '@wm-core/store/features/ugc/ugc.actions';
@@ -28,7 +29,7 @@ import {loadIcons} from '@wm-core/store/icons/icons.actions';
   encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent implements OnInit {
-  confAPP$: Observable<any> = this._store.select(confAPP);
+  confAPP$: Observable<APP> = this._store.select(confAPP);
   confTHEMEVariables$: Observable<any> = this._store.select(confTHEMEVariables);
   confWEBAPP$: Observable<any> = this._store.select(confWEBAPP);
   private _confPRIVACY$: Observable<any> = this._store.select(confPRIVACY);
@@ -91,7 +92,7 @@ export class AppComponent implements OnInit {
         switchMap(() => this.confAPP$),
         take(1),
       )
-      .subscribe((conf: IAPP) => {
+      .subscribe((conf: APP) => {
         this.setSplashScreenImage(conf);
         this.hideSplashScreen();
       });
@@ -117,7 +118,7 @@ export class AppComponent implements OnInit {
     }, 3000); // Attendi 3 secondi prima di nascondere la splash screen
   }
 
-  private setSplashScreenImage(conf: IAPP) {
+  private setSplashScreenImage(conf: APP) {
     const bodyElement = document.body;
     if (bodyElement && conf.geohubId) {
       const splashScreen = document.createElement('div') as HTMLImageElement;

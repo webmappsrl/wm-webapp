@@ -36,3 +36,7 @@ cypress/screenshots
 
 cypress/screenshots/
 cypress/videos/
+
+# File con chiavi PostHog
+.posthog
+src/app/config/posthog.json

@@ -90,13 +90,15 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "app:build"
+            "buildTarget": "app:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "app:build:production"
+              "buildTarget": "app:build:production"
             },
-            "ci": {}
+            "ci": {
+              "buildTarget": "app:build"
+            }
           }
         },
         "extract-i18n": {

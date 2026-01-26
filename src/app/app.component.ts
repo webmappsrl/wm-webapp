@@ -29,6 +29,7 @@ import {PosthogService} from './services/posthog.service';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class AppComponent implements OnInit {
   confAPP$: Observable<APP> = this._store.select(confAPP);
@@ -66,7 +67,7 @@ export class AppComponent implements OnInit {
               componentProps: {
                 html,
               },
-              swipeToClose: true,
+              canDismiss: true,
               mode: 'ios',
             });
           }),

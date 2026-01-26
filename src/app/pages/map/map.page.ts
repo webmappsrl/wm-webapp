@@ -27,6 +27,7 @@ const menuOpenLeft = 400;
 const initPadding = [100, 100, 100, menuOpenLeft];
 const initMenuOpened = true;
 @Component({
+  standalone: false,
   selector: 'webmapp-map-page',
   templateUrl: './map.page.html',
   styleUrls: ['./map.page.scss'],

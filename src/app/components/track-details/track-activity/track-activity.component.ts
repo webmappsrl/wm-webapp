@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
 
 @Component({
+  standalone: false,
   selector: 'wm-track-activity',
   templateUrl: './track-activity.component.html',
   styleUrls: ['./track-activity.component.scss'],

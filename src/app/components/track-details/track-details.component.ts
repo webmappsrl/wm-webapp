@@ -19,6 +19,7 @@ import {ecLayer} from '@wm-core/store/user-activity/user-activity.selector';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
 
 @Component({
+  standalone: false,
   selector: 'webmapp-track-details',
   templateUrl: './track-details.component.html',
   styleUrls: ['./track-details.component.scss'],

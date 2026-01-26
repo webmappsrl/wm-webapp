@@ -19,13 +19,13 @@ import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {environment} from 'src/environments/environment';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {MetaComponent} from './meta.component';
 import {tap} from 'rxjs/operators';
 import {WmCoreModule} from '@wm-core/wm-core.module';
 import {APP_TRANSLATION, APP_VERSION} from '@wm-core/store/conf/conf.token';
 import packageJson from 'package.json';
 import {EnvironmentService} from '@wm-core/services/environment.service';
 import {initializeConsoleOverride} from '@wm-core/utils/console-override';
+import {MetaComponent} from '@wm-core/meta/meta.component';
 registerLocaleData(localeIt);
 @Injectable()
 export class MyHttpInterceptor implements HttpInterceptor {
@@ -44,7 +44,7 @@ export class MyHttpInterceptor implements HttpInterceptor {
   }
 }
 @NgModule({
-  declarations: [AppComponent, MetaComponent, ScriptComponent],
+  declarations: [AppComponent, ScriptComponent],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
@@ -72,11 +72,10 @@ export class MyHttpInterceptor implements HttpInterceptor {
           multi: true,
         }, */
   ],
-  bootstrap: [ScriptComponent, AppComponent, MetaComponent],
+  bootstrap: [AppComponent, ScriptComponent, MetaComponent],
 })
 export class AppModule {
   constructor(private _environmentSvc: EnvironmentService) {
     this._environmentSvc.init(environment);
-    initializeConsoleOverride(environment);
   }
 }

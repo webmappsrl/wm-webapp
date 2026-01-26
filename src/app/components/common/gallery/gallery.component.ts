@@ -6,11 +6,12 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {IonSlides} from '@ionic/angular';
+// IonSlides removed - using Swiper directly
 import {BehaviorSubject} from 'rxjs';
 import {IWmImage} from 'src/app/types/model';
 
 @Component({
+  standalone: false,
   selector: 'wm-gallery',
   templateUrl: './gallery.component.html',
   styleUrls: ['./gallery.component.scss'],
@@ -22,7 +23,7 @@ export class GalleryComponent {
     this.gallery = gallery;
   }
 
-  @ViewChild('slider') slider: IonSlides;
+  @ViewChild('slider') slider: any; // TODO: Update to use Swiper directly
 
   currentImage$: BehaviorSubject<IWmImage | null> = new BehaviorSubject<IWmImage | null>(null);
   public defaultPhotoPath = '/assets/icon/no-photo.svg';

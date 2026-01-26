@@ -2,6 +2,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
   name: 'getFilterIcn',
+  standalone: false,
 })
 export class WmGetFilterIcnPipe implements PipeTransform {
   transform(identifier: string, filters: string[]): string {

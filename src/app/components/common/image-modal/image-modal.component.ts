@@ -8,6 +8,7 @@ import {
   EventEmitter,
 } from '@angular/core';
 @Component({
+  standalone: false,
   selector: 'webmapp-image-modal',
   templateUrl: './image-modal.component.html',
   styleUrls: ['./image-modal.component.scss'],

@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 
 @Component({
+  standalone: false,
   selector: 'webmapp-track-description',
   templateUrl: './track-description.component.html',
   styleUrls: ['./track-description.component.scss'],

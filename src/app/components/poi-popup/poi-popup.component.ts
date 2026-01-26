@@ -13,7 +13,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {UntypedFormGroup} from '@angular/forms';
-import {AlertController, IonSlides} from '@ionic/angular';
+import {AlertController} from '@ionic/angular';
 import {Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
 import {confPOIFORMS, confShowEditingInline} from '@wm-core/store/conf/conf.selector';
@@ -24,6 +24,7 @@ import {startDrawUgcPoi, stopDrawUgcPoi} from '@wm-core/store/user-activity/user
 import {currentUgcPoiDrawnGeometry} from '@wm-core/store/features/ugc/ugc.selector';
 
 @Component({
+  standalone: false,
   selector: 'webmapp-poi-popup',
   templateUrl: './poi-popup.component.html',
   styleUrls: ['./poi-popup.component.scss'],
@@ -55,7 +56,7 @@ export class PoiPopupComponent {
     spaceBetween: 20,
     loop: true,
   };
-  @ViewChild('gallery') public slider: IonSlides;
+  @ViewChild('gallery') public slider: any; // TODO: Update to use Swiper directly
 
   constructor(
     private _store: Store,

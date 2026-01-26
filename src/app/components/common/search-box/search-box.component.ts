@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
 import {BaseBoxComponent} from '../abstract/box';
 
 @Component({
+  standalone: false,
   selector: 'webmapp-search-box',
   templateUrl: './search-box.component.html',
   styleUrls: ['./search-box.component.scss'],

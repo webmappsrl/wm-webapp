@@ -3,6 +3,7 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
 import {BaseBoxComponent} from '../abstract/box';
 
 @Component({
+  standalone: false,
   selector: 'webmapp-poi-box',
   templateUrl: './poi-box.component.html',
   styleUrls: ['./poi-box.component.scss'],

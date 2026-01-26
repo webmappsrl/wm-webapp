@@ -1,5 +1,6 @@
 import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
 @Component({
+  standalone: false,
   selector: 'webmapp-track-related-urls',
   templateUrl: './track-related-urls.component.html',
   styleUrls: ['./track-related-urls.component.css'],

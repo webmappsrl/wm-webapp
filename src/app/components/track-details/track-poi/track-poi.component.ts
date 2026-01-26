@@ -11,6 +11,7 @@ import {WmFeature} from '@wm-types/feature';
 import {LineString, Point} from 'geojson';
 import {currentEcRelatedPoiId} from '@wm-core/store/features/ec/ec.selector';
 @Component({
+  standalone: false,
   selector: 'webmapp-track-poi',
   templateUrl: './track-poi.component.html',
   styleUrls: ['./track-poi.component.scss'],

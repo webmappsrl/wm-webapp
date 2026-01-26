@@ -5,6 +5,7 @@ import {filter, take} from 'rxjs/operators';
 import {confWEBAPP} from '@wm-core/store/conf/conf.selector';
 @Component({
   selector: 'wm-script',
+  standalone: false,
   template: ``,
 })
 export class ScriptComponent {

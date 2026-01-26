@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
 import {BaseBoxComponent} from '../abstract/box';
 
 @Component({
+  standalone: false,
   selector: 'webmapp-layer-box',
   templateUrl: './layer-box.component.html',
   styleUrls: ['./layer-box.component.scss'],

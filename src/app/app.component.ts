@@ -22,7 +22,6 @@ import {syncUgc} from '@wm-core/store/features/ugc/ugc.actions';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
 import {ModalController} from '@ionic/angular';
 import {loadIcons} from '@wm-core/store/icons/icons.actions';
-import {PosthogService} from './services/posthog.service';
 
 @Component({
   selector: 'webmapp-app-root',
@@ -40,7 +39,6 @@ export class AppComponent implements OnInit {
     @Inject(DOCUMENT) private _document: Document,
     private _store: Store<any>,
     private _modalCtrl: ModalController,
-    private _posthogSvc: PosthogService,
   ) {
     this._store.dispatch(loadConf());
     this._store.dispatch(loadAuths());

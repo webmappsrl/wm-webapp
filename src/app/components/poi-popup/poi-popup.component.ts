@@ -138,17 +138,17 @@ export class PoiPopupComponent {
       .subscribe();
   }
 
-  @HostListener('document:keydown.ArrowLeft', ['$event'])
+  @HostListener('document:keydown.ArrowLeft')
   handleArrowLeft(): void {
     this.prevEVT.emit();
   }
 
-  @HostListener('document:keydown.ArrowRight', ['$event'])
+  @HostListener('document:keydown.ArrowRight')
   handleArrowRight(): void {
     this.nextEVT.emit();
   }
 
-  @HostListener('document:keydown.Escape', ['$event'])
+  @HostListener('document:keydown.Escape')
   handleEscape(): void {
     this.closeEVT.emit();
   }

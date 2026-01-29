@@ -1,4 +1,4 @@
-{
+export const appIT = {
   "trackDetails": {
     "technicalData": {
       "ascent": "Dislivello positivo",
@@ -93,4 +93,4 @@
       }
     }
   }
-}
+};

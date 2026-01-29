@@ -1,4 +1,4 @@
-{
+export const appSQ = {
   "privacy": {
     "agree": {
       "title": "Përpunimi i të dhënave",

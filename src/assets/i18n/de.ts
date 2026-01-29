@@ -1,4 +1,4 @@
-{
+export const appDE = {
   "trackDetails": {
     "technicalData": {
       "ascent": "Aufstieg",

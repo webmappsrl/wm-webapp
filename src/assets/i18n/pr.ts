@@ -1,4 +1,4 @@
-{
+export const appPR = {
   "trackDetails": {
     "technicalData": {
       "ascent": "Elevação positiva",
@@ -98,4 +98,4 @@
       }
     }
   }
-}
+};

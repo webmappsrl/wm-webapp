@@ -14,7 +14,7 @@ import localeIt from '@angular/common/locales/it';
 import {BrowserModule} from '@angular/platform-browser';
 import {RouteReuseStrategy} from '@angular/router';
 import {EffectsModule} from '@ngrx/effects';
-import {StoreModule} from '@ngrx/store';
+import {ActionReducer, MetaReducer, StoreModule} from '@ngrx/store';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {environment} from 'src/environments/environment';
 import {AppRoutingModule} from './app-routing.module';
@@ -32,6 +32,41 @@ import { appFR } from 'src/assets/i18n/fr';
 import { appES } from 'src/assets/i18n/es';
 import { appPR } from 'src/assets/i18n/pr';
 import { appSQ } from 'src/assets/i18n/sq';
+
+// Meta-reducer per forzare WEBAPP.analytics.enabled = true solo quando lo shard è "geohub"
+export function analyticsGeohubMetaReducer(reducer: ActionReducer<any>): ActionReducer<any> {
+  return (state, action) => {
+    const nextState = reducer(state, action);
+
+    if (
+      environment.shardName === 'geohub' &&
+      nextState &&
+      nextState.conf &&
+      nextState.conf.WEBAPP &&
+      nextState.conf.WEBAPP.analytics &&
+      nextState.conf.WEBAPP.analytics.enabled !== true
+    ) {
+      return {
+        ...nextState,
+        conf: {
+          ...nextState.conf,
+          WEBAPP: {
+            ...nextState.conf.WEBAPP,
+            analytics: {
+              enabled: true,
+              recordingEnabled: false,
+              recordingProbability: 0,
+            },
+          },
+        },
+      };
+    }
+
+    return nextState;
+  };
+}
+
+export const metaReducers: MetaReducer[] = [analyticsGeohubMetaReducer];
 registerLocaleData(localeIt);
 export const langs: WmTranslations = {
   'de': appDE,
@@ -66,7 +101,7 @@ export class MyHttpInterceptor implements HttpInterceptor {
     HttpClientModule,
     AppRoutingModule,
     WmCoreModule,
-    StoreModule.forRoot(),
+    StoreModule.forRoot({}, {metaReducers}),
     EffectsModule.forRoot(),
     StoreDevtoolsModule.instrument({
       maxAge: 25,

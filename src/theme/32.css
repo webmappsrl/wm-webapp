@@ -445,3 +445,10 @@ webmapp-track-details .webmapp-title {
   color: #333333;
 }
 /* end webmapp-track-details component */
+
+/* start wm-features-in-viewport component */
+.details-container.details-container-visible ~ wm-geobox-map wm-features-in-viewport {
+  left: 521px !important;
+  width: calc(100% - 521px) !important;
+}
+/* end wm-features-in-viewport component */

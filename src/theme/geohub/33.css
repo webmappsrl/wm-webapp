@@ -1,7 +1,5 @@
 /* start track-details component */
-wm-gallery {
-  order: 2;
-}
+
 wm-slope-chart {
   align-self: flex-start;
   order: 3;

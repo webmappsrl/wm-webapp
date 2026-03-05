@@ -20,7 +20,6 @@ import {TrackDetailsModule} from '../track-details/track-details.module';
     PipeModule,
     SwiperModule,
     WmCoreModule,
-    TrackDetailsModule,
   ],
 })
 export class UgcDetailsModule {}

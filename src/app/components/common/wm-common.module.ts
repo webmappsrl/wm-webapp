@@ -8,7 +8,6 @@ import {PoiBoxComponent} from './poi-box/poi-box.component';
 import {RelatedUrlsComponent} from './related-urls.component';
 import {SearchBoxComponent} from './search-box/search-box.component';
 import {TrackAudioComponent} from './track-audio/track-audio.component';
-import {GalleryComponent} from './gallery/gallery.component';
 import {WmCoreModule} from '@wm-core/wm-core.module';
 
 const components = [
@@ -18,7 +17,6 @@ const components = [
   LayerBoxComponent,
   PoiBoxComponent,
   TrackAudioComponent,
-  GalleryComponent,
 ];
 @NgModule({
   declarations: components,

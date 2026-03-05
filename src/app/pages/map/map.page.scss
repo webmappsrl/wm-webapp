@@ -96,7 +96,7 @@ webmapp-map-page {
     color: var(--wm-color-dark);
 
     &.details-container-visible,
-    webmapp-track-details {
+    wm-track-properties {
       width: 400px;
     }
   }

@@ -370,9 +370,7 @@ wm-home-result wm-poi-box ion-card {
 /* end wm-home-result component */
 
 /* start webmapp-map-page component */
-webmapp-map-page .details-container webmapp-track-details {
-  width: unset !important;
-}
+
 webmapp-map-page .webmapp-menubtn.webmapp-menubtn {
   width: 37px;
   height: 44px;
@@ -390,61 +388,6 @@ webmapp-map-page .details-container.details-container-visible {
   width: 521px !important;
 }
 /* end webmapp-map-page component */
-
-/* start webmapp-track-details component */
-webmapp-track-details .webmapp-track-title {
-  display: none !important;
-}
-webmapp-track-details ion-toolbar {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  width: 521px;
-  left: 0px;
-  top: 0px;
-  background: #ffffff;
-  border-bottom: 1px solid #f0f0f0;
-}
-webmapp-track-details ion-toolbar ion-title {
-  color: #333333;
-  height: 11px;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 24px !important;
-  display: flex;
-  align-items: center;
-  flex: none;
-  order: 0;
-  flex-grow: 0;
-}
-webmapp-track-details .header-md::after {
-  display: none;
-}
-webmapp-track-details #webmapp-track-details-content {
-  display: flex;
-  flex-direction: column;
-}
-.wm-track-details-description {
-  order: -1;
-  line-height: 30px;
-}
-
-webmapp-track-details .webmapp-title {
-  height: 11px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 10px;
-  display: flex;
-  align-items: center;
-  flex: none;
-  order: 0;
-  flex-grow: 0;
-  color: #333333;
-}
-/* end webmapp-track-details component */
 
 /* start wm-features-in-viewport component */
 .details-container.details-container-visible ~ wm-geobox-map wm-features-in-viewport {

@@ -8,49 +8,50 @@
   <ion-icon [attr.name]="caretOutLine$|async"></ion-icon>
 </button>
 <div class="details-container" [class.details-container-visible]="(showMenu$|async)">
-  <wm-track-properties
-    *ngIf="(ecTrack$|async) as ecTrack;"
-    (dismiss)="updateEcTrack()"
-    class="webmapp-track-details"
-  >
-    <ng-container *ngIf="(confOPTIONS$|async) as opt">
-      <ion-item
-        *ngIf="opt.print_track_enable != null && opt.print_track_enable === true"
-        [href]="'https://geohub.webmapp.it/track/pdf/'+ecTrack.properties.id+'/?app_id='+(geohubId$|async)"
-        class="webmapp-track-download-urls-item"
-        target="_blank"
-      >
-        <ion-icon class="wm-icn icon-link" slot="start"></ion-icon>
-        <ion-label class="webmapp-track-download-urls-item-label">
-          {{"apri pdf"|wmtrans}}
-        </ion-label>
-      </ion-item>
-    </ng-container>
-    <ion-button
-      class="wm-edit-geohub"
-      expand="block"
-      *ngIf="enableEditingInline$|async"
-      (click)="openGeohub()"
-      bottom
+  <ng-container *ngIf="wmHomeEnable$|async; else drawUgc">
+    <wm-track-properties
+      *ngIf="(ecTrack$|async) as ecTrack;"
+      (dismiss)="updateEcTrack()"
+      class="webmapp-track-details"
     >
-      {{'edit geohub'|wmtrans}}
-    </ion-button>
-  </wm-track-properties>
+      <ng-container *ngIf="(confOPTIONS$|async) as opt">
+        <ion-item
+          *ngIf="opt.print_track_enable != null && opt.print_track_enable === true"
+          [href]="'https://geohub.webmapp.it/track/pdf/'+ecTrack.properties.id+'/?app_id='+(geohubId$|async)"
+          class="webmapp-track-download-urls-item"
+          target="_blank"
+        >
+          <ion-icon class="wm-icn icon-link" slot="start"></ion-icon>
+          <ion-label class="webmapp-track-download-urls-item-label">
+            {{"apri pdf"|wmtrans}}
+          </ion-label>
+        </ion-item>
+      </ng-container>
+      <ion-button
+        class="wm-edit-geohub"
+        expand="block"
+        *ngIf="enableEditingInline$|async"
+        (click)="openGeohub()"
+        bottom
+      >
+        {{'edit geohub'|wmtrans}}
+      </ion-button>
+    </wm-track-properties>
+  
+    <wm-ugc-track-properties
+      *ngIf="(ugcTrack$|async) as ugcTrack"
+      [track]="ugcTrack"
+      (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
+      (poi-click)="setCurrentRelatedPoi($event)"
+    ></wm-ugc-track-properties>
+    <wm-home
+      #home
+      class="wm-home"
+      [hidden]="(currentTrack$|async) !=null"
+    >
+    </wm-home>
+  </ng-container>
 
-  <wm-ugc-track-properties
-    *ngIf="(ugcTrack$|async) as ugcTrack"
-    [track]="ugcTrack"
-    (trackElevationChartHover)="setTrackElevationChartHoverElements($event)"
-    (poi-click)="setCurrentRelatedPoi($event)"
-  ></wm-ugc-track-properties>
-
-  <wm-home
-    #home
-    *ngIf="wmHomeEnable$|async;else drawUgc"
-    class="wm-home"
-    [hidden]="(currentTrack$|async) !=null"
-  >
-  </wm-home>
   <ng-template #drawUgc>
     <wm-draw-ugc></wm-draw-ugc>
   </ng-template>

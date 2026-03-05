@@ -7,6 +7,7 @@ import {confAPP, confGeohubId, confWEBAPP} from '@wm-core/store/conf/conf.select
 
 @Component({
   selector: 'webmapp-meta',
+  standalone: false,
   template: `
     <meta charset="utf-8" />
     <title>{{(APP$|async).name}}</title>

@@ -10,6 +10,7 @@ import {isLogged} from '@wm-core/store/auth/auth.selectors';
 import {confAUTHEnable} from '@wm-core/store/conf/conf.selector';
 
 @Component({
+  standalone: false,
   selector: 'wm-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],

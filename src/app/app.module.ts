@@ -14,19 +14,69 @@ import localeIt from '@angular/common/locales/it';
 import {BrowserModule} from '@angular/platform-browser';
 import {RouteReuseStrategy} from '@angular/router';
 import {EffectsModule} from '@ngrx/effects';
-import {StoreModule} from '@ngrx/store';
+import {ActionReducer, MetaReducer, StoreModule} from '@ngrx/store';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {environment} from 'src/environments/environment';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {MetaComponent} from './meta.component';
 import {tap} from 'rxjs/operators';
 import {WmCoreModule} from '@wm-core/wm-core.module';
-import {APP_TRANSLATION, APP_VERSION} from '@wm-core/store/conf/conf.token';
 import packageJson from 'package.json';
-import {EnvironmentService} from '@wm-core/services/environment.service';
-import {initializeConsoleOverride} from '@wm-core/utils/console-override';
+import posthogConfig from './config/posthog.json';
+import {MetaComponent} from '@wm-core/meta/meta.component';
+import { WmTranslations } from '@wm-types/language';
+import { appIT } from 'src/assets/i18n/it';
+import { appEN } from 'src/assets/i18n/en';
+import { appDE } from 'src/assets/i18n/de';
+import { appFR } from 'src/assets/i18n/fr';
+import { appES } from 'src/assets/i18n/es';
+import { appPR } from 'src/assets/i18n/pr';
+import { appSQ } from 'src/assets/i18n/sq';
+
+// Meta-reducer per forzare WEBAPP.analytics.enabled = true solo quando lo shard è "geohub"
+export function analyticsGeohubMetaReducer(reducer: ActionReducer<any>): ActionReducer<any> {
+  return (state, action) => {
+    const nextState = reducer(state, action);
+
+    if (
+      environment.shardName === 'geohub' &&
+      nextState &&
+      nextState.conf &&
+      nextState.conf.WEBAPP &&
+      nextState.conf.WEBAPP.analytics &&
+      nextState.conf.WEBAPP.analytics.enabled !== true
+    ) {
+      return {
+        ...nextState,
+        conf: {
+          ...nextState.conf,
+          WEBAPP: {
+            ...nextState.conf.WEBAPP,
+            analytics: {
+              enabled: true,
+              recordingEnabled: false,
+              recordingProbability: 0,
+            },
+          },
+        },
+      };
+    }
+
+    return nextState;
+  };
+}
+
+export const metaReducers: MetaReducer[] = [analyticsGeohubMetaReducer];
 registerLocaleData(localeIt);
+export const langs: WmTranslations = {
+  'de': appDE,
+  'en': appEN,
+  'es': appES,
+  'fr': appFR,
+  'it': appIT,
+  'pr': appPR,
+  'sq': appSQ,
+};
 @Injectable()
 export class MyHttpInterceptor implements HttpInterceptor {
   constructor() {}
@@ -44,14 +94,14 @@ export class MyHttpInterceptor implements HttpInterceptor {
   }
 }
 @NgModule({
-  declarations: [AppComponent, MetaComponent, ScriptComponent],
+  declarations: [AppComponent, ScriptComponent],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
     HttpClientModule,
     AppRoutingModule,
     WmCoreModule,
-    StoreModule.forRoot(),
+    StoreModule.forRoot({}, {metaReducers}),
     EffectsModule.forRoot(),
     StoreDevtoolsModule.instrument({
       maxAge: 25,
@@ -59,24 +109,24 @@ export class MyHttpInterceptor implements HttpInterceptor {
     }),
   ],
   providers: [
-    {
-      provide: APP_VERSION,
-      useValue: packageJson.version,
-    },
-    {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
-    {provide: APP_TRANSLATION, useValue: {}},
     {provide: LOCALE_ID, useValue: 'it'},
+    {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
+    ...WmCoreModule.forRoot({
+      appVersion: packageJson.version,
+      environment: environment,
+      translations: langs,
+      posthog: {
+        apiKey: posthogConfig.POSTHOG_KEY,
+        host: posthogConfig.POSTHOG_HOST,
+        enabled: true,
+      },
+    }).providers!,
     /*     {
           provide: HTTP_INTERCEPTORS,
           useClass: MyHttpInterceptor,
           multi: true,
         }, */
   ],
-  bootstrap: [ScriptComponent, AppComponent, MetaComponent],
+  bootstrap: [AppComponent, ScriptComponent, MetaComponent],
 })
-export class AppModule {
-  constructor(private _environmentSvc: EnvironmentService) {
-    this._environmentSvc.init(environment);
-    initializeConsoleOverride(environment);
-  }
-}
+export class AppModule {}

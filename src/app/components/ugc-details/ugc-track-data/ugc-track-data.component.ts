@@ -5,6 +5,7 @@ import {BehaviorSubject} from 'rxjs';
 import {WmFeature} from 'src/app/shared/wm-types/src';
 
 @Component({
+  standalone: false,
   selector: 'wm-ugc-track-data',
   templateUrl: './ugc-track-data.component.html',
   styleUrls: ['./ugc-track-data.component.scss'],

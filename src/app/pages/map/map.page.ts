@@ -13,7 +13,7 @@ import {
   confShowEditingInline,
 } from '@wm-core/store/conf/conf.selector';
 
-import {IOPTIONS} from '@wm-core/types/config';
+import {OPTIONS} from '@wm-types/config';
 import {WmFeature} from 'src/app/shared/wm-types/src';
 import {currentUgcPoiProperties, currentUgcTrack} from '@wm-core/store/features/ugc/ugc.selector';
 import {currentCustomTrack as currentCustomTrackAction} from '@wm-core/store/features/ugc/ugc.actions';
@@ -27,6 +27,7 @@ const menuOpenLeft = 400;
 const initPadding = [100, 100, 100, menuOpenLeft];
 const initMenuOpened = true;
 @Component({
+  standalone: false,
   selector: 'webmapp-map-page',
   templateUrl: './map.page.html',
   styleUrls: ['./map.page.scss'],
@@ -37,7 +38,7 @@ export class MapPage {
   @ViewChild(WmHomeComponent) homeCmp: WmHomeComponent;
 
   caretOutLine$: Observable<'caret-back-outline' | 'caret-forward-outline'>;
-  confOPTIONS$: Observable<IOPTIONS> = this._store.select(confOPTIONS);
+  confOPTIONS$: Observable<OPTIONS> = this._store.select(confOPTIONS);
   currentEcPoiId$ = this._store.select(currentEcPoiId);
   currentTrack$ = this._store.select(track);
   currentUgcPoiProperties$ = this._store.select(currentUgcPoiProperties);

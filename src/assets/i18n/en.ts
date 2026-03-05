@@ -1,4 +1,4 @@
-{
+export const appEN = {
   "trackDetails": {
     "technicalData": {
       "ascent": "Positive elevation",

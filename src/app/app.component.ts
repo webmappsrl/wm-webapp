@@ -2,7 +2,7 @@ import {DOCUMENT} from '@angular/common';
 import {Component, Inject, OnInit, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
-import {filter, skip, switchMap, take, takeUntil} from 'rxjs/operators';
+import {filter, skip, switchMap, take} from 'rxjs/operators';
 import {ecTracks} from '@wm-core/store/features/ec/ec.actions';
 import {loadConf} from '@wm-core/store/conf/conf.actions';
 import {
@@ -14,7 +14,7 @@ import {
 import appPackage from 'package.json';
 import wmCorePackage from './shared/wm-core/package.json';
 import mapCorePackage from './shared/map-core/package.json';
-import {IWEBAPP} from '@wm-core/types/config';
+import {WEBAPP} from '@wm-types/config';
 import {APP} from '@wm-types/config';
 import {loadAuths} from '@wm-core/store/auth/auth.actions';
 import {leftPadding, padding} from '@map-core/store/map-core.actions';
@@ -22,13 +22,13 @@ import {syncUgc} from '@wm-core/store/features/ugc/ugc.actions';
 import {WmInnerHtmlComponent} from '@wm-core/inner-html/inner-html.component';
 import {ModalController} from '@ionic/angular';
 import {loadIcons} from '@wm-core/store/icons/icons.actions';
-import {PosthogService} from './services/posthog.service';
 
 @Component({
   selector: 'webmapp-app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: false,
 })
 export class AppComponent implements OnInit {
   confAPP$: Observable<APP> = this._store.select(confAPP);
@@ -39,7 +39,6 @@ export class AppComponent implements OnInit {
     @Inject(DOCUMENT) private _document: Document,
     private _store: Store<any>,
     private _modalCtrl: ModalController,
-    private _posthogSvc: PosthogService,
   ) {
     this._store.dispatch(loadConf());
     this._store.dispatch(loadAuths());
@@ -66,7 +65,7 @@ export class AppComponent implements OnInit {
               componentProps: {
                 html,
               },
-              swipeToClose: true,
+              canDismiss: true,
               mode: 'ios',
             });
           }),
@@ -91,7 +90,7 @@ export class AppComponent implements OnInit {
     this.confWEBAPP$
       .pipe(
         skip(1),
-        filter((c: IWEBAPP) => c.splash_screen_show),
+        filter((c: WEBAPP) => c.splash_screen_show),
         switchMap(() => this.confAPP$),
         take(1),
       )

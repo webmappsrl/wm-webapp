@@ -1,9 +1,10 @@
 import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {IonSlides, ModalController} from '@ionic/angular';
+import {ModalController} from '@ionic/angular';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 @Component({
+  standalone: false,
   selector: 'webmapp-modal-gallery',
   templateUrl: './modal-gallery.component.html',
   styleUrls: ['./modal-gallery.component.scss'],
@@ -14,7 +15,7 @@ export class ModalGalleryComponent implements OnInit, OnDestroy {
     caption?: string;
     url?: string;
   }>;
-  @ViewChild('gallerySlider') slider: IonSlides;
+  @ViewChild('gallerySlider') slider: any; // TODO: Update to use Swiper directly
   public galleryOptions: any;
   public isExpanded: boolean;
   public isStart: boolean;

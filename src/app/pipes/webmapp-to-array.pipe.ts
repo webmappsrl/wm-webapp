@@ -2,6 +2,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
   name: 'toArray',
+  standalone: false,
 })
 export class WmToArrayPipe implements PipeTransform {
   transform(value: string): string[] {

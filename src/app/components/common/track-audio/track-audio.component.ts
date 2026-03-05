@@ -10,6 +10,7 @@ import {
 import {map, withLatestFrom} from 'rxjs/operators';
 
 @Component({
+  standalone: false,
   selector: 'webmapp-track-audio',
   templateUrl: './track-audio.component.html',
   styleUrls: ['./track-audio.component.scss'],

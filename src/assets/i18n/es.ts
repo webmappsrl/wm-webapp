@@ -1,4 +1,4 @@
-{
+export const appES = {
   "trackDetails": {
     "technicalData": {
       "ascent": "Ascenso positivo",
@@ -98,4 +98,4 @@
       }
     }
   }
-}
+};

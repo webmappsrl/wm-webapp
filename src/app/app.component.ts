@@ -2,7 +2,7 @@ import {DOCUMENT} from '@angular/common';
 import {Component, Inject, OnInit, ViewEncapsulation} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
-import {filter, skip, switchMap, take, takeUntil} from 'rxjs/operators';
+import {filter, skip, switchMap, take} from 'rxjs/operators';
 import {ecTracks} from '@wm-core/store/features/ec/ec.actions';
 import {loadConf} from '@wm-core/store/conf/conf.actions';
 import {
@@ -14,7 +14,7 @@ import {
 import appPackage from 'package.json';
 import wmCorePackage from './shared/wm-core/package.json';
 import mapCorePackage from './shared/map-core/package.json';
-import {IWEBAPP} from '@wm-core/types/config';
+import {WEBAPP} from '@wm-types/config';
 import {APP} from '@wm-types/config';
 import {loadAuths} from '@wm-core/store/auth/auth.actions';
 import {leftPadding, padding} from '@map-core/store/map-core.actions';
@@ -90,7 +90,7 @@ export class AppComponent implements OnInit {
     this.confWEBAPP$
       .pipe(
         skip(1),
-        filter((c: IWEBAPP) => c.splash_screen_show),
+        filter((c: WEBAPP) => c.splash_screen_show),
         switchMap(() => this.confAPP$),
         take(1),
       )

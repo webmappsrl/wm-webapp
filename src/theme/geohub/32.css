@@ -384,7 +384,8 @@ webmapp-map-page .webmapp-menubtn.webmapp-menubtn-opened {
   border-radius: 0px 4px 4px 0px;
   box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2);
 }
-webmapp-map-page .details-container.details-container-visible {
+webmapp-map-page .details-container.details-container-visible,
+webmapp-map-page .details-container wm-track-properties {
   width: 521px !important;
 }
 /* end webmapp-map-page component */

@@ -171,4 +171,11 @@ webmapp-poi-popup {
       margin: 3px;
     }
   }
+
+  wm-txn-where {
+    ion-item {
+      --inner-padding-start: 0px;
+      --padding-start: 0px;
+    }
+  }
 }

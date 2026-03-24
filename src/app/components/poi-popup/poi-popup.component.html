@@ -70,6 +70,10 @@
         [imageGallery]="poiProperties.image_gallery"
       ></wm-tab-image-gallery>
       <wm-ugc-medias [showArrows]="true"></wm-ugc-medias>
+      <wm-txn-where
+        *ngIf="poiProperties?.taxonomy_where as txnWhere"
+        [taxonomyWheres]="txnWhere"
+      ></wm-txn-where>
 
       <div class="webmapp-poi-popup-btns">
         <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.address">

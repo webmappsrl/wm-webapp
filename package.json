@@ -45,6 +45,7 @@
     "@capacitor/share": "^7.0.3",
     "@capacitor/splash-screen": "^7.0.4",
     "@capacitor/status-bar": "^7.0.4",
+    "@capawesome/capacitor-app-update": "^7.2.0",
     "@capawesome/capacitor-posthog": "^7.4.0",
     "@dwayneparton/geojson-to-gpx": "^0.0.30",
     "@ionic/angular": "^8.7.16",

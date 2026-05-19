@@ -12,6 +12,7 @@
     "lint": "ng lint",
     "deploy": "ionic build --prod && scp -r ./www/* server:/var/www/html/app.geohub.webmapp.it/",
     "deploy-cai": "ionic build --prod && scp -r ./www/* cai.osm2cai:/var/www/html/webapp/",
+    "deploy-newcai": "ionic build --prod && scp -r ./www/* newcai.osm2cai:/var/www/html/webapp/",
     "deploy-webcomponent": "ng build --configuration production --output-hashing=none --output-path=web-component",
     "surge-sardegna": "ionic build --prod && surge --project ./www --domain http://32.webmapp.surge.sh/",
     "surge-sardegna-dev": "ionic build --prod && surge --project ./www --domain http://32.dev-webmapp.surge.sh/",

@@ -57,7 +57,7 @@ jobs:
 
       - name: Install wm-core dependencies
         working-directory: src/app/shared/wm-core
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1
@@ -90,7 +90,7 @@ jobs:
 
       - name: Install map-core dependencies
         working-directory: src/app/shared/map-core
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1

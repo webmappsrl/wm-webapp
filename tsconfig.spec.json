@@ -12,7 +12,8 @@
     "src/polyfills.ts"
   ],
   "include": [
-    "src/**/*.spec.ts",
+    "src/app/app.component.spec.ts",
+    "src/app/classes/**/*.spec.ts",
     "src/**/*.d.ts"
   ]
 }

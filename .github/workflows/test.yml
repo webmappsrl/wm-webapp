@@ -1,0 +1,102 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+
+jobs:
+  test-webapp:
+    runs-on: ubuntu-latest
+    name: wm-webapp unit tests
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Update submodules
+        run: git submodule update --init --recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Run tests
+        run: npx ng test --configuration=ci
+        env:
+          CI: true
+
+  test-wm-core:
+    runs-on: ubuntu-latest
+    name: wm-core unit tests
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Update submodules
+        run: git submodule update --init --recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install wm-webapp dependencies
+        run: npm ci
+
+      - name: Install wm-core dependencies
+        working-directory: src/app/shared/wm-core
+        run: npm ci
+
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Run wm-core tests
+        working-directory: src/app/shared/wm-core
+        run: npx ng test wm-core --configuration=ci
+        env:
+          CI: true
+
+  test-map-core:
+    runs-on: ubuntu-latest
+    name: map-core unit tests
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Update submodules
+        run: git submodule update --init --recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install wm-webapp dependencies
+        run: npm ci
+
+      - name: Install map-core dependencies
+        working-directory: src/app/shared/map-core
+        run: npm ci
+
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Run map-core tests
+        working-directory: src/app/shared/map-core
+        run: npx ng test map-core --configuration=ci
+        env:
+          CI: true

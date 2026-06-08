@@ -38,6 +38,16 @@ Il piano originale riguardava solo wm-webapp. Il lavoro è stato esteso ai due s
 - Fix test obsoleti: z-index `TRACK_DIRECTIVE_ZINDEX` cambiato da 50→500 (test aspettava 51/52, ora 501/502); `buildRefStyle` aveva firma cambiata (`Feature`→`LineString` + `opt.map` richiesto).
 - Risultato: 27/27 SUCCESS in CI. I directive/component spec (85+) richiedono browser con GPU per girare.
 
+### tsconfig.json: paths per @ionic/* (fix post-rebase)
+
+Dopo il rebase su develop, `wm-core/node_modules/@ionic/core` era alla versione 8.8.9 mentre il root aveva 8.7.17. Il `package-lock.json` di wm-core è stale (mostra ancora 6.7.5 di ionic 6), ma `npm install` installa 8.8.9. La versione 8.8.9 ha cambiato la struttura interna di `@ionic/core/components` (i file `./animation.js`, `./index2.js` ecc. non esistono più in quel percorso).
+
+Quando webpack compila `app.component.ts` → `@wm-core/inner-html/...` → file in `src/app/shared/wm-core/`, la Node module resolution trova `wm-core/node_modules/@ionic/angular` (8.8.9) prima del root. Quello importa `@ionic/core/components` che nella versione 8.8.9 ha struttura incompatibile → errore `Can't resolve './animation.js'`.
+
+**Fix:** aggiungere paths in `tsconfig.json` per `@ionic/core` e `@ionic/angular` → root `node_modules`. `TsconfigPathsPlugin` (usato da Angular CLI nel webpack config) intercetta queste risoluzioni e reindirizza al root.
+
+**Perché non si vedeva prima**: prima del nostro fix, `src/test.ts` aveva `require.context(...)` (API webpack 4) che crashava webpack immediatamente. Con il fix (rimosso `require.context`), webpack arriva al punto di risolvere `@ionic` ed espone questo conflitto latente.
+
 ## Bug trovati
 
 - `zone.js/dist/zone-testing` rimosso in zone.js v0.15.x — preesistente, risolto come pianificato

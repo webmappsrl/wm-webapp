@@ -125,6 +125,12 @@ jobs:
       - name: Install Ionic CLI
         run: npm install -g @ionic/cli@7.2.1
 
+      - name: Create posthog.json fallback
+        run: |
+          if [ ! -f src/app/config/posthog.json ]; then
+            echo '{ "POSTHOG_KEY": "", "POSTHOG_HOST": "" }' > src/app/config/posthog.json
+          fi
+
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1
 

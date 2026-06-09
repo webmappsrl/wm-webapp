@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - develop
+      - feature/oc-8022-github-action-webmapp
 
 jobs:
   preview:
@@ -57,6 +58,13 @@ jobs:
 
       - name: Install Ionic CLI
         run: npm install -g @ionic/cli@7.2.1
+
+      - name: Create posthog.json fallback
+        run: |
+          mkdir -p src/app/config
+          if [ ! -f src/app/config/posthog.json ]; then
+            echo '{ "POSTHOG_KEY": "", "POSTHOG_HOST": "" }' > src/app/config/posthog.json
+          fi
 
       - name: Build
         run: ionic build

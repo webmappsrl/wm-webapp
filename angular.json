@@ -114,6 +114,10 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
+            "include": [
+              "src/app/app.component.spec.ts",
+              "src/app/classes"
+            ],
             "styles": [],
             "scripts": [],
             "assets": [

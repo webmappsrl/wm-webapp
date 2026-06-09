@@ -1,0 +1,109 @@
+name: Surge Preview
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, closed]
+  push:
+    branches:
+      - develop
+
+jobs:
+  preview:
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request_target' && github.event.action != 'closed')
+    runs-on: ubuntu-latest
+    name: Deploy Surge preview
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Update submodules
+        run: git submodule update --init --recursive
+
+      - name: Extract --id and --shard from commit message
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request_target" ]; then
+            COMMIT_MSG=$(git show -s --format=%B ${{ github.event.pull_request.head.sha }})
+          else
+            COMMIT_MSG=$(git show -s --format=%B ${{ github.sha }})
+          fi
+
+          ID=$(echo "$COMMIT_MSG" | grep -oP '(?<=--id )\d+' | head -1) || true
+          SHARD=$(echo "$COMMIT_MSG" | grep -oP '(?<=--shard )[a-zA-Z0-9-]+' | head -1) || true
+
+          ID=${ID:-1}
+          SHARD=${SHARD:-maphub}
+
+          if [ "${{ github.event_name }}" == "pull_request_target" ]; then
+            DOMAIN="${ID}.${SHARD}.pr-${{ github.event.pull_request.number }}.surge.sh"
+          else
+            DOMAIN="${ID}.${SHARD}.develop.surge.sh"
+          fi
+
+          echo "SURGE_DOMAIN=$DOMAIN" >> $GITHUB_ENV
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Ionic CLI
+        run: npm install -g @ionic/cli@7.2.1
+
+      - name: Build
+        run: ionic build
+
+      - name: Deploy to Surge
+        uses: dswistowski/surge-sh-action@v1
+        with:
+          domain: ${{ env.SURGE_DOMAIN }}
+          project: ./www
+          login: ${{ secrets.SURGE_EMAIL }}
+          token: ${{ secrets.SURGE_TOKEN }}
+
+      - name: Add preview link to summary
+        run: |
+          echo "## Surge Preview" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[${{ env.SURGE_DOMAIN }}](http://${{ env.SURGE_DOMAIN }})" >> $GITHUB_STEP_SUMMARY
+
+  teardown:
+    if: github.event_name == 'pull_request_target' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    name: Teardown Surge preview
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Compute domain to teardown
+        run: |
+          COMMIT_MSG=$(git show -s --format=%B ${{ github.event.pull_request.head.sha }})
+          ID=$(echo "$COMMIT_MSG" | grep -oP '(?<=--id )\d+' | head -1) || true
+          SHARD=$(echo "$COMMIT_MSG" | grep -oP '(?<=--shard )[a-zA-Z0-9-]+' | head -1) || true
+          ID=${ID:-1}
+          SHARD=${SHARD:-maphub}
+          echo "SURGE_DOMAIN=${ID}.${SHARD}.pr-${{ github.event.pull_request.number }}.surge.sh" >> $GITHUB_ENV
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Surge CLI
+        run: npm install -g surge
+
+      - name: Teardown
+        run: npx surge teardown ${{ env.SURGE_DOMAIN }}
+        env:
+          SURGE_LOGIN: ${{ secrets.SURGE_EMAIL }}
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}

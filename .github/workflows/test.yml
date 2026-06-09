@@ -127,6 +127,7 @@ jobs:
 
       - name: Create posthog.json fallback
         run: |
+          mkdir -p src/app/config
           if [ ! -f src/app/config/posthog.json ]; then
             echo '{ "POSTHOG_KEY": "", "POSTHOG_HOST": "" }' > src/app/config/posthog.json
           fi

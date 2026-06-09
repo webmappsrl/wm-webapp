@@ -30,8 +30,10 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" == "pull_request_target" ]; then
             COMMIT_MSG=$(git show -s --format=%B ${{ github.event.pull_request.head.sha }})
+            PR_NUMBER="${{ github.event.pull_request.number }}"
           else
             COMMIT_MSG=$(git show -s --format=%B ${{ github.sha }})
+            PR_NUMBER=$(gh pr list --head "${{ github.ref_name }}" --json number --jq '.[0].number' 2>/dev/null || echo "")
           fi
 
           ID=$(echo "$COMMIT_MSG" | grep -oP '(?<=--id )\d+' | head -1) || true
@@ -40,13 +42,15 @@ jobs:
           ID=${ID:-1}
           SHARD=${SHARD:-maphub}
 
-          if [ "${{ github.event_name }}" == "pull_request_target" ]; then
-            DOMAIN="${ID}.${SHARD}.pr-${{ github.event.pull_request.number }}.surge.sh"
+          if [ -n "$PR_NUMBER" ]; then
+            DOMAIN="${ID}.${SHARD}.pr-${PR_NUMBER}.surge.sh"
           else
-            DOMAIN="${ID}.${SHARD}.develop.surge.sh"
+            DOMAIN="${ID}.${SHARD}.pr-develop.surge.sh"
           fi
 
           echo "SURGE_DOMAIN=$DOMAIN" >> $GITHUB_ENV
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - uses: actions/setup-node@v4
         with:

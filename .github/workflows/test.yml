@@ -5,6 +5,7 @@ on:
     branches:
       - develop
   pull_request:
+  workflow_call:
 
 jobs:
   test-webapp:
@@ -100,3 +101,56 @@ jobs:
         run: npx ng test map-core --configuration=ci
         env:
           CI: true
+
+  e2e:
+    runs-on: ubuntu-latest
+    name: E2E tests (Cypress)
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Update submodules
+        run: git submodule update --init --recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Ionic CLI
+        run: npm install -g @ionic/cli@7.2.1
+
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Run Cypress E2E
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          headed: false
+          start: ionic serve
+          wait-on: 'http://localhost:8100'
+          wait-on-timeout: 280
+          config: >-
+            defaultCommandTimeout=5000,pageLoadTimeout=10000,viewportWidth=412,viewportHeight=832,testIsolation=false
+        env:
+          CI: true
+
+      - name: Upload screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+
+      - name: Upload videos
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos
+          path: cypress/videos

@@ -1,3 +1,5 @@
+// TODO(oc:8022): migra a fixture + cy.intercept() per CI. Richiede mock delle API di autenticazione e del salvataggio POI.
+// Usa home-layers-tab.cy.ts come riferimento: cy.fixture() + cy.intercept() su CONF_URL.
 import {
   clearTestState,
   confURL,
@@ -10,7 +12,7 @@ import {
 const clickPosition = [478.18231201171875, 335.328125];
 const poiTitle = 'Draw ugc poi title test e2e';
 
-describe('Draw UGC POI', () => {
+describe.skip('Draw UGC POI — TODO: migra a fixture + cy.intercept() per CI, vedi home-layers-tab.cy.ts', () => {
   beforeEach('should draw a UGC POI', () => {
     clearTestState();
   });

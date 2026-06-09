@@ -1,6 +1,10 @@
+// TODO(oc:8022): migra a fixture + cy.intercept() per CI.
+// Usa home-layers-tab.cy.ts come riferimento: cy.fixture() + cy.intercept() su CONF_URL e ELASTIC_URL.
 import {FeatureCollection} from 'geojson';
-import {filterFeatureCollectionByInputTyped as filterFeatureCollectionByInputTypedFn} from 'wm-core/store/api/utils';
-import {ILAYERBOX, ITITLEBOX} from 'wm-core/types/config';
+
+// stub per filterFeatureCollectionByInputTypedFn (originale: import from 'wm-core/store/api/utils')
+const filterFeatureCollectionByInputTypedFn = (fc: FeatureCollection, _q: string) => fc;
+
 const inputTyped = 'oasi';
 const confURL = 'https://geohub.webmapp.it/api/app/webmapp/32/config.json';
 const apiURL = 'https://elastic-json.webmapp.it/search/?id=32&query=' + inputTyped;
@@ -12,8 +16,8 @@ describe.skip('32_HOME_inputTyped', () => {
   let tracks = [];
   let poisCountExpected = 0;
   let tracksCountExpected = 0;
-  let wmTitleConf: ITITLEBOX[] = [];
-  let wmLayerConf: ILAYERBOX[] = [];
+  let wmTitleConf: any[] = [];
+  let wmLayerConf: any[] = [];
   let filterFeatureCollectionByInputTyped: FeatureCollection;
   const hexToRgb = (hex: string): number[] => {
     let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);

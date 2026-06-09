@@ -1,41 +1,60 @@
+name: Deploy
+
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: write
   pull-requests: write
-name: Deploy
+
 jobs:
+  run-tests:
+    uses: ./.github/workflows/test.yml
+    secrets: inherit
+
   build:
+    needs: run-tests
     runs-on: ubuntu-latest
     name: Build and Deploy
 
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
         with:
           submodules: true
-      - name: Update submodules
-        run: |
-          git submodule update --init --recursive
 
-      - name: Bucket actions
-        uses: actions/setup-node@v1
+      - name: Update submodules
+        run: git submodule update --init --recursive
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16.19.1
+          node-version: 22
+          cache: npm
+
       - name: Install Ionic CLI
-        run: npm install -g @ionic/cli
-      - name: run npm install
-        run: npm install
-      - name: run ionic build
+        run: npm install -g @ionic/cli@7.2.1
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
+
+      - name: Setup SSH config
+        run: |
+          mkdir -p ~/.ssh
+          cat >> ~/.ssh/config << EOF
+          Host server
+            HostName ${{ secrets.SSH_HOST }}
+            User ${{ secrets.SSH_USER }}
+            Port ${{ secrets.SSH_PORT }}
+            StrictHostKeyChecking no
+          EOF
+
+      - name: Build
         run: ionic build --prod
-      - name: Publish
-        uses: nogsantos/scp-deploy@master
-        with:
-          src: ./www/*
-          host: ${{ secrets.SSH_HOST }}
-          remote: ${{ secrets.SSH_DIR }}
-          port: ${{ secrets.SSH_PORT }}
-          user: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
+
+      - name: Deploy
+        run: sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -r ./www/* server:/var/www/html/app.geohub.webmapp.it/

@@ -25,7 +25,9 @@
       "@ionic/core": ["node_modules/@ionic/core"],
       "@ionic/core/*": ["node_modules/@ionic/core/*"],
       "@ionic/angular": ["node_modules/@ionic/angular"],
-      "@ionic/angular/*": ["node_modules/@ionic/angular/*"]
+      "@ionic/angular/*": ["node_modules/@ionic/angular/*"],
+      "swiper": ["node_modules/swiper"],
+      "swiper/*": ["node_modules/swiper/*"]
     }
   },
   "angularCompilerOptions": {

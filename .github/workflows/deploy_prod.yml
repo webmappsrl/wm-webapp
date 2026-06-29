@@ -53,6 +53,11 @@ jobs:
             StrictHostKeyChecking no
           EOF
 
+      - name: Create posthog.json
+        run: |
+          mkdir -p src/app/config
+          echo '{ "POSTHOG_KEY": "${{ secrets.POSTHOG_KEY }}", "POSTHOG_HOST": "${{ secrets.POSTHOG_HOST }}" }' > src/app/config/posthog.json
+
       - name: Build
         run: ionic build --prod
 

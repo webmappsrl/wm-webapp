@@ -1,14 +1,18 @@
+// TODO(oc:8022): migra a fixture + cy.intercept() per CI.
+// Usa home-layers-tab.cy.ts come riferimento: cy.fixture() + cy.intercept() su CONF_URL e ELASTIC_URL.
+// Nota: tutti i describe sono già describe.skip — aggiorna context.ts e rimuovi lo skip quando le fixture sono pronte.
 import {FeatureCollection} from 'geojson';
-import {filterFeatureCollectionByInputTyped as filterFeatureCollectionByInputTypedFn} from 'wm-core/store/api/utils';
 import {environment} from 'src/environments/environment';
 import {context} from '../../support/context';
-import {ILAYERBOX, ITITLEBOX} from 'wm-core/types/config';
-import {wmIT} from 'wm-core/localization/i18n/it';
 import {clearTestState} from 'cypress/utils/test-utils';
 
 Cypress.config('defaultCommandTimeout', 10000);
-const appId = environment.geohubId;
-const inputsTyped: string[] = context[appId]?.inputsTyped ?? [];
+
+// stub per wmIT (originale: import from 'wm-core/localization/i18n/it')
+const wmIT: Record<string, string> = {};
+
+const appId = environment.appId;
+const inputsTyped: string[] = (context as any)[appId]?.inputsTyped ?? [];
 const confURL = `https://geohub.webmapp.it/api/app/webmapp/${appId}/config.json`;
 const poisURL = `https://geohub.webmapp.it/api/v1/app/${appId}/pois.geojson`;
 
@@ -18,8 +22,8 @@ const executeTests = (HOME_inputTyped, {inputTyped = ''}) => {
     let tracks = [];
     let poisCountExpected = 0;
     let tracksCountExpected = 0;
-    let wmTitleConf: ITITLEBOX[] = [];
-    let wmLayerConf: ILAYERBOX[] = [];
+    let wmTitleConf: any[] = [];
+    let wmLayerConf: any[] = [];
     let filterFeatureCollectionByInputTyped: FeatureCollection;
 
     before(() => {
@@ -40,7 +44,7 @@ const executeTests = (HOME_inputTyped, {inputTyped = ''}) => {
       cy.request(poisURL)
         .its('body')
         .then(featureCollection => {
-          filterFeatureCollectionByInputTyped = filterFeatureCollectionByInputTypedFn(
+          filterFeatureCollectionByInputTyped = _filterFeatureCollectionByInputTyped(
             featureCollection,
             inputTyped,
           );
@@ -110,7 +114,6 @@ const executeTests = (HOME_inputTyped, {inputTyped = ''}) => {
           cy.wrap(ionContent)
             .find('wm-search-box')
             .then($elements => {
-              // Check if tracksCountExpected is 200, if not use tracksCountExpected for assertion
               if (tracksCountExpected > 200) {
                 expect($elements).to.have.length(200);
               } else {
@@ -187,7 +190,6 @@ const executeTests = (HOME_inputTyped, {inputTyped = ''}) => {
               cy.wrap(wmPoiBox)
                 .invoke('text')
                 .then(wmPoiBoxText => {
-                  // Prepare wmPoiBoxText to match JSON format
                   const wmPoiBoxTextEscaped = wmPoiBoxText.replace(/"/g, '\\"');
                   expect(rawName).to.include(wmPoiBoxTextEscaped);
                 });
@@ -202,7 +204,7 @@ const executeTests = (HOME_inputTyped, {inputTyped = ''}) => {
     });
   });
 };
-// TODO: non riesco ad importarla
+
 const _filterFeatureCollectionByInputTyped = (
   featureCollection: FeatureCollection,
   inputTyped: string,

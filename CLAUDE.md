@@ -91,8 +91,12 @@ Il pattern completo (intercept, fixture, `visitWithPrivacy`, motivazioni) è doc
 | Feature | Ticket | Moduli toccati | Note |
 |---|---|---|---|
 | Fix Karma/test config | oc:7989 | `src/test.ts`, `tsconfig.spec.json`, `karma.conf.js`, `angular.json`, `app.component.spec.ts`, `.github/workflows/test.yml`, submodule wm-core e map-core | wm-webapp: 2 spec; wm-core: 112 spec; map-core CI: 27 spec utils |
+| Allineamento script surge-camminiditalia a --prod | oc:8382 | `package.json` | Era l'unico script deploy/surge del repo a non usare `--prod`; build `--prod` già verificata pulita in questo repo (fix principale in webmapp-app) |
 
 ## Decisioni architetturali
+
+### Allineamento script surge-camminiditalia a --prod (oc:8382)
+- `wm-webapp` non aveva errori di build `--prod` (verificato: 0 errori, solo warning bundle-budget/Sass @import non bloccanti) — l'unico intervento necessario era coerenza tra script, non un fix di codice
 
 ### Fix Karma/test config (oc:7989)
 

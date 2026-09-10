@@ -5,7 +5,7 @@
 ## Cosa cambia
 
 - Aggiunta di una configurazione Angular `camminiditalia` in `angular.json` di wm-webapp, con `fileReplacements` che instradano `home-layer.component.ts` e `search-bar.component.ts` (submodule condiviso `wm-core`) verso le rispettive varianti `.camminiditalia.ts` — **già esistenti** nel submodule (introdotte da oc:8391 e oc:8414 per webmapp-app, mai collegate lato webapp).
-- Nuovo script di deploy dedicato (Node, mirror 1:1 del pattern già usato in `webmapp-app/core/scripts/deploy-to-web-camminiditalia.js` + `scripts/lib/run.js`) che builda con `--configuration=production,camminiditalia --output-path=www-camminiditalia` e invia il risultato via `rsync`/`scp` a `server:/var/www/html/camminiditalia.webmapp.it/`. Esposto come script npm dedicato in `package.json`, **non** automatizzato in CI.
+- Nuovo script di deploy dedicato (Node, mirror 1:1 del pattern già usato in `webmapp-app/core/scripts/deploy-camminiditalia.js` + `scripts/lib/run.js`) che builda con `--configuration=production,camminiditalia --output-path=www-camminiditalia` e invia il risultato via `rsync`/`scp` a `server:/var/www/html/camminiditalia.webmapp.it/`. Esposto come script npm dedicato in `package.json`, **non** automatizzato in CI.
 - Lo script `surge-camminiditalia` esistente in `package.json` viene allineato per buildare con la configurazione `camminiditalia` (fileReplacements), mantenendo invariata la destinazione di preview su surge.sh.
 
 ## Perché
@@ -15,7 +15,7 @@ Oggi wm-webapp builda sempre con i componenti generici (`home-layer`, `search-ba
 ## Requisiti
 
 - [ ] Configurazione `camminiditalia` in `angular.json` (wm-webapp) con `fileReplacements` per `home-layer.component.ts` e `search-bar.component.ts` (nessun equivalente di `profile.page.camminiditalia.ts` di webmapp-app: wm-webapp non ha una pagina "profile", verificato — non applicabile)
-- [ ] Script Node dedicato per build+invio al server (mirror del pattern `webmapp-app/core/scripts/deploy-to-web-camminiditalia.js` + `scripts/lib/run.js`), esposto come script npm, **non** eseguito automaticamente in CI
+- [ ] Script Node dedicato per build+invio al server (mirror del pattern `webmapp-app/core/scripts/deploy-camminiditalia.js` + `scripts/lib/run.js`), esposto come script npm, **non** eseguito automaticamente in CI
 - [ ] Path di output locale (`www-camminiditalia`) e destinazione remota (`server:/var/www/html/camminiditalia.webmapp.it/`) hardcoded ed espliciti nello script, per evitare che una build camminiditalia finisca nella cartella condivisa `app.geohub.webmapp.it/` (o viceversa) e rompa il sito per tutti gli shard
 - [ ] Script `surge-camminiditalia` esistente allineato per buildare con la configurazione `camminiditalia` (fileReplacements), destinazione surge.sh invariata
 - [ ] Build reale verificata in locale (`ng build --configuration=production,camminiditalia` o equivalente `ionic build`) prima di considerare il ticket concluso
@@ -44,7 +44,7 @@ Emersi in Fase: challenge (revisore adversariale), con relativa mitigazione/deci
 
 - `angular.json` (wm-webapp, repo principale) — nuova configurazione `camminiditalia`
 - `package.json` (wm-webapp, repo principale) — nuovo script `deploy-camminiditalia`; script `surge-camminiditalia` esistente modificato
-- `scripts/deploy-to-web-camminiditalia.js` (nuovo, wm-webapp)
+- `scripts/deploy-camminiditalia.js` (nuovo, wm-webapp)
 - `scripts/lib/run.js` (nuovo, wm-webapp)
 
 Nessuna modifica al submodule `wm-core`: le varianti `.camminiditalia.ts` di `home-layer.component` e `search-bar.component` esistono già (oc:8391, oc:8414).

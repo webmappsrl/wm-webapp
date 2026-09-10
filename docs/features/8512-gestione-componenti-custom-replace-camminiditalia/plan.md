@@ -6,7 +6,7 @@
 
 **Goal:** Portare in wm-webapp il meccanismo di sostituzione a compile-time (`fileReplacements`) dei componenti custom camminiditalia (`home-layer`, `search-bar`), già attivo in `webmapp-app`, e predisporre lo script di build+invio al server dedicato — senza eseguire alcun invio reale né toccare CI/redirect.
 
-**Architettura:** Nuova configurazione Angular `camminiditalia` in `angular.json` che sostituisce due file del submodule condiviso `wm-core` con le loro varianti `.camminiditalia.ts` già esistenti. Nuovo script Node (`scripts/deploy-to-web-camminiditalia.js` + `scripts/lib/run.js`), mirror 1:1 del pattern già in produzione su `webmapp-app/core/scripts/`, esposto come script npm manuale (mai eseguito in CI). Lo script `surge-camminiditalia` esistente viene allineato per buildare con la stessa configurazione.
+**Architettura:** Nuova configurazione Angular `camminiditalia` in `angular.json` che sostituisce due file del submodule condiviso `wm-core` con le loro varianti `.camminiditalia.ts` già esistenti. Nuovo script Node (`scripts/deploy-camminiditalia.js` + `scripts/lib/run.js`), mirror 1:1 del pattern già in produzione su `webmapp-app/core/scripts/`, esposto come script npm manuale (mai eseguito in CI). Lo script `surge-camminiditalia` esistente viene allineato per buildare con la stessa configurazione.
 
 **Tech Stack:** Angular 20, Ionic CLI 7, Node.js (script di deploy, `child_process.spawnSync`), npm scripts.
 
@@ -28,8 +28,8 @@
 
 - `angular.json` (modifica) — nuova configurazione `camminiditalia` sotto `projects.app.architect.build.configurations`, accanto a `production`/`ci` esistenti.
 - `scripts/lib/run.js` (nuovo) — helper `run(command, args)` che esegue un comando ereditando stdio e propaga l'exit code in caso di fallimento. Mirror esatto di `webmapp-app/core/scripts/lib/run.js`.
-- `scripts/deploy-to-web-camminiditalia.js` (nuovo) — builda con `ionic build --configuration=production,camminiditalia -- --output-path=www-camminiditalia`, crea la cartella remota se assente, poi `rsync` verso `server:/var/www/html/camminiditalia.webmapp.it/`.
-- `package.json` (modifica) — nuovo script `"deploy-camminiditalia": "node scripts/deploy-to-web-camminiditalia.js"`; script `surge-camminiditalia` esistente allineato per usare la configurazione `camminiditalia`.
+- `scripts/deploy-camminiditalia.js` (nuovo) — builda con `ionic build --configuration=production,camminiditalia -- --output-path=www-camminiditalia`, crea la cartella remota se assente, poi `rsync` verso `server:/var/www/html/camminiditalia.webmapp.it/`.
+- `package.json` (modifica) — nuovo script `"deploy-camminiditalia": "node scripts/deploy-camminiditalia.js"`; script `surge-camminiditalia` esistente allineato per usare la configurazione `camminiditalia`.
 
 ---
 
@@ -97,7 +97,7 @@ git commit -m "feat(oc:8512): add camminiditalia build configuration with fileRe
 
 **Interfaces:**
 - Consumes: nessuna
-- Produces: `run(command: string, args: string[]): void` — esporta `{run}`. Usato da Task 3 (`scripts/deploy-to-web-camminiditalia.js`).
+- Produces: `run(command: string, args: string[]): void` — esporta `{run}`. Usato da Task 3 (`scripts/deploy-camminiditalia.js`).
 
 - [ ] **Step 1: Creare la cartella e il file**
 
@@ -150,18 +150,18 @@ git commit -m "feat(oc:8512): add run() helper for deploy scripts"
 
 ---
 
-### Task 3: Script `scripts/deploy-to-web-camminiditalia.js`
+### Task 3: Script `scripts/deploy-camminiditalia.js`
 
 **Files:**
-- Create: `scripts/deploy-to-web-camminiditalia.js`
+- Create: `scripts/deploy-camminiditalia.js`
 
 **Interfaces:**
 - Consumes: `run(command, args)` da `./lib/run` (Task 2)
-- Produces: script eseguibile via `node scripts/deploy-to-web-camminiditalia.js`. Usato da Task 4 (script npm `deploy-camminiditalia`).
+- Produces: script eseguibile via `node scripts/deploy-camminiditalia.js`. Usato da Task 4 (script npm `deploy-camminiditalia`).
 
 - [ ] **Step 1: Creare lo script**
 
-Crea il file `scripts/deploy-to-web-camminiditalia.js` con questo contenuto:
+Crea il file `scripts/deploy-camminiditalia.js` con questo contenuto:
 
 ```javascript
 #!/usr/bin/env node
@@ -200,13 +200,13 @@ run('rsync', [...RSYNC_ARGS, './www-camminiditalia/*', `${REMOTE_HOST}:${REMOTE_
 
 - [ ] **Step 2: Verificare la sintassi**
 
-Run: `node --check scripts/deploy-to-web-camminiditalia.js`
+Run: `node --check scripts/deploy-camminiditalia.js`
 
 Expected: nessun output, exit code 0. Questo valida solo la sintassi JavaScript — non esegue lo script, quindi non builda né contatta alcun server.
 
 - [ ] **Step 3: Verificare che il modulo si carichi senza errori di require**
 
-Run: `node -e "require('./scripts/deploy-to-web-camminiditalia.js')"`
+Run: `node -e "require('./scripts/deploy-camminiditalia.js')"`
 
 Expected: **questo comando esegue realmente lo script** (build + tentativo di connessione SSH). **Non eseguire questo step in questo ciclo** — è escluso esplicitamente dai Global Constraints (nessun invio reale al server, nessuna build eseguita fuori da Task 1/Step 4). Salta questo step e passa direttamente al successivo.
 
@@ -220,7 +220,7 @@ Apri il file appena creato e conferma a occhio, confrontando con `angular.json` 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add scripts/deploy-to-web-camminiditalia.js
+git add scripts/deploy-camminiditalia.js
 git commit -m "feat(oc:8512): add dedicated deploy script for camminiditalia build"
 ```
 
@@ -232,7 +232,7 @@ git commit -m "feat(oc:8512): add dedicated deploy script for camminiditalia bui
 - Modify: `package.json:13-19` (sezione `scripts`)
 
 **Interfaces:**
-- Consumes: `scripts/deploy-to-web-camminiditalia.js` (Task 3)
+- Consumes: `scripts/deploy-camminiditalia.js` (Task 3)
 - Produces: script npm `deploy-camminiditalia` (invocabile manualmente dal developer, mai da CI); script `surge-camminiditalia` allineato alla configurazione `camminiditalia`.
 
 - [ ] **Step 1: Aggiungere lo script `deploy-camminiditalia`**
@@ -240,7 +240,7 @@ git commit -m "feat(oc:8512): add dedicated deploy script for camminiditalia bui
 In `package.json`, dentro `"scripts"`, aggiungi una nuova voce subito dopo `"deploy-cai"` (riga 14 attuale):
 
 ```json
-"deploy-camminiditalia": "node scripts/deploy-to-web-camminiditalia.js",
+"deploy-camminiditalia": "node scripts/deploy-camminiditalia.js",
 ```
 
 - [ ] **Step 2: Allineare `surge-camminiditalia` alla configurazione `camminiditalia`**

@@ -6,7 +6,7 @@
  */
 const {run} = require('./lib/run');
 
-run('node', ['scripts/deploy-to-web-default.js']);
-run('node', ['scripts/deploy-to-web-camminiditalia.js']);
+run('node', ['scripts/deploy-default.js']);
+run('node', ['scripts/deploy-camminiditalia.js']);
 
-console.log('\n[deploy-to-web] Completato: app.geohub.webmapp.it + camminiditalia.webmapp.it');
+console.log('\n[deploy] Completato: app.geohub.webmapp.it + camminiditalia.webmapp.it');

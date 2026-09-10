@@ -5,6 +5,16 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      target:
+        description: 'Target di deploy'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - default
+          - camminiditalia
 
 permissions:
   contents: write
@@ -58,8 +68,23 @@ jobs:
           mkdir -p src/app/config
           echo '{ "POSTHOG_KEY": "${{ secrets.POSTHOG_KEY }}", "POSTHOG_HOST": "${{ secrets.POSTHOG_HOST }}" }' > src/app/config/posthog.json
 
-      - name: Build
-        run: ionic build --prod
+      - name: Extract --target from commit message
+        run: |
+          COMMIT_MSG=$(git show -s --format=%B ${{ github.sha }})
+          TARGET=$(echo "$COMMIT_MSG" | grep -oP '(?<=--target )(all|default|camminiditalia)' | head -1) || true
+          TARGET=${TARGET:-all}
+          echo "COMMIT_TARGET=$TARGET" >> $GITHUB_ENV
 
       - name: Deploy
-        run: sshpass -p "${{ secrets.SSH_PASSWORD }}" scp -r ./www/* server:/var/www/html/app.geohub.webmapp.it/
+        env:
+          SSHPASS: ${{ secrets.SSH_PASSWORD }}
+          RSYNC_RSH: sshpass -e ssh
+        run: |
+          TARGET="${{ github.event.inputs.target || env.COMMIT_TARGET }}"
+          if [ "$TARGET" = "default" ]; then
+            npm run deploy-default
+          elif [ "$TARGET" = "camminiditalia" ]; then
+            npm run deploy-camminiditalia
+          else
+            npm run deploy
+          fi

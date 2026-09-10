@@ -84,6 +84,18 @@
             },
             "ci": {
               "progress": false
+            },
+            "camminiditalia": {
+              "fileReplacements": [
+                {
+                  "replace": "src/app/shared/wm-core/projects/wm-core/src/home/home-layer/home-layer.component.ts",
+                  "with": "src/app/shared/wm-core/projects/wm-core/src/home/home-layer/home-layer.component.camminiditalia.ts"
+                },
+                {
+                  "replace": "src/app/shared/wm-core/projects/wm-core/src/search-bar/search-bar.component.ts",
+                  "with": "src/app/shared/wm-core/projects/wm-core/src/search-bar/search-bar.component.camminiditalia.ts"
+                }
+              ]
             }
           }
         },
@@ -98,6 +110,9 @@
             },
             "ci": {
               "buildTarget": "app:build"
+            },
+            "camminiditalia": {
+              "buildTarget": "app:build:camminiditalia"
             }
           }
         },

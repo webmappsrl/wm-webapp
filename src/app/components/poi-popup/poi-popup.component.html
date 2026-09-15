@@ -21,29 +21,28 @@
         <i class="icon-outline-close"></i>
       </button>
     </div>
-    <!-- Categoria nel chrome per entrambi i rami, come il pannello mobile
-         (webmapp-app map.page.html:14-26): è un elemento distinto da wm-poi-types-badges,
-         che nel corpo condiviso rende il chip con icona, non questa etichetta.
-         Il fallback su `poi_type` singolare resta necessario: il backend lo marca deprecato
-         (geohub EcPoi.php:304) ma continua a popolarlo, ed è l'unico ramo che il mobile
-         raggiunge davvero — lì la condizione sul plurale ha un typo (`taxonom` senza `y`). -->
-    <ng-container
-      *ngIf="poiProperties.taxonomy && poiProperties.taxonomy.poi_types as poiTypes;else poiType"
-      ><ng-container *ngFor="let poiType of poiTypes">
-        <div class="row category" *ngIf="poiType" [innerHTML]="poiType.name|wmtrans"></div>
+    <!-- Località, nome e navigazione fra POI correlati vivono ora in wm-poi-properties
+         (oc:8406): erano markup duplicato qui e nell'header del pannello di webmapp-app.
+         Il ramo UGC conserva il proprio titolo perché non passa dal componente condiviso —
+         lo split UGC è un ticket a parte. -->
+    <ng-container *ngIf="poiProperties?.uuid">
+      <ng-container
+        *ngIf="poiProperties.taxonomy && poiProperties.taxonomy.poi_types as poiTypes;else poiType"
+        ><ng-container *ngFor="let poiType of poiTypes">
+          <div class="row category" *ngIf="poiType" [innerHTML]="poiType.name|wmtrans"></div>
+        </ng-container>
       </ng-container>
+      <ng-template #poiType>
+        <div
+          class="row category"
+          *ngIf="poiProperties.taxonomy && poiProperties.taxonomy.poi_type as poiType"
+          [innerHTML]="poiType.name|wmtrans"
+        ></div>
+      </ng-template>
+      <div class="title">
+        <p class="webmapp-poi-popup-title">{{poiProperties.name|wmtrans}}</p>
+      </div>
     </ng-container>
-    <ng-template #poiType>
-      <div
-        class="row category"
-        *ngIf="poiProperties.taxonomy && poiProperties.taxonomy.poi_type as poiType"
-        [innerHTML]="poiType.name|wmtrans"
-      ></div>
-    </ng-template>
-    <div class="title">
-      <p class="webmapp-poi-popup-title">{{poiProperties.name|wmtrans}}</p>
-    </div>
-    <wm-related-pois-navigator></wm-related-pois-navigator>
     <ion-content>
       <ng-container *ngIf="poiProperties?.uuid; else ecBody">
         <div class="row">

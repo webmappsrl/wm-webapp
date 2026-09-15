@@ -31,6 +31,20 @@
 @import '~ol-ext/dist/ol-ext.min.css';
 
 @import url(./app/theme/fonts.scss);
+
+/**
+ * variables.scss è già il primo entry di `styles` in angular.json, ma va ri-importato QUI, dopo
+ * il core di Ionic: `@ionic/angular/css/core.css` dichiara le proprie `--ion-color-*` su `:root`
+ * con la stessa specificità, quindi caricato dopo vinceva sulla riga
+ * `--ion-color-primary: var(--wm-color-primary)` e il primary dell'istanza non arrivava ai
+ * componenti Ionic. Il sintomo era un tema a due colori: le parti che leggono `--wm-color-*`
+ * seguivano il brand (la label della categoria), quelle che passano da Ionic restavano sul blu
+ * di default — icone dei contatti, bottoni. Su un'istanza con primary blu non si notava.
+ * Le variabili applicate a runtime da `_setGlobalCSS` (app.component.ts) sono solo le `--wm-*`:
+ * le `--ion-*` le deriva questo foglio, quindi l'ordine è l'unico punto in cui si può correggere.
+ * `webmapp-app` fa esattamente lo stesso in fondo al proprio global.scss.
+ */
+@import './theme/variables.scss';
 .ol-zoom {
   top: unset;
   left: unset !important;

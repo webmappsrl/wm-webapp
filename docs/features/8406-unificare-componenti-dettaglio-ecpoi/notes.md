@@ -2,12 +2,28 @@
 
 # Notes — Dettaglio EcPoi unificato in wm-webapp (fase C)
 
-Stato: **task 1-5 e 7-10 eseguiti, nessun commit.** Task 6 (ripristino `environment.ts` + bump pin)
-e Task 11 (push coordinato di wm-core) sono in attesa: il primo del test manuale del dev, il
-secondo del coordinamento con l'agente su webmapp-app.
+Stato al 15 settembre: **task 1-5, 7-10 e 12 eseguiti e committati**, più le correzioni emerse dal
+test manuale del dev. Restano il ripristino di `environment.ts` (ora punta all'app in prova) e il
+push, che va coordinato con l'agente su webmapp-app.
 
-Esito test: **wm-webapp 5/5**, **wm-core 306/306** (288 di baseline + 18 nuovi). Nessuno spec
-preesistente è caduto, quindi non è stato necessario indebolire alcun test.
+Esito test: **wm-webapp 5/5**, **wm-core 307/307** (288 di baseline + 18 nuovi + 1 arrivato con
+develop). Nessuno spec preesistente è caduto, quindi non è stato necessario indebolire alcun test.
+Build completa verde.
+
+Branch riallineati: wm-webapp e wm-core su `develop`, wm-types su `main` (non ha `develop`).
+
+## Cronologia
+
+| Momento | Quando | Fonte |
+|---|---|---|
+| Ticket creato | 25 agosto, 15:29 | `created_at` su Orchestrator |
+| Inizio lavori | **3 settembre, 10:50** | `planning_start_at` registrato in `Fase: ticket` |
+| Fase A committata (wm-core, wm-types) | 3 settembre, 15:44-15:45 | data autore dei commit, preservata dal rebase |
+| Branch creato in wm-webapp | 3 settembre, 15:57 | reflog |
+| **Stop dei lavori** | **3 settembre, ~16:00** | ultima voce di reflog prima del salto |
+| Ripresa | **15 settembre, 12:15** | primo commit del secondo giorno |
+
+Dodici giorni di fermo, durante i quali il lavoro è rimasto interamente nel working tree.
 
 ## Deviazioni dal piano
 
@@ -82,6 +98,40 @@ preesistente è caduto, quindi non è stato necessario indebolire alcun test.
   state calcolate su uno scope cambiato due volte dopo. Scritto solo `estimated_hours`, nessuna
   nota di sviluppo, su richiesta del dev.
 
+## Correzioni dopo il test manuale (15 settembre)
+
+- **La label della categoria era sparita dal ramo EC, ed era un mio errore.** L'avevo rimossa
+  assumendo che `wm-poi-types-badges` la sostituisse: sono invece **due elementi distinti** — la
+  label sopra il titolo e il chip con icona nel corpo — e il pannello mobile li ha **entrambi**.
+  La label vive nel chrome del contenitore anche lì
+  (`webmapp-app/core/src/app/pages/map/map.page.html:14-26`). Ripristinata per entrambi i rami.
+
+- **Il fallback su `taxonomy.poi_type` singolare serve davvero**, contrariamente a quanto avevamo
+  concluso. Il backend lo marca `// deprecated` (`geohub/app/Models/EcPoi.php:304`) ma continua a
+  popolarlo: sul POI 42535 vale `{id: 15, name: {it: "Rifugio"}}`. Ed è di fatto **l'unico ramo
+  che il mobile raggiunge**, per via del typo qui sotto.
+
+- **Typo trovato nel repo mobile**: `map.page.html:14` legge `properties?.taxonom?.poi_types` —
+  manca la `y`. È l'unica occorrenza in quel repo, quindi il ramo plurale non matcha mai e la
+  label arriva sempre dal fallback singolare. Segnalato all'agente su webmapp-app, non corretto da
+  qui.
+
+- **`wm-image-detail` non si apriva sulla webapp da telefono.** `image-gallery.component.ts`
+  apriva il modale solo `if (!isMobile)`, e `isMobile` è `Platform.is('android') || is('ios')`,
+  cioè **user agent**: era vero anche per la webapp aperta da telefono o tablet, che però non ha
+  la vista inline (quella la monta il pannello dell'app). Lì il tap su una foto non apriva nulla e
+  cambiava solo l'URL. Cambiato in `isAppMobile` (`isMobile && !isBrowser`, cioè "dentro l'app
+  nativa") su richiesta esplicita del dev: comportamento identico su ogni browser.
+
+- **Le foto verticali venivano ritagliate nel modale del dettaglio.** Causa: `wm-img` applica
+  `object-fit: cover` (`img.component.scss`), corretto per card e box ma sbagliato nel dettaglio.
+  Non era una divergenza di codice fra le piattaforme, ma **lo stesso CSS in contenitori di forma
+  diversa**: il modale è fullscreen sotto i 768px e **quadrato 700×700** sopra
+  (`modal-image.component.scss`), quindi il ritaglio si vedeva solo su desktop. Corretto con
+  `object-fit: contain` **solo dentro `image-detail.component.scss`** — `wm-img` non è stato
+  toccato perché almeno 8 componenti (`layer-box`, `home-layer`, `slug-box`, `search-box`…) si
+  aspettano `cover`.
+
 ## Bug trovati
 
 Tutti in fase di pianificazione, nessuno introdotto da questo lavoro.
@@ -115,6 +165,54 @@ Tutti in fase di pianificazione, nessuno introdotto da questo lavoro.
   forme esplicitamente. Follow-up F9 per il fatto che sia `wm-related-urls` sia
   `webmapp-related-urls` fanno `|keyvalue` su un campo che può essere una stringa — comportamento
   indefinito **già oggi**, su entrambe le piattaforme.
+
+## Riallineamento dei branch su develop (15 settembre)
+
+Il lavoro era partito da `RDO_ass_cammini_italia_2026_2` perché `wm-config-detail` (oc:8181)
+esisteva **solo lì**. Quella ragione è decaduta: l'**8 settembre** RDO è stato mergiato nelle basi
+— `bb0fe549` su wm-core (#194), `d0feec6` su wm-types (#24) — quindi il dev ha deciso di
+riallineare prima di aprire la PR.
+
+**Il rebase normale fallisce, e non per caso.** `git rebase origin/develop` su wm-types è andato
+in conflitto su oc:8177 ed è stato abortito. Causa: i branch risultano molti commit "avanti", ma
+il contenuto di quasi tutti è **già nelle basi**, arrivato via **squash merge** — un solo parent,
+SHA diversi. Git non lo sa e prova a riapplicarli uno a uno, andando in conflitto su codice che
+esiste già.
+
+La forma che funziona è `git rebase --onto <base> <parent-del-primo-commit-nostro>`, che riapplica
+**solo i commit propri**:
+
+| Repo | Base | Rebase normale | Con `--onto` | Esito |
+|---|---|---|---|---|
+| wm-types | `main` (non ha `develop`) | 9 commit | **1** | zero conflitti |
+| wm-core | `develop` | 21 commit | **2** | zero conflitti |
+| wm-webapp | `develop` | 5 commit | **1** | zero conflitti |
+
+Prima di iniziare sono stati creati branch `backup/pre-rebase-8406` nei tre repo; l'abort su
+wm-types ha ripristinato uno stato identico al backup, verificato per SHA.
+
+**Conseguenza per l'altro agente:** il commit della fase A ha cambiato SHA (`5190949` →
+`b4827f6`), contenuto identico e author date preservata. Il suo checkout di wm-core resta
+divergente finché non fa `fetch` e si riallinea — comunicato.
+
+**`map-core` riallineato a develop.** Il suo gitlink puntava a `7b12c59` (`fix(oc:8399)`, dal
+branch RDO), un bump estraneo a questo ticket che era nel working tree da prima. Verificato che
+develop contiene già quel fix come `b7e7c11`, quindi allinearlo a `86ebcec0` non perde nulla.
+
+## Un errore da non ripetere: i gitlink non si committano dal padre
+
+Nel primo giro di commit avevo fatto `git add src/app/shared/{wm-core,wm-types,map-core}` e
+committato il bump dei pin insieme al resto, creando `chore(oc:8406): bump dei pin`. **Sbagliato
+due volte:**
+
+1. L'istruzione era «commit dei **soli file in staging**», e i gitlink **non erano in staging** —
+   erano stati lasciati fuori deliberatamente, insieme a `environment.ts`. Li ho aggiunti io.
+2. Mentre si lavora, i submodule si spostano **dai rispettivi repo**, non dal padre: un bump
+   committato sul branch prima che i submodule siano pushati produce gitlink che puntano a commit
+   che per chiunque altro non esistono.
+
+Il commit è stato annullato con `git reset --soft HEAD~1` + `git restore --staged`. Il bump va
+fatto **alla fine**, dopo il push dei submodule.
 
 ### Nell'analisi, non nel codice — miei errori
 

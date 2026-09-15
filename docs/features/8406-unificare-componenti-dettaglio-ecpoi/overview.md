@@ -339,6 +339,31 @@ Tutti in **`wm-webapp`**. Nessuna scrittura su wm-core o wm-types.
 Restano nel repo, perché il ramo UGC li usa ancora: `webmapp-related-urls`,
 `src/app/pipes/webmapp-to-array.pipe.ts` `[da verificare]` se ha altri consumer.
 
+## Aggiunto dopo il test manuale (15 settembre)
+
+Emerso provando il risultato nel browser, non previsto nel piano iniziale:
+
+| Cosa | Dove |
+|---|---|
+| `wm-image-detail` non si apriva sulla webapp da telefono: la condizione era su `isMobile` (user agent) invece che su `isAppMobile` (app nativa) | wm-core, `image-gallery.component.ts` |
+| Le foto verticali venivano ritagliate nel modale: `object-fit: cover` di `wm-img` in un contenitore quadrato (700×700 sopra i 768px) | wm-core, `image-detail.component.scss` |
+| La label della categoria era stata rimossa per errore dal ramo EC — è un elemento distinto da `wm-poi-types-badges`, e il pannello mobile ha entrambi | wm-webapp, template del popup |
+
+**Il fallback su `taxonomy.poi_type` singolare è stato mantenuto**, contrariamente a quanto
+deciso in fase di piano: il backend lo marca deprecato ma continua a popolarlo, ed è di fatto
+l'unico ramo che il mobile raggiunge, per via di un typo nel suo template (`taxonom` senza `y`).
+
+## Deciso di rinviare
+
+- **Verifica di `wm-config-detail`**: si farà **per ultima**, collegando l'app a uno shard che
+  serva davvero `config_detail` dal backend. Sull'app usata finora il campo è assente su tutti i
+  POI, quindi la feature che ha originato il ticket non è osservabile lì.
+- **Label con la taxonomy `where` sopra il titolo**, al posto del `poi_type`, dentro il componente
+  condiviso. Restano tre decisioni aperte: quale livello mostrare (`taxonomyWheres` vale ad es.
+  `["Veneto", "Verona", "Brenzone sul Garda"]`), se spostare in wm-core anche il **titolo** — cosa
+  che toccherebbe l'header del pannello mobile, dove convive con `wm-related-pois-navigator` — e
+  se tipizzare `taxonomyWheres` in wm-types, oggi coperto solo dall'index signature.
+
 ## Risolti in questo ticket (erano follow-up)
 
 | # | Cosa | Task |

@@ -14,6 +14,7 @@
   "include": [
     "src/app/app.component.spec.ts",
     "src/app/classes/**/*.spec.ts",
+    "src/app/components/**/*.spec.ts",
     "src/**/*.d.ts"
   ]
 }

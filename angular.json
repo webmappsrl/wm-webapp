@@ -131,7 +131,8 @@
             "karmaConfig": "karma.conf.js",
             "include": [
               "src/app/app.component.spec.ts",
-              "src/app/classes"
+              "src/app/classes",
+              "src/app/components"
             ],
             "styles": [],
             "scripts": [],

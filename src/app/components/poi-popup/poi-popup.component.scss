@@ -50,24 +50,6 @@ webmapp-poi-popup {
     align-items: center;
     width: 100%;
     padding-bottom: 10px;
-
-    .webmapp-poi-popup-left,
-    .webmapp-poi-popup-right {
-      order: 0;
-      flex: 0 1 auto;
-      align-self: auto;
-    }
-    .webmapp-poi-popup-left {
-      margin-right: 5px;
-    }
-    .webmapp-poi-popup-right {
-      margin-left: 5px;
-    }
-  }
-  .circle {
-    width: 33px;
-    height: 33px;
-    margin: auto;
   }
   .webmapp-poi-popup-close {
     float: right;
@@ -83,23 +65,6 @@ webmapp-poi-popup {
     flex: 1 1 auto;
     flex-basis: min-content;
     margin: 0;
-  }
-  .webmapp-poi-popup-text {
-    font-family: var(--wm-font-family-content);
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    align-content: stretch;
-    align-items: stretch;
-    overflow-y: auto;
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-    margin-bottom: 10px;
-    margin-top: 10px;
-    p {
-      margin: unset;
-    }
   }
   .readonly-form {
     ion-card {
@@ -152,9 +117,7 @@ webmapp-poi-popup {
   .webmapp-poi-popup-urls {
     margin-bottom: 10px;
   }
-  .webmapp-poi-popup-close,
-  .webmapp-poi-popup-left,
-  .webmapp-poi-popup-right {
+  .webmapp-poi-popup-close {
     padding: 10px;
     border-radius: 15px;
     z-index: 9999;
@@ -177,5 +140,30 @@ webmapp-poi-popup {
       --inner-padding-start: 0px;
       --padding-start: 0px;
     }
+  }
+
+  // Neutralizza il posizionamento che wm-core dichiara globalmente su wm-poi-properties
+  // (poi-properties.component.scss:1-10, ViewEncapsulation.None): quelle regole descrivono il
+  // pannello mobile a tutta area, non un corpo dentro un popup. Senza questo, il figlio si
+  // stenderebbe su tutta l'area del popup a z-index 2, coprendo titolo e navigatore.
+  // Stesso approccio del consumer mobile (webmapp-app map-details.component.scss:127-129).
+  // Specificita (0,0,2) contro (0,0,1) del selettore di libreria: vince a prescindere
+  // dall'ordine di caricamento.
+  wm-poi-properties {
+    position: relative;
+    bottom: auto;
+    width: auto;
+    height: auto;
+    z-index: auto;
+    border-radius: 0;
+    // Il popup ha gia background-color: white; il valore hardcoded in libreria ignorerebbe
+    // comunque il theming --wm-color-*.
+    background: transparent;
+
+    // Il popup e flex column: il corpo deve poter crescere e scrollare per conto proprio
+    // invece di ereditare l'altezza piena.
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
   }
 }

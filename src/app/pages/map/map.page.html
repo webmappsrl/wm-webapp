@@ -55,7 +55,5 @@
   *ngIf="poi$|async as poi"
   [poi]="poi"
   (closeEVT)="unselectPOI()"
-  (nextEVT)="next()"
-  (prevEVT)="prev()"
 ></webmapp-poi-popup>
 <wm-geobox-map (openPopupEVT)="openPopup($event)"> </wm-geobox-map>

@@ -188,6 +188,8 @@ git commit -m "test(oc:8406): spec di instradamento EC/UGC per poi-popup"
 
 ### Task 2: Ramo EC nel template (verde)
 
+> ⚠️ L'implementazione ha deviato da questo task: [notes.md](notes.md#task-2--chrome-del-popup)
+
 **Files:**
 - Modify: `src/app/components/poi-popup/poi-popup.component.html` (intero file)
 - Test: `src/app/components/poi-popup/poi-popup.component.spec.ts` (già scritto nel Task 1)
@@ -733,6 +735,8 @@ ticket: il bump non è isolabile alla sola fase C."
 ---
 
 ### Task 7 (wm-core): baseline degli spec e guardia dei selettori (F8)
+
+> ⚠️ L'implementazione ha deviato da questo task: [notes.md](notes.md#task-7-10--scope-allargato-a-wm-core)
 
 Da qui in poi si lavora in `src/app/shared/wm-core`. Primo passo: sapere da dove si parte, così un
 fallimento successivo è attribuibile.

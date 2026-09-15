@@ -56,6 +56,7 @@ Gli spec dei submodule **non girano da qui**: ognuno ha il proprio setup nel pro
 |---|---|---|---|
 | CI, preview e deploy | I quattro job di `test.yml`, la preview Surge per PR, il gate sui test prima del deploy | oc:8022, oc:8382, oc:8512 | [docs/knowledge/ci-e-deploy.md](docs/knowledge/ci-e-deploy.md) |
 | Test di questo repo | Cosa gira e cosa no, il confine `src/app/shared/`, il `MockStore` di `AppComponent` | oc:7989 | [docs/knowledge/test-di-questo-repo.md](docs/knowledge/test-di-questo-repo.md) |
+| Tema e colori | Come il primary dell'istanza arriva ai componenti Ionic, e perché `variables.scss` è importato due volte | oc:8406 | [docs/knowledge/tema-e-colori.md](docs/knowledge/tema-e-colori.md) |
 | Variante `camminiditalia` | La configuration Angular, `npm start` che la sceglie da sé, i tre script di deploy | oc:8512 | [docs/knowledge/variante-camminiditalia.md](docs/knowledge/variante-camminiditalia.md) |
 
 ## Test E2E con Cypress

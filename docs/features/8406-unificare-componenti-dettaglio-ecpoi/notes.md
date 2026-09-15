@@ -324,3 +324,58 @@ all'agente su webmapp-app, in attesa di risposta.
 Altri campi assenti sull'app 29, quindi non verificabili: `taxonomy_where`, `osm_url`, `audio`,
 `info`, `embedded_html`, `form`. E nessuno dei 5 POI del set di QA ha `ele`, quindi `wm-tab-detail`
 non compare mai su quel set — servono 12842, 16570 o 5314.
+
+## Seconda tornata di correzioni, dal test manuale del dev (15 settembre)
+
+- **Il primary del tema non arrivava ai componenti Ionic.** Le icone di Contatti e Link utili
+  restavano blu mentre la label della località seguiva il brand: le prime leggono
+  `--ion-color-primary`, la seconda `--wm-color-primary`. `variables.scss` deriva la prima dalla
+  seconda, ma `@ionic/angular/css/core.css` dichiara le proprie `--ion-color-*` su `:root` con la
+  stessa specificità ed è importato dopo, quindi vinceva Ionic. **La mobile non aveva il problema
+  perché ri-importa `variables.scss` in fondo al proprio `global.scss`**, dopo il core: stessa
+  soluzione applicata qui. Le `--ion-*` non sono impostabili a runtime — `_setGlobalCSS` applica
+  solo le 78 variabili `--wm-*` — quindi l'ordine di import è l'unico punto in cui intervenire.
+
+- **Intestazione spostata nel componente condiviso.** Località, nome e
+  `wm-related-pois-navigator` erano markup duplicato qui e nell'header del pannello mobile, con
+  rese divergenti: la mobile usa `var(--wm-font-lg)` e `var(--wm-font-weight-bold)`, il popup
+  aveva `20px` e `700` fissi. Ha vinto la resa della mobile perché segue la scala tipografica
+  per-istanza. Il pulsante di chiusura resta ai contenitori: lì la semantica differisce davvero —
+  il pannello chiude il dettaglio, il popup azzera anche `ec_related_poi`.
+
+- **Sopra il nome ora c'è il comune, non più la categoria.** Richiesta del dev. La sorgente è
+  `taxonomyWheres` e non `taxonomy_where`: quest'ultimo — il campo tipizzato che `wm-txn-where`
+  consuma — è vuoto su tutti i POI delle app verificate (0 su 3.252 dell'app 33, 0 su 3.721
+  dell'app 29), mentre `taxonomyWheres` è popolato su 3.251 e 3.203. È un array ordinato regione →
+  provincia → comune, verificato su cinque POI, quindi si prende l'ultimo elemento.
+  **Conseguenza da tenere presente:** anche la sezione "Dove" di `wm-txn-where` non renderizza mai
+  nulla su queste app, per lo stesso motivo. Non toccata in questo giro.
+
+- **`wm-image-detail` non si apriva sulla webapp da telefono.** La condizione era su `isMobile`
+  (`Platform.is('android') || is('ios')`, cioè user agent), vera anche per la webapp aperta da un
+  telefono, che però non monta la vista inline. Cambiata in `isAppMobile` (`isMobile &&
+  !isBrowser`, cioè dentro l'app nativa). Nota emersa indagando: `wm-image-detail` **era già usato
+  su entrambe le piattaforme** — sul web dentro `ModalImageComponent`, nell'app inline — quindi
+  non era un componente mancante ma un contenitore non raggiungibile.
+
+- **Foto verticali ritagliate nel modale.** `wm-img` applica `object-fit: cover`, corretto per card
+  e box. Non era una divergenza fra piattaforme: `ModalImageComponent` è unico, ma è fullscreen
+  sotto i 768px e **quadrato 700×700** sopra, e `cover` in un quadrato taglia una foto verticale.
+  Corretto con `contain` nel solo `image-detail.component.scss`; `wm-img` non toccato perché almeno
+  otto componenti dipendono da `cover`.
+
+## Divergenze dal piano, task per task
+
+### Task 2 — chrome del popup
+
+Il piano prevedeva che titolo e categoria restassero nel contenitore su entrambe le piattaforme,
+seguendo quanto stabilito dall'agente su webmapp-app. Il dev ha ribaltato la decisione dopo il test
+manuale: l'intestazione è stata spostata in `wm-poi-properties` e rimossa da entrambi i contenitori.
+La categoria è stata inoltre sostituita dal comune. Il ramo UGC conserva il proprio titolo perché
+non passa dal componente condiviso.
+
+### Task 7-10 — scope allargato a wm-core
+
+Il piano dichiarava «nessuna scrittura su wm-core». Il dev ha autorizzato le modifiche al repo
+condiviso in corso d'opera, prima per quattro follow-up (F2, F4, F8, F9) e poi per l'intestazione,
+il fix di `isAppMobile` e quello di `object-fit`. Il perimetro finale è di sei file in wm-core.

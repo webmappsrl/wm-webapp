@@ -480,11 +480,6 @@ La classe resta dov'è ancora usata, cioè sul titolo del ramo UGC del popup.
   che il default è il valore arcodato… se nella configurazione ho lo shard name, ci metto lo
   shard». Tocca `environment`/`shards` e va provato su almeno due shard.
 
-- **`delete`, `save` e `cancel` non sono tradotte.** Stesso difetto che aveva `edit` prima di
-  oc:8406: la chiave esiste nei template ma non nei file i18n, quindi `wmtrans` ricade sulla chiave
-  e a schermo si legge la parola inglese in tutte le lingue. Si vedono sui tasti dei POI e delle
-  tracce UGC, su entrambi i prodotti.
-
 - **Verificare `wm-config-detail` sui POI** su Cammini d'Italia dev, POI Santa Barbara: è l'unico
   posto dove i box esistono (vedi `wm-core/docs/knowledge/config-detail.md`). Era il gap che ha
   dato origine a questo ticket, e non è ancora stato visto funzionare sulla webapp.
@@ -574,3 +569,15 @@ bloccanti erano tutti introdotti da questo ticket, e nessuno dei tre era coperto
 Tutti e tre hanno ora uno spec che li blocca: `related-poi-navigation.spec.ts` sui due selettori, e
 tre casi nuovi in `hasContacts$` per il telefono di sole etichette, quello non stringa e quello con
 un numero vero dietro l'etichetta. Test di wm-core: da 308 a 315.
+
+### Le chiavi sorelle di `edit`, tradotte per non lasciare tasti bilingui
+
+Tradurre `edit` ha avuto un effetto che la review ha colto e che da solo sarebbe stato un
+peggioramento: sui tasti dei POI e delle tracce UGC si sarebbe letto «Modifica» accanto a
+«delete». Prima erano entrambe in inglese — sbagliate ma coerenti — e il cambio avrebbe reso la
+riga visibilmente incoerente su entrambi i prodotti.
+
+Tradotte quindi anche `delete`, `save` e `cancel` nelle sette lingue, che erano nella stessa
+condizione di `edit`: chiave presente nei template, assente nei file i18n, quindi `wmtrans`
+ricadeva sulla chiave. Non era nel perimetro del ticket, ma lasciare a metà una riga di tasti per
+rispettarlo avrebbe voluto dire consegnare un difetto nuovo.

@@ -42,9 +42,10 @@ colonna loro.
   `width: 20%`, che a 1024px di viewport valeva ~205px: metà, e abbastanza stretto da far andare a
   capo la catena regione → provincia → comune nell'intestazione del POI.
 
-- **Il dettaglio sta sullo stesso piano degli altri overlay, non sopra** (oc:8406): in `map-core`
-  tutte le fasce proiettate su `wm-map` — `top-left`, `top-right`, `bottom-right`, `bottom` — sono a
-  `z-index: 2`, il canvas a 1, e attribuzione e scala a 1. Il popup era a 3 e le scavalcava tutte:
+- **Il dettaglio sta sullo stesso piano delle fasce alte, non sopra** (oc:8406): in `map-core`
+  (`map.component.scss`) i piani sono tre — `top-left`, `top-right`, `bottom` e `bottom-center` a
+  `z-index: 2`; `bottom-right`, la scala e l'attribuzione a 1; il canvas senza z-index, quindi
+  ancora sotto. Il popup era a 3 e le scavalcava tutte:
   i controlli restavano visibili, ma i **menu** che aprono finivano sotto al dettaglio. A parità di
   z-index decide l'ordine nel DOM di `map.page.html`, che è già quello giusto: `.details-container`
   viene prima del popup, `wm-geobox-map` dopo. Nessun override su `map-core`.

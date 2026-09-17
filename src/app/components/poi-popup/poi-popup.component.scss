@@ -1,8 +1,10 @@
 webmapp-poi-popup {
   position: absolute;
   background-color: white;
-  margin-right: 10px;
-  right: 0;
+  // Si ferma prima dei tasti dello zoom invece di coprirli: vedi `--wm-poi-popup-right` in
+  // `map.page.scss`. Sostituisce `right: 0` più `margin-right: 10px`, che dicevano la stessa cosa
+  // in due posti.
+  right: var(--wm-poi-popup-right, 76px);
   // Largo quanto il pannello della home, non una percentuale della viewport: il valore è
   // `--wm-poi-popup-width`, definito da `map.page.scss` insieme alle altre due fasce. Il 20% di
   // prima valeva ~205px a 1024px di viewport, e a quella larghezza il dettaglio stava stretto.
@@ -14,7 +16,15 @@ webmapp-poi-popup {
   border-radius: 15px;
   box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.1);
   transition: all 500ms;
-  z-index: 3;
+  // Stesso piano degli altri overlay della mappa, non sopra di loro: in map-core tutte le fasce
+  // proiettate su `wm-map` — `top-left`, `top-right`, `bottom-right`, `bottom` — stanno a
+  // `z-index: 2`, e il canvas a 1. Con il 3 di prima il dettaglio copriva i menu che quei controlli
+  // aprono: i filtri restavano ben visibili, ma la loro tendina finiva sotto al popup.
+  // A parità di z-index decide l'ordine nel DOM (`map.page.html`): `.details-container` viene
+  // prima, quindi il dettaglio le sta sopra; `wm-geobox-map` viene dopo, quindi i suoi controlli e
+  // i loro menu stanno sopra al dettaglio. È la relazione che serve, e non richiede di
+  // sovrascrivere niente di map-core.
+  z-index: 2;
   padding: 10px;
 
   display: flex;

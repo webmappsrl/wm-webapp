@@ -470,6 +470,20 @@ La classe resta dov'è ancora usata, cioè sul titolo del ramo UGC del popup.
   `wm-feature-useful-urls` e `wm-tab-image-gallery`, montati da `track-properties`,
   `ugc-track-properties` e `draw-ugc`.
 
+- **URL dell'editor di backend parametrico per shard.** In oc:8406 l'etichetta del tasto è passata
+  da "modifica geohub" a "Modifica", generica in previsione di istanze collegate ad altri shard. La
+  destinazione però resta scritta nel codice: `map.page.ts:69` costruisce
+  `https://geohub.webmapp.it/resources/ec-tracks/<id>/edit`, quindi su un'altra istanza il tasto
+  direbbe "Modifica" e aprirebbe comunque geohub. La strada è quella indicata nello scrum del
+  04/09/2026: «l'approccio di solito quando si passa da una cosa arcodata a una cosa parametrica è
+  che il default è il valore arcodato… se nella configurazione ho lo shard name, ci metto lo
+  shard». Tocca `environment`/`shards` e va provato su almeno due shard.
+
+- **`delete`, `save` e `cancel` non sono tradotte.** Stesso difetto che aveva `edit` prima di
+  oc:8406: la chiave esiste nei template ma non nei file i18n, quindi `wmtrans` ricade sulla chiave
+  e a schermo si legge la parola inglese in tutte le lingue. Si vedono sui tasti dei POI e delle
+  tracce UGC, su entrambi i prodotti.
+
 - **Verificare `wm-config-detail` sui POI** su Cammini d'Italia dev, POI Santa Barbara: è l'unico
   posto dove i box esistono (vedi `wm-core/docs/knowledge/config-detail.md`). Era il gap che ha
   dato origine a questo ticket, e non è ancora stato visto funzionare sulla webapp.

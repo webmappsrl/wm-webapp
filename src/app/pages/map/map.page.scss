@@ -12,6 +12,12 @@ webmapp-map-page {
   // hanno dal bordo destro.
   --wm-poi-popup-top: calc(72px + env(safe-area-inset-top));
 
+  // Il dettaglio si ferma prima dei tasti dello zoom, invece di passarci sopra: quelli restano
+  // dove sono, come i controlli in alto. `.ol-zoom` sta a `right: 20px` ed è largo 40px
+  // (`map-core/map.component.scss`, con `left: unset` in `global.scss` che lo porta a destra),
+  // quindi occupa i primi 60px dal bordo; sotto, gli stessi 16px di distacco usati altrove.
+  --wm-poi-popup-right: 76px;
+
   // Sotto i 1024px le tre fasce non stanno: con la home aperta resterebbero ~200px di mappa.
   // Si stringe il dettaglio, non la mappa.
   @media (max-width: 1024px) {

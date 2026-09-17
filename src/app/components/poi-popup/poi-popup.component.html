@@ -116,8 +116,10 @@
       <ng-template #ecBody>
         <wm-poi-properties></wm-poi-properties>
         <div class="edit-container">
+          <!-- Etichetta generica, non "modifica geohub": l'editor di backend dipende dallo shard a
+               cui l'istanza è collegata, e il nome di quello attuale non deve finire a schermo. -->
           <ion-button class="edit" *ngIf="enableEditingInline$|async" (click)="openGeohub()">
-            {{"edit geohub" | wmtrans}}</ion-button
+            {{"edit" | wmtrans}}</ion-button
           >
         </div>
       </ng-template>

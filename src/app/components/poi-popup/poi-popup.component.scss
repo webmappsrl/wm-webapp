@@ -1,9 +1,9 @@
 webmapp-poi-popup {
   position: absolute;
   background-color: white;
-  // Si ferma prima dei tasti dello zoom invece di coprirli: vedi `--wm-poi-popup-right` in
-  // `map.page.scss`. Sostituisce `right: 0` più `margin-right: 10px`, che dicevano la stessa cosa
-  // in due posti.
+  // Si ferma prima dei tasti dello zoom, che a `z-index: 10000` si disegnavano sopra al contenuto
+  // del pannello: vedi `--wm-poi-popup-right` in `map.page.scss`. Sostituisce `right: 0` più
+  // `margin-right: 10px`, che dicevano la stessa cosa in due posti.
   right: var(--wm-poi-popup-right, 76px);
   // Largo quanto il pannello della home, non una percentuale della viewport: il valore è
   // `--wm-poi-popup-width`, definito da `map.page.scss` insieme alle altre due fasce. Il 20% di

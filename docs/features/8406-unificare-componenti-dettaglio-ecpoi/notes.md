@@ -2,13 +2,14 @@
 
 # Notes — Dettaglio EcPoi unificato in wm-webapp (fase C)
 
-Stato al 15 settembre: **task 1-5, 7-10 e 12 eseguiti e committati**, più le correzioni emerse dal
-test manuale del dev. Restano il ripristino di `environment.ts` (ora punta all'app in prova) e il
-push, che va coordinato con l'agente su webmapp-app.
+Stato al 17 settembre: **task 1-5, 7-10 e 12 eseguiti e committati**, più le correzioni emerse dal
+test manuale del dev, le due decisioni dello scrum recepite in ritardo e i tre difetti trovati dalla
+review. Restano il ripristino di `environment.ts` (ora punta all'app in prova) e il push, che va
+coordinato con l'agente su webmapp-app.
 
-Esito test: **wm-webapp 5/5**, **wm-core 307/307** (288 di baseline + 18 nuovi + 1 arrivato con
-develop). Nessuno spec preesistente è caduto, quindi non è stato necessario indebolire alcun test.
-Build completa verde.
+Esito test: **wm-webapp 5/5**, **wm-core 315/315** (288 di baseline, 1 arrivato con develop, il
+resto aggiunti da questo ticket). Nessuno spec preesistente è caduto, quindi non è stato necessario
+indebolire alcun test. Build di produzione verde.
 
 Branch riallineati: wm-webapp e wm-core su `develop`, wm-types su `main` (non ha `develop`).
 

@@ -379,3 +379,153 @@ non passa dal componente condiviso.
 Il piano dichiarava «nessuna scrittura su wm-core». Il dev ha autorizzato le modifiche al repo
 condiviso in corso d'opera, prima per quattro follow-up (F2, F4, F8, F9) e poi per l'intestazione,
 il fix di `isAppMobile` e quello di `object-fit`. Il perimetro finale è di sei file in wm-core.
+
+### Task 7-10 — due decisioni dello scrum recepite in ritardo
+
+Rilette le trascrizioni a lavoro quasi finito, la call del **04/09/2026** conteneva due decisioni
+sul dettaglio del POI che non erano arrivate né nel ticket né nel piano, e che questo cantiere
+aveva quindi disatteso. Il ticket riportava solo la parte architetturale — spostare il componente
+in `wm-core` — non le scelte di resa discusse a voce.
+
+- **Le tassonomie vanno subito sotto il titolo**, non in fondo: «in generale le tassonomie vanno in
+  cima per tanti motivi, fa parte dei filtri, quindi li vedete subito», con recap finale esplicito.
+  Stavano in fondo in **entrambi** i prodotti, quindi la regola «vince sempre la mobile» aveva
+  riprodotto fedelmente un ordine che era già stato bocciato. Corretto nel componente condiviso.
+
+- **Le etichette "Contatti", "Link utili" e "Galleria" vanno tolte**, non usate per separare: la
+  proposta di dividere contatti e link era stata presentata in quella stessa call e respinta —
+  «se li ricevi uniti e il frontend deve fare una serie di if o controlli per separarli, allora non
+  mi sta tanto bene», «la suddivisione dinamica di questi dati al più va fatta nel backend». Questo
+  cantiere aveva fatto l'opposto: etichetta "Contatti" nuova, con le sette traduzioni, e due
+  `BehaviorSubject` per decidere se mostrare i gruppi. Tutto rimosso.
+
+**Cosa cade con le etichette.** Senza titoli non esiste più il problema del titolo orfano sopra
+zero righe, che era la ragione di `hasUsableRelatedUrls`: la funzione e il suo spec sono stati
+eliminati, e con loro la duplicazione con `normalizeRelatedUrls`, che fa già la stessa analisi
+delle tre forme di `related_url` dentro `wm-related-urls`. Anche la chiave i18n `Contatti`,
+aggiunta in sette lingue, è stata tolta perché non la usa più nessuno.
+
+**Cosa resta come prima, di proposito.** `wm-feature-useful-urls` e `wm-tab-image-gallery` non sono
+stati modificati: portano le etichette anche al dettaglio della traccia, che non era oggetto della
+decisione. Nel dettaglio del POI sono stati semplicemente sostituiti dai componenti interni che
+avvolgono. Se la stessa pulizia va fatta anche sulle tracce, è un ticket suo.
+
+**Lezione.** Le decisioni di resa vivevano solo nella trascrizione: il ticket, scritto prima di
+quella call, descriveva l'intervento come «sostituire il componente e cancellarne uno». Cercare le
+trascrizioni all'inizio, non alla fine, avrebbe evitato di costruire e poi smontare la separazione
+dei contatti.
+
+### Requisito superato — la classe `.webmapp-poi-popup-title`
+
+L'overview chiedeva di **conservare** quella classe, perché `cypress/e2e/url-with-parameters.cy.ts`
+vi asserisce alle righe 21 e 39 su due POI EC. Lo spostamento dell'intestazione nel componente
+condiviso l'ha lasciata solo sul ramo UGC, quindi per un POI EC il selettore non matcha più nulla.
+Il file è dentro un `describe.skip` in attesa di oc:8022, quindi il difetto non si vedeva: sarebbe
+emerso solo alla riattivazione della suite, come un finto bug di rendering.
+
+Risolto aggiornando il selettore a `webmapp-poi-popup .wm-poi-properties-title`, non rimettendo la
+vecchia classe nel componente di libreria. La ragione è la convenzione sui prefissi, misurata sul
+repo: in `wm-core` 91 selettori di componente su 94 sono `wm-`, e dei sette template nati nel 2026
+cinque usano solo classi `wm-`, uno solo `webmapp-` e uno è misto — ed è
+`poi-properties.component.html`, nato per questo ticket, che si era portato dietro copiando la
+mobile una `webmapp-track-download-urls-item-label` senza alcuna regola CSS dietro, in nessuno dei
+due prodotti. Rinominata `wm-poi-properties-osm-link`. Trapiantare in libreria un nome `webmapp-` — prefisso in
+abbandono, e per giunta di un componente della webapp — per far felice un test dell'altro repo è
+l'accoppiamento che questo ticket serve a togliere. L'assert vicino, quello sulla traccia, usa già
+`wm-track-properties .wm-track-details-header`: ora i due sono simmetrici.
+
+La classe resta dov'è ancora usata, cioè sul titolo del ramo UGC del popup.
+
+## Da decidere prima di chiudere la PR
+
+### Rimasto in sospeso, da valutare qui o con un ticket
+
+- **Markup della categoria nel ramo UGC** (`poi-popup.component.html`, blocco
+  `taxonomy.poi_types` / `poi_type` dentro `*ngIf="poiProperties?.uuid"`): sembra irraggiungibile,
+  perché un POI UGC non ha `taxonomy`. Va verificato su un UGC reale prima di toglierlo. Se
+  confermato, è codice morto che entra nel ticket dello split UGC insieme al resto del ramo.
+
+- **Popup vuoto sul percorso `{related: false}`**: `currentPoiProperties` (`ec.selector.ts:225`)
+  azzera le properties su quel valore sentinella, mentre il selettore `poi` che apre il popup non
+  applica lo stesso filtro. Su quel percorso il popup si aprirebbe con il solo pulsante di
+  chiusura, dove prima mostrava titolo e descrizione dal proprio `@Input`. Non riprodotto con dati
+  reali; già tracciato come follow-up F7, ma questo ticket ne peggiora la resa.
+
+### Candidati a ticket nuovo
+
+- **`.eslintrc.json` di wm-webapp dichiara `prefix: "webmapp"` come `error`**, contro la
+  convenzione appena scritta nei due `CLAUDE.md`. Oggi è configurazione morta — `ng lint` non parte
+  perché estende `plugin:@angular-eslint/ng-cli-compat`, che non esiste più nella versione
+  installata — ma rimettere in piedi il lint senza toccarla bloccherebbe i selettori `wm-`.
+  Il ticket è "far ripartire il lint", e tocca la configurazione dell'intero repo.
+
+- **Allargare il popup della webapp** «quanto la home», e nella stessa occasione sistemare filtri,
+  lingua e zoom che il popup copre. Deciso nello scrum del 04/09/2026, mai implementato. È della
+  webapp, non del componente condiviso.
+
+- **Unificare il componente badge dei filtri con quello delle tassonomie**, con la questione del
+  colore (primary contro secondary). Deciso a voce nello stesso scrum e rinviato lì per lì
+  («stiamo complicando troppo», «magari si fa un ticket postumo»).
+
+- **Etichette del dettaglio della traccia**: "Link utili" e "Galleria" restano, perché la decisione
+  dello scrum guardava il dettaglio del POI. Se vale anche per le tracce, è un ticket suo — tocca
+  `wm-feature-useful-urls` e `wm-tab-image-gallery`, montati da `track-properties`,
+  `ugc-track-properties` e `draw-ugc`.
+
+- **Verificare `wm-config-detail` sui POI** su Cammini d'Italia dev, POI Santa Barbara: è l'unico
+  posto dove i box esistono (vedi `wm-core/docs/knowledge/config-detail.md`). Era il gap che ha
+  dato origine a questo ticket, e non è ancora stato visto funzionare sulla webapp.
+
+### Etichette: tolte e poi rimesse, con una sola al posto di due
+
+La rimozione delle etichette è stata **ribaltata dal dev il giorno dopo**, e la ragione è buona: il
+dettaglio della traccia le etichette ce le ha ancora, e due schermate dello stesso prodotto che
+trattano i titoli in modo diverso sembrano un lavoro lasciato a metà — cioè esattamente il difetto
+che questo ticket esiste per togliere. Ha vinto la coerenza fra le due schermate sulla decisione
+presa guardandone una sola.
+
+Stato finale: "Galleria" torna montando di nuovo `wm-tab-image-gallery`, e al posto dei due titoli
+"Contatti" e "Link utili" ce n'è **uno solo, "Informazioni"**, sopra indirizzo, telefoni, mail e
+link insieme.
+
+**Perché un titolo solo e perché quella parola.** Due titoli separati erano la forma che lo scrum
+aveva respinto. Un titolo solo doveva quindi coprire tutte e quattro le righe, e "Contatti"
+mentirebbe: misurato sui dati, `related_url` porta spesso pagine di approfondimento — «Comune di
+Pizzighettone», «Pizzighettone (da Wikipedia)» — che contatti non sono. Avevo proposto "Contatti e
+link", il dev ha scelto "Informazioni", che era anche il ripiego offerto da Giuseppe in call
+(«potremmo mettere informazioni e basta e lasciare perdere la parola»).
+
+**Una premessa dello scrum era falsa, e vale la pena saperlo.** Il criterio per decidere se
+separare i gruppi era: «se li ricevi già separati, allora mi sta bene che tu li suddividi; se
+invece li ricevi uniti e il frontend deve fare una serie di if o controlli per separarli, allora
+non mi sta tanto bene». L'ipotesi operativa in call era che arrivassero uniti — «mi sembra che
+siano tutti assieme» — e nessuno l'ha verificata. Profilando i payload di 45 app: `addr_complete`,
+`contact_phone`, `contact_email` e `related_url` sono **campi distinti**, sempre. Separarli sarebbe
+stato ammesso dal criterio stesso. La scelta finale di unirli resta valida, ma per la ragione
+linguistica sopra, non perché il dato lo imponesse.
+
+**`hasContacts$`, l'unico gate rimasto.** Serve a non lasciare "Informazioni" sospeso sopra il
+vuoto, e non è sostituibile da un `*ngIf` sui campi: `related_url` arriva come `[]` su 2.572 POI, e
+in JavaScript un array vuoto è truthy. Riusa `normalizeRelatedUrls`, la stessa funzione di
+`wm-related-urls`, quindi non reintroduce la duplicazione che `hasUsableRelatedUrls` aveva creato.
+
+### Rientro delle righe: tolta un'eccezione, non aggiunta una regola
+
+Nel dettaglio, "Dove" partiva dal bordo mentre "Dettagli tecnici" e i contatti erano rientrati di
+16px. La causa era un override in `poi-popup.component.scss` che azzerava `--padding-start` sugli
+`ion-item` del solo `wm-txn-where`, e solo nella webapp: produceva due divergenze insieme, una
+dentro il dettaglio e una fra webapp e dettaglio traccia.
+
+Il primo tentativo è stato allineare tutto **al bordo**, portando la regola nel componente
+condiviso. Il dev ha poi chiesto l'opposto — allineare al rientro standard, cioè alla resa della
+traccia — che si ottiene semplicemente togliendo l'eccezione. Risultato: `wm-core` non ha nessun
+override di padding sul dettaglio POI e `wm-webapp` ne ha uno in meno di prima che cominciassimo.
+
+### Identificatori in italiano: uno, ed era mio
+
+`wm-poi-informazioni` è stato l'unico identificatore italiano di entrambi i repo — verificato su
+classi, id, variabili CSS e membri TypeScript con una ventina di parole italiane comuni. Rinominato
+`wm-poi-properties-contacts`, insieme a `hasInformazioni$` → `hasContacts$` e alle variabili locali
+dello spec. La convenzione, che non era scritta da nessuna parte, è ora nei due `CLAUDE.md`:
+identificatori in inglese, prosa in italiano — descrizioni dei test comprese, che nel repo sono
+già italiane.

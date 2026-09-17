@@ -1,4 +1,23 @@
 webmapp-map-page {
+  // La pagina si legge in tre fasce: pannello della home a sinistra, mappa al centro, dettaglio
+  // del POI a destra (scrum del 04/09/2026: «lo farei largo quanto la home, in maniera che ti si
+  // creano tre fasce»). Il dettaglio è largo quanto `.details-container`, cioè 400px; il valore
+  // vive qui, accanto a quello della home, perché è il confronto fra i due a dare senso alle fasce.
+  --wm-poi-popup-width: 400px;
+
+  // Il dettaglio comincia sotto i controlli in alto a destra della mappa — profilo, lingua,
+  // filtri, disegno — così quelli restano al loro posto invece di spostarsi all'apertura del
+  // popup. I controlli stanno a `top: 16px` e sono alti 40px su una riga sola (map-core li
+  // dichiara `flex-wrap: nowrap`), quindi finiscono a 56px: sotto, lo stesso distacco di 16px che
+  // hanno dal bordo destro.
+  --wm-poi-popup-top: calc(72px + env(safe-area-inset-top));
+
+  // Sotto i 1024px le tre fasce non stanno: con la home aperta resterebbero ~200px di mappa.
+  // Si stringe il dettaglio, non la mappa.
+  @media (max-width: 1024px) {
+    --wm-poi-popup-width: 320px;
+  }
+
   ion-progress-bar {
     width: 100% !important;
   }

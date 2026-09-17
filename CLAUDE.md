@@ -48,6 +48,17 @@ Gli spec dei submodule **non girano da qui**: ognuno ha il proprio setup nel pro
 - **`docs/` ha tre destinazioni**: `features/` è il cantiere di un lavoro (com'è andato,
   immutabile), `knowledge/` la conoscenza per argomento (perché funziona così), `howto/` le
   procedure. Le trappole non stanno in nessuna delle tre: stanno in `.claude/rules/`.
+- **Gli identificatori sono in inglese**, anche quando il testo che mostrano è in italiano:
+  `hasContacts$`, non `hasInformazioni$`; `.wm-poi-properties-contacts`, non
+  `.wm-poi-informazioni`. Vale per classi CSS, variabili CSS, membri e variabili TypeScript. La
+  prosa — commenti, documentazione, descrizioni dei test — resta in italiano.
+- **I nuovi selettori e le nuove classi CSS usano il prefisso `wm-`**, non `webmapp-`. Qui la
+  transizione è più indietro che nei submodule — i componenti storici del repo sono
+  `webmapp-poi-popup`, `webmapp-layer-box`, `webmapp-search-box` — ma i nuovi seguono `wm-`, e un
+  selettore che deve combaciare con un componente di `wm-core` usa il nome che ha lì.
+  Attenzione: `.eslintrc.json` dichiara ancora `prefix: "webmapp"` come `error`, ma è configurazione
+  morta — `ng lint` non parte, perché estende `plugin:@angular-eslint/ng-cli-compat`, che non esiste
+  più nella versione installata di `@angular-eslint`.
 - **Documentazione, commenti e messaggi di commit sono in italiano**, i termini tecnici in inglese.
 
 ## Conoscenza
@@ -56,6 +67,7 @@ Gli spec dei submodule **non girano da qui**: ognuno ha il proprio setup nel pro
 |---|---|---|---|
 | CI, preview e deploy | I quattro job di `test.yml`, la preview Surge per PR, il gate sui test prima del deploy | oc:8022, oc:8382, oc:8512 | [docs/knowledge/ci-e-deploy.md](docs/knowledge/ci-e-deploy.md) |
 | Test di questo repo | Cosa gira e cosa no, il confine `src/app/shared/`, il `MockStore` di `AppComponent` | oc:7989 | [docs/knowledge/test-di-questo-repo.md](docs/knowledge/test-di-questo-repo.md) |
+| Mappa a tre fasce | Larghezze di home, mappa e dettaglio POI, e perché il dettaglio comincia sotto i controlli | oc:8406 | [docs/knowledge/mappa-a-tre-fasce.md](docs/knowledge/mappa-a-tre-fasce.md) |
 | Tema e colori | Come il primary dell'istanza arriva ai componenti Ionic, e perché `variables.scss` è importato due volte | oc:8406 | [docs/knowledge/tema-e-colori.md](docs/knowledge/tema-e-colori.md) |
 | Variante `camminiditalia` | La configuration Angular, `npm start` che la sceglie da sé, i tre script di deploy | oc:8512 | [docs/knowledge/variante-camminiditalia.md](docs/knowledge/variante-camminiditalia.md) |
 

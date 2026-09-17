@@ -3,10 +3,14 @@ webmapp-poi-popup {
   background-color: white;
   margin-right: 10px;
   right: 0;
-  top: 0;
-  width: 20%;
+  // Largo quanto il pannello della home, non una percentuale della viewport: il valore è
+  // `--wm-poi-popup-width`, definito da `map.page.scss` insieme alle altre due fasce. Il 20% di
+  // prima valeva ~205px a 1024px di viewport, e a quella larghezza il dettaglio stava stretto.
+  width: var(--wm-poi-popup-width, 400px);
   bottom: 35px;
-  top: 35px;
+  // Comincia sotto i controlli in alto a destra della mappa, invece di passarci sopra: vedi
+  // `--wm-poi-popup-top` in `map.page.scss`.
+  top: var(--wm-poi-popup-top, 72px);
   border-radius: 15px;
   box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.1);
   transition: all 500ms;
@@ -135,12 +139,11 @@ webmapp-poi-popup {
     }
   }
 
-  wm-txn-where {
-    ion-item {
-      --inner-padding-start: 0px;
-      --padding-start: 0px;
-    }
-  }
+  // Qui c'era un azzeramento di `--padding-start` sugli `ion-item` di `wm-txn-where`, rimosso in
+  // oc:8406. Valeva per un solo componente e per la sola webapp, quindi dentro il dettaglio "Dove"
+  // partiva dal bordo mentre "Dettagli tecnici" e i contatti restavano rientrati, e la stessa
+  // sezione si vedeva diversa qui e nel dettaglio della traccia. Senza l'eccezione, tutte le righe
+  // usano il rientro di `ion-item`, che è la resa della traccia e della mobile.
 
   // Neutralizza il posizionamento che wm-core dichiara globalmente su wm-poi-properties
   // (poi-properties.component.scss:1-10, ViewEncapsulation.None): quelle regole descrivono il

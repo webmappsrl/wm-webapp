@@ -151,8 +151,11 @@ export class PoiPopupComponent {
    * sia un `@ViewChild` su un componente di libreria.
    *
    * Il gate su `currentRelatedPoisCount` è una condizione di dominio: naviga solo se esiste più di
-   * un POI correlato. I pulsanti del navigator hanno lo stesso gate nel proprio template, mentre
-   * queste scorciatoie sono `@HostListener` su `document`, quindi attive sempre.
+   * un POI correlato. **Non è l'unico gate del navigator**: il suo template richiede anche che
+   * `currentRelatedPoiIndex` non sia nullo, e quindi si nasconde quando nessun correlato è
+   * selezionato. Qui quel secondo gate non si può replicare — queste sono `@HostListener` su
+   * `document`, attive sempre — quindi vive nei selettori, che restituiscono `null` su indice
+   * negativo invece del primo elemento dell'elenco (`ec.selector.ts`).
    */
   private _goToRelatedPoi(selector: MemoizedSelector<any, number | null>): void {
     this._store

@@ -378,7 +378,9 @@ non passa dal componente condiviso.
 
 Il piano dichiarava «nessuna scrittura su wm-core». Il dev ha autorizzato le modifiche al repo
 condiviso in corso d'opera, prima per quattro follow-up (F2, F4, F8, F9) e poi per l'intestazione,
-il fix di `isAppMobile` e quello di `object-fit`. Il perimetro finale è di sei file in wm-core.
+il fix di `isAppMobile` e quello di `object-fit`. Il perimetro finale è di 23 file in wm-core —
+il piano ne prevedeva cinque, e di quei cinque `feature-useful-urls.component.html` non è mai stato
+toccato perché il dettaglio POI ha smesso di montarlo.
 
 ### Task 7-10 — due decisioni dello scrum recepite in ritardo
 
@@ -459,10 +461,6 @@ La classe resta dov'è ancora usata, cioè sul titolo del ramo UGC del popup.
   installata — ma rimettere in piedi il lint senza toccarla bloccherebbe i selettori `wm-`.
   Il ticket è "far ripartire il lint", e tocca la configurazione dell'intero repo.
 
-- **Allargare il popup della webapp** «quanto la home», e nella stessa occasione sistemare filtri,
-  lingua e zoom che il popup copre. Deciso nello scrum del 04/09/2026, mai implementato. È della
-  webapp, non del componente condiviso.
-
 - **Unificare il componente badge dei filtri con quello delle tassonomie**, con la questione del
   colore (primary contro secondary). Deciso a voce nello stesso scrum e rinviato lì per lì
   («stiamo complicando troppo», «magari si fa un ticket postumo»).
@@ -529,3 +527,35 @@ classi, id, variabili CSS e membri TypeScript con una ventina di parole italiane
 dello spec. La convenzione, che non era scritta da nessuna parte, è ora nei due `CLAUDE.md`:
 identificatori in inglese, prosa in italiano — descrizioni dei test comprese, che nel repo sono
 già italiane.
+
+## Tre difetti trovati dalla review, e corretti
+
+Review con `wm-skills:wm-review-ticket` a lavoro finito, cinque finder in parallelo. I tre
+bloccanti erano tutti introdotti da questo ticket, e nessuno dei tre era coperto dai test.
+
+- **Le frecce saltavano su un POI non correlato.** Le guardie che avevo aggiunto a
+  `nextRelatedPoiId`/`prevRelatedPoiId` coprivano `relatedPois == null` ma non l'indice `-1`: senza
+  un correlato selezionato, `findIndex` torna `-1` e `relatedPois[-1 + 1]` è il **primo** POI
+  dell'elenco. Il navigator a schermo non lo mostrava perché il suo template ha un gate in più
+  (`currentRelatedPoiIndex` filtrato sui null, poi `+1`, quindi `0` e falsy); le scorciatoie da
+  tastiera del popup no. Il commento che avevo scritto affermava che il gate fosse lo stesso: non
+  lo era, ed è stato corretto insieme al codice.
+
+- **Il titolo "Informazioni" poteva restare sopra una lista vuota.** `hasContacts$` guardava
+  `contact_phone` grezzo, ma la riga la disegna `wm-phone`, che passa per `splitPhones` e scarta le
+  stringhe senza cifre — `"Fixed Phone:,Cell Phone:,Other Phone:"`, forma già registrata in queste
+  note come vista in QA. Era la stessa asimmetria che per i link avevo risolto riusando
+  `normalizeRelatedUrls` e che non avevo applicato ai telefoni. Ora ogni riga è chiesta alla stessa
+  funzione che poi la disegna.
+
+- **Nel dettaglio del POI compariva la distanza live della traccia.** `wm-tab-detail` legge
+  `trackLiveDistanceVm$` dallo stato di navigazione **globale**, non dalle `properties` che riceve,
+  e le righe "Da"/"A" hanno un `*ngIf` in `||` su quel valore. Con una navigazione live attiva,
+  aprire un POI correlato con la quota mostrava dentro "Dettagli tecnici" i numeri della traccia.
+  È una regressione nuova, perché è la prima volta che `wm-tab-detail` viene montato per un POI.
+  Risolto con un `@Input showLiveDistance`, default `true` così le tracce non cambiano, messo a
+  `false` da `wm-poi-properties`.
+
+Tutti e tre hanno ora uno spec che li blocca: `related-poi-navigation.spec.ts` sui due selettori, e
+tre casi nuovi in `hasContacts$` per il telefono di sole etichette, quello non stringa e quello con
+un numero vero dietro l'etichetta. Test di wm-core: da 308 a 315.

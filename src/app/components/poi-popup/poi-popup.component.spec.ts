@@ -137,6 +137,32 @@ describe('PoiPopupComponent — instradamento EC/UGC', () => {
     });
   });
 
+  describe('le frecce non rubano i tasti a chi scrive', () => {
+    const premi = (tasto: string, target: any) =>
+      fixture.componentInstance[tasto === 'ArrowRight' ? 'handleArrowRight' : 'handleArrowLeft'](
+        {target} as any,
+      );
+
+    it('ignora il tasto se arriva da un campo di testo', () => {
+      const naviga = spyOn<any>(fixture.componentInstance, '_goToRelatedPoi');
+      for (const tag of ['input', 'textarea', 'ion-input', 'ion-searchbar']) {
+        premi('ArrowRight', document.createElement(tag));
+        premi('ArrowLeft', document.createElement(tag));
+      }
+
+      expect(naviga)
+        .withContext('nella searchbar le frecce muovono il cursore, non il POI')
+        .not.toHaveBeenCalled();
+    });
+
+    it('naviga se il tasto arriva dalla pagina', () => {
+      const naviga = spyOn<any>(fixture.componentInstance, '_goToRelatedPoi');
+      premi('ArrowRight', document.createElement('div'));
+
+      expect(naviga).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it('monta wm-ugc-medias per un POI UGC', () => {
     fixture.componentInstance.setPoi = UGC_POI;
     fixture.detectChanges();

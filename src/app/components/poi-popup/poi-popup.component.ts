@@ -22,7 +22,7 @@ import {filter, switchMap, take} from 'rxjs/operators';
 import {startDrawUgcPoi, stopDrawUgcPoi} from '@wm-core/store/user-activity/user-activity.action';
 import {currentUgcPoiDrawnGeometry} from '@wm-core/store/features/ugc/ugc.selector';
 import {
-  currentRelatedPoisCount,
+  canNavigateRelatedPois,
   nextRelatedPoiId,
   prevRelatedPoiId,
 } from '@wm-core/store/features/ec/ec.selector';
@@ -147,14 +147,43 @@ export class PoiPopupComponent {
       .subscribe();
   }
 
-  @HostListener('document:keydown.ArrowLeft')
-  handleArrowLeft(): void {
+  @HostListener('document:keydown.ArrowLeft', ['$event'])
+  handleArrowLeft(event: KeyboardEvent): void {
+    if (this._staScrivendo(event)) {
+      return;
+    }
     this._goToRelatedPoi(prevRelatedPoiId);
   }
 
-  @HostListener('document:keydown.ArrowRight')
-  handleArrowRight(): void {
+  @HostListener('document:keydown.ArrowRight', ['$event'])
+  handleArrowRight(event: KeyboardEvent): void {
+    if (this._staScrivendo(event)) {
+      return;
+    }
     this._goToRelatedPoi(nextRelatedPoiId);
+  }
+
+  /**
+   * `true` se il tasto è arrivato mentre si scrive in un campo di testo. Gli handler delle frecce
+   * ascoltano su `document`, quindi ricevono anche i tasti premuti nella searchbar della home o
+   * nel form UGC: lì le frecce servono a muovere il cursore, e far cambiare POI sotto le mani
+   * sarebbe una sorpresa. Prima di oc:8406 il problema non si poneva perché `next()`/`prev()`
+   * erano metodi vuoti.
+   */
+  private _staScrivendo(event: KeyboardEvent): boolean {
+    const target = event?.target as HTMLElement | null;
+    if (target == null) {
+      return false;
+    }
+    const tag = target.tagName?.toLowerCase();
+    return (
+      tag === 'input' ||
+      tag === 'textarea' ||
+      tag === 'ion-input' ||
+      tag === 'ion-textarea' ||
+      tag === 'ion-searchbar' ||
+      target.isContentEditable === true
+    );
   }
 
   /**
@@ -163,19 +192,18 @@ export class PoiPopupComponent {
    * vive nel selettore, quindi qui viene riusata e non riscritta — evitando sia la duplicazione
    * sia un `@ViewChild` su un componente di libreria.
    *
-   * Il gate su `currentRelatedPoisCount` è una condizione di dominio: naviga solo se esiste più di
-   * un POI correlato. **Non è l'unico gate del navigator**: il suo template richiede anche che
-   * `currentRelatedPoiIndex` non sia nullo, e quindi si nasconde quando nessun correlato è
-   * selezionato. Qui quel secondo gate non si può replicare — queste sono `@HostListener` su
-   * `document`, attive sempre — quindi vive nei selettori, che restituiscono `null` su indice
-   * negativo invece del primo elemento dell'elenco (`ec.selector.ts`).
+   * Il gate è `canNavigateRelatedPois`, **lo stesso selettore che usa il navigatore**: si sta
+   * mostrando un POI correlato e ce n'è più di uno. Averne uno solo è il punto — due gate scritti
+   * separatamente divergono, ed era già successo due volte: le frecce navigavano dove i pulsanti
+   * erano nascosti, prima con l'indice negativo e poi con `ec_related_poi` rimasto nell'URL dopo
+   * aver scelto un altro POI dalla mappa.
    */
   private _goToRelatedPoi(selector: MemoizedSelector<any, number | null>): void {
     this._store
-      .select(currentRelatedPoisCount)
+      .select(canNavigateRelatedPois)
       .pipe(
         take(1),
-        filter(count => count > 1),
+        filter(puoNavigare => puoNavigare),
         switchMap(() => this._store.select(selector).pipe(take(1))),
       )
       .subscribe(id => {

@@ -2,6 +2,13 @@
 
 # Unificare i componenti di dettaglio EcPoi tra webmapp-app (mobile) e wm-webapp (web)
 
+> **Lo stato finale non è qui.** Questo documento fotografa la **pianificazione**, e per convenzione
+> del repo resta com'era: `docs/features/` è il cantiere di come è andata, non la descrizione di
+> come funziona. Diverse scelte sono cambiate in corso d'opera — le etichette, l'intestazione, il
+> perimetro su wm-core — e ognuna è registrata con il suo perché in `notes.md`, che è il documento
+> da leggere per sapere dove si è arrivati. Le caselle qui sotto non vengono spuntate: lo stato di
+> avanzamento sta anch'esso in `notes.md`.
+
 > **Ambito:** solo la **fase C**, la parte che vive in `wm-webapp`, e limitata ai **POI EC**.
 > Le fasi A (promozione di `PoiPropertiesComponent` in wm-core) e B (ri-consumo da parte di
 > webmapp-app) sono già completate e documentate in

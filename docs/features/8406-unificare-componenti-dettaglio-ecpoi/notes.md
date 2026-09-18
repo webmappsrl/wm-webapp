@@ -439,6 +439,35 @@ l'accoppiamento che questo ticket serve a togliere. L'assert vicino, quello sull
 
 La classe resta dov'è ancora usata, cioè sul titolo del ramo UGC del popup.
 
+## I cleanup della review esterna
+
+Oltre ai tre bloccanti, la review esterna ha elencato sei cleanup. Due erano azionabili subito, e
+sono stati chiusi; degli altri quattro, tre erano già tracciati e uno è stato chiuso dal dev.
+
+- **Le frecce rubavano i tasti a chi scrive** — chiuso. Gli handler sono `@HostListener` su
+  `document`, quindi ricevevano anche le frecce premute nella searchbar della home o in un campo
+  del form UGC, dove servono a muovere il cursore. Prima di oc:8406 non si notava perché
+  `next()`/`prev()` erano metodi vuoti. Ora `_staScrivendo()` controlla il target dell'evento —
+  `input`, `textarea`, le controparti Ionic e `contentEditable` — con due spec che lo bloccano.
+
+- **La documentazione si contraddiceva** — chiuso. `overview.md` e `plan.md` descrivevano ancora
+  "Contatti" e `hasUsableRelatedUrls`, mentre le note parlano di "Informazioni" e `hasContacts$`,
+  e le caselle del piano erano tutte vuote benché il lavoro fosse fatto. Quei due documenti non si
+  riscrivono — per convenzione `docs/features/` è il cantiere di come è andata — ma un lettore ne
+  ricavava un quadro falso. Aggiunto in testa a tutti e quattro (wm-webapp e wm-core) un rimando
+  esplicito: lo stato finale sta in `notes.md`, comprese le deviazioni e l'avanzamento.
+
+- **`wm-config-detail` mai visto su dati reali** — chiuso dal dev, che l'ha verificato a mano sul
+  POI 377 di `camminiditaliadev`. Era il gap originario di oc:8181, cioè la ragione per cui questo
+  ticket esiste.
+
+- **Popup vuoto su `{related: false}`**, **shell CSS assoluto in `wm-poi-properties`** e
+  **il ramo UGC ancora su `webmapp-related-urls` e le pipe locali**: già tracciati qui sopra, i
+  primi due fra i punti da decidere, il terzo fra i candidati a ticket. Sul terzo vale una
+  precisazione del revisore che condivido: in parte è preesistente, in parte **allargato dallo
+  split**, perché ora il ramo EC usa `normalizeRelatedUrls` e `splitPhones` mentre l'UGC resta su
+  `|keyvalue` e `|toArray`. La divergenza non c'era prima che i due rami si separassero.
+
 ## Da decidere prima di chiudere la PR
 
 ### Rimasto in sospeso, da valutare qui o con un ticket

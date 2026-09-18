@@ -7,8 +7,9 @@ test manuale del dev, le due decisioni dello scrum recepite in ritardo e i tre d
 review. Restano il ripristino di `environment.ts` (ora punta all'app in prova) e il push, che va
 coordinato con l'agente su webmapp-app.
 
-Esito test: **wm-webapp 5/5**, **wm-core 315/315** (288 di baseline, 1 arrivato con develop, il
-resto aggiunti da questo ticket). Nessuno spec preesistente è caduto, quindi non è stato necessario
+Esito test: **wm-webapp 12/12**, **wm-core 322/322** (288 di baseline, 1 arrivato con develop, il
+resto aggiunti da questo ticket — gli ultimi sette dopo le due review, a coprire i difetti che
+avevano trovato). Nessuno spec preesistente è caduto, quindi non è stato necessario
 indebolire alcun test. Build di produzione verde.
 
 Branch riallineati: wm-webapp e wm-core su `develop`, wm-types su `main` (non ha `develop`).

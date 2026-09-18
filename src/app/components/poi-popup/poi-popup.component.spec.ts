@@ -112,6 +112,21 @@ describe('PoiPopupComponent — instradamento EC/UGC', () => {
       expect(fixture.componentInstance.ugcMapsHref).toContain('Pisa');
     });
 
+    it('conserva l\u2019indirizzo anche dopo il salvataggio', () => {
+      // `updatePoi()` ricostruiva `poiProperties` per conto suo, senza derivare l'indirizzo:
+      // dopo "Salva" su un POI UGC con i soli campi `addr_*` la riga spariva.
+      const poi = {
+        ...UGC_POI,
+        properties: {...UGC_POI.properties, addr_locality: 'Pisa', addr_street: 'Via Roma 1'},
+      };
+      fixture.componentInstance.setPoi = poi;
+      fixture.componentInstance.fg = {valid: true, value: {title: 'Nuovo nome'}} as any;
+
+      fixture.componentInstance.updatePoi();
+
+      expect(fixture.componentInstance.poiProperties.address).toBe('Pisa, Via Roma 1');
+    });
+
     it('mostra la quota', () => {
       fixture.componentInstance.setPoi = {
         ...UGC_POI,
@@ -153,6 +168,15 @@ describe('PoiPopupComponent — instradamento EC/UGC', () => {
       expect(naviga)
         .withContext('nella searchbar le frecce muovono il cursore, non il POI')
         .not.toHaveBeenCalled();
+    });
+
+    it('Escape non chiude il dettaglio mentre si scrive', () => {
+      const chiude = spyOn(fixture.componentInstance.closeEVT, 'emit');
+      fixture.componentInstance.handleEscape({target: document.createElement('input')} as any);
+      expect(chiude).withContext('chiuderebbe buttando via il form in compilazione').not.toHaveBeenCalled();
+
+      fixture.componentInstance.handleEscape({target: document.createElement('div')} as any);
+      expect(chiude).toHaveBeenCalledTimes(1);
     });
 
     it('naviga se il tasto arriva dalla pagina', () => {

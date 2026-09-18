@@ -439,6 +439,22 @@ l'accoppiamento che questo ticket serve a togliere. L'assert vicino, quello sull
 
 La classe resta dov'è ancora usata, cioè sul titolo del ramo UGC del popup.
 
+## Il gate della navigazione fra POI correlati
+
+Il difetto e la correzione stanno per esteso in `wm-core/docs/knowledge/dettaglio-poi.md`, perché
+sono dominio condiviso; qui resta la cronaca di come ci siamo arrivati, che riguarda questo repo.
+
+Su `develop` i due pulsanti erano gated su `poiProperties.related`, una proprietà **del POI
+mostrato**, e `next()`/`prev()` erano metodi vuoti in `map.page.ts`: la navigazione non funzionava
+ma non poteva nemmeno sbagliare. Collegandola davvero, il gate è diventato il conteggio dei
+correlati del track più l'indice preso dall'URL — due cose che non dicono «sto mostrando un
+correlato».
+
+È costato due giri di correzioni, e in entrambi i casi il sintomo era lo stesso: **le frecce
+navigavano dove i pulsanti erano nascosti**, perché i due gate erano scritti separatamente. Prima
+con l'indice `-1`, poi con `ec_related_poi` rimasto nell'URL dopo aver scelto un altro POI dalla
+mappa. Ora la condizione è una sola, `canNavigateRelatedPois`, usata da entrambi.
+
 ## I cleanup della review esterna
 
 Oltre ai tre bloccanti, la review esterna ha elencato sei cleanup. Due erano azionabili subito, e
@@ -698,3 +714,27 @@ sezioni che verranno aggiunte. Restano margini e non `gap`: i margini collassano
 montato che non rende nulla — `wm-config-detail` — non lascia spazio vuoto, mentre con flex ne
 lascerebbe uno per ciascuno. Misurato sul POI 42057 di geohub, sette sezioni visibili e due host
 vuoti: tutti gli intervalli a 24px.
+
+## Il secondo giro di cleanup della review esterna
+
+- **`updatePoi()` non derivava l'indirizzo** — chiuso. Il setter lo faceva, il salvataggio no:
+  dopo "Salva" su un POI UGC con i soli campi `addr_*` la riga spariva. È lo stesso schema che
+  `develop` aveva evitato costruendo le properties in un posto solo, e che lo split aveva rotto.
+  Ora `_aggiornaProperties()` è quel posto solo, usato da entrambi i percorsi, con uno spec che
+  salva e rilegge l'indirizzo.
+
+- **`ec_related_poi` non azzerato scegliendo un POI** — chiuso. A schermo non si vedeva, grazie al
+  gate, ma `removeLatest()` controlla quel parametro **prima** di `poi`: il primo "indietro" lo
+  consumava senza spostare niente, e ne serviva un secondo. Azzerato nei due punti da cui si
+  sceglie un POI direttamente: `url-handler.setPoi()` per le liste e `geobox-map.setPoi()` per il
+  tap sulla mappa. La navigazione fra correlati passa invece da `setCurrentRelatedPoi`, che non è
+  toccata.
+
+- **`Escape` senza la guardia sui campi di testo** — chiuso. Era asimmetrico rispetto alle frecce,
+  e sul ramo UGC chiudere il dettaglio mentre si compila il form butta via le modifiche.
+
+- **Le note non documentavano `canNavigateRelatedPois`** — chiuso, vedi sopra.
+
+Restano i tre debiti già accettati: il popup vuoto su `{related: false}` (F7), lo shell CSS
+assoluto di `wm-poi-properties` che entrambi i consumer neutralizzano, e il ramo UGC ancora su
+`webmapp-related-urls` e le pipe locali.

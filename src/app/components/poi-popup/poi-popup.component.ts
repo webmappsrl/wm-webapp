@@ -64,9 +64,19 @@ export class PoiPopupComponent {
       // abbia solo i campi `addr_*` perderebbe la riga dell'indirizzo e il link a Maps.
       // `derivePoiAddress` è la stessa funzione che usa il condiviso: una sola implementazione,
       // non due che possono divergere.
-      const {address} = derivePoiAddress(poi.properties);
-      this.poiProperties = {...poi.properties, address};
+      this._aggiornaProperties(poi);
     }
+  }
+
+  /**
+   * L'unico punto in cui si costruisce `poiProperties`. Esiste perché la derivazione
+   * dell'indirizzo va applicata **sempre**, e averla in un posto solo evita che i due percorsi
+   * divergano: era già successo: il setter la faceva, `updatePoi()` no, e dopo un salvataggio
+   * l'indirizzo di un POI UGC spariva.
+   */
+  private _aggiornaProperties(poi: WmFeature<Point>): void {
+    const {address} = derivePoiAddress(poi?.properties as any);
+    this.poiProperties = {...poi?.properties, address} as any;
   }
 
   /**
@@ -213,8 +223,14 @@ export class PoiPopupComponent {
       });
   }
 
-  @HostListener('document:keydown.Escape')
-  handleEscape(): void {
+  @HostListener('document:keydown.Escape', ['$event'])
+  handleEscape(event: KeyboardEvent): void {
+    // Stessa guardia delle frecce: `Escape` dentro un campo di testo annulla l'input, non deve
+    // chiudere il dettaglio — e sul ramo UGC chiuderlo mentre si compila il form butterebbe via
+    // le modifiche.
+    if (this._staScrivendo(event)) {
+      return;
+    }
     this.closeEVT.emit();
   }
 
@@ -242,7 +258,7 @@ export class PoiPopupComponent {
       this._store.dispatch(stopDrawUgcPoi());
       this.isEditing$.next(false);
       this.poi = poi;
-      this.poiProperties = {...poi.properties} as any;
+      this._aggiornaProperties(poi);
       this._cdr.detectChanges();
     }
   }

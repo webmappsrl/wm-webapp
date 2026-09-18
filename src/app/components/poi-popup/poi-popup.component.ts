@@ -64,8 +64,8 @@ export class PoiPopupComponent {
       // abbia solo i campi `addr_*` perderebbe la riga dell'indirizzo e il link a Maps.
       // `derivePoiAddress` è la stessa funzione che usa il condiviso: una sola implementazione,
       // non due che possono divergere.
-      const {address, address_link} = derivePoiAddress(poi.properties);
-      this.poiProperties = {...poi.properties, address, address_link};
+      const {address} = derivePoiAddress(poi.properties);
+      this.poiProperties = {...poi.properties, address};
     }
   }
 

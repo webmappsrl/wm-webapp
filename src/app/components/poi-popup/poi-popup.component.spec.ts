@@ -102,7 +102,7 @@ describe('PoiPopupComponent — instradamento EC/UGC', () => {
   // markup comune deve restare qui: l'indirizzo derivato dai campi `addr_*`, la quota e il link
   // OpenStreetMap. Sono spariti una volta nello split EC/UGC e li ha trovati una review esterna.
   describe('il ramo UGC conserva quello che aveva su develop', () => {
-    it('deriva address e address_link dai campi addr_*', () => {
+    it('deriva address dai campi addr_*', () => {
       fixture.componentInstance.setPoi = {
         ...UGC_POI,
         properties: {...UGC_POI.properties, addr_locality: 'Pisa', addr_street: 'Via Roma 1'},

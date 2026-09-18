@@ -480,6 +480,18 @@ La classe resta dov'è ancora usata, cioè sul titolo del ramo UGC del popup.
   che il default è il valore arcodato… se nella configurazione ho lo shard name, ci metto lo
   shard». Tocca `environment`/`shards` e va provato su almeno due shard.
 
+- **`draw-ugc` monta `wm-tab-detail` con la distanza live attiva.** È lo stesso difetto corretto
+  nel dettaglio POI con `[showLiveDistance]="false"`: `trackLiveDistanceVm` è agganciato a
+  `currentEcTrack`, non alla feature renderizzata, quindi nel pannello di disegno di una traccia UGC
+  i badge riporterebbero i numeri della traccia EC in stato. Preesistente, non introdotto da
+  oc:8406, e chiuderlo costa una parola — ma sta nel ramo UGC, tenuto fuori per decisione del dev.
+
+- **`contact_phone` non stringa.** Se il backend mandasse un oggetto di traduzione invece di una
+  stringa, `splitPhones` restituisce `[]` e da oc:8406 il gruppo "Informazioni" si nasconde del
+  tutto. È coerente con `wm-phone`, che comunque non disegnerebbe la riga, quindi non è una
+  regressione; ma prima di considerarlo chiuso vale una verifica sui dati, perché il caso passa
+  dall'essere visibile-e-vuoto all'essere invisibile.
+
 - **Verificare `wm-config-detail` sui POI** su Cammini d'Italia dev, POI Santa Barbara: è l'unico
   posto dove i box esistono (vedi `wm-core/docs/knowledge/config-detail.md`). Era il gap che ha
   dato origine a questo ticket, e non è ancora stato visto funzionare sulla webapp.
@@ -581,3 +593,36 @@ Tradotte quindi anche `delete`, `save` e `cancel` nelle sette lingue, che erano 
 condizione di `edit`: chiave presente nei template, assente nei file i18n, quindi `wmtrans`
 ricadeva sulla chiave. Non era nel perimetro del ticket, ma lasciare a metà una riga di tasti per
 rispettarlo avrebbe voluto dire consegnare un difetto nuovo.
+
+## La seconda review, e cosa ha corretto
+
+Rieseguita `wm-skills:wm-review-ticket` dopo i tre fix. Le correzioni sono state verificate una per
+una e reggono — guardia sull'indice negativo, `showLiveDistance`, `hasContacts$` — e lo `z-index: 2`
+del popup è stato verificato sui file: i pannelli che il dettaglio copriva sono `position: fixed`
+dentro `.top-right`, che sta a 2 e viene dopo nel DOM, quindi ora ci passano sopra.
+
+Due difetti sono però emersi, ed erano entrambi introdotti da modifiche dello stesso giorno.
+
+- **Il commento che giustificava lo `z-index` diceva il falso.** Affermava che `.bottom-right` sta a
+  2 e il canvas a 1. Verificato in `map-core`: `.bottom-right` è a **1** insieme a scala e
+  attribuzione, e il canvas non ha z-index affatto; a 2 ci sono `top-left`, `top-right`, `bottom` e
+  `bottom-center`. La scelta resta giusta, ma chi avesse letto quel commento per posizionare un
+  overlay nuovo sarebbe partito da una mappa sbagliata dei piani. Corretto nel codice e nella pagina
+  di conoscenza, dove l'errore era stato ricopiato.
+
+- **Tradurre `edit` da solo peggiorava la resa**, ed è il motivo per cui `delete`, `save` e `cancel`
+  sono state tradotte nello stesso giro invece di restare un follow-up: vedi sopra.
+
+### Il ritmo verticale delle sezioni
+
+Segnalato dal dev: spazi disomogenei nel dettaglio, in particolare l'excerpt con più aria sopra che
+sotto. Il modello era corretto — ogni componente porta `--wm-feature-details-margin` e i margini
+adiacenti collassano — ma aveva quattro eccezioni: l'excerpt usava `padding: 20px 0 3px 0` invece
+del margine (il riquadro era spaziato bene, il **testo dentro** no, ed era quello che si vedeva),
+il link OSM e l'HTML incorporato non avevano niente, la distanza azzerava il margine sopra.
+
+Il ritmo ora lo dichiara il contenitore, `.wm-poi-properties-body > *`, quindi vale anche per le
+sezioni che verranno aggiunte. Restano margini e non `gap`: i margini collassano, e un host sempre
+montato che non rende nulla — `wm-config-detail` — non lascia spazio vuoto, mentre con flex ne
+lascerebbe uno per ciascuno. Misurato sul POI 42057 di geohub, sette sezioni visibili e due host
+vuoti: tutti gli intervalli a 24px.

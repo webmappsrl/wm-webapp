@@ -63,7 +63,7 @@ colonna loro.
   lascerebbero ~200px di mappa. Si stringe il dettaglio, perché la mappa è il motivo per cui la
   pagina esiste.
 
-- **Le due misure stanno sulla pagina, non sul popup** (oc:8406): è il confronto con i 400px di
-  `.details-container` a dare senso alla larghezza del dettaglio, e il valore serve anche a chi
-  dovrà posizionare altro accanto. Il popup la legge con un fallback, così resta montabile anche
-  fuori da questa pagina.
+- **Le tre misure stanno sulla pagina, non sul popup** (oc:8406): è il confronto con i 400px di
+  `.details-container` a dare senso alla larghezza del dettaglio, e le altre due nascono dalla
+  posizione dei controlli della mappa, che sulla pagina si vedono tutti insieme. Il popup le legge
+  con un fallback, così resta montabile anche fuori da questa pagina.

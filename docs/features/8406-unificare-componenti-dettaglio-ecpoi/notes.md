@@ -594,6 +594,33 @@ condizione di `edit`: chiave presente nei template, assente nei file i18n, quind
 ricadeva sulla chiave. Non era nel perimetro del ticket, ma lasciare a metà una riga di tasti per
 rispettarlo avrebbe voluto dire consegnare un difetto nuovo.
 
+## Quota e link OSM erano spariti dal ramo UGC
+
+Trovato da una review esterna, ed è un difetto vero che le mie due review non avevano visto.
+
+Su `develop` `poiProperties.ele` e `poiProperties.osm_url` stavano nel markup **comune**, senza
+nessun gate su `uuid`: si vedevano quindi anche sui POI UGC. Separando i due rami ho portato sul
+ramo UGC il blocco dei contatti ma non quelle due righe, perché per gli EC sono coperte dal
+componente condiviso — la quota dentro "Dettagli tecnici", il link OSM in fondo a
+`wm-poi-properties`. Non è stata una decisione: è una svista, e contraddice il requisito che questo
+stesso cantiere si era dato, «il ramo UGC resta invariato».
+
+**Peggiorata da una mia affermazione sbagliata.** Nella prima review avevo scritto che «gli unici
+blocchi caduti dal ramo UGC erano gated EC anche prima»: falso per `ele` e `osm_url`. Veniva da un
+finder che su quel punto non avevo verificato contro `git show develop:…`, ed è esattamente il
+genere di conclusione che la skill chiede di controllare con una prova verbatim prima di usarla.
+
+**Quanto fosse raggiungibile, per quel che si può dire senza dati UGC reali:** `osm_url` non è mai
+scritto dal percorso di creazione UGC e non compare in nessun componente UGC — viene dall'import
+OpenStreetMap; `ele` non è scritto dal client, e il componente ufficiale della mobile
+`wm-ugc-poi-properties` non mostra la quota nemmeno lui. Il caso è probabilmente irraggiungibile,
+ma non è una ragione per cambiare comportamento in un ticket che aveva promesso di non toccare quel
+ramo, e senza dati veri non si può escludere.
+
+Ripristinate fedeli a `develop`. L'unica differenza che resta nel gruppo è voluta e documentata:
+`*ngIf="poiProperties.related_url != null"` è diventato `hasRelatedUrls`, che evita il blocco vuoto
+quando il campo arriva come `[]`.
+
 ## La seconda review, e cosa ha corretto
 
 Rieseguita `wm-skills:wm-review-ticket` dopo i tre fix. Le correzioni sono state verificate una per

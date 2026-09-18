@@ -67,6 +67,12 @@
               {{poiProperties.address}}
             </a>
           </div>
+          <div class="webmapp-poi-popup-btn" *ngIf="poiProperties.ele">
+            <i class="wm-icn icon-outline-plus"></i>
+            <p>
+              <a> {{poiProperties.ele}} {{'metri'|wmtrans}} </a>
+            </p>
+          </div>
           <ng-container *ngIf="poiProperties.contact_phone|toArray as arrayOfPhones">
             <div
               class="webmapp-poi-popup-btn webmapp-poi-popup-phone"
@@ -92,6 +98,17 @@
           <div class="webmapp-poi-popup-btn webmapp-poi-popup-urls" *ngIf="hasRelatedUrls">
             <i class="wm-icn icon-fill-globe"></i>
             <webmapp-related-urls [relatedUrls]="poiProperties.related_url"></webmapp-related-urls>
+          </div>
+          <div *ngIf="poiProperties.osm_url as osm">
+            <ion-icon class="wm-icn icon-link" slot="start"></ion-icon>
+            <a
+              class="webmapp-track-download-urls-item-label"
+              [href]="osm"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ "Vedi su OpenStreetMap" | wmtrans }}
+            </a>
           </div>
         </div>
 

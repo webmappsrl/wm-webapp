@@ -27,6 +27,7 @@ import {
   prevRelatedPoiId,
 } from '@wm-core/store/features/ec/ec.selector';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
+import {derivePoiAddress} from '@wm-core/utils/derive-poi-address';
 
 @Component({
   standalone: false,
@@ -57,7 +58,14 @@ export class PoiPopupComponent {
   @Input('poi') public set setPoi(poi: any) {
     if (poi != null && poi.properties != null) {
       this.poi = poi;
-      this.poiProperties = {...poi.properties};
+      // L'indirizzo va derivato anche qui, non solo in `wm-poi-properties`: il ramo UGC non passa
+      // dal componente condiviso, e su `develop` questo setter componeva `address` da
+      // `addr_complete`/`addr_locality`/`addr_street` per **tutti** i POI. Senza, un POI UGC che
+      // abbia solo i campi `addr_*` perderebbe la riga dell'indirizzo e il link a Maps.
+      // `derivePoiAddress` è la stessa funzione che usa il condiviso: una sola implementazione,
+      // non due che possono divergere.
+      const {address, address_link} = derivePoiAddress(poi.properties);
+      this.poiProperties = {...poi.properties, address, address_link};
     }
   }
 
@@ -65,6 +73,11 @@ export class PoiPopupComponent {
    * Link Google Maps per il ramo UGC. Sostituisce l'interpolazione inline che aveva una graffa di
    * chiusura in eccesso (`{{...}}}`): quella finiva letteralmente nell'URL, che nel DOM risultava
    * `daddr=…}&navigate=yes`. Per i POI EC il link lo produce `wm-address` in wm-core.
+   *
+   * Usa `address` e non `address_link`, che `develop` preferiva quando valorizzato: `address_link`
+   * unisce con `+` per pre-codificare gli spazi, ma `encodeURIComponent` trasforma poi quei `+` in
+   * `%2B`, cioè in un più letterale dentro l'indirizzo. Partendo da `address` gli spazi diventano
+   * `%20`, che è la forma corretta.
    */
   get ugcMapsHref(): string {
     const destination = this.poiProperties?.address ?? '';

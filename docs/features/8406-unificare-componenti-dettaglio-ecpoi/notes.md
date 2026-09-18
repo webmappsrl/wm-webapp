@@ -621,6 +621,22 @@ Ripristinate fedeli a `develop`. L'unica differenza che resta nel gruppo è volu
 `*ngIf="poiProperties.related_url != null"` è diventato `hasRelatedUrls`, che evita il blocco vuoto
 quando il campo arriva come `[]`.
 
+**Stessa svista, terzo caso: la derivazione dell'indirizzo.** Su `develop` il setter `setPoi`
+componeva `address` e `address_link` da `addr_complete`/`addr_locality`/`addr_street` per **tutti**
+i POI. Promuovendo quella logica in `derivePoiAddress` l'ho tolta dal setter, coprendo gli EC col
+componente condiviso e lasciando scoperto il ramo UGC: un POI UGC con i soli campi `addr_*` perdeva
+la riga dell'indirizzo e il link a Maps. Ripristinata chiamando `derivePoiAddress` nel setter —
+la stessa funzione del condiviso, non una seconda implementazione.
+
+Il getter `ugcMapsHref` usa `address` e non `address_link`, che `develop` preferiva quando
+valorizzato: `address_link` unisce con `+` per pre-codificare gli spazi, ma `encodeURIComponent`
+trasforma quei `+` in `%2B`, cioè in un più letterale. È la stessa ragione per cui `address_link` è
+fra i follow-up.
+
+I tre ripristini hanno ora uno spec ciascuno in `poi-popup.component.spec.ts`: indirizzo derivato,
+quota a schermo, link OSM con `target="_blank"`. Erano il punto scoperto — il ramo UGC aveva solo i
+tre test di instradamento, e nessuno guardava dentro.
+
 ## La seconda review, e cosa ha corretto
 
 Rieseguita `wm-skills:wm-review-ticket` dopo i tre fix. Le correzioni sono state verificate una per

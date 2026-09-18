@@ -98,6 +98,45 @@ describe('PoiPopupComponent — instradamento EC/UGC', () => {
       .toBeNull();
   });
 
+  // Il ramo UGC non passa dal componente condiviso, quindi tutto ciò che su develop stava nel
+  // markup comune deve restare qui: l'indirizzo derivato dai campi `addr_*`, la quota e il link
+  // OpenStreetMap. Sono spariti una volta nello split EC/UGC e li ha trovati una review esterna.
+  describe('il ramo UGC conserva quello che aveva su develop', () => {
+    it('deriva address e address_link dai campi addr_*', () => {
+      fixture.componentInstance.setPoi = {
+        ...UGC_POI,
+        properties: {...UGC_POI.properties, addr_locality: 'Pisa', addr_street: 'Via Roma 1'},
+      };
+
+      expect(fixture.componentInstance.poiProperties.address).toBe('Pisa, Via Roma 1');
+      expect(fixture.componentInstance.ugcMapsHref).toContain('Pisa');
+    });
+
+    it('mostra la quota', () => {
+      fixture.componentInstance.setPoi = {
+        ...UGC_POI,
+        properties: {...UGC_POI.properties, ele: 1029},
+      };
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent)
+        .withContext('la quota deve comparire anche sui POI UGC')
+        .toContain('1029');
+    });
+
+    it('mostra il link OpenStreetMap, in una scheda nuova', () => {
+      fixture.componentInstance.setPoi = {
+        ...UGC_POI,
+        properties: {...UGC_POI.properties, osm_url: 'https://www.openstreetmap.org/node/42'},
+      };
+      fixture.detectChanges();
+
+      const link = fixture.nativeElement.querySelector('a[href*="openstreetmap"]');
+      expect(link).withContext('il link OSM deve esserci').not.toBeNull();
+      expect(link.getAttribute('target')).toBe('_blank');
+    });
+  });
+
   it('monta wm-ugc-medias per un POI UGC', () => {
     fixture.componentInstance.setPoi = UGC_POI;
     fixture.detectChanges();

@@ -25,6 +25,10 @@ Il secondo import sembra ridondante e non lo è: `@ionic/angular/css/core.css` d
 `--ion-color-*` su `:root` con la stessa specificità, quindi senza una dichiarazione successiva
 vince lui e il primary dell'istanza non raggiunge i componenti Ionic.
 
+Le variabili non sono però l'unica personalizzazione per istanza: alcune app hanno anche un foglio
+di stile proprio, con selettori veri, iniettato a runtime — sta in
+[css-custom-per-istanza.md](css-custom-per-istanza.md).
+
 ## Perché così
 
 - **La derivazione sta nel foglio di stile, non nel codice** (oc:8406): `_setGlobalCSS` applica

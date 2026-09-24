@@ -70,6 +70,7 @@ Gli spec dei submodule **non girano da qui**: ognuno ha il proprio setup nel pro
 | Mappa a tre fasce | Larghezze di home, mappa e dettaglio POI, e perché il dettaglio comincia sotto i controlli | oc:8406 | [docs/knowledge/mappa-a-tre-fasce.md](docs/knowledge/mappa-a-tre-fasce.md) |
 | Tema e colori | Come il primary dell'istanza arriva ai componenti Ionic, e perché `variables.scss` è importato due volte | oc:8406 | [docs/knowledge/tema-e-colori.md](docs/knowledge/tema-e-colori.md) |
 | Variante `camminiditalia` | La configuration Angular, `npm start` che la sceglie da sé, i tre script di deploy | oc:8512 | [docs/knowledge/variante-camminiditalia.md](docs/knowledge/variante-camminiditalia.md) |
+| CSS custom per istanza | I sei file di `src/theme/`, il `<link>` costruito a runtime, e perché una rinomina li scollega in silenzio | oc:8613 | [docs/knowledge/css-custom-per-istanza.md](docs/knowledge/css-custom-per-istanza.md) |
 
 ## Test E2E con Cypress
 
@@ -83,5 +84,6 @@ cattura delle fixture, template, `visitWithPrivacy` — sta nel submodule che qu
 Stanno in `.claude/rules/`, un file per soggetto, con il frontmatter `paths:` che le carica quando
 si toccano i file corrispondenti: `test-e-spec` (la doppia registrazione di un nuovo spec),
 `angular-config` (una configuration va dichiarata sia in `build` sia in `serve`, e i due script
-gemelli di `webmapp-app`) e `cypress-e2e` (`privacy-accepted` in `onBeforeLoad`, quale spec gira
-in CI).
+gemelli di `webmapp-app`), `cypress-e2e` (`privacy-accepted` in `onBeforeLoad`, quale spec gira
+in CI) e `css-per-istanza` (rinominare un selettore scollega il CSS di un cliente senza che nulla
+lo segnali, e un figlio flex senza `order` risale in cima).

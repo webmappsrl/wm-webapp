@@ -61,11 +61,15 @@ l'ha solo sulla mobile.
   "Informazioni" era finito sotto al nome dopo che oc:8406 aveva rinominato il wrapper che il CSS
   dell'app 75 prendeva di mira.
 
-## Stato degli orfani in questo repo (oc:8613)
+## Stato dei selettori inerti in questo repo (oc:8613)
 
-L'audit dei sei file ha trovato selettori che non combaciano più con nessun elemento o classe del
-codice. **Nessuno è stato causato da oc:8406**: verificati uno per uno, sono assenti anche su
-`develop`.
+**L'esito dell'audit è che oc:8406 non ha scollegato niente su questo repo.** Verificati uno per
+uno, i selettori che non combaciano sono assenti anche su `develop`: non c'è nessuna regressione da
+correggere.
+
+Quello che l'audit ha rilevato è un'altra cosa, e va letta come tale: nei temi ci sono regole
+**inerti**, cioè che non agiscono e con ogni evidenza non agivano già prima. Non è qualcosa che
+funzionava e si è rotto.
 
 Nei quattro file identici, uno solo e puramente estetico:
 
@@ -73,7 +77,10 @@ Nei quattro file identici, uno solo e puramente estetico:
 |---|---|
 | `webmapp-search` | `webmapp-search-box` |
 
-In `geohub/29.css` e `geohub/33.css`, sul dettaglio traccia:
+In `geohub/29.css` e `geohub/33.css`, sul dettaglio traccia, dove la quota è tutt'altro che
+marginale: delle **20 regole `order` in tutto, 12 sono inerti** — 7 su 11 in FIE, 5 su 9 in CAI
+Parma. In entrambi i file reggono solo `wm-slope-chart`, `.wm-track-details-download`,
+`.wm-track-details-track-related-poi` e `.wm-alert`.
 
 | Orfano | Oggi | `order` in 29 | `order` in 33 |
 |---|---|---|---|

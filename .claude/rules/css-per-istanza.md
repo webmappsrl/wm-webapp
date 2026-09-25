@@ -64,3 +64,11 @@ prodotti** (oc:8613).
   selettori reali e marca orfano *tutto*; se il conteggio è fuori scala, è rotto lo strumento. Spoglia
   i file dai commenti prima di estrarre, e per le classi ricorda che una ricerca per sottostringa fa
   sembrare vivo `webmapp-search` solo perché esiste `webmapp-search-box`.
+
+- **Conta i file prima di fidarti del risultato.** Una glob che non trova niente non protesta: se un
+  comando cerca i temi nel percorso vecchio — stavano in `src/theme/`, da oc:8613 stanno dentro
+  `wm-core` — restituisce zero, e zero orfani si legge come «tutto a posto». Prima di ogni scansione:
+
+  ```bash
+  ls src/app/shared/wm-core/projects/wm-core/src/assets/theme/*/*.css | wc -l   # deve dare 9
+  ```

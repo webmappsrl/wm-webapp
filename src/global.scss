@@ -46,7 +46,11 @@
  */
 @import './theme/variables.scss';
 .ol-zoom {
-  top: unset;
+  // Niente `top: unset` (oc:8613): map-core li mette a `top: 50%`, cioè centrati in altezza, ed è
+  // la posizione voluta. Azzerandolo scendevano in basso a destra, perché senza `top` né `bottom`
+  // l'assoluto si appoggia alla posizione statica in fondo al contenitore.
+  // `left: unset` invece serve e resta: map-core dichiara sia `left: 16px` sia `right: 20px`, e con
+  // `width: fit-content` in LTR vincerebbe `left`, portandoli sul lato sbagliato.
   left: unset !important;
   z-index: 10000;
 
@@ -109,4 +113,21 @@
  */
 webmapp-map-page wm-get-directions {
   display: none;
+}
+
+/**
+ * I tasti dello zoom restano dove li mette `map-core`, cioè centrati in altezza (oc:8613).
+ *
+ * Da quando i CSS per istanza sono condivisi, un tema scritto per l'app può spostarli anche qui:
+ * `geohub/75.css` dichiara `wm-map .map-container .ol-zoom { top: unset; bottom: 50px }`, che
+ * sull'app ha senso — lì sotto c'è la tab bar e il foglio dei dettagli sale dal basso — e qui no,
+ * perché li manda in un angolo sotto al pannello.
+ *
+ * È una scelta di prodotto e non del cliente, come per "Ottieni indicazioni": sulla webapp quei
+ * tasti stanno nel loro posto di default per tutte le app. La catena è più lunga di quella del tema
+ * e porta `!important` perché è l'unico modo di battere un `!important` di pari specificità.
+ */
+webmapp-map-page wm-map .map-container .ol-zoom {
+  top: 50% !important;
+  bottom: unset !important;
 }

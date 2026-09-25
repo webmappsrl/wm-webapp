@@ -62,8 +62,6 @@ export class MapPage {
     );
   }
 
-  next(): void {}
-
   openGeohub(): void {
     this.ecTrack$.pipe(take(1)).subscribe(track => {
       const id = track && track.properties && track.properties.id;
@@ -77,8 +75,6 @@ export class MapPage {
   openPopup(popup: any): void {
     this.homeCmp.popup$.next(popup);
   }
-
-  prev(): void {}
 
   reloadCustomTrack(): void {
     this._store.dispatch(currentCustomTrackAction({currentCustomTrack: null}));

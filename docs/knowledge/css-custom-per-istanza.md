@@ -1,0 +1,185 @@
+# CSS custom per istanza
+
+Il foglio di stile che una singola app si porta dietro, dove vive e perché rinominare un selettore
+condiviso lo scollega senza che nulla lo segnali.
+
+## Come funziona oggi
+
+Oltre alle variabili di tema — quelle stanno in [tema-e-colori.md](tema-e-colori.md) — ogni app può
+avere **un foglio di stile tutto suo**, con selettori veri. Lo inietta `wm-core`, in
+`meta.component.ts:50`:
+
+```ts
+this._renderer.setProperty(styleLink, 'href', `theme/${shardName}/${appId}.css`);
+this._renderer.setProperty(styleLink, 'id', 'client-theme');
+```
+
+Il `<link id="client-theme">` finisce in fondo al `<head>`, quindi vince sui fogli del bundle a
+parità di specificità. Il percorso è costruito, non dichiarato: **un'app senza quel file riceve
+semplicemente un 404 e non ha nessuna personalizzazione**. Non c'è elenco da tenere aggiornato, e
+non c'è errore quando il file manca.
+
+I file stanno in **`wm-core`**, sotto `projects/wm-core/src/assets/theme/<shardName>/<appId>.css`, e
+questo repo li pubblica con una voce di `assets` in `angular.json` che punta lì con
+`output: "theme"` — lo stesso schema già usato per `map-core/src/assets`. Sono **nove**, per otto
+app, e li serve anche `webmapp-app` con una voce identica:
+
+| App | Shard | File | Regole `order` | Cosa tocca |
+|---|---|---|---|---|
+| Federazione Italiana Escursionismo (29) | `geohub` | `geohub/29.css` | 11 | dettaglio traccia |
+| Sentieri CAI Parma (33) | `geohub` | `geohub/33.css` | 9 | dettaglio traccia |
+| Sardegna Sentieri (32) | `geohub` | `geohub/32.css` | — | filtri, ricerca, box della home |
+| Forestas (1) | `forestas`, `forestasdev`, `forestasuat` | `forestas/1.css` e i due gemelli | — | come sopra |
+| Ville e Giardini Medicei (75) | `geohub` | `geohub/75.css` | 26 | dettaglio POI, home, filtri |
+| Cammini d'Italia (1) | `camminiditalia`, `camminiditaliadev` | `camminiditalia/1.css` e il gemello | — | home |
+
+I quattro file senza `order` hanno lo **stesso md5** (`4312f5d8…`): si leggono e si correggono una
+volta sola.
+
+**Prima di oc:8613 i file stavano nei due prodotti, in insiemi disgiunti**: sei in
+`wm-webapp/src/theme/`, tre in `webmapp-app/core/src/theme/`, e nessuna app li aveva da entrambe le
+parti. La conseguenza era che la stessa istanza si vedeva personalizzata su una piattaforma e di
+default sull'altra — Ville e Giardini Medicei aveva il suo CSS solo sull'app, e sulla webapp
+`theme/geohub/75.css` rispondeva 404. Ora entrambi i prodotti servono tutti e nove.
+
+## Perché così
+
+- **Un `<link>` costruito a runtime, non un `styles` di `angular.json`** : il bundle web è uno solo
+  e multi-tenant — `app.geohub.webmapp.it` serve tutti gli shard e tutte le app, con lo shard
+  deciso a runtime dall'hostname — quindi una personalizzazione per app non può essere compilata
+  dentro. L'unica alternativa sarebbe un bundle per cliente, che è quello che si fa solo per
+  `camminiditalia`, e solo perché lì servono `fileReplacements`.
+
+- **L'`order` di flexbox è il modo con cui queste app riordinano le sezioni** (29 e 33):
+  `wm-track-properties` è `display: flex; flex-direction: column`, quindi un `order` sul figlio
+  giusto sposta una sezione senza toccare il markup condiviso. È la sola leva disponibile a chi
+  scrive il CSS del cliente: il template non è suo.
+
+- **Il prezzo di quella leva è che il CSS punta ai nostri nomi**: elementi (`wm-tab-description`) e
+  classi (`.wm-track-details-activities`) del codice condiviso. Una rinomina in `wm-core` non fa
+  fallire nessuna build e non produce nessun avviso — il selettore semplicemente non combacia più.
+
+- **Una regola che vale su entrambi i prodotti si scrive additiva, non sostitutiva** (oc:8613):
+  al selettore esistente se ne **affianca** un secondo, non lo si cambia.
+
+  ```css
+  wm-map-details wm-home-layer wm-img,      /* contenitore dell'app */
+  .details-container wm-home-layer wm-img { /* contenitore della webapp */ }
+  ```
+
+  Così il ramo del prodotto che già funzionava resta identico e la sua resa non cambia **per
+  costruzione**, senza doverlo dimostrare; l'altro prodotto entra dal ramo nuovo, e ciascuno dei due
+  resta inerte dove il suo contenitore non esiste.
+
+  Il prefisso **non è decorativo e non si può togliere**: `wm-home-layer` e `wm-status-filter` si
+  montano in due punti sull'app — dentro il pannello e dentro `wm-home` nella pagina home — e senza
+  quello scope la regola si applicherebbe anche lì. Verificato che i due punti sono vivi nello
+  stesso momento quando un layer è aperto.
+
+- **Non tutto si traduce, e va bene così** (oc:8613): sei regole del tema di Ville restano solo
+  sull'app perché dipendono da com'è fatto il suo contenitore — `padding-bottom: 90px` per la tab
+  bar che la webapp non ha, un `::after` che disegna la linguetta sopra il foglio scorrevole, e
+  quattro `:has(...)` che compensano l'altezza di `ion-card-content`. Qui `.details-container` sta a
+  `top: 0`, si apre in larghezza e non ha `border-radius`: non esiste un «sopra il pannello», e
+  l'altezza gliela dà già `--wm-poi-popup-top`. Tradurle produrrebbe una striscia fuori dal viewport
+  e dell'overflow. Il criterio è cosa **dichiara** la regola, non come si chiama il selettore.
+
+- **Un figlio flex senza `order` vale 0, e lo 0 viene prima dei valori positivi**: è la ragione per
+  cui un selettore scollegato non "perde solo il suo stile", ma **manda la sezione in cima**. È
+  esattamente il difetto che si è visto sul dettaglio POI della mobile, dove il blocco
+  "Informazioni" era finito sotto al nome dopo che oc:8406 aveva rinominato il wrapper che il CSS
+  dell'app 75 prendeva di mira.
+
+## Stato dei selettori inerti in questo repo (oc:8613)
+
+**L'esito dell'audit è che oc:8406 non ha scollegato niente su questo repo.** Verificati uno per
+uno, i selettori che non combaciano sono assenti anche su `develop`: non c'è nessuna regressione da
+correggere.
+
+Quello che l'audit ha rilevato è un'altra cosa, e va letta come tale: nei temi ci sono regole
+**inerti**, cioè che non agiscono e con ogni evidenza non agivano già prima. Non è qualcosa che
+funzionava e si è rotto.
+
+Nei quattro file identici, uno solo e puramente estetico:
+
+| Orfano | Oggi |
+|---|---|
+| `webmapp-search` | `webmapp-search-box` |
+
+In `geohub/29.css` e `geohub/33.css`, sul dettaglio traccia, dove la quota è tutt'altro che
+marginale: delle **20 regole `order` in tutto, 12 sono inerti** — 7 su 11 in FIE, 5 su 9 in CAI
+Parma. In entrambi i file reggono solo `wm-slope-chart`, `.wm-track-details-download`,
+`.wm-track-details-track-related-poi` e `.wm-alert`.
+
+| Orfano | Oggi | `order` in 29 | `order` in 33 |
+|---|---|---|---|
+| `webmapp-track-description` | `wm-tab-description` | 2 | — |
+| `wm-gallery` | `wm-tab-image-gallery` | 3 | — |
+| `.wm-track-details-related-url` | `wm-related-urls` | 4 | 7 |
+| `.wm-track-details-activities` | `wm-tab-howto` | 5 | 5 |
+| `.wm-track-details-title-technical-details` | `wm-tab-detail` | 6 | 4 |
+| `.wm-track-details-edit-geohub` | nessun bersaglio nella webapp | 10 | 9 |
+| `.webmapp-track-title` | `.wm-track-details-header` | −2 | −2 |
+| `webmapp-track-technical-data` | `wm-tab-detail` | — | — |
+| `webmapp-track-download-urls` | `wm-feature-useful-urls` | — | — |
+
+**Riagganciarli non ripristina niente, cambia la resa — e si è deciso di non farlo.** Qui non è come
+sulla mobile, dove il CSS si era scollegato con il lavoro in corso e rimetterlo a posto riportava la
+produzione com'era: questi selettori sono morti da prima di `develop`, quindi FIE e CAI Parma girano
+da tempo **senza** quegli `order`, e la loro resa attuale in produzione è quella senza. Riagganciarli
+non sarebbe un fix ma un cambio di aspetto su due app di clienti, verso un layout che nessun utente
+ha mai visto. **La baseline è lo stato attuale** (oc:8613): restano inerti e documentati.
+
+La regola generale che ne esce, e che vale per la prossima volta: **prima di riagganciare una regola,
+misurare se agganciava**. Riscrivere un selettore inerte non ripristina niente, lo attiva per la
+prima volta — ed è un errore in cui si è caduti da entrambe le parti prima di formularlo così.
+
+Tre casi non si risolvono comunque con una rinomina secca:
+
+- `.wm-track-details-edit-geohub` non ha nessun bersaglio: nella webapp quel pulsante non esiste.
+- `.wm-track-details-related-url` diventerebbe `wm-related-urls`, che è **annidato** dentro
+  `.wm-track-details-download`: l'`order` non agirebbe sul contenitore principale comunque.
+- `33.css` dichiara già `wm-tab-detail { margin-top: 15px }`, quindi la rinomina di
+  `.wm-track-details-title-technical-details` finisce sulla stessa regola e le due vanno fuse.
+
+## Cosa ha richiesto la condivisione, dal lato di questo repo
+
+Portare i temi nel core non è stato neutro: un file scritto per l'app, arrivando qui, ha chiesto
+cose che la webapp non aveva. Sono emerse tutte dal controllo visivo app per app, non dall'analisi.
+
+- **L'icon font sotto due nomi.** I due prodotti hanno sempre chiamato la propria font delle icone in
+  modo diverso — `wm` qui, `webmapp` nell'app — e finché i CSS stavano in cartelle separate la cosa
+  non emergeva. Un tema che chiede `font-family: 'webmapp'` qui non trovava niente e il glifo non
+  rendeva: è il caso della freccia sulle schede dei layer del tema 75. Risolto con un **alias
+  `@font-face`** sugli stessi file in `assets/icons/webmapp-icons/style.css`: è la stessa icona nei
+  due font (`\e985`, `.icon-fill-arrow-right`), quindi costa una dichiarazione e vale per ogni regola
+  che usi quel nome.
+
+- **Due regole di prodotto in `global.scss`.** Non tutto ciò che un tema dichiara ha senso qui, e
+  quando la differenza dipende dal prodotto e non dal cliente la decisione sta nel codice, non nel
+  tema: **"Ottieni indicazioni" resta nascosto** — avvia la navigazione assistita, che senza GPS
+  continuo non porta a niente — e **i tasti dello zoom restano dove li mette `map-core`**, centrati
+  in altezza, anche se `geohub/75.css` li manda in basso perché sull'app sotto c'è la tab bar.
+  Entrambe le regole portano il prefisso della pagina: il foglio del componente dichiara sullo stesso
+  host e viene iniettato a runtime, quindi a parità di specificità vincerebbe lui.
+
+- **Lo slot `[bottom]` di `wm-track-properties` ha un `order` esplicito** (in `wm-core`): il
+  contenitore è flex e un figlio senza `order` vale 0, quindi bastava un tema che numerasse le
+  sezioni perché il contenuto proiettato in fondo finisse in cima. Il sintomo era il pulsante
+  "Modifica" sopra l'intestazione del percorso.
+
+- **Un fondo bianco che era bianco per caso.** `geohub/32.css` dava al chip "Torna alla home"
+  `background: white` per farlo sembrare un link, e funzionava solo perché dietro c'era il pannello
+  bianco della webapp. Sull'app si vedeva come un riquadro. Ora è `transparent`, che dice quello che
+  la regola voleva dire ed è identico su entrambi.
+
+## Come ci siamo arrivati
+
+- **"Dove stanno i CSS arcodati?" senza risposta** (oc:8613, superata): la prima ricerca li aveva
+  cercati nel repo — in `global.scss`, nelle configurations di `angular.json`, in un `styles` per
+  shard — e nella configurazione dell'app servita dall'API, dove esiste solo il blocco `THEME` con
+  le variabili. In nessuno dei due posti c'era niente, e la conclusione sbagliata che se ne ricavava
+  è che la webapp non avesse personalizzazioni per app. Erano in `src/theme/` — da oc:8613 stanno in
+  `wm-core` — raggiunti da un URL
+  costruito a runtime: non c'è nessuna riga di configurazione che li nomini, quindi non si trovano
+  cercando chi li dichiara.

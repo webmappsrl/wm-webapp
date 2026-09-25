@@ -31,8 +31,26 @@
 @import '~ol-ext/dist/ol-ext.min.css';
 
 @import url(./app/theme/fonts.scss);
+
+/**
+ * variables.scss è già il primo entry di `styles` in angular.json, ma va ri-importato QUI, dopo
+ * il core di Ionic: `@ionic/angular/css/core.css` dichiara le proprie `--ion-color-*` su `:root`
+ * con la stessa specificità, quindi caricato dopo vinceva sulla riga
+ * `--ion-color-primary: var(--wm-color-primary)` e il primary dell'istanza non arrivava ai
+ * componenti Ionic. Il sintomo era un tema a due colori: le parti che leggono `--wm-color-*`
+ * seguivano il brand (la label della categoria), quelle che passano da Ionic restavano sul blu
+ * di default — icone dei contatti, bottoni. Su un'istanza con primary blu non si notava.
+ * Le variabili applicate a runtime da `_setGlobalCSS` (app.component.ts) sono solo le `--wm-*`:
+ * le `--ion-*` le deriva questo foglio, quindi l'ordine è l'unico punto in cui si può correggere.
+ * `webmapp-app` fa esattamente lo stesso in fondo al proprio global.scss.
+ */
+@import './theme/variables.scss';
 .ol-zoom {
-  top: unset;
+  // Niente `top: unset` (oc:8613): map-core li mette a `top: 50%`, cioè centrati in altezza, ed è
+  // la posizione voluta. Azzerandolo scendevano in basso a destra, perché senza `top` né `bottom`
+  // l'assoluto si appoggia alla posizione statica in fondo al contenitore.
+  // `left: unset` invece serve e resta: map-core dichiara sia `left: 16px` sia `right: 20px`, e con
+  // `width: fit-content` in LTR vincerebbe `left`, portandoli sul lato sbagliato.
   left: unset !important;
   z-index: 10000;
 
@@ -80,4 +98,36 @@
 .modal-gallery-class {
   --width: 94%;
   --height: 94%;
+}
+
+/**
+ * "Ottieni indicazioni" non si mostra sulla webapp (oc:8613). Il pulsante avvia la navigazione
+ * assistita, che ha senso nell'app nativa e non qui: senza GPS continuo non porta a niente, e
+ * lasciarlo visibile prometteva una funzione che non parte. Vale sia nel dettaglio del POI sia in
+ * quello della traccia, che sono i due punti in cui `wm-core` monta il componente.
+ *
+ * Sta qui e non in un tema per istanza perché non dipende dal cliente ma dal prodotto: riguarda
+ * tutte le app servite dalla webapp. E il selettore porta il prefisso della pagina per una ragione
+ * pratica: il foglio del componente dichiara `display: block` sullo stesso host e viene iniettato
+ * in <head> a runtime, quindi a parità di specificità vincerebbe lui.
+ */
+webmapp-map-page wm-get-directions {
+  display: none;
+}
+
+/**
+ * I tasti dello zoom restano dove li mette `map-core`, cioè centrati in altezza (oc:8613).
+ *
+ * Da quando i CSS per istanza sono condivisi, un tema scritto per l'app può spostarli anche qui:
+ * `geohub/75.css` dichiara `wm-map .map-container .ol-zoom { top: unset; bottom: 50px }`, che
+ * sull'app ha senso — lì sotto c'è la tab bar e il foglio dei dettagli sale dal basso — e qui no,
+ * perché li manda in un angolo sotto al pannello.
+ *
+ * È una scelta di prodotto e non del cliente, come per "Ottieni indicazioni": sulla webapp quei
+ * tasti stanno nel loro posto di default per tutte le app. La catena è più lunga di quella del tema
+ * e porta `!important` perché è l'unico modo di battere un `!important` di pari specificità.
+ */
+webmapp-map-page wm-map .map-container .ol-zoom {
+  top: 50% !important;
+  bottom: unset !important;
 }

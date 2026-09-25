@@ -9,19 +9,25 @@ import {
   HostListener,
   Input,
   Output,
-  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import {UntypedFormGroup} from '@angular/forms';
 import {AlertController} from '@ionic/angular';
-import {Store} from '@ngrx/store';
+import {MemoizedSelector, Store} from '@ngrx/store';
 import {LangService} from '@wm-core/localization/lang.service';
 import {confPOIFORMS, confShowEditingInline} from '@wm-core/store/conf/conf.selector';
 import {deleteUgcPoi, updateUgcPoi} from '@wm-core/store/features/ugc/ugc.actions';
-import {Media, WmFeature, WmProperties} from '@wm-types/feature';
-import {switchMap, take} from 'rxjs/operators';
+import {WmFeature, WmProperties} from '@wm-types/feature';
+import {filter, switchMap, take} from 'rxjs/operators';
 import {startDrawUgcPoi, stopDrawUgcPoi} from '@wm-core/store/user-activity/user-activity.action';
 import {currentUgcPoiDrawnGeometry} from '@wm-core/store/features/ugc/ugc.selector';
+import {
+  canNavigateRelatedPois,
+  nextRelatedPoiId,
+  prevRelatedPoiId,
+} from '@wm-core/store/features/ec/ec.selector';
+import {UrlHandlerService} from '@wm-core/services/url-handler.service';
+import {derivePoiAddress} from '@wm-core/utils/derive-poi-address';
 
 @Component({
   standalone: false,
@@ -35,72 +41,85 @@ export class PoiPopupComponent {
   @Output() closeEVT: EventEmitter<void> = new EventEmitter<void>();
   confPOIFORMS$: Observable<any[]> = this._store.select(confPOIFORMS);
   currentUgcPoiDrawnGeometry$: Observable<Point> = this._store.select(currentUgcPoiDrawnGeometry);
-  public defaultPhotoPath = '/assets/icon/no-photo.svg';
   enableEditingInline$ = this._store.select(confShowEditingInline);
-  enableGallery$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public fg: UntypedFormGroup;
   isEditing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  isEnd$: Observable<boolean>;
-  medias$: Observable<Media[]>;
-  @Output() public nextEVT: EventEmitter<void> = new EventEmitter<void>();
   public poi: WmFeature<Point> = null;
   public poiProperties: WmProperties = null;
-  @Output() public prevEVT: EventEmitter<void> = new EventEmitter<void>();
-  public slideOptions = {
-    allowTouchMove: false,
-    slidesPerView: 1,
-    slidesPerColumn: 1,
-    slidesPerGroup: 1,
-    centeredSlides: true,
-    watchSlidesProgress: true,
-    spaceBetween: 20,
-    loop: true,
-  };
-  @ViewChild('gallery') public slider: any; // TODO: Update to use Swiper directly
 
   constructor(
     private _store: Store,
     private _alertCtrl: AlertController,
     private _langSvc: LangService,
     private _cdr: ChangeDetectorRef,
+    private _urlHandlerSvc: UrlHandlerService,
   ) {}
 
   @Input('poi') public set setPoi(poi: any) {
     if (poi != null && poi.properties != null) {
       this.poi = poi;
-      this.medias$ = undefined;
-      const prop: {[key: string]: any} = {};
-      try {
-        prop.address =
-          poi.properties.addr_complete ??
-          [poi.properties.addr_locality, poi.properties.addr_street]
-            .filter(f => f != null)
-            .join(', ');
-      } catch (_) {
-        prop.address = '';
-      }
-      try {
-        prop.address_link = [poi.properties.addr_locality, poi.properties.addr_street]
-          .filter(f => f != null)
-          .join('+');
-      } catch (_) {
-        prop.address_link = '';
-      }
-      if (poi.properties.related_url != null) {
-        if (poi.properties.related_url[''] === null) {
-          delete poi.properties.related_url[''];
-        }
-        prop.related_url =
-          Object.keys(poi.properties.related_url).length === 0 ? null : poi.properties.related_url;
-      }
-
-      this.poiProperties = {...poi.properties, ...prop};
-      this.enableGallery$.next(
-        this.poiProperties?.feature_image != null ||
-          (this.poiProperties?.image_gallery != null &&
-            this.poiProperties?.image_gallery?.length > 0),
-      );
+      // L'indirizzo va derivato anche qui, non solo in `wm-poi-properties`: il ramo UGC non passa
+      // dal componente condiviso, e su `develop` questo setter componeva `address` da
+      // `addr_complete`/`addr_locality`/`addr_street` per **tutti** i POI. Senza, un POI UGC che
+      // abbia solo i campi `addr_*` perderebbe la riga dell'indirizzo e il link a Maps.
+      // `derivePoiAddress` è la stessa funzione che usa il condiviso: una sola implementazione,
+      // non due che possono divergere.
+      this._aggiornaProperties(poi);
     }
+  }
+
+  /**
+   * L'unico punto in cui si costruisce `poiProperties`. Esiste perché la derivazione
+   * dell'indirizzo va applicata **sempre**, e averla in un posto solo evita che i due percorsi
+   * divergano: era già successo: il setter la faceva, `updatePoi()` no, e dopo un salvataggio
+   * l'indirizzo di un POI UGC spariva.
+   */
+  private _aggiornaProperties(poi: WmFeature<Point>): void {
+    const {address} = derivePoiAddress(poi?.properties as any);
+    this.poiProperties = {...poi?.properties, address} as any;
+  }
+
+  /**
+   * Link Google Maps per il ramo UGC. Sostituisce l'interpolazione inline che aveva una graffa di
+   * chiusura in eccesso (`{{...}}}`): quella finiva letteralmente nell'URL, che nel DOM risultava
+   * `daddr=…}&navigate=yes`. Per i POI EC il link lo produce `wm-address` in wm-core.
+   *
+   * Usa `address` e non `address_link`, che `develop` preferiva quando valorizzato: `address_link`
+   * unisce con `+` per pre-codificare gli spazi, ma `encodeURIComponent` trasforma poi quei `+` in
+   * `%2B`, cioè in un più letterale dentro l'indirizzo. Partendo da `address` gli spazi diventano
+   * `%20`, che è la forma corretta.
+   */
+  get ugcMapsHref(): string {
+    const destination = this.poiProperties?.address ?? '';
+    return `https://www.google.com/maps?daddr=${encodeURIComponent(destination)}&navigate=yes`;
+  }
+
+  /**
+   * `true` solo se `related_url` porta almeno un link utilizzabile. Sostituisce la normalizzazione
+   * che il setter faceva prima — cancellava la chiave `''` e forzava `null` sull'oggetto vuoto
+   * **mutando un oggetto dello store**: qui la stessa decisione è presa in lettura, senza toccare
+   * lo stato.
+   *
+   * Il campo arriva dal backend in tre forme, conseguenza deterministica di `EcPoi::getJson()`
+   * (`geohub/app/Models/EcPoi.php:282`), che lo rimuove solo se `!is_array && empty`: `false` e
+   * `""` spariscono dal payload, una stringa non vuota sopravvive. Misurate sull'app 29: 752
+   * oggetti `{label: url}`, 76 stringhe, 3 array. `Object.entries` su una stringa produrrebbe
+   * coppie indice/carattere e restituirebbe `true` per caso, quindi le forme sono distinte.
+   */
+  get hasRelatedUrls(): boolean {
+    const urls = this.poiProperties?.related_url;
+    if (urls == null) {
+      return false;
+    }
+    if (typeof urls === 'string') {
+      return urls.trim() !== '';
+    }
+    if (Array.isArray(urls)) {
+      return urls.some(url => typeof url === 'string' && url.trim() !== '');
+    }
+    return Object.entries(urls).some(
+      ([label, url]) => label.trim() !== '' && typeof url === 'string' && url.trim() !== '',
+    );
   }
 
   editUgcPoi(): void {
@@ -138,18 +157,80 @@ export class PoiPopupComponent {
       .subscribe();
   }
 
-  @HostListener('document:keydown.ArrowLeft')
-  handleArrowLeft(): void {
-    this.prevEVT.emit();
+  @HostListener('document:keydown.ArrowLeft', ['$event'])
+  handleArrowLeft(event: KeyboardEvent): void {
+    if (this._staScrivendo(event)) {
+      return;
+    }
+    this._goToRelatedPoi(prevRelatedPoiId);
   }
 
-  @HostListener('document:keydown.ArrowRight')
-  handleArrowRight(): void {
-    this.nextEVT.emit();
+  @HostListener('document:keydown.ArrowRight', ['$event'])
+  handleArrowRight(event: KeyboardEvent): void {
+    if (this._staScrivendo(event)) {
+      return;
+    }
+    this._goToRelatedPoi(nextRelatedPoiId);
   }
 
-  @HostListener('document:keydown.Escape')
-  handleEscape(): void {
+  /**
+   * `true` se il tasto è arrivato mentre si scrive in un campo di testo. Gli handler delle frecce
+   * ascoltano su `document`, quindi ricevono anche i tasti premuti nella searchbar della home o
+   * nel form UGC: lì le frecce servono a muovere il cursore, e far cambiare POI sotto le mani
+   * sarebbe una sorpresa. Prima di oc:8406 il problema non si poneva perché `next()`/`prev()`
+   * erano metodi vuoti.
+   */
+  private _staScrivendo(event: KeyboardEvent): boolean {
+    const target = event?.target as HTMLElement | null;
+    if (target == null) {
+      return false;
+    }
+    const tag = target.tagName?.toLowerCase();
+    return (
+      tag === 'input' ||
+      tag === 'textarea' ||
+      tag === 'ion-input' ||
+      tag === 'ion-textarea' ||
+      tag === 'ion-searchbar' ||
+      target.isContentEditable === true
+    );
+  }
+
+  /**
+   * Naviga al POI correlato indicato dal selettore passato, con la stessa semantica di
+   * `WmRelatedPoisNavigatorComponent.poiNext()`/`poiPrev()`: la logica di "quale è il prossimo"
+   * vive nel selettore, quindi qui viene riusata e non riscritta — evitando sia la duplicazione
+   * sia un `@ViewChild` su un componente di libreria.
+   *
+   * Il gate è `canNavigateRelatedPois`, **lo stesso selettore che usa il navigatore**: si sta
+   * mostrando un POI correlato e ce n'è più di uno. Averne uno solo è il punto — due gate scritti
+   * separatamente divergono, ed era già successo due volte: le frecce navigavano dove i pulsanti
+   * erano nascosti, prima con l'indice negativo e poi con `ec_related_poi` rimasto nell'URL dopo
+   * aver scelto un altro POI dalla mappa.
+   */
+  private _goToRelatedPoi(selector: MemoizedSelector<any, number | null>): void {
+    this._store
+      .select(canNavigateRelatedPois)
+      .pipe(
+        take(1),
+        filter(puoNavigare => puoNavigare),
+        switchMap(() => this._store.select(selector).pipe(take(1))),
+      )
+      .subscribe(id => {
+        if (id != null) {
+          this._urlHandlerSvc.updateURL({ec_related_poi: id});
+        }
+      });
+  }
+
+  @HostListener('document:keydown.Escape', ['$event'])
+  handleEscape(event: KeyboardEvent): void {
+    // Stessa guardia delle frecce: `Escape` dentro un campo di testo annulla l'input, non deve
+    // chiudere il dettaglio — e sul ramo UGC chiuderlo mentre si compila il form butterebbe via
+    // le modifiche.
+    if (this._staScrivendo(event)) {
+      return;
+    }
     this.closeEVT.emit();
   }
 
@@ -177,7 +258,7 @@ export class PoiPopupComponent {
       this._store.dispatch(stopDrawUgcPoi());
       this.isEditing$.next(false);
       this.poi = poi;
-      this.poiProperties = {...poi.properties} as any;
+      this._aggiornaProperties(poi);
       this._cdr.detectChanges();
     }
   }

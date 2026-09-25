@@ -28,13 +28,13 @@
         </ion-item>
       </ng-container>
       <ion-button
-        class="wm-edit-geohub"
+        class="wm-edit-button"
         expand="block"
         *ngIf="enableEditingInline$|async"
         (click)="openGeohub()"
         bottom
       >
-        {{'edit geohub'|wmtrans}}
+        {{'edit'|wmtrans}}
       </ion-button>
     </wm-track-properties>
 
@@ -55,7 +55,5 @@
   *ngIf="poi$|async as poi"
   [poi]="poi"
   (closeEVT)="unselectPOI()"
-  (nextEVT)="next()"
-  (prevEVT)="prev()"
 ></webmapp-poi-popup>
 <wm-geobox-map (openPopupEVT)="openPopup($event)"> </wm-geobox-map>

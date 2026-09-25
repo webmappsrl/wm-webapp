@@ -53,6 +53,27 @@
   font-display: block;
 }
 
+/*
+ * Lo stesso font sotto il nome che usa webmapp-app (oc:8613). I due prodotti hanno sempre chiamato
+ * la propria icon font in modo diverso — 'wm' qui, 'webmapp' nell'app — e finché i CSS per istanza
+ * stavano in due cartelle separate la cosa non emergeva. Ora quei file sono condivisi da wm-core, e
+ * un tema scritto per l'app chiede `font-family: 'webmapp'`: qui quel nome non esisteva, quindi il
+ * glifo cadeva su un font qualsiasi e non si vedeva niente. È il caso della freccia sulle schede dei
+ * layer del tema 75 (`\e985`, cioè `.icon-fill-arrow-right`), presente e identica in entrambi i font.
+ * L'alias costa una dichiarazione e vale per ogni regola, presente e futura, che usi quel nome.
+ */
+@font-face {
+  font-family: 'webmapp';
+  src:  url('fonts/wm.eot?jqcblt');
+  src:  url('fonts/wm.eot?jqcblt#iefix') format('embedded-opentype'),
+    url('fonts/wm.ttf?jqcblt') format('truetype'),
+    url('fonts/wm.woff?jqcblt') format('woff'),
+    url('fonts/wm.svg?jqcblt#wm') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
 #splash-screen {
   position: fixed;
   width: 100%;

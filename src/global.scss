@@ -95,3 +95,18 @@
   --width: 94%;
   --height: 94%;
 }
+
+/**
+ * "Ottieni indicazioni" non si mostra sulla webapp (oc:8613). Il pulsante avvia la navigazione
+ * assistita, che ha senso nell'app nativa e non qui: senza GPS continuo non porta a niente, e
+ * lasciarlo visibile prometteva una funzione che non parte. Vale sia nel dettaglio del POI sia in
+ * quello della traccia, che sono i due punti in cui `wm-core` monta il componente.
+ *
+ * Sta qui e non in un tema per istanza perché non dipende dal cliente ma dal prodotto: riguarda
+ * tutte le app servite dalla webapp. E il selettore porta il prefisso della pagina per una ragione
+ * pratica: il foglio del componente dichiara `display: block` sullo stesso host e viene iniettato
+ * in <head> a runtime, quindi a parità di specificità vincerebbe lui.
+ */
+webmapp-map-page wm-get-directions {
+  display: none;
+}

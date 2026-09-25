@@ -70,7 +70,7 @@ Gli spec dei submodule **non girano da qui**: ognuno ha il proprio setup nel pro
 | Mappa a tre fasce | Larghezze di home, mappa e dettaglio POI, e perché il dettaglio comincia sotto i controlli | oc:8406 | [docs/knowledge/mappa-a-tre-fasce.md](docs/knowledge/mappa-a-tre-fasce.md) |
 | Tema e colori | Come il primary dell'istanza arriva ai componenti Ionic, e perché `variables.scss` è importato due volte | oc:8406 | [docs/knowledge/tema-e-colori.md](docs/knowledge/tema-e-colori.md) |
 | Variante `camminiditalia` | La configuration Angular, `npm start` che la sceglie da sé, i tre script di deploy | oc:8512 | [docs/knowledge/variante-camminiditalia.md](docs/knowledge/variante-camminiditalia.md) |
-| CSS custom per istanza | I sei file di `src/theme/`, il `<link>` costruito a runtime, e perché una rinomina li scollega in silenzio | oc:8613 | [docs/knowledge/css-custom-per-istanza.md](docs/knowledge/css-custom-per-istanza.md) |
+| CSS custom per istanza | I nove file condivisi da `wm-core`, il `<link>` costruito a runtime, e perché una rinomina li scollega in silenzio | oc:8613 | [docs/knowledge/css-custom-per-istanza.md](docs/knowledge/css-custom-per-istanza.md) |
 
 ## Test E2E con Cypress
 

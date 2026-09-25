@@ -19,8 +19,10 @@ parità di specificità. Il percorso è costruito, non dichiarato: **un'app senz
 semplicemente un 404 e non ha nessuna personalizzazione**. Non c'è elenco da tenere aggiornato, e
 non c'è errore quando il file manca.
 
-I file stanno in `src/theme/<shardName>/<appId>.css`, serviti perché `src/theme` è fra gli `assets`
-di `angular.json`. Sono **sei**, per cinque app:
+I file stanno in **`wm-core`**, sotto `projects/wm-core/src/assets/theme/<shardName>/<appId>.css`, e
+questo repo li pubblica con una voce di `assets` in `angular.json` che punta lì con
+`output: "theme"` — lo stesso schema già usato per `map-core/src/assets`. Sono **nove**, per otto
+app, e li serve anche `webmapp-app` con una voce identica:
 
 | App | Shard | File | Regole `order` | Cosa tocca |
 |---|---|---|---|---|
@@ -28,15 +30,17 @@ di `angular.json`. Sono **sei**, per cinque app:
 | Sentieri CAI Parma (33) | `geohub` | `geohub/33.css` | 9 | dettaglio traccia |
 | Sardegna Sentieri (32) | `geohub` | `geohub/32.css` | — | filtri, ricerca, box della home |
 | Forestas (1) | `forestas`, `forestasdev`, `forestasuat` | `forestas/1.css` e i due gemelli | — | come sopra |
+| Ville e Giardini Medicei (75) | `geohub` | `geohub/75.css` | 26 | dettaglio POI, home, filtri |
+| Cammini d'Italia (1) | `camminiditalia`, `camminiditaliadev` | `camminiditalia/1.css` e il gemello | — | home |
 
 I quattro file senza `order` hanno lo **stesso md5** (`4312f5d8…`): si leggono e si correggono una
 volta sola.
 
-**Il meccanismo è condiviso, i file no.** Anche `webmapp-app` inietta `theme/<shard>/<appId>.css`,
-ma legge dal proprio `src/theme/`, che contiene `camminiditalia/1.css`, `camminiditaliadev/1.css` e
-`geohub/75.css`. Nessun file compare in entrambi i prodotti, quindi **la stessa app può avere un CSS
-custom su una piattaforma e non sull'altra**: è il caso di Ville e Giardini Medicei (75), che ce
-l'ha solo sulla mobile.
+**Prima di oc:8613 i file stavano nei due prodotti, in insiemi disgiunti**: sei in
+`wm-webapp/src/theme/`, tre in `webmapp-app/core/src/theme/`, e nessuna app li aveva da entrambe le
+parti. La conseguenza era che la stessa istanza si vedeva personalizzata su una piattaforma e di
+default sull'altra — Ville e Giardini Medicei aveva il suo CSS solo sull'app, e sulla webapp
+`theme/geohub/75.css` rispondeva 404. Ora entrambi i prodotti servono tutti e nove.
 
 ## Perché così
 
@@ -54,6 +58,31 @@ l'ha solo sulla mobile.
 - **Il prezzo di quella leva è che il CSS punta ai nostri nomi**: elementi (`wm-tab-description`) e
   classi (`.wm-track-details-activities`) del codice condiviso. Una rinomina in `wm-core` non fa
   fallire nessuna build e non produce nessun avviso — il selettore semplicemente non combacia più.
+
+- **Una regola che vale su entrambi i prodotti si scrive additiva, non sostitutiva** (oc:8613):
+  al selettore esistente se ne **affianca** un secondo, non lo si cambia.
+
+  ```css
+  wm-map-details wm-home-layer wm-img,      /* contenitore dell'app */
+  .details-container wm-home-layer wm-img { /* contenitore della webapp */ }
+  ```
+
+  Così il ramo del prodotto che già funzionava resta identico e la sua resa non cambia **per
+  costruzione**, senza doverlo dimostrare; l'altro prodotto entra dal ramo nuovo, e ciascuno dei due
+  resta inerte dove il suo contenitore non esiste.
+
+  Il prefisso **non è decorativo e non si può togliere**: `wm-home-layer` e `wm-status-filter` si
+  montano in due punti sull'app — dentro il pannello e dentro `wm-home` nella pagina home — e senza
+  quello scope la regola si applicherebbe anche lì. Verificato che i due punti sono vivi nello
+  stesso momento quando un layer è aperto.
+
+- **Non tutto si traduce, e va bene così** (oc:8613): sei regole del tema di Ville restano solo
+  sull'app perché dipendono da com'è fatto il suo contenitore — `padding-bottom: 90px` per la tab
+  bar che la webapp non ha, un `::after` che disegna la linguetta sopra il foglio scorrevole, e
+  quattro `:has(...)` che compensano l'altezza di `ion-card-content`. Qui `.details-container` sta a
+  `top: 0`, si apre in larghezza e non ha `border-radius`: non esiste un «sopra il pannello», e
+  l'altezza gliela dà già `--wm-poi-popup-top`. Tradurle produrrebbe una striscia fuori dal viewport
+  e dell'overflow. Il criterio è cosa **dichiara** la regola, non come si chiama il selettore.
 
 - **Un figlio flex senza `order` vale 0, e lo 0 viene prima dei valori positivi**: è la ragione per
   cui un selettore scollegato non "perde solo il suo stile", ma **manda la sezione in cima**. È
@@ -114,6 +143,7 @@ Tre casi non si risolvono comunque con una rinomina secca:
   cercati nel repo — in `global.scss`, nelle configurations di `angular.json`, in un `styles` per
   shard — e nella configurazione dell'app servita dall'API, dove esiste solo il blocco `THEME` con
   le variabili. In nessuno dei due posti c'era niente, e la conclusione sbagliata che se ne ricavava
-  è che la webapp non avesse personalizzazioni per app. Erano in `src/theme/`, raggiunti da un URL
+  è che la webapp non avesse personalizzazioni per app. Erano in `src/theme/` — da oc:8613 stanno in
+  `wm-core` — raggiunti da un URL
   costruito a runtime: non c'è nessuna riga di configurazione che li nomini, quindi non si trovano
   cercando chi li dichiara.

@@ -69,6 +69,12 @@ jobs:
             echo '{ "POSTHOG_KEY": "", "POSTHOG_HOST": "" }' > src/app/config/posthog.json
           fi
 
+      # I temi per istanza stanno in wm-core e nessuna build li referenzia a compile-time: se il
+      # submodule è a un commit che li precede, `ionic build` riesce e la preview esce senza i CSS
+      # dei clienti, in silenzio. Questo passo trasforma quel guasto in un fallimento (oc:8613).
+      - name: Check per-instance themes
+        run: node scripts/check-themes.js
+
       - name: Build
         run: ionic build
 

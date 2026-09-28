@@ -133,8 +133,9 @@
       <ng-template #ecBody>
         <wm-poi-properties></wm-poi-properties>
         <div class="edit-container">
-          <!-- Etichetta generica, non "modifica geohub": l'editor di backend dipende dallo shard a
-               cui l'istanza è collegata, e il nome di quello attuale non deve finire a schermo. -->
+          <!-- Etichetta generica, non "modifica geohub": il nome del backend non deve finire a
+               schermo. L'host però è fisso, `geohub.webmapp.it` per ogni shard — vedi
+               `geohubEditUrl` — e il commento di prima lasciava intendere il contrario. -->
           <ion-button class="edit" *ngIf="enableEditingInline$|async" (click)="openGeohub()">
             {{"edit" | wmtrans}}</ion-button
           >

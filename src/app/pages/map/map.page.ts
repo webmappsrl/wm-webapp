@@ -23,6 +23,7 @@ import {poi, track} from '@wm-core/store/features/features.selector';
 import {homeOpened} from '@wm-core/store/user-activity/user-activity.selector';
 import {WmHomeComponent} from '@wm-core/home/home.component';
 import {WmSlopeChartHoverElements} from '@wm-types/slope-chart';
+import {geohubEditUrl} from 'src/app/functions/geohub-editor';
 const menuOpenLeft = 400;
 const initPadding = [100, 100, 100, menuOpenLeft];
 const initMenuOpened = true;
@@ -66,8 +67,7 @@ export class MapPage {
     this.ecTrack$.pipe(take(1)).subscribe(track => {
       const id = track && track.properties && track.properties.id;
       if (id != null) {
-        const url = `https://geohub.webmapp.it/resources/ec-tracks/${id}/edit?viaResource&viaResourceId&viaRelationship`;
-        window.open(url, '_blank').focus();
+        window.open(geohubEditUrl('ec-tracks', id), '_blank').focus();
       }
     });
   }

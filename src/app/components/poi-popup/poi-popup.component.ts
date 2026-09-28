@@ -30,6 +30,7 @@ import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {derivePoiAddress} from '@wm-core/utils/derive-poi-address';
 import {buildMapsHref} from '@wm-core/address/maps-href';
 import {normalizeRelatedUrls} from '@wm-core/related-urls/related-urls.component';
+import {geohubEditUrl} from 'src/app/functions/geohub-editor';
 
 @Component({
   standalone: false,
@@ -60,12 +61,6 @@ export class PoiPopupComponent {
   @Input('poi') public set setPoi(poi: any) {
     if (poi != null && poi.properties != null) {
       this.poi = poi;
-      // L'indirizzo va derivato anche qui, non solo in `wm-poi-properties`: il ramo UGC non passa
-      // dal componente condiviso, e su `develop` questo setter componeva `address` da
-      // `addr_complete`/`addr_locality`/`addr_street` per **tutti** i POI. Senza, un POI UGC che
-      // abbia solo i campi `addr_*` perderebbe la riga dell'indirizzo e il link a Maps.
-      // `derivePoiAddress` è la stessa funzione che usa il condiviso: una sola implementazione,
-      // non due che possono divergere.
       this._refreshProperties(poi);
     }
   }
@@ -191,9 +186,13 @@ export class PoiPopupComponent {
    * e il modale — che legge dallo stesso store con lo stesso `gallery_index` — passava a
    * un'immagine di un altro POI o restava vuoto se il nuovo ne aveva meno. Prima di oc:8406 non
    * succedeva perché `next()`/`prev()` erano metodi vuoti in `map.page.ts` (oc:8613).
+   *
+   * Valgono allo stesso modo `ion-alert` e `ion-popover`: con l'alert di conferma dell'eliminazione
+   * di un UGC aperto, Escape chiudeva anche il popup sotto — buttando via il form — e con un
+   * popover aperto le frecce cambiavano il POI dietro.
    */
   private _isTypingOrAdjusting(event: KeyboardEvent): boolean {
-    if (document.querySelector('ion-modal') != null) {
+    if (document.querySelector('ion-modal, ion-alert, ion-popover') != null) {
       return true;
     }
     const target = event?.target as HTMLElement | null;
@@ -248,8 +247,7 @@ export class PoiPopupComponent {
   openGeohub(): void {
     const id = this.poiProperties != null && this.poiProperties.id;
     if (id != null) {
-      const url = `https://geohub.webmapp.it/resources/ec-pois/${id}/edit?viaResource&viaResourceId&viaRelationship`;
-      window.open(url, '_blank').focus();
+      window.open(geohubEditUrl('ec-pois', id), '_blank').focus();
     }
   }
 

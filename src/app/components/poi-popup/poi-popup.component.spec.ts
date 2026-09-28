@@ -179,6 +179,42 @@ describe('PoiPopupComponent — instradamento EC/UGC', () => {
       expect(chiude).toHaveBeenCalledTimes(1);
     });
 
+    it('ignora il tasto anche dai controlli che con le frecce cambiano valore', () => {
+      const naviga = spyOn<any>(fixture.componentInstance, '_goToRelatedPoi');
+      for (const tag of ['select', 'ion-select', 'ion-range', 'ion-segment']) {
+        premi('ArrowRight', document.createElement(tag));
+      }
+
+      expect(naviga)
+        .withContext('qui le frecce scorrono le opzioni: il POI non deve cambiare sotto')
+        .not.toHaveBeenCalled();
+    });
+
+    it('ignora il tasto su un elemento contentEditable', () => {
+      const naviga = spyOn<any>(fixture.componentInstance, '_goToRelatedPoi');
+      const editabile = document.createElement('div');
+      Object.defineProperty(editabile, 'isContentEditable', {value: true});
+      premi('ArrowRight', editabile);
+
+      expect(naviga).not.toHaveBeenCalled();
+    });
+
+    // Questi tre rami non avevano spec: togliere la guardia lasciava tutto verde.
+    for (const sopra of ['ion-modal', 'ion-alert', 'ion-popover']) {
+      it(`non naviga mentre sopra il popup c'e un ${sopra}`, () => {
+        const naviga = spyOn<any>(fixture.componentInstance, '_goToRelatedPoi');
+        const overlay = document.createElement(sopra);
+        document.body.appendChild(overlay);
+
+        premi('ArrowRight', document.createElement('div'));
+        document.body.removeChild(overlay);
+
+        expect(naviga)
+          .withContext('il POI cambierebbe sotto a quello che l utente sta guardando')
+          .not.toHaveBeenCalled();
+      });
+    }
+
     it('naviga se il tasto arriva dalla pagina', () => {
       const naviga = spyOn<any>(fixture.componentInstance, '_goToRelatedPoi');
       premi('ArrowRight', document.createElement('div'));

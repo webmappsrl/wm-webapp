@@ -73,9 +73,6 @@ webmapp-poi-popup {
     width: 100%;
     padding-bottom: 10px;
   }
-  .webmapp-poi-popup-close {
-    float: right;
-  }
 
   .webmapp-poi-popup-title {
     font-family: var(--wm-font-family-header);
@@ -140,6 +137,7 @@ webmapp-poi-popup {
     margin-bottom: 10px;
   }
   .webmapp-poi-popup-close {
+    float: right;
     padding: 10px;
     border-radius: 15px;
     z-index: 9999;
@@ -166,7 +164,9 @@ webmapp-poi-popup {
   // Neutralizza il posizionamento che wm-core dichiara globalmente su wm-poi-properties
   // (poi-properties.component.scss:1-10, ViewEncapsulation.None): quelle regole descrivono il
   // pannello mobile a tutta area, non un corpo dentro un popup. Senza questo, il figlio si
-  // stenderebbe su tutta l'area del popup a z-index 2, coprendo titolo e navigatore.
+  // stenderebbe su tutta l'area del popup a z-index 2, coprendo il chrome che il popup tiene per
+  // sé — il titolo e il pulsante di chiusura. Il navigatore dei POI correlati non è più fra quelli:
+  // da oc:8406 lo rende `wm-poi-properties`, dentro il corpo.
   // Stesso approccio del consumer mobile (webmapp-app map-details.component.scss:127-129).
   // Specificita (0,0,2) contro (0,0,1) del selettore di libreria: vince a prescindere
   // dall'ordine di caricamento.

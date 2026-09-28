@@ -1,94 +1,31 @@
 # CSS custom per istanza
 
-Il foglio di stile che una singola app si porta dietro, dove vive e perché rinominare un selettore
-condiviso lo scollega senza che nulla lo segnali.
+Cosa comporta, **per questo prodotto**, il fatto che alcune app abbiano un proprio foglio di stile.
 
-## Come funziona oggi
+## Il meccanismo sta in wm-core, non qui
 
-Oltre alle variabili di tema — quelle stanno in [tema-e-colori.md](tema-e-colori.md) — ogni app può
-avere **un foglio di stile tutto suo**, con selettori veri. Lo inietta `wm-core`, in
-`meta.component.ts:50`:
+I nove fogli — uno per app, `<shardName>/<appId>.css` — vivono in
+`wm-core/projects/wm-core/src/assets/theme/`, e da lì li servono entrambi i prodotti. Come funziona
+il caricamento, perché una rinomina li scollega in silenzio, come si estende una regola all'altro
+prodotto e cosa invece non si traduce: sta tutto in
+[`wm-core/docs/knowledge/varianti-per-shard.md`](../../src/app/shared/wm-core/docs/knowledge/varianti-per-shard.md),
+insieme al [README accanto ai file](../../src/app/shared/wm-core/projects/wm-core/src/assets/theme/README.md).
 
-```ts
-this._renderer.setProperty(styleLink, 'href', `theme/${shardName}/${appId}.css`);
-this._renderer.setProperty(styleLink, 'id', 'client-theme');
-```
+**Non duplicare qui quella spiegazione.** Fino a oc:8613 stava in questa pagina, che era la più
+lunga delle tre sull'argomento e stava nel repo che quei file non li possiede più — ed è così che si
+arriva a due documenti che si smentiscono.
 
-Il `<link id="client-theme">` finisce in fondo al `<head>`, quindi vince sui fogli del bundle a
-parità di specificità. Il percorso è costruito, non dichiarato: **un'app senza quel file riceve
-semplicemente un 404 e non ha nessuna personalizzazione**. Non c'è elenco da tenere aggiornato, e
-non c'è errore quando il file manca.
+Le due cose da sapere lavorando qui:
 
-I file stanno in **`wm-core`**, sotto `projects/wm-core/src/assets/theme/<shardName>/<appId>.css`, e
-questo repo li pubblica con una voce di `assets` in `angular.json` che punta lì con
-`output: "theme"` — lo stesso schema già usato per `map-core/src/assets`. Sono **nove**, per otto
-app, e li serve anche `webmapp-app` con una voce identica:
-
-| App | Shard | File | Regole `order` | Cosa tocca |
-|---|---|---|---|---|
-| Federazione Italiana Escursionismo (29) | `geohub` | `geohub/29.css` | 11 | dettaglio traccia |
-| Sentieri CAI Parma (33) | `geohub` | `geohub/33.css` | 9 | dettaglio traccia |
-| Sardegna Sentieri (32) | `geohub` | `geohub/32.css` | — | filtri, ricerca, box della home |
-| Forestas (1) | `forestas`, `forestasdev`, `forestasuat` | `forestas/1.css` e i due gemelli | — | come sopra |
-| Ville e Giardini Medicei (75) | `geohub` | `geohub/75.css` | 26 | dettaglio POI, home, filtri |
-| Cammini d'Italia (1) | `camminiditalia`, `camminiditaliadev` | `camminiditalia/1.css` e il gemello | — | home |
-
-I quattro file senza `order` hanno lo **stesso md5** (`4312f5d8…`): si leggono e si correggono una
-volta sola.
-
-**Prima di oc:8613 i file stavano nei due prodotti, in insiemi disgiunti**: sei in
-`wm-webapp/src/theme/`, tre in `webmapp-app/core/src/theme/`, e nessuna app li aveva da entrambe le
-parti. La conseguenza era che la stessa istanza si vedeva personalizzata su una piattaforma e di
-default sull'altra — Ville e Giardini Medicei aveva il suo CSS solo sull'app, e sulla webapp
-`theme/geohub/75.css` rispondeva 404. Ora entrambi i prodotti servono tutti e nove.
-
-## Perché così
-
-- **Un `<link>` costruito a runtime, non un `styles` di `angular.json`** : il bundle web è uno solo
-  e multi-tenant — `app.geohub.webmapp.it` serve tutti gli shard e tutte le app, con lo shard
-  deciso a runtime dall'hostname — quindi una personalizzazione per app non può essere compilata
-  dentro. L'unica alternativa sarebbe un bundle per cliente, che è quello che si fa solo per
-  `camminiditalia`, e solo perché lì servono `fileReplacements`.
-
-- **L'`order` di flexbox è il modo con cui queste app riordinano le sezioni** (29 e 33):
-  `wm-track-properties` è `display: flex; flex-direction: column`, quindi un `order` sul figlio
-  giusto sposta una sezione senza toccare il markup condiviso. È la sola leva disponibile a chi
-  scrive il CSS del cliente: il template non è suo.
-
-- **Il prezzo di quella leva è che il CSS punta ai nostri nomi**: elementi (`wm-tab-description`) e
-  classi (`.wm-track-details-activities`) del codice condiviso. Una rinomina in `wm-core` non fa
-  fallire nessuna build e non produce nessun avviso — il selettore semplicemente non combacia più.
-
-- **Una regola che vale su entrambi i prodotti si scrive additiva, non sostitutiva** (oc:8613):
-  al selettore esistente se ne **affianca** un secondo, non lo si cambia.
-
-  ```css
-  wm-map-details wm-home-layer wm-img,      /* contenitore dell'app */
-  .details-container wm-home-layer wm-img { /* contenitore della webapp */ }
-  ```
-
-  Così il ramo del prodotto che già funzionava resta identico e la sua resa non cambia **per
-  costruzione**, senza doverlo dimostrare; l'altro prodotto entra dal ramo nuovo, e ciascuno dei due
-  resta inerte dove il suo contenitore non esiste.
-
-  Il prefisso **non è decorativo e non si può togliere**: `wm-home-layer` e `wm-status-filter` si
-  montano in due punti sull'app — dentro il pannello e dentro `wm-home` nella pagina home — e senza
-  quello scope la regola si applicherebbe anche lì. Verificato che i due punti sono vivi nello
-  stesso momento quando un layer è aperto.
-
-- **Non tutto si traduce, e va bene così** (oc:8613): sei regole del tema di Ville restano solo
-  sull'app perché dipendono da com'è fatto il suo contenitore — `padding-bottom: 90px` per la tab
-  bar che la webapp non ha, un `::after` che disegna la linguetta sopra il foglio scorrevole, e
-  quattro `:has(...)` che compensano l'altezza di `ion-card-content`. Qui `.details-container` sta a
-  `top: 0`, si apre in larghezza e non ha `border-radius`: non esiste un «sopra il pannello», e
-  l'altezza gliela dà già `--wm-poi-popup-top`. Tradurle produrrebbe una striscia fuori dal viewport
-  e dell'overflow. Il criterio è cosa **dichiara** la regola, non come si chiama il selettore.
-
-- **Un figlio flex senza `order` vale 0, e lo 0 viene prima dei valori positivi**: è la ragione per
-  cui un selettore scollegato non "perde solo il suo stile", ma **manda la sezione in cima**. È
-  esattamente il difetto che si è visto sul dettaglio POI della mobile, dove il blocco
-  "Informazioni" era finito sotto al nome dopo che oc:8406 aveva rinominato il wrapper che il CSS
-  dell'app 75 prendeva di mira.
+- **La webapp pubblica i nove temi** con una voce di `assets` in `angular.json` che punta alla
+  cartella di `wm-core` con `output: "theme"`. Se quella cartella manca — tipicamente perché il
+  submodule è indietro — la glob non trova niente e la build **riuscirebbe** senza i CSS dei
+  clienti: per questo `scripts/check-themes.js` di `wm-core` viene invocato dal `prebuild`, dai due
+  script di deploy, dagli script Surge e da un passo di `preview.yml`.
+- **Delle nove app, quattro hanno un tema nato qui**: Federazione Italiana Escursionismo (29) e
+  Sentieri CAI Parma (33), che riordinano il dettaglio traccia con `order`, e Sardegna Sentieri (32)
+  con Forestas (app 1 sui tre shard), che hanno lo stesso md5 e toccano filtri, ricerca e box della
+  home.
 
 ## Stato dei selettori inerti in questo repo (oc:8613)
 

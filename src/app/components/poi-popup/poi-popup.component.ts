@@ -28,6 +28,8 @@ import {
 } from '@wm-core/store/features/ec/ec.selector';
 import {UrlHandlerService} from '@wm-core/services/url-handler.service';
 import {derivePoiAddress} from '@wm-core/utils/derive-poi-address';
+import {buildMapsHref} from '@wm-core/address/maps-href';
+import {normalizeRelatedUrls} from '@wm-core/related-urls/related-urls.component';
 
 @Component({
   standalone: false,
@@ -64,7 +66,7 @@ export class PoiPopupComponent {
       // abbia solo i campi `addr_*` perderebbe la riga dell'indirizzo e il link a Maps.
       // `derivePoiAddress` è la stessa funzione che usa il condiviso: una sola implementazione,
       // non due che possono divergere.
-      this._aggiornaProperties(poi);
+      this._refreshProperties(poi);
     }
   }
 
@@ -74,7 +76,7 @@ export class PoiPopupComponent {
    * divergano: era già successo: il setter la faceva, `updatePoi()` no, e dopo un salvataggio
    * l'indirizzo di un POI UGC spariva.
    */
-  private _aggiornaProperties(poi: WmFeature<Point>): void {
+  private _refreshProperties(poi: WmFeature<Point>): void {
     const {address} = derivePoiAddress(poi?.properties as any);
     this.poiProperties = {...poi?.properties, address} as any;
   }
@@ -84,14 +86,12 @@ export class PoiPopupComponent {
    * chiusura in eccesso (`{{...}}}`): quella finiva letteralmente nell'URL, che nel DOM risultava
    * `daddr=…}&navigate=yes`. Per i POI EC il link lo produce `wm-address` in wm-core.
    *
-   * Usa `address` e non `address_link`, che `develop` preferiva quando valorizzato: `address_link`
-   * unisce con `+` per pre-codificare gli spazi, ma `encodeURIComponent` trasforma poi quei `+` in
-   * `%2B`, cioè in un più letterale dentro l'indirizzo. Partendo da `address` gli spazi diventano
-   * `%20`, che è la forma corretta.
+   * L'URL lo costruisce `buildMapsHref` di wm-core, lo stesso che usa `wm-address`: la template
+   * string era copiata qui e solo quella di wm-core aveva uno spec, quindi cambiare destinazione
+   * avrebbe richiesto due modifiche e nessuno strumento avrebbe segnalato la seconda (oc:8613).
    */
   get ugcMapsHref(): string {
-    const destination = this.poiProperties?.address ?? '';
-    return `https://www.google.com/maps?daddr=${encodeURIComponent(destination)}&navigate=yes`;
+    return buildMapsHref(this.poiProperties?.address);
   }
 
   /**
@@ -100,26 +100,14 @@ export class PoiPopupComponent {
    * **mutando un oggetto dello store**: qui la stessa decisione è presa in lettura, senza toccare
    * lo stato.
    *
-   * Il campo arriva dal backend in tre forme, conseguenza deterministica di `EcPoi::getJson()`
-   * (`geohub/app/Models/EcPoi.php:282`), che lo rimuove solo se `!is_array && empty`: `false` e
-   * `""` spariscono dal payload, una stringa non vuota sopravvive. Misurate sull'app 29: 752
-   * oggetti `{label: url}`, 76 stringhe, 3 array. `Object.entries` su una stringa produrrebbe
-   * coppie indice/carattere e restituirebbe `true` per caso, quindi le forme sono distinte.
+   * Le tre forme del campo — oggetto `{label: url}`, array, stringa — le riconosce
+   * `normalizeRelatedUrls` di wm-core, la stessa funzione che disegna poi quei link e che
+   * `PoiPropertiesComponent` usa per il proprio gate. Qui erano riscritte a mano: due gate
+   * separati sullo stesso campo divergono alla prima forma nuova, ed è l'anti-pattern che questo
+   * stesso file documenta per `canNavigateRelatedPois` (oc:8613).
    */
   get hasRelatedUrls(): boolean {
-    const urls = this.poiProperties?.related_url;
-    if (urls == null) {
-      return false;
-    }
-    if (typeof urls === 'string') {
-      return urls.trim() !== '';
-    }
-    if (Array.isArray(urls)) {
-      return urls.some(url => typeof url === 'string' && url.trim() !== '');
-    }
-    return Object.entries(urls).some(
-      ([label, url]) => label.trim() !== '' && typeof url === 'string' && url.trim() !== '',
-    );
+    return normalizeRelatedUrls(this.poiProperties?.related_url).length > 0;
   }
 
   editUgcPoi(): void {
@@ -159,7 +147,7 @@ export class PoiPopupComponent {
 
   @HostListener('document:keydown.ArrowLeft', ['$event'])
   handleArrowLeft(event: KeyboardEvent): void {
-    if (this._staScrivendo(event)) {
+    if (this._isTypingOrAdjusting(event)) {
       return;
     }
     this._goToRelatedPoi(prevRelatedPoiId);
@@ -167,33 +155,56 @@ export class PoiPopupComponent {
 
   @HostListener('document:keydown.ArrowRight', ['$event'])
   handleArrowRight(event: KeyboardEvent): void {
-    if (this._staScrivendo(event)) {
+    if (this._isTypingOrAdjusting(event)) {
       return;
     }
     this._goToRelatedPoi(nextRelatedPoiId);
   }
 
   /**
-   * `true` se il tasto è arrivato mentre si scrive in un campo di testo. Gli handler delle frecce
-   * ascoltano su `document`, quindi ricevono anche i tasti premuti nella searchbar della home o
-   * nel form UGC: lì le frecce servono a muovere il cursore, e far cambiare POI sotto le mani
-   * sarebbe una sorpresa. Prima di oc:8406 il problema non si poneva perché `next()`/`prev()`
-   * erano metodi vuoti.
+   * Elementi che con le frecce fanno qualcosa di proprio: i campi di testo muovono il cursore, i
+   * selettori e i cursori cambiano valore. Gli `HostListener` ascoltano su `document`, quindi
+   * ricevono anche i tasti premuti nella searchbar della home o nel form UGC, e far cambiare POI
+   * sotto le mani sarebbe una sorpresa. `ion-input`, `ion-textarea` e `ion-searchbar` sono qui per
+   * sicurezza: Ionic li rende `scoped`, quindi di solito `event.target` è l'`<input>` interno, ma
+   * `ion-select` e `ion-segment` hanno come target il proprio host e senza questi nomi non
+   * sarebbero coperti (oc:8613).
    */
-  private _staScrivendo(event: KeyboardEvent): boolean {
+  private static readonly TAGS_THAT_USE_ARROWS = [
+    'input',
+    'textarea',
+    'select',
+    'ion-input',
+    'ion-textarea',
+    'ion-searchbar',
+    'ion-select',
+    'ion-range',
+    'ion-segment',
+  ];
+
+  /**
+   * `true` se le frecce non devono navigare fra i POI: o perché si sta scrivendo o regolando un
+   * controllo, o perché sopra il popup c'è un modale.
+   *
+   * Il caso del modale: aprendo una foto a schermo pieno `ModalImageComponent` si monta sopra, ma
+   * gli handler del popup sottostante restano attivi. Premendo una freccia il POI cambiava sotto,
+   * e il modale — che legge dallo stesso store con lo stesso `gallery_index` — passava a
+   * un'immagine di un altro POI o restava vuoto se il nuovo ne aveva meno. Prima di oc:8406 non
+   * succedeva perché `next()`/`prev()` erano metodi vuoti in `map.page.ts` (oc:8613).
+   */
+  private _isTypingOrAdjusting(event: KeyboardEvent): boolean {
+    if (document.querySelector('ion-modal') != null) {
+      return true;
+    }
     const target = event?.target as HTMLElement | null;
     if (target == null) {
       return false;
     }
+    if (target.isContentEditable === true) {
+      return true;
+    }
     const tag = target.tagName?.toLowerCase();
-    return (
-      tag === 'input' ||
-      tag === 'textarea' ||
-      tag === 'ion-input' ||
-      tag === 'ion-textarea' ||
-      tag === 'ion-searchbar' ||
-      target.isContentEditable === true
-    );
+    return PoiPopupComponent.TAGS_THAT_USE_ARROWS.includes(tag);
   }
 
   /**
@@ -213,7 +224,7 @@ export class PoiPopupComponent {
       .select(canNavigateRelatedPois)
       .pipe(
         take(1),
-        filter(puoNavigare => puoNavigare),
+        filter(canNavigate => canNavigate),
         switchMap(() => this._store.select(selector).pipe(take(1))),
       )
       .subscribe(id => {
@@ -228,7 +239,7 @@ export class PoiPopupComponent {
     // Stessa guardia delle frecce: `Escape` dentro un campo di testo annulla l'input, non deve
     // chiudere il dettaglio — e sul ramo UGC chiuderlo mentre si compila il form butterebbe via
     // le modifiche.
-    if (this._staScrivendo(event)) {
+    if (this._isTypingOrAdjusting(event)) {
       return;
     }
     this.closeEVT.emit();
@@ -258,7 +269,7 @@ export class PoiPopupComponent {
       this._store.dispatch(stopDrawUgcPoi());
       this.isEditing$.next(false);
       this.poi = poi;
-      this._aggiornaProperties(poi);
+      this._refreshProperties(poi);
       this._cdr.detectChanges();
     }
   }

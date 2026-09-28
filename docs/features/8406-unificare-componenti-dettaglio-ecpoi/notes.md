@@ -739,3 +739,34 @@ vuoti: tutti gli intervalli a 24px.
 Restano i tre debiti già accettati: il popup vuoto su `{related: false}` (F7), lo shell CSS
 assoluto di `wm-poi-properties` che entrambi i consumer neutralizzano, e il ramo UGC ancora su
 `webmapp-related-urls` e le pipe locali.
+
+## Seguito della review interna — 28/09/2026
+
+Il cantiere è immutabile, quindi quello che segue si aggiunge invece di riscriverlo.
+
+**Tre nomi citati sopra non esistono più.** `_staScrivendo()` è diventato `_isTypingOrAdjusting()`,
+`_aggiornaProperties()` è diventato `_refreshProperties()` — erano identificatori in italiano, in un
+branch che ha scritto la convenzione opposta — e `hasRelatedUrls` non riconosce più le tre forme di
+`related_url` a mano: delega a `normalizeRelatedUrls` di wm-core, che è la stessa funzione che poi
+disegna quei link.
+
+**Un fix di questo ticket non è registrato da nessuna parte**: `poi-popup.component.scss` ha un
+`max-width: calc(100vw - var(--wm-poi-popup-right) - 16px)` (`41c6c60`). Sotto i 1024px la larghezza
+del pannello è fissa a 320px e il distacco da destra è 76px: su una viewport da 360px il bordo
+sinistro finiva a -36px. Prima di oc:8406 il popup era `width: 20%` e il problema non si poneva. Il
+`max-width` non cambia niente sopra i 412px. Vedi anche `docs/knowledge/mappa-a-tre-fasce.md`.
+
+**I fix di dominio 8406 fatti durante la review portano lo scope `oc:8613`**, perché sono stati
+fatti dentro quel ciclo. `git log --grep oc:8406` non li trova, quindi eccoli:
+
+| Commit | Repo | Cosa |
+|---|---|---|
+| `6fa8fe3`, `c56099e` | wm-core | `telHref`: il primo numero invece della concatenazione, poi il prefisso internazionale |
+| `f74b643` | wm-core | `buildMapsHref` estratta, per togliere la copia nel popup |
+| `8a2069f` | wm-core | gli spec che proteggono il contratto di `isShowingRelatedPoi` |
+| `da09fb8` | wm-core | cinque commenti che descrivevano codice non più esistente |
+| `0a2f6db` | wm-webapp | il popup riusa le funzioni condivise; i tre identificatori in inglese |
+| `d6689525` | webmapp-app | i tre spec Cypress allineati al markup nuovo |
+
+`d13c56a` e `66d2e98` — lo schema dei `related_url` e il contenitore del dettaglio immagine —
+portano invece lo scope `oc:8406`, perché sono difetti di dominio trovati nel secondo ciclo.

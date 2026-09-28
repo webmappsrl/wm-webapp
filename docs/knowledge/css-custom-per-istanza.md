@@ -22,8 +22,11 @@ Le due cose da sapere lavorando qui:
   cartella di `wm-core` con `output: "theme"`. Se quella cartella manca — tipicamente perché il
   submodule è indietro — la glob non trova niente e la build **riuscirebbe** senza i CSS dei
   clienti: per questo `scripts/check-themes.js` di `wm-core` viene invocato dal `prebuild`, dai due
-  script di deploy, dagli script Surge e da un passo di `preview.yml`.
-- **Delle sei app, tre hanno un tema nato qui**: Federazione Italiana Escursionismo (29) e
+  script di deploy, dai quattro script Surge, da `deploy-cai`, da `deploy-webcomponent` e da un
+  passo di `preview.yml` — nove punti in tutto. L'elenco dei clienti attesi sta in
+  `theme-manifest.json`, nella radice del repo: senza, il gate non potrebbe accorgersi di un pin
+  del submodule rimasto indietro.
+- **Delle sei app, quattro hanno un tema nato qui**: Federazione Italiana Escursionismo (29) e
   Sentieri CAI Parma (33), che riordinano il dettaglio traccia con `order`, e Sardegna Sentieri (32)
   con Forestas (app 1 sui tre shard), che hanno lo stesso md5 e toccano filtri, ricerca e box della
   home.

@@ -20,7 +20,14 @@ disgiunti. Quattro con lo stesso md5.
 
 Classificato ogni selettore in «aggancia» / «morto» / «non raggiungibile da questa app», su entrambi
 i prodotti, percorrendo gli stati invece di dedurli. Esito: **oc:8406 non ha scollegato niente in
-questo repo**; sull'app aveva scollegato quattro selettori del tema 75, già corretti.
+questo repo**; sull'app aveva scollegato quattro selettori del tema 75.
+
+> **Rettifica del 28/09/2026.** «Già corretti» non regge: due di quelle quattro rinomine —
+> `wm-excerpt` → `.wm-excerpt` e `wm-tab-audio` → `wm-track-audio` — sono state **annullate** in
+> `wm-core` (`4f1ce25`, `a18eb9a`), perché il nome vecchio non agganciava niente nemmeno prima e
+> riscriverlo non ripristinava una resa, la creava. Vale anche per due regole dell'intestazione,
+> inerti anche in produzione. Chi rileggesse questa riga e rimettesse quelle regole riporterebbe lo
+> spostamento dei blocchi sulla scheda di Ville.
 
 ## 4 — Spostamento in `wm-core` — ✅
 

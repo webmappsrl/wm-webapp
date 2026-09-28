@@ -17,6 +17,7 @@ Nessuna prevista dal piano: sono uscite tutte guardando le app una per una.
 | "Ottieni indicazioni" visibile sulla webapp | **decisione del dev**, non un difetto: il pulsante avvia la navigazione assistita e va mostrato solo dove c'è il GPS dell'app | `global.scss`, regola di prodotto |
 | Zoom in basso a destra, webapp | `geohub/75.css` li sposta per la tab bar dell'app | `global.scss`, regola di prodotto |
 | Riquadro bianco attorno a "Torna alla home", app | `background: white` che funzionava solo su fondo bianco | `transparent` nei quattro temi della famiglia 32/forestas |
+| Titolo del POI in Roboto invece del font dell'istanza, webapp | `--wm-font-family-content` si applicava solo a `webmapp-app-root`, e `ion-content` reimposta il proprio font: tutto il dettaglio ci sta dentro | `--ion-font-family` sull'host in `app.component.scss` (`b0315da`) |
 
 ## Errori fatti, e cosa li ha resi visibili
 

@@ -67,3 +67,13 @@ colonna loro.
   `.details-container` a dare senso alla larghezza del dettaglio, e le altre due nascono dalla
   posizione dei controlli della mappa, che sulla pagina si vedono tutti insieme. Il popup le legge
   con un fallback, così resta montabile anche fuori da questa pagina.
+
+## Sotto le larghezze da telefono
+
+Il gradino a 320px non basta da solo: sommato ai 76px di `--wm-poi-popup-right` fa 396px, quindi su
+una viewport più stretta il pannello uscirebbe dallo schermo a sinistra. `poi-popup.component.scss`
+ha per questo un `max-width: calc(100vw - var(--wm-poi-popup-right) - 16px)`, che **non cambia
+niente sopra i 412px** — 320 + 76 + 16 — e sotto stringe il pannello lasciando sempre 16px di
+margine, gli stessi che ha dagli altri lati (oc:8406, trovato in review).
+
+Prima di oc:8406 il popup era `width: 20%` e il caso non si poneva: a 360px faceva 72px.

@@ -79,7 +79,7 @@ jobs:
             echo "::error::$SCRIPT non esiste. La CI porta wm-core al commit pinnato, che è precedente a oc:8613: senza quella cartella la build uscirebbe senza i CSS dei clienti. Aggiorna il pin del submodule dopo il merge della PR di wm-core."
             exit 1
           fi
-          node "$SCRIPT"
+          npm run check-themes
 
       - name: Build
         run: ionic build

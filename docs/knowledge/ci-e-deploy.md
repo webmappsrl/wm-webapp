@@ -27,6 +27,14 @@ lo impedisce confrontando i temi trovati con l'elenco atteso, e in questo repo �
 | `scripts/deploy-default.js`, `scripts/deploy-camminiditalia.js` | prima di buildare |
 | `.github/workflows/preview.yml` | un passo dedicato, che prima verifica l'esistenza dello script e spiega il pin se manca |
 
+Tutti e nove invocano **`npm run check-themes`**, non il percorso dello script: quello è scritto una
+volta sola, nel `package.json`. Prima era ripetuto in ogni punto, e quando è cambiato — con
+oc:8613, che ha spostato lo script in `wm-core` — sono stati aggiornati a mano uno per uno. Chi ne
+avesse dimenticato uno non se ne sarebbe accorto: quel percorso di build avrebbe semplicemente
+smesso di controllare, senza errore. L'unica eccezione è `preview.yml`, che il percorso letterale
+ce l'ha perché deve verificare che il **file esista** prima di lanciarlo, ed è proprio il caso del
+pin indietro.
+
 `deploy_prod.yml` è coperto di riflesso, perché passa dagli script di deploy. Restano fuori solo
 `ng build` e `ionic build` lanciati a mano, ed è coerente: non pubblicano niente.
 

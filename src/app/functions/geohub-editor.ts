@@ -3,7 +3,7 @@
  *
  * Sta in una funzione perché era scritto due volte, con la stessa stringa: nel popup dei POI e in
  * `map.page.ts` per le tracce. Due copie della stessa cosa divergono alla prima modifica, e
- * nessuno strumento lo segnala (oc:8613).
+ * nessuno strumento lo segnala (oc:8406).
  *
  * **L'host è fisso**, e vale la pena dirlo perché il commento accanto al pulsante lasciava intendere
  * il contrario: l'etichetta è generica — «Modifica», non «modifica geohub» — perché il nome del

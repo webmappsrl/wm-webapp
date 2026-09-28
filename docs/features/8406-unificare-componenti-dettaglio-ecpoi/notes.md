@@ -766,6 +766,7 @@ fatti dentro quel ciclo. `git log --grep oc:8406` non li trova, quindi eccoli:
 | `8a2069f` | wm-core | gli spec che proteggono il contratto di `isShowingRelatedPoi` |
 | `da09fb8` | wm-core | cinque commenti che descrivevano codice non più esistente |
 | `0a2f6db` | wm-webapp | il popup riusa le funzioni condivise; i tre identificatori in inglese |
+| `3e9e0c8` | wm-webapp | la guardia della tastiera copre `ion-alert` e `ion-popover`, i suoi rami hanno gli spec, e l'URL dell'editor Geohub diventa `geohubEditUrl()` invece di essere scritto due volte |
 | `d6689525` | webmapp-app | i tre spec Cypress allineati al markup nuovo |
 
 `d13c56a` e `66d2e98` — lo schema dei `related_url` e il contenitore del dettaglio immagine —

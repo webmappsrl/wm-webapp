@@ -200,18 +200,39 @@ describe('PoiPopupComponent — instradamento EC/UGC', () => {
     });
 
     // Questi tre rami non avevano spec: togliere la guardia lasciava tutto verde.
-    for (const sopra of ['ion-modal', 'ion-alert', 'ion-popover']) {
-      it(`non naviga mentre sopra il popup c'e un ${sopra}`, () => {
-        const naviga = spyOn<any>(fixture.componentInstance, '_goToRelatedPoi');
-        const overlay = document.createElement(sopra);
-        document.body.appendChild(overlay);
-
-        premi('ArrowRight', document.createElement('div'));
+    // Il `finally` non è pedanteria: senza, un assert che fallisce lascia l'overlay attaccato al
+    // body e fa fallire per contagio tutti i test successivi, con un sintomo che non c'entra.
+    const conOverlay = (tag: string, prova: () => void) => {
+      const overlay = document.createElement(tag);
+      document.body.appendChild(overlay);
+      try {
+        prova();
+      } finally {
         document.body.removeChild(overlay);
+      }
+    };
+
+    for (const sopra of ['ion-modal', 'ion-alert', 'ion-popover']) {
+      it(`non naviga mentre sopra il popup c'è un ${sopra}`, () => {
+        const naviga = spyOn<any>(fixture.componentInstance, '_goToRelatedPoi');
+
+        conOverlay(sopra, () => premi('ArrowRight', document.createElement('div')));
 
         expect(naviga)
-          .withContext('il POI cambierebbe sotto a quello che l utente sta guardando')
+          .withContext("il POI cambierebbe sotto a quello che l'utente sta guardando")
           .not.toHaveBeenCalled();
+      });
+
+      // Il caso che ha motivato la guardia: l'alert di conferma dell'eliminazione di un POI UGC.
+      // Escape chiudeva l'alert **e** il popup sotto, buttando via il form in compilazione.
+      it(`Escape non chiude il dettaglio mentre sopra c'è un ${sopra}`, () => {
+        const chiude = spyOn(fixture.componentInstance.closeEVT, 'emit');
+
+        conOverlay(sopra, () =>
+          fixture.componentInstance.handleEscape({target: document.createElement('div')} as any),
+        );
+
+        expect(chiude).not.toHaveBeenCalled();
       });
     }
 

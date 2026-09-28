@@ -14,7 +14,7 @@ Nessuna prevista dal piano: sono uscite tutte guardando le app una per una.
 |---|---|---|
 | Frecce assenti sulle schede dei layer, webapp | l'icon font si chiama `wm` qui e `webmapp` sull'app | alias `@font-face` in `src/assets/icons/webmapp-icons/style.css` |
 | "Modifica" sopra l'intestazione del percorso, webapp | slot `[bottom]` senza `order` in un contenitore riordinato dal tema | `order: 100` in `track-properties.component.scss` (wm-core) |
-| "Ottieni indicazioni" visibile ma inerte, webapp | manca il GPS continuo | `global.scss`, regola di prodotto |
+| "Ottieni indicazioni" visibile sulla webapp | **decisione del dev**, non un difetto: il pulsante avvia la navigazione assistita e va mostrato solo dove c'è il GPS dell'app | `global.scss`, regola di prodotto |
 | Zoom in basso a destra, webapp | `geohub/75.css` li sposta per la tab bar dell'app | `global.scss`, regola di prodotto |
 | Riquadro bianco attorno a "Torna alla home", app | `background: white` che funzionava solo su fondo bianco | `transparent` nei quattro temi della famiglia 32/forestas |
 
@@ -43,14 +43,20 @@ Nessuna prevista dal piano: sono uscite tutte guardando le app una per una.
   vecchia. Decisione del dev, presa per chiudere una discussione che si stava allungando.
 - **Le distinzioni fra prodotti restano dove servono**: la riscrittura è additiva, e una regola senza
   senso sull'altro prodotto non si traduce.
-- **L'app 32 resta com'è**, allineata ai tre gemelli di Forestas. Giuseppe aveva detto che non serviva
-  lavorarci, ma tenerla identica costa meno che farla divergere per una riga.
+- **L'app 32 è stata modificata come i tre gemelli di Forestas**, non lasciata indietro: il chip
+  trasparente e la correzione del suo commento sono andati in tutti e quattro. Giuseppe aveva detto
+  che sulla 32 non serviva lavorare — «non viene usata più, diventa la uno» — ma tenerla identica ai
+  gemelli costa meno che farla divergere per una riga, e i quattro file hanno tuttora lo stesso md5.
 
 ## Aperto
 
-- Il **push dei repo padre** resta in locale per indicazione del dev; `wm-core` va spinto.
 - La **description di oc:8613 su Orchestrator** descrive ancora il ticket come un audit e elenca app
   sbagliate: va riscritta su quello che il ticket è diventato.
-- `wm-config-detail` non ha un `order`: con un tema che riordina finirebbe in cima, come è successo al
-  pulsante "Modifica". Oggi non si nota perché ha altezza zero quasi ovunque, ma è lo stesso difetto
-  latente. Non toccato su indicazione del dev.
+- **Tre figli di `wm-track-properties` non hanno un `order`** — l'excerpt (`wm-inner-component-html`),
+  `wm-txn-where` e `wm-config-detail` — quindi valgono 0 e con un tema che numera le sezioni
+  risalgono **sopra l'intestazione**, che il tema 75 mette a 1. È lo stesso difetto del pulsante
+  "Modifica", ma lì la cura era ovvia perché lo slot si chiama `[bottom]`: qui non esiste un valore
+  giusto da inventare, perché la numerazione è del cliente. Un default su tutti i figli toglierebbe
+  il difetto ma sposterebbe l'excerpt di Ville dove non è mai stato. Rimasto aperto di proposito.
+- **La knowledge sui temi esiste in tre repo**, e la più lunga è in `wm-webapp`, che i file non li
+  possiede più. Da ridurre a una sola, in `wm-core`, con le altre due che rimandano.

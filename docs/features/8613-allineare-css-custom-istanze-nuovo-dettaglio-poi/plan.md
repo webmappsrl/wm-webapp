@@ -31,8 +31,9 @@ i prodotti servano tutti e nove i temi.
 ## 5 — Riscrittura additiva — ✅
 
 Le regole del tema 75 legate a `wm-map-details` che hanno un equivalente qui: affiancato un secondo
-selettore su `.details-container` invece di sostituire il primo. Otto regole, verificate a runtime
-sulla webapp con i valori calcolati.
+selettore su `.details-container` invece di sostituire il primo. **Nove selettori distinti, dieci
+occorrenze** — `wm-home-layer wm-img` compariva due volte, e i due blocchi sono poi stati uniti —
+verificati a runtime sulla webapp con i valori calcolati.
 
 ## 6 — Regole non portabili — ✅
 
@@ -42,7 +43,8 @@ compensazioni dell'altezza di `ion-card-content`. Nessuna riga scritta.
 ## 7 — Controllo visivo, app per app — ✅
 
 Ville (75) su entrambi, Sardegna Sentieri (32) e Forestas sulla mobile, FIE (29) e CAI Parma (33)
-sulla mobile, Cammini d'Italia su entrambi. Ne sono uscite quattro correzioni, tutte in `notes.md`.
+sulla mobile, Cammini d'Italia su entrambi. Ne sono uscite **cinque** correzioni, tutte in
+`notes.md`.
 
 ## 8 — Documentazione — ✅
 

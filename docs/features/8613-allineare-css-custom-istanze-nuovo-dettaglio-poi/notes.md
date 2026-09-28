@@ -69,6 +69,7 @@ resta com'era e le correzioni stanno qui.
 
 | Dove | Diceva | È |
 |---|---|---|
+| `notes.md:19` | «Riquadro bianco attorno a "Torna alla home", **app**» | vero, ma incompleto: si vedeva **nella home**, non nel pannello della mappa. `wm-status-filter` monta in due punti e il tema non ne tocca nessuno, quindi il fondo è di prodotto — bianco nel pannello, grigio nella home (`#f2f2f2` sull'app, `#f4f5f8` sulla webapp). Lo stesso testo, con gli stessi riferimenti, sta nel commento dei quattro temi e nei notes della mobile |
 | `plan.md:16` | «Nove file per **otto** app» | **sei** app: i tre shard di Forestas e i due di Cammini d'Italia portano lo stesso `appId` su domini diversi. Otto non esce da nessun modo di contare — né le coppie shard/appId (nove), né le app (sei), né i contenuti distinti (cinque) |
 | `notes.md:27` | «**quattordici** regole del tema 75 sembravano morte, dodici erano vive» | gli pseudo-elementi del tema 75 sono **sedici**: quattordici `::after` e due `::before`. Il quattordici contava i soli `::after` |
 | `docs/knowledge/css-custom-per-istanza.md` | «delle 20 regole `order`, **12** sono inerti» | **14 su 20** — 8 in FIE, 6 in CAI Parma. `.wm-alert` era contata fra le vive e non ha nessun bersaglio: il template monta `<wm-track-alert>`, quella classe non esiste. Corretto sul posto, perché è una pagina viva; `overview.md:45` il numero giusto lo dava già |

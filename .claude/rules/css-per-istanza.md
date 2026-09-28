@@ -72,3 +72,23 @@ prodotti** (oc:8613).
   ```bash
   ls src/app/shared/wm-core/projects/wm-core/src/assets/theme/*/*.css | wc -l   # deve dare 9
   ```
+
+- **`document.fonts.check()` non dice se una famiglia esiste.** Risponde «le font che servono sono
+  pronte, o non c'è niente da caricare», quindi per un nome sconosciuto dà `true`:
+  `document.fonts.check('18px "fontCheNonEsiste"')` → `true`. E può dare `false` su una famiglia
+  dichiarata correttamente ma non ancora *usata* da nessun elemento, se ha `font-display: block`.
+  Risponde cioè al rovescio della verità in entrambe le direzioni.
+
+  Serve quando un tema chiede una icon font per nome — i due prodotti la chiamano `wm` qui e
+  `webmapp` sull'app, con un alias per parte. Le due misure che valgono, con il controllo negativo
+  sempre accanto:
+
+  ```js
+  (await document.fonts.load('64px "wm"')).length        // 1 se risolve, 0 se il nome non esiste
+  // e soprattutto la larghezza del glifo, che è ciò che l'utente vede:
+  // uno <span> con position:absolute;visibility:hidden;font-size:64px e il carattere 
+  // → 64px con la font giusta, 46.22px sul fallback di sistema
+  ```
+
+  Senza il controllo negativo la misura non vale: è così che una verifica sbagliata è stata data per
+  buona da entrambe le sessioni prima che l'altra la smontasse.

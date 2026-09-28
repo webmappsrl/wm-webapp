@@ -60,3 +60,25 @@ Nessuna prevista dal piano: sono uscite tutte guardando le app una per una.
   il difetto ma sposterebbe l'excerpt di Ville dove non è mai stato. Rimasto aperto di proposito.
 - **La knowledge sui temi esiste in tre repo**, e la più lunga è in `wm-webapp`, che i file non li
   possiede più. Da ridurre a una sola, in `wm-core`, con le altre due che rimandano.
+
+## Rettifiche — 28/09/2026
+
+Trovate dalla review interna di fine ciclo. `docs/features/` è immutabile, quindi il testo sopra
+resta com'era e le correzioni stanno qui.
+
+| Dove | Diceva | È |
+|---|---|---|
+| `plan.md:16` | «Nove file per **otto** app» | **sei** app: i tre shard di Forestas e i due di Cammini d'Italia portano lo stesso `appId` su domini diversi. Otto non esce da nessun modo di contare — né le coppie shard/appId (nove), né le app (sei), né i contenuti distinti (cinque) |
+| `notes.md:27` | «**quattordici** regole del tema 75 sembravano morte, dodici erano vive» | gli pseudo-elementi del tema 75 sono **sedici**: quattordici `::after` e due `::before`. Il quattordici contava i soli `::after` |
+| `docs/knowledge/css-custom-per-istanza.md` | «delle 20 regole `order`, **12** sono inerti» | **14 su 20** — 8 in FIE, 6 in CAI Parma. `.wm-alert` era contata fra le vive e non ha nessun bersaglio: il template monta `<wm-track-alert>`, quella classe non esiste. Corretto sul posto, perché è una pagina viva; `overview.md:45` il numero giusto lo dava già |
+
+E due cose che il cantiere non registra affatto, aggiunte qui perché chi rilegge non le troverebbe
+altrove:
+
+- **La cancellazione di `src/app/meta.component.ts`**: era un `MetaComponent` locale doppione, e per
+  giunta costruiva `theme/<appId>.css`, un percorso piatto mai esistito. `app.module.ts` importava
+  già quello di `wm-core`. Rimuoverlo non ha cambiato niente se non dove si cerca.
+- **Il gate sulla build**: `wm-core/scripts/check-themes.js` è invocato da `prebuild`, dai due
+  script di deploy, dai quattro script Surge, da `deploy-cai`, da `deploy-webcomponent` e da un
+  passo di `preview.yml`. Il cantiere non ne parla, e chi vedesse una build fermarsi lì non
+  troverebbe la spiegazione in nessuno dei tre file. Ora sta in `docs/knowledge/ci-e-deploy.md`.

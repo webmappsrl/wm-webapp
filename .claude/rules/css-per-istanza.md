@@ -34,6 +34,12 @@ prodotti** (oc:8613).
 - **Si affianca un selettore, non si sostituisce.** Il ramo che già funzionava resta identico, così
   la resa su quel prodotto non cambia per costruzione. Vedi la knowledge per la forma.
 
+- **Additiva non vuol dire equivalente.** I due rami hanno specificità diverse — `wm-map-details` è
+  un elemento, `.details-container` una classe — quindi il ramo webapp ne ha una in più e vince
+  confronti che l'altro perde. Succede davvero: la copertina della scheda del layer è nascosta dal
+  tema sulla webapp e solo alta zero sull'app, con la stessa dichiarazione. L'esito va **misurato su
+  entrambi i prodotti**, non dedotto dal fatto che la regola è la stessa.
+
 - **Il prefisso del contenitore è portante.** `wm-home-layer` e `wm-status-filter` si montano in due
   punti sull'app — nel pannello e dentro `wm-home` — quindi togliere `wm-map-details` farebbe
   applicare la regola anche alla home. I due punti sono vivi **nello stesso momento** con un layer

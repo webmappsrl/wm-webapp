@@ -1,3 +1,13 @@
 webmapp-app-root {
   font-family: var(--wm-font-family-content, inherit);
+
+  // Il font dell'istanza arriva da `theme.ts` di wm-core, che scrive
+  // `--wm-font-family-content` leggendo `THEME.fontFamilyContent` della configurazione. La riga
+  // sopra lo applica all'host, ma l'eredita' si ferma al primo componente Ionic: `ion-content`
+  // dichiara il proprio font, quindi tutto il dettaglio — che ci sta dentro — tornava al default.
+  // Su Ville (75) il titolo del POI usciva Roboto mentre in produzione e' Merriweather.
+  // `--ion-font-family` e' la variabile che i componenti Ionic leggono davvero: impostandola
+  // qui il font dell'istanza li raggiunge tutti. Il fallback e' il default di Ionic, quindi le
+  // istanze che non dichiarano un font restano com'erano. (oc:8613)
+  --ion-font-family: var(--wm-font-family-content, var(--ion-default-font));
 }

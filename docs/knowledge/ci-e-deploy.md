@@ -6,6 +6,11 @@
 `wm-webapp`, `wm-core` e `map-core`, più `e2e` — Cypress in Chrome headless, che avvia
 `ionic serve` e attende `localhost:8100`.
 
+**È qui che girano anche gli spec di `wm-core`**, e non nella CI di quel repo: lì il workflow
+controlla solo i temi, perché `wm-core` da solo non compila — `tsconfig.json` risolve
+`@wm-types/*` e `@map-core/*` in cartelle che esistono solo dentro un prodotto. L'ambiente c'è
+qui, dove il submodule è montato accanto ai suoi fratelli (oc:8613).
+
 **`preview.yml`** pubblica una preview Surge per ogni PR, con dominio
 `<appId>.<shardName>.pr-<prNumber>.surge.sh` e link cliccabile nello Step Summary; un job di
 teardown la rimuove alla chiusura della PR. Gli override `--id` e `--shard` si passano nel

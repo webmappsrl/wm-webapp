@@ -44,4 +44,6 @@ due controlli l'altro, perché niente lo segnalerà.
   componenti. Anche il tema di camminiditalia era fuori scope, perché allora `src/theme/camminiditalia/`
   era una cartella vuota: **da oc:8613 non lo è più.** Il tema esiste, sta in `wm-core` insieme agli
   altri otto — vedi [css-custom-per-istanza.md](css-custom-per-istanza.md) — e arriva a entrambi i
-  prodotti, quindi le sue regole si applicano anche qui. Sono quattro, tutte sulla home.
+  prodotti, quindi le sue regole si applicano anche qui. Sono quattro: tre sulla home, e la quarta
+  — `wm-map-details wm-status-filter { display: none }` — sul pannello del dettaglio, dove però
+  resta inerte, perché `wm-map-details` è il contenitore dell'app e qui non esiste.

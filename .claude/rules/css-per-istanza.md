@@ -18,7 +18,10 @@ prodotti** (oc:8613).
 
 - **Rinominare un selettore o una classe può scollegare il CSS di un cliente, in silenzio.** Quei
   file puntano ai nomi dei componenti condivisi e non sono referenziati da nessuna build: il
-  `<link>` è costruito a runtime da `meta.component.ts:50`. Nessun compilatore, test o lint segnalerà
+  `<link>` è costruito a runtime da `meta.component.ts:50` **di wm-core**
+  (`src/app/shared/wm-core/projects/wm-core/src/meta/`). Il `MetaComponent` locale di questo repo
+  è stato cancellato sotto oc:8613: era un doppione morto e costruiva un percorso piatto,
+  `theme/<appId>.css`, che non è mai esistito. Nessun compilatore, test o lint segnalerà
   mai il drift. Dopo una rinomina, cerca il vecchio nome nella cartella dei temi.
 
 - **Un figlio flex senza `order` vale 0, quindi va in cima, non in fondo.** `wm-track-properties` è
@@ -54,8 +57,10 @@ prodotti** (oc:8613).
 - **`querySelectorAll` non aggancia mai uno pseudo-elemento.** `document.querySelectorAll('body::after')`
   restituisce 0 anche se `body` esiste. Misura sull'elemento host, togliendo lo pseudo, o
   classificherai come morte regole vive. Le pseudo-**classi** (`:first-of-type`, `:has()`) invece
-  funzionano. In questo repo i temi non hanno `::after` né `::before` — zero occorrenze in tutti e
-  quattro — ma il tema di Ville ne ha quattordici.
+  funzionano. Attenzione a non rassicurarsi troppo presto: i quattro temi nati qui non ne hanno
+  nessuno, ma da oc:8613 questo repo **pubblica tutti e nove** i temi, e quello di Ville ne ha
+  **sedici** — quattordici `::after` e due `::before`. Contarne quattordici vuol dire aver contato
+  solo i primi.
 
 - **Un match non basta: controlla in quale contenitore sta.** Un elemento può essere montato fuori
   dal contenitore che ti interessa e farti contare un falso positivo. Ancora la query al contenitore

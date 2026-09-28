@@ -15,6 +15,21 @@ messaggio di commit.
 quattro i job non deploya. Ha anche un `workflow_dispatch` per gli hotfix che devono bypassare il
 gate, e un input `target` per scegliere quale deploy lanciare.
 
+**C'è un secondo gate, e non è sui test: è sui CSS dei clienti** (oc:8613). I nove temi per istanza
+vivono in `wm-core` e i due prodotti li pubblicano con una voce di `assets`; siccome nessuna build
+li referenzia a compile-time, una cartella assente — tipicamente per un pin del submodule indietro —
+darebbe una build **verde** e un deploy senza personalizzazioni. `wm-core/scripts/check-themes.js`
+lo impedisce confrontando i temi trovati con l'elenco atteso, e in questo repo è invocato da:
+
+| Dove | Cosa |
+|---|---|
+| `package.json` | `prebuild`, quindi ogni `npm run build`; più `deploy-cai`, `deploy-webcomponent` e i quattro script `surge-*`, che chiamano `ionic build` e scavalcherebbero il `prebuild` |
+| `scripts/deploy-default.js`, `scripts/deploy-camminiditalia.js` | prima di buildare |
+| `.github/workflows/preview.yml` | un passo dedicato, che prima verifica l'esistenza dello script e spiega il pin se manca |
+
+`deploy_prod.yml` è coperto di riflesso, perché passa dagli script di deploy. Restano fuori solo
+`ng build` e `ionic build` lanciati a mano, ed è coerente: non pubblicano niente.
+
 ## Perché così
 
 - **Il gate esisteva solo nelle intenzioni** (oc:8022): prima il deploy su `main` partiva senza

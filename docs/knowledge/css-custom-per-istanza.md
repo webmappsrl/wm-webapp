@@ -4,7 +4,8 @@ Cosa comporta, **per questo prodotto**, il fatto che alcune app abbiano un propr
 
 ## Il meccanismo sta in wm-core, non qui
 
-I nove fogli — uno per app, `<shardName>/<appId>.css` — vivono in
+I nove fogli — `<shardName>/<appId>.css`, per **sei** app: i tre shard di Forestas e i due di
+Cammini d'Italia portano lo stesso `appId` su domini diversi — vivono in
 `wm-core/projects/wm-core/src/assets/theme/`, e da lì li servono entrambi i prodotti. Come funziona
 il caricamento, perché una rinomina li scollega in silenzio, come si estende una regola all'altro
 prodotto e cosa invece non si traduce: sta tutto in
@@ -22,7 +23,7 @@ Le due cose da sapere lavorando qui:
   submodule è indietro — la glob non trova niente e la build **riuscirebbe** senza i CSS dei
   clienti: per questo `scripts/check-themes.js` di `wm-core` viene invocato dal `prebuild`, dai due
   script di deploy, dagli script Surge e da un passo di `preview.yml`.
-- **Delle nove app, quattro hanno un tema nato qui**: Federazione Italiana Escursionismo (29) e
+- **Delle sei app, tre hanno un tema nato qui**: Federazione Italiana Escursionismo (29) e
   Sentieri CAI Parma (33), che riordinano il dettaglio traccia con `order`, e Sardegna Sentieri (32)
   con Forestas (app 1 sui tre shard), che hanno lo stesso md5 e toccano filtri, ricerca e box della
   home.
@@ -44,9 +45,14 @@ Nei quattro file identici, uno solo e puramente estetico:
 | `webmapp-search` | `webmapp-search-box` |
 
 In `geohub/29.css` e `geohub/33.css`, sul dettaglio traccia, dove la quota è tutt'altro che
-marginale: delle **20 regole `order` in tutto, 12 sono inerti** — 7 su 11 in FIE, 5 su 9 in CAI
-Parma. In entrambi i file reggono solo `wm-slope-chart`, `.wm-track-details-download`,
-`.wm-track-details-track-related-poi` e `.wm-alert`.
+marginale: delle **20 regole `order` in tutto, 14 sono inerti** — 8 su 11 in FIE, 6 su 9 in CAI
+Parma. In entrambi i file reggono solo `wm-slope-chart`, `.wm-track-details-download` e
+`.wm-track-details-track-related-poi`.
+
+`.wm-alert` era contata fra le vive e non lo è: nessun elemento porta quella classe — il template
+monta `<wm-track-alert>` — quindi la regola è orfana come le altre. Misurato a runtime sulle app 29
+e 33, zero bersagli. Da qui il 14 invece del 12: la correzione allinea questa pagina a
+`overview.md` del cantiere, che il numero giusto lo dava già (oc:8613).
 
 | Orfano | Oggi | `order` in 29 | `order` in 33 |
 |---|---|---|---|
@@ -57,6 +63,7 @@ Parma. In entrambi i file reggono solo `wm-slope-chart`, `.wm-track-details-down
 | `.wm-track-details-title-technical-details` | `wm-tab-detail` | 6 | 4 |
 | `.wm-track-details-edit-geohub` | nessun bersaglio nella webapp | 10 | 9 |
 | `.webmapp-track-title` | `.wm-track-details-header` | −2 | −2 |
+| `.wm-alert` | nessun elemento la porta: il componente è `wm-track-alert` | −1 | −1 |
 | `webmapp-track-technical-data` | `wm-tab-detail` | — | — |
 | `webmapp-track-download-urls` | `wm-feature-useful-urls` | — | — |
 

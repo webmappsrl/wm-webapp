@@ -30,6 +30,14 @@ lo impedisce confrontando i temi trovati con l'elenco atteso, e in questo repo �
 `deploy_prod.yml` è coperto di riflesso, perché passa dagli script di deploy. Restano fuori solo
 `ng build` e `ionic build` lanciati a mano, ed è coerente: non pubblicano niente.
 
+**I deploy non cancellano sul server.** `deploy-default.js` usa `scp -r ./www/*` e
+`deploy-camminiditalia.js` un `rsync` senza `--delete`: entrambi copiano sopra e non tolgono mai
+niente. Vale anche per la mobile. La conseguenza pratica riguarda i temi per istanza: **cancellare
+il CSS di un cliente dal repo non lo toglie dalla produzione**, il file resta sul server e continua
+a essere servito. Disattivare un tema è due operazioni — il repo e il server — e il README dei temi
+lo dice ora anche lì. `--delete` è stato valutato e rimandato: su un percorso sbagliato cancella
+quello che trova (oc:8613).
+
 ## Perché così
 
 - **Il gate esisteva solo nelle intenzioni** (oc:8022): prima il deploy su `main` partiva senza

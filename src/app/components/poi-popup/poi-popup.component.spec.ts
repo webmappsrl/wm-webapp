@@ -223,8 +223,9 @@ describe('PoiPopupComponent — instradamento EC/UGC', () => {
           .not.toHaveBeenCalled();
       });
 
-      // Il caso che ha motivato la guardia: l'alert di conferma dell'eliminazione di un POI UGC.
-      // Escape chiudeva l'alert **e** il popup sotto, buttando via il form in compilazione.
+      // Il caso che ha motivato **l'estensione** della guardia oltre `ion-modal`: con l'alert di
+      // conferma dell'eliminazione di un POI UGC aperto, Escape chiudeva l'alert **e** il popup
+      // sotto, buttando via il form in compilazione. La guardia in sé è nata per la galleria.
       it(`Escape non chiude il dettaglio mentre sopra c'è un ${sopra}`, () => {
         const chiude = spyOn(fixture.componentInstance.closeEVT, 'emit');
 

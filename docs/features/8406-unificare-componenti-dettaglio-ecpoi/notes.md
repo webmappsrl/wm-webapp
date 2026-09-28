@@ -764,10 +764,14 @@ fatti dentro quel ciclo. `git log --grep oc:8406` non li trova, quindi eccoli:
 | `6fa8fe3`, `c56099e` | wm-core | `telHref`: il primo numero invece della concatenazione, poi il prefisso internazionale |
 | `f74b643` | wm-core | `buildMapsHref` estratta, per togliere la copia nel popup |
 | `8a2069f` | wm-core | gli spec che proteggono il contratto di `isShowingRelatedPoi` |
-| `da09fb8` | wm-core | cinque commenti che descrivevano codice non più esistente |
 | `0a2f6db` | wm-webapp | il popup riusa le funzioni condivise; i tre identificatori in inglese |
-| `3e9e0c8` | wm-webapp | la guardia della tastiera copre `ion-alert` e `ion-popover`, i suoi rami hanno gli spec, e l'URL dell'editor Geohub diventa `geohubEditUrl()` invece di essere scritto due volte |
+| `3b8fec2` | wm-webapp | il provider `'modal'`, senza il quale il dettaglio immagine non si apre più sulla webapp |
+| `0457f3c` | wm-core | `INTERNATIONAL_PREFIX` e il suo spec, `image-detail-presentation.spec.ts`, la pulizia di `poi-properties.component.spec.ts` |
 | `d6689525` | webmapp-app | i tre spec Cypress allineati al markup nuovo |
+| `9348a1e6` | webmapp-app | il provider `'inline'` della mobile, controparte di `66d2e98` |
 
-`d13c56a` e `66d2e98` — lo schema dei `related_url` e il contenitore del dettaglio immagine —
-portano invece lo scope `oc:8406`, perché sono difetti di dominio trovati nel secondo ciclo.
+Portano invece lo scope `oc:8406`, e quindi `git log --grep` li trova da sé: `d13c56a` e `64edf3b`
+(lo schema dei `related_url`, poi la allowlist), `66d2e98` (il contenitore del dettaglio immagine),
+`3e9e0c8` e `58c9519` (la guardia della tastiera e i suoi spec) e `da09fb8` (i commenti che
+descrivevano codice non più esistente). `58c9519` va nella direzione opposta a tutti gli altri:
+porta scope `oc:8406` ma riscrive anche una rettifica nel cantiere di oc:8613.

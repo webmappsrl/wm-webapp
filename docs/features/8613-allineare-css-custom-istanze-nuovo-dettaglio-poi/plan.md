@@ -25,9 +25,8 @@ questo repo**; sull'app aveva scollegato quattro selettori del tema 75.
 > **Rettifica del 28/09/2026.** «Già corretti» non regge: **tre** di quelle quattro rinomine sono
 > state **annullate** in `wm-core` (`4f1ce25`, `a18eb9a`) — `wm-excerpt` → `.wm-excerpt`, e
 > `wm-tab-audio` → `wm-track-audio` in **due** punti, il dettaglio POI e quello traccia. A HEAD il
-> tema le ha tutte e tre nella forma inerte, righe 258, 684 e 699. Perché il nome vecchio non
-> agganciava niente nemmeno prima e
-> riscriverlo non ripristinava una resa, la creava. Vale anche per due regole dell'intestazione,
+> tema le ha tutte e tre nella forma inerte, righe 258, 684 e 699, perché il nome vecchio non
+> agganciava niente nemmeno prima e riscriverlo non ripristinava una resa, la creava. Vale anche per due regole dell'intestazione,
 > inerti anche in produzione. Chi rileggesse questa riga e rimettesse quelle regole riporterebbe lo
 > spostamento dei blocchi sulla scheda di Ville.
 

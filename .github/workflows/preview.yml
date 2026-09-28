@@ -73,7 +73,13 @@ jobs:
       # submodule è a un commit che li precede, `ionic build` riesce e la preview esce senza i CSS
       # dei clienti, in silenzio. Questo passo trasforma quel guasto in un fallimento (oc:8613).
       - name: Check per-instance themes
-        run: node src/app/shared/wm-core/scripts/check-themes.js
+        run: |
+          SCRIPT=src/app/shared/wm-core/scripts/check-themes.js
+          if [ ! -f "$SCRIPT" ]; then
+            echo "::error::$SCRIPT non esiste. La CI porta wm-core al commit pinnato, che è precedente a oc:8613: senza quella cartella la build uscirebbe senza i CSS dei clienti. Aggiorna il pin del submodule dopo il merge della PR di wm-core."
+            exit 1
+          fi
+          node "$SCRIPT"
 
       - name: Build
         run: ionic build

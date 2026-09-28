@@ -16,7 +16,7 @@ const REMOTE = 'server:/var/www/html/app.geohub.webmapp.it/';
 // `ionic build` non passa da `npm run build`, quindi il gate su `prebuild` qui non scatterebbe:
 // il controllo va chiamato a mano (oc:8613). Senza, un submodule indietro produce un deploy in cui
 // tutte le istanze personalizzate perdono il proprio CSS, con la build verde.
-run('node', ['scripts/check-themes.js']);
+run('node', ['src/app/shared/wm-core/scripts/check-themes.js']);
 
 run('ionic', ['build', '--prod']);
 

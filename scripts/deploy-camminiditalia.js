@@ -29,7 +29,7 @@ const RSYNC_ARGS = ['-av', '--exclude', 'assets'];
 
 // Come in deploy-default.js: `ionic build` non passa da `npm run build`, quindi il gate su
 // `prebuild` non scatterebbe e il controllo va chiamato a mano (oc:8613).
-run('node', ['scripts/check-themes.js']);
+run('node', ['src/app/shared/wm-core/scripts/check-themes.js']);
 
 run('ionic', [
   'build',

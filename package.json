@@ -7,7 +7,7 @@
   "scripts": {
     "ng": "ng",
     "start": "node scripts/serve.js",
-    "prebuild": "node scripts/check-themes.js",
+    "prebuild": "node src/app/shared/wm-core/scripts/check-themes.js",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",

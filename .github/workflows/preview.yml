@@ -73,7 +73,7 @@ jobs:
       # submodule è a un commit che li precede, `ionic build` riesce e la preview esce senza i CSS
       # dei clienti, in silenzio. Questo passo trasforma quel guasto in un fallimento (oc:8613).
       - name: Check per-instance themes
-        run: node scripts/check-themes.js
+        run: node src/app/shared/wm-core/scripts/check-themes.js
 
       - name: Build
         run: ionic build

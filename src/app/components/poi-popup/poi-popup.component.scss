@@ -9,6 +9,13 @@ webmapp-poi-popup {
   // `--wm-poi-popup-width`, definito da `map.page.scss` insieme alle altre due fasce. Il 20% di
   // prima valeva ~205px a 1024px di viewport, e a quella larghezza il dettaglio stava stretto.
   width: var(--wm-poi-popup-width, 400px);
+  // Sotto le larghezze da telefono la larghezza fissa non ci sta: 320px (il valore sotto i 1024px)
+  // più i 76px di `--wm-poi-popup-right` fanno 396px, quindi su una viewport da 360px il bordo
+  // sinistro del pannello finirebbe a -36px e il contenuto sarebbe tagliato. Prima di oc:8406 il
+  // popup era `width: 20%` e il problema non si poneva. Un `max-width` invece di un breakpoint
+  // nuovo: non cambia niente sopra i 412px — 320 + 76 + 16 — e sotto lascia sempre 16px di
+  // margine a sinistra, gli stessi che il pannello ha dagli altri lati. (oc:8406, trovato in review)
+  max-width: calc(100vw - var(--wm-poi-popup-right, 76px) - 16px);
   bottom: 35px;
   // Comincia sotto i controlli in alto a destra della mappa, invece di passarci sopra: vedi
   // `--wm-poi-popup-top` in `map.page.scss`.

@@ -107,9 +107,16 @@
  * quello della traccia, che sono i due punti in cui `wm-core` monta il componente.
  *
  * Sta qui e non in un tema per istanza perché non dipende dal cliente ma dal prodotto: riguarda
- * tutte le app servite dalla webapp. E il selettore porta il prefisso della pagina per una ragione
- * pratica: il foglio del componente dichiara `display: block` sullo stesso host e viene iniettato
- * in <head> a runtime, quindi a parità di specificità vincerebbe lui.
+ * tutte le app servite dalla webapp.
+ *
+ * Due precisazioni sul selettore, perché è facile leggerlo male. **Il prefisso non serve a
+ * escludere l'app**: `webmapp-map-page` è il selettore della pagina mappa in *entrambi* i prodotti,
+ * e ciò che tiene questa regola fuori dall'app è solo il fatto che `global.scss` entra dagli
+ * `styles` di questo `angular.json` e l'app ha il proprio. Chi un domani spostasse questa regola in
+ * `wm-core` o in un tema condiviso spegnerebbe il pulsante anche lì, senza che nulla lo segnali.
+ * Il prefisso serve invece ad **alzare la specificità**: il foglio del componente dichiara
+ * `display: block` sullo stesso host e viene iniettato in <head> a runtime, quindi a parità
+ * vincerebbe lui.
  */
 webmapp-map-page wm-get-directions {
   display: none;
@@ -124,8 +131,12 @@ webmapp-map-page wm-get-directions {
  * perché li manda in un angolo sotto al pannello.
  *
  * È una scelta di prodotto e non del cliente, come per "Ottieni indicazioni": sulla webapp quei
- * tasti stanno nel loro posto di default per tutte le app. La catena è più lunga di quella del tema
- * e porta `!important` perché è l'unico modo di battere un `!important` di pari specificità.
+ * tasti stanno nel loro posto di default per tutte le app.
+ *
+ * Sul perché serve `!important`: **non è una questione di specificità**. Quella di questa regola è
+ * già più alta di quella del tema — `webmapp-map-page wm-map .map-container .ol-zoom` è (0,2,2)
+ * contro (0,2,1) — ma una dichiarazione `!important` si batte **solo** con un'altra `!important`,
+ * qualunque sia la specificità. Allungare il selettore, da solo, non sarebbe bastato.
  */
 webmapp-map-page wm-map .map-container .ol-zoom {
   top: 50% !important;

@@ -40,5 +40,8 @@ due controlli l'altro, perché niente lo segnalerà.
   `wm-core` che rinomini o sposti i file `.camminiditalia.ts` la rompe in silenzio, senza che
   nessuna pipeline se ne accorga. Rischio accettato esplicitamente.
 - **Fuori scope e a carico del developer** (oc:8512): il redirect server-side di
-  `1.camminiditalia.webmapp.it` verso la cartella nuova, la verifica visiva della resa dei
-  componenti, e il tema `src/theme/camminiditalia/`, che è una cartella vuota.
+  `1.camminiditalia.webmapp.it` verso la cartella nuova e la verifica visiva della resa dei
+  componenti. Anche il tema di camminiditalia era fuori scope, perché allora `src/theme/camminiditalia/`
+  era una cartella vuota: **da oc:8613 non lo è più.** Il tema esiste, sta in `wm-core` insieme agli
+  altri otto — vedi [css-custom-per-istanza.md](css-custom-per-istanza.md) — e arriva a entrambi i
+  prodotti, quindi le sue regole si applicano anche qui. Sono quattro, tutte sulla home.

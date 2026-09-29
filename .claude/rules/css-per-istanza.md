@@ -1,0 +1,105 @@
+---
+paths:
+  - "src/app/shared/wm-core/projects/wm-core/src/assets/theme/**"
+  - "src/app/components/**/*.html"
+  - "src/app/pages/**/*.html"
+  - "src/app/shared/wm-core/projects/wm-core/src/**/*.html"
+---
+
+# Trappole: CSS custom per istanza
+
+Il perché sta in [docs/knowledge/css-custom-per-istanza.md](../../docs/knowledge/css-custom-per-istanza.md).
+
+I nove temi stanno in `wm-core`, sotto `projects/wm-core/src/assets/theme/<shard>/<appId>.css`, e
+sono serviti sia da questo repo sia da `webmapp-app`: **una modifica lì arriva a entrambi i
+prodotti** (oc:8613).
+
+## Quando si tocca un componente
+
+- **Rinominare un selettore o una classe può scollegare il CSS di un cliente, in silenzio.** Quei
+  file puntano ai nomi dei componenti condivisi e non sono referenziati da nessuna build: il
+  `<link>` è costruito a runtime da `meta.component.ts:50` **di wm-core**
+  (`src/app/shared/wm-core/projects/wm-core/src/meta/`). Il `MetaComponent` locale di questo repo
+  è stato cancellato sotto oc:8613: era un doppione morto e costruiva un percorso piatto,
+  `theme/<appId>.css`, che non è mai esistito. Nessun compilatore, test o lint segnalerà
+  mai il drift. Dopo una rinomina, cerca il vecchio nome nella cartella dei temi.
+
+- **Un figlio flex senza `order` vale 0, quindi va in cima, non in fondo.** `wm-track-properties` è
+  `display: flex; flex-direction: column`, e i temi di FIE (29) e CAI Parma (33) ne riordinano le
+  sezioni. Se un selettore si scollega, quella sezione non perde solo il suo stile: **risale sopra
+  tutte le altre**.
+
+- **Un file di tema che manca non è un errore.** L'URL è costruito, non dichiarato: un'app senza il
+  suo file prende un 404 e resta senza personalizzazione.
+
+## Quando si riscrive una regola per farla valere su entrambi i prodotti
+
+- **Si affianca un selettore, non si sostituisce.** Il ramo che già funzionava resta identico, così
+  la resa su quel prodotto non cambia per costruzione. Vedi la knowledge per la forma.
+
+- **Additiva non vuol dire equivalente.** I due rami hanno specificità diverse — `wm-map-details` è
+  un elemento, `.details-container` una classe — quindi il ramo webapp ne ha una in più e vince
+  confronti che l'altro perde. Succede davvero: la copertina della scheda del layer è nascosta dal
+  tema sulla webapp e solo alta zero sull'app, con la stessa dichiarazione. L'esito va **misurato su
+  entrambi i prodotti**, non dedotto dal fatto che la regola è la stessa.
+
+- **Il prefisso del contenitore è portante.** `wm-home-layer` e `wm-status-filter` si montano in due
+  punti sull'app — nel pannello e dentro `wm-home` — quindi togliere `wm-map-details` farebbe
+  applicare la regola anche alla home. I due punti sono vivi **nello stesso momento** con un layer
+  aperto.
+
+- **Si decide su cosa dichiara la regola, non su come si chiama il selettore.** Una regola che
+  compensa il padding di `ion-card-content` o fa spazio a una tab bar non ha senso dove non ci sono
+  né la card né la tab bar: resta al prodotto suo.
+
+## Quando si misura quali regole agganciano
+
+- **`querySelectorAll` non aggancia mai uno pseudo-elemento.** `document.querySelectorAll('body::after')`
+  restituisce 0 anche se `body` esiste. Misura sull'elemento host, togliendo lo pseudo, o
+  classificherai come morte regole vive. Le pseudo-**classi** (`:first-of-type`, `:has()`) invece
+  funzionano. Attenzione a non rassicurarsi troppo presto: i quattro temi nati qui non ne hanno
+  nessuno, ma da oc:8613 questo repo **pubblica tutti e nove** i temi, e quello di Ville ne ha
+  **sedici** — quattordici `::after` e due `::before`. Contarne quattordici vuol dire aver contato
+  solo i primi.
+
+- **Un match non basta: controlla in quale contenitore sta.** Un elemento può essere montato fuori
+  dal contenitore che ti interessa e farti contare un falso positivo. Ancora la query al contenitore
+  (`.details-container …`) o verifica con `closest()`.
+
+- **Percorri gli stati, non dedurli dalla configurazione.** `wm-home-layer` e `wm-status-filter`
+  compaiono solo con un layer aperto, `wm-tab-description` solo se quel layer ha una descrizione,
+  `.wm-track-details-track-related-poi` solo su una traccia con POI correlati. Dedurre da `MAP.layers`
+  porta fuori strada: l'app 75 è stata data per «senza layer» quando ne ha cinque.
+
+- **L'audit degli orfani si fa con ERE POSIX, dove `\s` non esiste.** Usarlo restituisce zero
+  selettori reali e marca orfano *tutto*; se il conteggio è fuori scala, è rotto lo strumento. Spoglia
+  i file dai commenti prima di estrarre, e per le classi ricorda che una ricerca per sottostringa fa
+  sembrare vivo `webmapp-search` solo perché esiste `webmapp-search-box`.
+
+- **Conta i file prima di fidarti del risultato.** Una glob che non trova niente non protesta: se un
+  comando cerca i temi nel percorso vecchio — stavano in `src/theme/`, da oc:8613 stanno dentro
+  `wm-core` — restituisce zero, e zero orfani si legge come «tutto a posto». Prima di ogni scansione:
+
+  ```bash
+  ls src/app/shared/wm-core/projects/wm-core/src/assets/theme/*/*.css | wc -l   # deve dare 9
+  ```
+
+- **`document.fonts.check()` non dice se una famiglia esiste.** Risponde «le font che servono sono
+  pronte, o non c'è niente da caricare», quindi per un nome sconosciuto dà `true`:
+  `document.fonts.check('18px "fontCheNonEsiste"')` → `true`. E può dare `false` su una famiglia
+  dichiarata correttamente ma non ancora *usata* da nessun elemento, se ha `font-display: block`.
+  Risponde cioè al rovescio della verità in entrambe le direzioni.
+
+  Serve quando un tema chiede una icon font per nome — i due prodotti la chiamano `wm` qui e
+  `webmapp` sull'app, con un alias per parte. Le due misure che valgono, con il controllo negativo
+  sempre accanto:
+
+  ```js
+  (await document.fonts.load('64px "wm"')).length        // 1 se risolve, 0 se il nome non esiste
+  // e soprattutto la larghezza del glifo, che è ciò che l'utente vede:
+  // uno <span> con position:absolute;visibility:hidden;font-size:64px e il carattere 
+  // → 64px con la font giusta, 46.22px sul fallback di sistema
+  ```
+
+  Senza il controllo negativo la misura non vale: è così che una verifica sbagliata è stata data per
+  buona da entrambe le sessioni prima che l'altra la smontasse.

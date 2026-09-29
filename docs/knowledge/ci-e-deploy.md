@@ -6,6 +6,11 @@
 `wm-webapp`, `wm-core` e `map-core`, più `e2e` — Cypress in Chrome headless, che avvia
 `ionic serve` e attende `localhost:8100`.
 
+**È qui che girano anche gli spec di `wm-core`**, e non nella CI di quel repo: lì il workflow
+controlla solo i temi, perché `wm-core` da solo non compila — `tsconfig.json` risolve
+`@wm-types/*` e `@map-core/*` in cartelle che esistono solo dentro un prodotto. L'ambiente c'è
+qui, dove il submodule è montato accanto ai suoi fratelli (oc:8613).
+
 **`preview.yml`** pubblica una preview Surge per ogni PR, con dominio
 `<appId>.<shardName>.pr-<prNumber>.surge.sh` e link cliccabile nello Step Summary; un job di
 teardown la rimuove alla chiusura della PR. Gli override `--id` e `--shard` si passano nel
@@ -14,6 +19,37 @@ messaggio di commit.
 **`deploy_prod.yml`** parte sul push a `main` ed è **gatato sui test**: senza il verde di tutti e
 quattro i job non deploya. Ha anche un `workflow_dispatch` per gli hotfix che devono bypassare il
 gate, e un input `target` per scegliere quale deploy lanciare.
+
+**C'è un secondo gate, e non è sui test: è sui CSS dei clienti** (oc:8613). I nove temi per istanza
+vivono in `wm-core` e i due prodotti li pubblicano con una voce di `assets`; siccome nessuna build
+li referenzia a compile-time, una cartella assente — tipicamente per un pin del submodule indietro —
+darebbe una build **verde** e un deploy senza personalizzazioni. `wm-core/scripts/check-themes.js`
+lo impedisce confrontando i temi trovati con l'elenco atteso, e in questo repo è invocato da:
+
+| Dove | Cosa |
+|---|---|
+| `package.json` | `prebuild`, quindi ogni `npm run build`; più `deploy-cai`, `deploy-webcomponent` e i quattro script `surge-*`, che chiamano `ionic build` e scavalcherebbero il `prebuild` |
+| `scripts/deploy-default.js`, `scripts/deploy-camminiditalia.js` | prima di buildare |
+| `.github/workflows/preview.yml` | un passo dedicato, che prima verifica l'esistenza dello script e spiega il pin se manca |
+
+Tutti e nove invocano **`npm run check-themes`**, non il percorso dello script: quello è scritto una
+volta sola, nel `package.json`. Prima era ripetuto in ogni punto, e quando è cambiato — con
+oc:8613, che ha spostato lo script in `wm-core` — sono stati aggiornati a mano uno per uno. Chi ne
+avesse dimenticato uno non se ne sarebbe accorto: quel percorso di build avrebbe semplicemente
+smesso di controllare, senza errore. L'unica eccezione è `preview.yml`, che il percorso letterale
+ce l'ha perché deve verificare che il **file esista** prima di lanciarlo, ed è proprio il caso del
+pin indietro.
+
+`deploy_prod.yml` è coperto di riflesso, perché passa dagli script di deploy. Restano fuori solo
+`ng build` e `ionic build` lanciati a mano, ed è coerente: non pubblicano niente.
+
+**I deploy non cancellano sul server.** `deploy-default.js` usa `scp -r ./www/*` e
+`deploy-camminiditalia.js` un `rsync` senza `--delete`: entrambi copiano sopra e non tolgono mai
+niente. Vale anche per la mobile. La conseguenza pratica riguarda i temi per istanza: **cancellare
+il CSS di un cliente dal repo non lo toglie dalla produzione**, il file resta sul server e continua
+a essere servito. Disattivare un tema è due operazioni — il repo e il server — e il README dei temi
+lo dice ora anche lì. `--delete` è stato valutato e rimandato: su un percorso sbagliato cancella
+quello che trova (oc:8613).
 
 ## Perché così
 

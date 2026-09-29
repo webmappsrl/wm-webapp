@@ -32,6 +32,7 @@ import { appFR } from 'src/assets/i18n/fr';
 import { appES } from 'src/assets/i18n/es';
 import { appPR } from 'src/assets/i18n/pr';
 import { appSQ } from 'src/assets/i18n/sq';
+import {WM_IMAGE_DETAIL_PRESENTATION} from '@wm-core/image-detail/image-detail-presentation';
 
 // Meta-reducer per forzare WEBAPP.analytics.enabled = true solo quando lo shard è "geohub"
 export function analyticsGeohubMetaReducer(reducer: ActionReducer<any>): ActionReducer<any> {
@@ -109,6 +110,10 @@ export class MyHttpInterceptor implements HttpInterceptor {
     }),
   ],
   providers: [
+    // La webapp non monta mai `wm-image-detail` inline, quindi il dettaglio di un'immagine deve
+    // aprirsi in un modale. Il default di wm-core è `inline`, pensato per chi la vista ce l'ha già
+    // nel proprio contenitore — è il caso di webmapp-app, anche nella sua build web (oc:8613).
+    {provide: WM_IMAGE_DETAIL_PRESENTATION, useValue: 'modal'},
     {provide: LOCALE_ID, useValue: 'it'},
     {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
     ...WmCoreModule.forRoot({

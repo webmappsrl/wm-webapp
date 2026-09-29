@@ -20,7 +20,6 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/assets",
-              "src/theme",
               {
                 "glob": "**/*",
                 "input": "src/assets",
@@ -35,6 +34,11 @@
                 "glob": "**/*",
                 "input": "src/app/shared/map-core/src/assets",
                 "output": "map-core/assets"
+              },
+              {
+                "glob": "**/*.css",
+                "input": "src/app/shared/wm-core/projects/wm-core/src/assets/theme",
+                "output": "theme"
               }
             ],
             "styles": ["src/theme/variables.scss", "src/global.scss"],
@@ -131,7 +135,8 @@
             "karmaConfig": "karma.conf.js",
             "include": [
               "src/app/app.component.spec.ts",
-              "src/app/classes"
+              "src/app/classes",
+              "src/app/components"
             ],
             "styles": [],
             "scripts": [],

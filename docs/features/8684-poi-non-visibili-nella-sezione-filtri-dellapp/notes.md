@@ -34,6 +34,20 @@
 - `baseUrl` di `cypress.config.ts` è 8100, mentre `npm start` serve su 4200: il run locale è stato
   fatto con `--config baseUrl=…`.
 
+- In CI il test falliva per la lingua: l'app usa la lingua del browser (`lang.service.ts:82`), che
+  in CI è l'inglese, e le chip diventavano "Accomodation", "Camping". Il test fissa
+  `localStorage['wm-lang'] = 'it'` in `onBeforeLoad`.
+
+- Lo scenario 2 non verifica più il ritorno di `search` nell'URL dopo la X, ma solo che la tipologia
+  resti selezionata. In una verifica con la configurazione della CI la X aveva riportato l'URL a
+  `/`; una diagnosi successiva, con lo stato del service letto a ogni passo, non l'ha riprodotto
+  (copia salvata all'apertura e ripristinata alla X, sia caricando `/?search=…` sia digitando la
+  ricerca). La causa non è stata trovata. Il dev ha scelto di non toccare `wm-core` per il test: il
+  ripristino è coperto dagli unit test di `url-handler.service.spec.ts` (`closeTrack`).
+
 ## Follow-up
 
-- Nessuno oltre al puntatore del submodule.
+- A 412px di larghezza (viewport della CI) la X della track, `.webmapp-track-details-dismiss`, è
+  coperta da `div.wm-profile-button`: su uno schermo stretto l'utente non riesce a chiudere la
+  track con la X. Problema di layout preesistente, da affrontare con un ticket separato; il test
+  gira a viewport desktop (`cy.viewport(1280, 800)`).

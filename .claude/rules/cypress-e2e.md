@@ -22,6 +22,10 @@ che quei test esercitano:
   });
   ```
 
+- **Un test che cerca un'etichetta per testo deve fissare la lingua**: imposta
+  `localStorage['wm-lang']` in `onBeforeLoad`. Senza, l'app usa la lingua del browser, che in
+  CI è l'inglese, e il test che passa in locale fallisce in CI (oc:8684).
+
 - **Fixture e `cy.intercept()` per i test di logica UI, mai le API reali.** Le API reali valgono
   solo per gli smoke test. Un test di logica che dipende dalla rete è instabile per costruzione e
   non gira in CI senza backend.

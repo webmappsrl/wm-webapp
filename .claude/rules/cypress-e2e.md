@@ -22,12 +22,16 @@ che quei test esercitano:
   });
   ```
 
+- **Un test che cerca un'etichetta per testo deve fissare la lingua**: imposta
+  `localStorage['wm-lang']` in `onBeforeLoad`. Senza, l'app usa la lingua del browser, che in
+  CI è l'inglese, e il test che passa in locale fallisce in CI (oc:8684).
+
 - **Fixture e `cy.intercept()` per i test di logica UI, mai le API reali.** Le API reali valgono
   solo per gli smoke test. Un test di logica che dipende dalla rete è instabile per costruzione e
   non gira in CI senza backend.
 
-- **In CI gira un solo spec**, `cypress/e2e/home/home-layers-tab.cy.ts`: è l'unico basato su
-  fixture. Se ne scrivi uno nuovo che dipende da API vive o da credenziali, non aggiungerlo al
+- **In CI girano gli spec basati su fixture**, `cypress/e2e/home/home-layers-tab.cy.ts` e
+  `cypress/e2e/filters/filters-track-pois.cy.ts`; gli altri sono marcati `describe.skip`. Se ne scrivi uno nuovo che dipende da API vive o da credenziali, non aggiungerlo al
   workflow — fallirebbe per motivi che non riguardano il codice.
 
 - **Il percorso non è lo stesso nei due prodotti**: qui è `cypress/e2e/`, nell'app (`webmapp-app`)

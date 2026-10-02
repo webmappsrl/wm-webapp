@@ -56,8 +56,9 @@ quello che trova (oc:8613).
 - **Il gate esisteva solo nelle intenzioni** (oc:8022): prima il deploy su `main` partiva senza
   alcun controllo sui test, e una regressione poteva andare in produzione senza che nulla la
   fermasse. Gli E2E, per giunta, erano configurati nel repo ma non giravano mai in CI.
-- **In CI gira un solo spec Cypress**, `cypress/e2e/home/home-layers-tab.cy.ts` (oc:8022): è
-  l'unico CI-safe, perché basato su fixture e senza backend reale. Gli altri dipendono da API vive
+- **In CI girano gli spec Cypress basati su fixture**, `cypress/e2e/home/home-layers-tab.cy.ts` e
+  `cypress/e2e/filters/filters-track-pois.cy.ts` (oc:8022, oc:8684): sono gli unici CI-safe, perché
+  senza backend reale; gli altri sono marcati `describe.skip`. Gli altri dipendono da API vive
   o da credenziali, e in CI fallirebbero per motivi che non riguardano il codice.
 - **`preview.yml` usa `pull_request_target`, non `pull_request`** (oc:8022): serve perché i secret
   siano disponibili anche sulle PR che arrivano da un fork.

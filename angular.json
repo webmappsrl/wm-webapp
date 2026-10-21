@@ -98,6 +98,22 @@
                 {
                   "replace": "src/app/shared/wm-core/projects/wm-core/src/search-bar/search-bar.component.ts",
                   "with": "src/app/shared/wm-core/projects/wm-core/src/search-bar/search-bar.component.camminiditalia.ts"
+                },
+                {
+                  "replace": "src/app/shared/wm-core/projects/wm-core/src/box/layer-box/layer-box.component.ts",
+                  "with": "src/app/shared/wm-core/projects/wm-core/src/box/layer-box/layer-box.component.camminiditalia.ts"
+                },
+                {
+                  "replace": "src/app/shared/wm-core/projects/wm-core/src/box/search-box/search-box.component.ts",
+                  "with": "src/app/shared/wm-core/projects/wm-core/src/box/search-box/search-box.component.camminiditalia.ts"
+                },
+                {
+                  "replace": "src/app/shared/wm-core/projects/wm-core/src/track-properties/track-properties.component.ts",
+                  "with": "src/app/shared/wm-core/projects/wm-core/src/track-properties/track-properties.component.camminiditalia.ts"
+                },
+                {
+                  "replace": "src/app/shared/wm-core/projects/wm-core/src/ugc-track-properties/ugc-track-properties.component.ts",
+                  "with": "src/app/shared/wm-core/projects/wm-core/src/ugc-track-properties/ugc-track-properties.component.camminiditalia.ts"
                 }
               ]
             }

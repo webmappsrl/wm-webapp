@@ -15,6 +15,7 @@
     "deploy": "node scripts/deploy.js",
     "deploy-default": "node scripts/deploy-default.js",
     "deploy-camminiditalia": "node scripts/deploy-camminiditalia.js",
+    "deploy-camminiditalia-full": "node scripts/deploy-camminiditalia.js --full",
     "deploy-cai": "npm run check-themes && ionic build --prod && scp -r ./www/* cai.osm2cai:/var/www/html/webapp/",
     "deploy-webcomponent": "npm run check-themes && ng build --configuration production --output-hashing=none --output-path=web-component",
     "surge-sardegna": "npm run check-themes && ionic build --prod && surge --project ./www --domain http://32.webmapp.surge.sh/",

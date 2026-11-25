@@ -29,6 +29,7 @@ Ordine di dipendenza: `wm-types` → `wm-core` → `wm-webapp`.
 | Build | `npm run build` (`ng build`) |
 | Deploy, entrambi i target | `npm run deploy` — orchestra `deploy-default` e `deploy-camminiditalia` |
 | Deploy di un target solo | `npm run deploy-default` oppure `npm run deploy-camminiditalia` |
+| Deploy completo di camminiditalia, assets compresi | `npm run deploy-camminiditalia-full` — a mano, quando cambia un asset o su un server nuovo |
 | Preview Surge di uno shard | `npm run surge-<shard>` (`sardegna`, `camminiditalia`, `carg`, …) |
 | Test E2E | `npm run e2e` (avvia l'app e lancia Cypress) o `npm run e2e-gui` per la GUI |
 | Cypress su un'app già avviata | `npm run cy:run`, oppure `npm run cy:open` |
@@ -69,7 +70,7 @@ Gli spec dei submodule **non girano da qui**: ognuno ha il proprio setup nel pro
 | Test di questo repo | Cosa gira e cosa no, il confine `src/app/shared/`, il `MockStore` di `AppComponent` | oc:7989 | [docs/knowledge/test-di-questo-repo.md](docs/knowledge/test-di-questo-repo.md) |
 | Mappa a tre fasce | Larghezze di home, mappa e dettaglio POI, e perché il dettaglio comincia sotto i controlli | oc:8406 | [docs/knowledge/mappa-a-tre-fasce.md](docs/knowledge/mappa-a-tre-fasce.md) |
 | Tema e colori | Come il primary dell'istanza arriva ai componenti Ionic, e perché `variables.scss` è importato due volte | oc:8406 | [docs/knowledge/tema-e-colori.md](docs/knowledge/tema-e-colori.md) |
-| Variante `camminiditalia` | La configuration Angular, `npm start` che la sceglie da sé, i tre script di deploy | oc:8512 | [docs/knowledge/variante-camminiditalia.md](docs/knowledge/variante-camminiditalia.md) |
+| Variante `camminiditalia` | La configuration Angular, `npm start` che la sceglie da sé, i tre script di deploy | oc:8512, oc:9042 | [docs/knowledge/variante-camminiditalia.md](docs/knowledge/variante-camminiditalia.md) |
 | CSS custom per istanza | Cosa comporta per questo prodotto: i quattro temi nati qui, i selettori inerti, il gate sulla build. Il meccanismo sta in `wm-core` | oc:8613 | [docs/knowledge/css-custom-per-istanza.md](docs/knowledge/css-custom-per-istanza.md) |
 
 ## Test E2E con Cypress

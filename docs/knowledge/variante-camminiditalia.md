@@ -17,11 +17,20 @@
 esatto, poi per prefisso per le varianti `dev`. Dato che `environment.ts` dichiara già
 `shardName: 'camminiditalia'`, `npm start` builda con i componenti custom senza flag manuali.
 
-Il deploy è tre script: `deploy-default.js` (generico, `scp`), `deploy-camminiditalia.js`
-(`fileReplacements`, `rsync` più creazione della cartella remota via `ssh mkdir -p`) e `deploy.js`
-che li orchestra.
+Il deploy è tre script: `deploy-default.js` (generico, `scp -r` di tutto `www/`),
+`deploy-camminiditalia.js` (`fileReplacements`, `rsync` più creazione della cartella remota via
+`ssh mkdir -p`) e `deploy.js` che li orchestra. `deploy-camminiditalia.js` ha due modi: senza
+argomenti esclude ogni cartella `assets`, ed è quello di `npm run deploy` e della CI; con `--full`
+(`npm run deploy-camminiditalia-full`) pubblica tutta la build e si lancia a mano. Il perché è
+sotto.
 
 ## Perché così
+
+- **Due deploy, non un'esclusione ancorata** (oc:9042): `--exclude assets` senza `/` iniziale
+  escludeva anche `map-core/assets/`, e sulle track selezionate restavano i dischi bianchi senza la
+  freccia. Il deploy automatico resta veloce e gli asset passano da un comando completo lanciato a
+  mano, invece di `--exclude /assets`. Costo accettato: un asset nuovo non arriva in produzione
+  finché qualcuno non lancia il completo, e nessun controllo lo segnala.
 
 - **Niente equivalente di `profile.page.camminiditalia.ts`** (oc:8512): esiste in `webmapp-app`,
   ma questa webapp non ha una pagina «profile» — verificato, non applicabile. Nessuna modifica al

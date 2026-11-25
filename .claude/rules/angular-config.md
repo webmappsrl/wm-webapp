@@ -29,5 +29,10 @@ Il perché sta in [docs/knowledge/variante-camminiditalia.md](../../docs/knowled
   esempio `curl -s http://localhost:<porta>/main.js | grep -c wm-searchbar-camminiditalia-panel`.
   Zero significa build generica, diverso da zero significa variante.
 
+- **`--exclude assets` in rsync esclude ogni cartella `assets` a qualunque profondità**, anche
+  `map-core/assets/`: il deploy veloce non pubblica l'icona delle frecce delle track e la mappa
+  mostra dischi bianchi. Per pubblicare gli asset si lancia `npm run deploy-camminiditalia-full`;
+  per escludere solo la radice il pattern è `/assets` (oc:9042).
+
 - **`sshpass -e` si applica solo se `SSHPASS` è impostata.** In locale l'autenticazione è a chiave
   e avvolgere i comandi li farebbe fallire; `rsync` non va avvolto affatto, legge `RSYNC_RSH`.
